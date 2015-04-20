@@ -1,0 +1,72 @@
+<?
+require_once('application_edit_form_start.phtml');
+require('header.phtml');
+
+echo "
+<script>
+function save_and_load(mode) {
+	document.application_edit.target_app_mode.value=mode;
+	document.application_edit.submit();
+	}
+</script>";
+
+function show_button($mode,$current_mode) {
+	global $appsections,$app_form_bg;
+	$bgcolor="#4488ff";
+	$bgcolor=$app_form_bg;
+	$fontcolor="black";
+	if ($mode==$current_mode) {
+		$bgcolor="#dddddd";
+		$fontcolor="black";
+		$link="\"\"";
+		$link_start="";
+		$link_end="";
+		} else {
+		$link="javascript:form_verify('$mode')";
+		$link_start="<a href=$link>";
+		$link_end="</a>";
+		}
+	
+	
+	$button_text=ereg_replace(" ","&nbsp;",$appsections[$mode]);
+	echo "
+	<table width=100% border=1 cellspacing=0 cellpadding=3><tr><td bgcolor=\"$bgcolor\" width=100% onclick=$link>
+	<font color=$fontcolor><b>$button_text</b></font></td></tr></table>";
+	}
+
+
+echo "
+<center>
+<table width=790 cellspacing=0 cellpadding=4 border=3><tr><td bgcolor=$app_form_bg><table border=0 cellspacing=0 cellpadding=4>
+
+<tr><td valign=top bgcolor=$app_form_bg>
+	";
+	show_button("vitals",$last_app_mode);
+	show_button("employment_history",$last_app_mode);
+	show_button("education",$last_app_mode);
+	show_button("job_references",$last_app_mode);
+	show_button("eligibility",$last_app_mode);
+	show_button("openings",$last_app_mode);
+	show_button("main",$last_app_mode);
+	echo"
+</td><td valign=top bgcolor=$app_form_bg width=100%>";
+	include("application_edit_${last_app_mode}.phtml");echo"
+</td></tr>
+
+</table>
+</table>
+</center>
+";
+
+
+
+
+
+
+
+
+
+
+require_once('application_edit_form_end.phtml');
+
+?>

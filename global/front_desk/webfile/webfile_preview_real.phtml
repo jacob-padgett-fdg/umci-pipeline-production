@@ -1,0 +1,107 @@
+<?
+set_time_limit('20');
+if ($files_id=="") die("Application Error!!");
+$files_id=addslashes($files_id);
+$file=getone("select * from webfile_files where files_id = '$files_id'");
+$file_preview_name=substr($file->file_name,0,10);
+$height=clean_int($height);
+$width=clean_int($width);
+$outputvar=array();
+
+if ($width < 1) $width="";
+if ($height < 1) $height="";
+$source_file="$storage_root$file->file_path";
+$target_file="$storage_root$file->file_path.${width}x${height}.png";
+
+function pdf_sniff($filename) {
+	$filename=escapeshellcmd($filename);
+	$outputvar=array();
+	$return_val="";
+	exec("pdftk $filename dump_data",$outputvar,$return_val);
+	if ($return_val=="0") return TRUE;
+	else return FALSE;
+}
+
+
+if (($width!="")||($height!="")) {
+	$scale_command=" -scale ${width}x${height} ";
+	} else {
+	$scale_command="";
+	}
+
+if (!(($readable)||($adminuser))) {
+	header("Content-type: image/png");
+    // GPH MARK - absolute path
+	passthru("convert $scale_command -antialias /data/web/pipeline/global/webfile${devel}/stop.gif png:-");
+	exit;
+	}
+
+switch ($file->mime_type) {
+	case "image/jpg":
+	case "image/jpeg":
+	case "image/png":
+	case "image/gif":
+	case "image/tif":
+	case "image/tiff":
+	case "image/x-tiff":
+	case "image/bmp":
+	case "image/x-windows-bmp":
+	case "image/x-portable-bitmap":
+					$type="raster";
+					break;;
+	case "application/pdf":
+	case "application/x-pdf":
+					$type="pdf";
+					break;;
+					
+	default:
+					$type="unknown";
+					break;;
+	}
+
+if ($type=="pdf") {
+	if (!(is_file($target_file))) {
+		if (!(is_file("${source_file}.png"))) {
+			if (pdf_sniff($source_file)) {
+                $prep_command = "convert -trim -antialias ${source_file}[0] ${source_file}.png";
+            } else {
+                // GPH MARK - absolute path
+                $prep_command = "convert -gravity south -pointsize 85 -fill black -draw \"text 0,92 '$file_preview_name'\" /data/web/pipeline/global/webfile${devel}/frowny_with_block.png ${source_file}.png";
+            }
+			exec($prep_command,$outputvar,$return);
+			}
+		$convert_command="convert $scale_command ${source_file}.png $target_file";
+		exec($convert_command,$outputvar,$return);
+		if ($return!=0) die ("
+		$convert_command<br>
+		APPLICATION ERROR");
+		}
+	}
+
+if ($type=="raster") {
+	if (!(is_file($target_file))) {
+		$convert_command="convert $scale_command $source_file $target_file";
+		exec($convert_command,$outputvar,$return);
+		if ($return!=0) die ("APPLICATION ERROR");
+		}
+	}
+
+if ($type=="unknown") {
+	if (!(is_file($target_file))) {
+		if (!(is_file("${source_file}.png"))) {
+            // GPH MARK - absolute path
+			$prep_command="convert -gravity south -pointsize 60 -fill black -draw \"text 0,70 '$file_preview_name'\" /data/web/pipeline/global/webfile${devel}/question_mark.jpg ${source_file}.png";
+			exec($prep_command,$outputvar,$return);
+			}
+		$convert_command="convert $scale_command ${source_file}.png $target_file";
+		exec($convert_command,$outputvar,$return);
+		if ($return!=0) die ("
+		$convert_command<br>
+		APPLICATION ERROR");
+		}
+	}
+
+
+header("Content-type: image/png");
+readfile($target_file);
+?>

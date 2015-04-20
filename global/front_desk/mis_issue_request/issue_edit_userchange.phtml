@@ -1,0 +1,58 @@
+<?
+if ($issue_id=="") die ('ERROR: issue_id is required for this dialog! Call your system administrator');
+$issue_id=escapeshellcmd($issue_id);
+$history_id_info=getone("select * from mis_issue_history where issue_id = '$issue_id' and current_hist_item = 'Y'");
+
+$current_users_qry="select * from mis_issue_concerned_parties where issue_history_id = '$history_id_info->issue_history_id' and us_or_them = 'them'";
+$cu_res=@mysql_query($current_users_qry);
+
+$rowcount=@mysql_num_rows($cu_res);
+
+if ($rowcount=="1") {
+	echo "
+	<script>
+	function last_off_the_ship() {
+		if (confirm(\"You're the last user, so the issue will automatically be closed!\")) {
+			opener.document.issue_edit.issue_approved.value='Y';
+			opener.document.issue_edit.submit();
+			self.close();
+			
+			}
+
+		}	
+	</script>";	
+	
+	
+	}
+
+
+echo "
+<html><body bgcolor=#ffffff>
+
+<a href=javascript:self.close();><font color=blue>Close</font></a>
+<p>
+<b>Current Users:</b><hr>";
+while($row=@mysql_fetch_object($cu_res)) {
+	$contact=getone("select * from contacts where contacts_id = '$row->contacts_id'");
+	if ($rowcount!="1") {
+		echo "<a href=$pagename?mode=issue_edit_user_remove&issue_history_id=$history_id_info->issue_history_id&contacts_id=$contact->contacts_id><font color=blue><i>Remove</i></font></a>&nbsp;&nbsp;$contact->last_name, $contact->first_name<br>";
+		} else {
+		echo "<a href=javascript:last_off_the_ship();><font color=blue><i>Remove</i></font></a>&nbsp;&nbsp;$contact->last_name, $contact->first_name<br>";
+		}
+	}
+
+echo "
+<p>
+<b>Add Users:</b><hr>";
+$others_query="select * from contacts where current = 'Y' and umc_emp = 'Y' order by last_name,first_name";
+//tabledump($others_query);
+$others_res=@mysql_query($others_query);
+while($row=@mysql_fetch_object($others_res)) {
+
+	$tmpq="select * from mis_issue_concerned_parties where issue_history_id = '$history_id_info->issue_history_id' and us_or_them = 'them' and contacts_id = '$row->contacts_id'";
+	if (!(getoneb($tmpq))) 
+	echo "<a href=$pagename?mode=issue_edit_user_add&issue_history_id=$history_id_info->issue_history_id&contacts_id=$row->contacts_id><font color=blue><i>Add</i></font></a>&nbsp;&nbsp;$row->last_name, $row->first_name<br>";
+	}
+
+echo "</body></html>";
+?>

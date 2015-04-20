@@ -1,0 +1,16 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+if ($payroll_seq_user_id=="") die("ERROR: Missing important thing. Please contact your system administrator!(uid)");
+else $payroll_seq_user_id=addslashes($payroll_seq_user_id);
+
+if ($timesheet_payroll_sequence_num=="") die("ERROR: Missing important thing. Please contact your system administrator! (seq#)");
+else $timesheet_payroll_sequence_num=addslashes($timesheet_payroll_sequence_num);
+
+@mysql_query("update contacts set 
+	timesheet_payroll_sequence_num = '$timesheet_payroll_sequence_num' 
+	where 
+	contacts_id = '$payroll_seq_user_id'
+	");
+forward('payroll_manage_sequences');
+?>

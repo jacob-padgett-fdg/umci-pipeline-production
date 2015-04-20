@@ -1,0 +1,92 @@
+<?
+
+if ( ($materials_id=="") && ($sched_index_id=="") )die("ERROR: Not enough info! Please contact your system administrator!");
+
+if ($materials_id!="") {
+	$materials_id=escapeshellcmd($materials_id);
+	$item_info=materials_item_info($materials_id);
+	} else {
+	$item_info->sched_index_id=escapeshellcmd($sched_index_id);
+	}
+
+$sched_index_id=$item_info->sched_index_id;
+if ($material_list_id=="") $material_list_id=$item_info->material_list_id;
+if ($clear_materials_list_id=='Y') $material_list_id="";
+$materials_list_info=material_info($material_list_id);
+
+
+
+if ($material_list_id=="") {
+	$query="select * from svc_materials_list where material_list_id = material_list_parent and disabled = 'N' order by type,name";
+	} else {
+	$material_info=getone("select * from svc_materials_list where material_list_id = '$material_list_id' and disabled = 'N' order by type,name");
+	$query="select * from svc_materials_list where material_list_id != '$material_list_id' and material_list_parent = '$material_list_id' and disabled = 'N' order by type,name";
+	}
+echo "$materials_list_info->materials_browse_link<br>";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->type=="cat")	
+	echo "<a style=\"text-decoration: none;\" href=$pagename?mode=svc_agreement_material_edit&material_list_id=$row->material_list_id&sched_index_id=$sched_index_id&materials_id=$materials_id><font color=black>+</font>&nbsp;<font color=blue>$row->name</font></a><br>";
+	if ($row->type=="item")	
+	echo "&nbsp;<a href=$pagename?mode=svc_agreement_material_edit&material_list_id=$row->material_list_id&sched_index_id=$sched_index_id&materials_id=$materials_id><font color=black>$row->name</font></a><br>";
+	}
+
+echo "<table border=1>";
+
+if ($materials_list_info->type=="item") {
+
+	
+	if ($item_info->material_list_id!=$materials_list_info->material_list_id) {
+		$item_info->name=$materials_list_info->name;
+		$item_info->qty_name=$materials_list_info->qty_name;
+		$item_info->cost=$materials_list_info->cost;
+		}
+	
+	
+	
+	echo "
+	<form name=materail_info method=post action=$pagename>
+	<input type=hidden name=mode value=svc_agreement_material_submit>
+	<input type=hidden name=materials_id value=$item_info->materials_id>
+	<input type=hidden name=sched_index_id value=\"$item_info->sched_index_id\">
+	<input type=hidden name=material_list_id value=\"$materials_list_info->material_list_id\">
+	";
+	
+	
+	$materials_list_info->name=htmlspecialchars($materials_list_info->name);
+	echo "<tr><td>Name:</td><td>";
+	if ($materials_list_info->ss_name!='Y') 
+		echo "<input type=hidden name=name value=\"$materials_list_info->name\">$materials_list_info->name";
+	else
+		echo "<input type=text name=name value=\"$materials_list_info->name\">";
+	echo "</td></tr>";
+				
+	echo "<tr><td>Unit:</td><td>";
+	if ($materials_list_info->ss_name!='Y') 
+		echo "<input type=hidden name=qty_name value=\"$materials_list_info->qty_name\">$materials_list_info->qty_name";
+	else 
+		echo "<input type=text name=qty_name value=\"$materials_list_info->qty_name\">";
+	echo "</td></tr>";
+				
+	echo "<tr><td>Cost:</td><td>";
+	if ($materials_list_info->ss_cost!='Y') 
+		echo "<input type=hidden name=cost value=\"$materials_list_info->cost\">$materials_list_info->cost";
+	else 
+		echo "<input type=text name=cost value=\"$materials_list_info->cost\">";
+	echo "</td></tr>";
+
+	echo "
+	<tr><td>
+		Qty:
+	</td><td>
+		<input type=text size=5 name=qty value=\"$item_info->qty\">
+	</td></tr>
+	
+	<tr><td colspan=2 align=right>
+		<input type=submit value=Save>
+	</td></tr>
+	</form>
+	";
+	}
+echo "</table>";
+?>

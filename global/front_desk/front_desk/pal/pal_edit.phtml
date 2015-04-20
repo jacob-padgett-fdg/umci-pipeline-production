@@ -1,0 +1,214 @@
+<?
+require('header.phtml');
+pal_javascripts();
+fd_navs_header();
+
+if ($pal_id!="") {
+	$pal_id=addslashes($pal_id);
+	$pal_info=getone("select * from pal where pal_id = '$pal_id'");
+	} else {
+	die('Application error! Invalid PAL id.');
+	}
+//$creator=getoneb("select * from contacts where contacts_id = '$pal_info->creator_id'");
+
+
+$doc_id=fd_get_doc_id($pal_info->pal_id);
+//pal_box($doc_id);
+
+$pal_status=addslashes($pal_status);
+$pal_assigned=addslashes($pal_assigned);
+
+
+echo "
+<script src='/javascript/cal2.js'></script>
+<a href=$pagename?mode=main&pal_status=$pal_status&pal_assigned=$pal_assigned><font color=blue>Return to PAL log</font></a>
+<div style=\"border: 2px solid black; width: 350px;\">
+<div style=\"min-width: 350px; max-width: 350px; cursor: pointer; cursor: hand; border-top: 1px solid black;\" id=\"pal_header_item$pal_info->pal_id\" onclick=\"pal_id_edit_toggle($pal_info->pal_id,this);\">
+
+<div style=\"float: right; background: \"$fd_color_3\";\"><font size=-1>&nbsp;&nbsp;" . invali_date($pal_info->pal_sign_off_date,'/') . "</font></div><div style=\"width: 100%; background: $fd_color_3;\"><font style=\"background: $fd_color_3;\" size=-1>$pal_info->pal_num&nbsp;<font id=\"pal_{$pal_info->pal_id}_display_header_text\">$pal_info->short_description</font></font></div></div><div style=\"width: 350px;\" id=\"pal_item$pal_info->pal_id\"></div>
+</div>
+<script>
+obj=document.getElementById('pal_header_item$pal_info->pal_id');
+pal_id_edit_toggle($pal_info->pal_id,obj);
+</script>
+
+";
+
+
+
+
+fd_navs_footer();
+
+
+
+exit;
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to log view</font></a>
+<form name=pal_edit method=post action=$pagename>
+<input type=hidden name=mode value=pal_edit_submit>
+<input type=hidden name=pal_id value=\"$pal_info->pal_id\">
+<input type=hidden name=pal_status value=\"$pal_status\">
+<input type=hidden name=pal_assigned value=\"$pal_assigned\">
+<div id=\"pal_box\">
+<table onsubmit=\"return(false);\" border=1 cellspacing=0 cellpadding=5>
+
+<tr bgcolor=$fd_color_4><td>
+	<b>PAL ID:</b>
+</td><td>
+	$pal_info->pal_num
+</td></tr>
+
+<tr><td><b>Status:</b></td>
+	";
+	if (($global_user->contacts_id==$creator->contacts_id)&&($pal_info->status=="active")) {
+	 	echo "
+	 	<td onclick=\"pal_force_mark_complete($pal_info->pal_id);\" onmouseover=\"this.style.background='$fd_color_4';\" onmouseout=\"this.style.background='$fd_color_1 ';\" id=\"pal_${pal_id}_status\">
+	 	$pal_info->status";
+	} else {
+		echo "
+		<td>
+		$pal_info->status";
+	}
+	if ($pal_info->forced_sign_off_id>0) {
+		$forcer=getoneb("select * from contacts where contacts_id = '$pal_info->forced_sign_off_id'");
+		echo "<br>Forced: $forcer->login_name($forcer->contacts_id)";
+	}
+
+echo "
+</td></tr>
+
+<tr><td>
+	<b>Related Documents</b>
+</td><td>
+	";fd_doc_box($pal_info->pal_id);echo "
+</td></tr>
+
+<tr><td>
+	<b>Subject:</b>
+</td><td>
+	<input type=text size=20 id=\"pal_short_description\" name=short_description value=\"$pal_info->short_description\">
+</td></tr>
+
+<tr><td>
+	<b>Priority:</b>
+</td><td>
+	";
+	if ($pal_info->priority=="high") {
+	$high_selected="selected";
+	$normal_selected="";
+	} else {
+	$high_selected="";
+	$normal_selected="selected";
+	}
+	echo "<select name=priority>
+	<option $normal_selected>normal</option>
+	<option $high_selected>high</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>Action Reqd:</b>
+</td><td>
+	<textarea name=full_description cols=30 rows=5>$pal_info->full_description</textarea>
+</td></tr>
+
+<tr><td>
+	<b>Created:</b>
+</td><td>
+	"; echo invali_date($pal_info->create_date,'/'); echo "
+</td></tr>
+
+<tr><td>
+	<b>Due Date:</b>
+</td><td>
+	";datebox($pal_info->due_date,'pal_edit.due_date','/');echo "
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Submit>
+</td></tr>
+</form>
+<tr><td colspan=2 align=center bgcolor=$fd_color_4><b>Current Assignments</b></td></tr>
+<tr><td style=\"padding: 0px; border-collapse: collapse;\" colspan=2 align=center>
+<table cellspacing=0 cellpadding=4 border=1 width=100%>
+<tr bgcolor=$fd_color_1><td>
+	<b>Who</b>
+</td><td>
+	<b>Reviewed</b>
+</td><td>
+	<b>MSO</b>
+</td><td>
+	<b>Signed off</b>
+</td><td>
+	<b>Date</b>
+</td></tr>
+";
+$assignments=@mysql_query("select * from pal_assignments where pal_id = '$pal_info->pal_id'");
+while ($ass=@mysql_fetch_object($assignments)) {
+	$ass_owner=getoneb("select * from contacts where contacts_id = '$ass->owner_id'");
+	
+	echo "<tr><td>
+			$ass_owner->display_name
+		</td><td>
+			$ass->viewed
+		</td><td>
+			$ass->mso
+		</td><td>
+			$ass->signed_off
+		</td><td>
+			";echo invali_date($ass->signed_off_date,'/');echo"
+		</td></tr>
+	";
+	}
+	echo "
+	</table>
+</td></tr>
+
+<tr><td bgcolor=\"$fd_color_4\" style=\"padding: 0px; border-collapse: collapse;\" colspan=2 align=center>
+	<b>Notes</b>
+</td></tr>
+
+<tr><td style=\"padding: 0px; border-collapse: collapse;\" colspan=2 align=center>
+	";
+	
+	$notesres=@mysql_query("select * from pal_log where pal_id = '$pal_info->pal_id'");
+	while ($note=@mysql_fetch_object($notesres)) {
+		$note_author=getoneb("select * from contacts where contacts_id = '$note->owner_id'");
+		$note_text=$note->notes;
+		
+		//$note_text=ereg_replace("\r","<br>",$note_text);
+		//$note_text=ereg_replace("\n","<br>",$note_text);
+		$note_text=ereg_replace("","<br>",$note_text);
+		echo "<table border=1 cellspacing=0 cellpadding=2 width=550px>
+		<tr><td bgcolor=$fd_color_2>
+			<div style=\"float: right;\"><font size=-1>$note->note_date&nbsp;$note->note_time</font></div>
+			<font size=-1><b>$note_author->display_name</b></font>
+		</td></tr>
+		
+		<tr><td>
+		<font size=-1>$note_text</font>
+		</td></tr>
+		</table>";
+		}
+echo"</td></tr>";
+
+
+echo "
+
+
+
+</table>
+</div>
+
+";
+
+//<script>
+//function save_short_description() {
+//	ajaxManager('load_page','$pagename?mode=pal_update&pal_id=$pal_info->pal_id&short_description=' + document.getElementById('pal_short_description').value,'pal_box');
+//	//alert(document.getElementById('pal_short_description').value);
+//	return(false);
+//	}
+//</script>
+
+fd_navs_footer();
+?>

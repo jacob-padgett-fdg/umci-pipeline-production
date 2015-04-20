@@ -1,0 +1,325 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+
+
+//$joblist_res=@mssql_query("select substring(JCJM.Job,1,5) as Job from JCJM  right join JCJP on (JCJM.Job = JCJP.Job and JCJM.JCCo = JCJP.JCCo) where JCJM.JCCo = 1 and JCJM.JobStatus = 1 and JCJP.Phase like '25040%' group by substring(JCJM.Job,1,5)");
+$jobdata_res=@mssql_query("select substring(JCJM.Job,1,5) as Job, SUM(ActualHours) AS ActualHours, SUM(OrigEstHours) AS OrigEstHours, SUM(CurrEstHours) AS CurrEstHours from JCJM with (NOLOCK) 
+right join JCJP with (NOLOCK) on (JCJM.Job = JCJP.Job and JCJM.JCCo = JCJP.JCCo) 
+right join JCCP with (NOLOCK) on (JCJM.Job = JCCP.Job and JCJM.JCCo = JCCP.JCCo)
+
+where JCJM.JCCo = 1 and JCJM.JobStatus = 1 and JCJP.Phase like '25040%' and JCCP.Phase like '25040%'
+group by substring(JCJM.Job,1,5)");
+
+
+$job_data=array();
+
+while ($job=@mssql_fetch_object($jobdata_res)) {
+	$changes=$job->CurrEstHours - $job->OrigEstHours;
+	$job_data[$job->Job]['phase_on']='Y';
+	$job_data[$job->Job]['job']="$job->Job";
+	$job_data[$job->Job]['OrigEstHours']="$job->OrigEstHours";
+	$job_data[$job->Job]['changes']="$changes";
+	$job_data[$job->Job]['CurrEstHours']="$job->CurrEstHours";
+	$job_data[$job->Job]['ActualHours']="$job->ActualHours";
+	}
+
+$joblist_res=@mysql_query("select * from jobinfo where active = 'Y' and bim_budget_log = 'Y' order by contract_num");
+//tabledump("select * from jobinfo where active = 'Y' and bim_budget_log = 'Y' order by contract_num");
+
+
+echo "
+<font size=-1>
+<table border=1 cellspacing=0 cellpadding=4>
+<tr align=center bgcolor=$fd_color_4><td rowspan=2>
+	<b>Job<br>Number</b>
+</td><td rowspan=2>
+	<b>Job&nbsp;Name</b>
+</td><td colspan=4>
+	<b>BIM&nbsp;Budget&nbsp;Hours</b>
+</td><td colspan=4>
+	<b>Number&nbsp;Of&nbsp;Shop&nbsp;Dwgs</b>
+</td><td colspan=2>
+	<b>Hours&nbsp;Per&nbsp;Shop&nbsp;Dwg
+</td><td colspan=2>
+	<b>BIM&nbsp;Budget&nbsp;At&nbsp;Completion</b>
+</td></tr>
+
+<tr align=center bgcolor=$fd_color_4><td>
+	<b>Estimated&nbsp;Hours</b>
+</td><td>
+	<b>Change&nbsp;Orders</b>
+</td><td>
+	<b>Total&nbsp;Budget</b>
+</td><td>
+	<b>Hours&nbsp;Spent&nbsp;To&nbsp;Date</b>
+</td><td>
+	<b>Est&nbsp;SM</b>
+</td><td>
+	<b>Est&nbsp;MP/PL</b>
+</td><td>
+	<b>To&nbsp;Date&nbsp;SM</b>
+</td><td>
+	<b>To&nbsp;Date&nbsp;MP/PL</b>
+</td><td>
+	<b>Estimated</b>
+</td><td>
+	<b>To&nbsp;Date</b>
+</td><td>
+	<b>Total&nbsp;Hours</b>
+</td><td>
+	<b>%&nbsp;of&nbsp;Original&nbsp;Budget
+</td></tr>
+";
+
+while ($job=@mysql_fetch_object($joblist_res)) {
+	$job_nice=str_pad($job->contract_num,5,"0",STR_PAD_LEFT);
+	$changes=$job->CurrEstHours - $job->OrigEstHours;
+	$phase_on=$job_data[$job_nice]['phase_on'];
+	$OrigEstHours=$job_data[$job_nice]['OrigEstHours'];
+	$CurrEstHours=$job_data[$job_nice]['CurrEstHours'];
+	$ActualHours=$job_data[$job_nice]['ActualHours'];
+	$ActualHours=$job_data[$job_nice]['ActualHours'] + "$job->bim_hours_correction";
+	$changes=$job_data[$job_nice]['changes'];
+	
+	
+	$bgcolor="#ffffff";
+	if ($phase_on!='Y') {
+		$bgcolor="#ff7777";
+		}
+	
+	
+	$dwg_pipe_progress_sub_sub_query="
+	select 
+	CASE
+		when drawinglog_revs.dwg_rev_id > '0' then 1
+		else '0'
+	END as drawing,
+	name,
+	drawinglog.drawing_id,
+	sm_sheets,
+	plumb_sheets,
+	plumb_sheets as total_sheets,
+	sign_off_signoff,
+	second_pass_signoff,
+	third_pass_signoff,
+	first_pass_signoff,
+	rev_description,
+	CASE
+		when drawinglog_revs.dwg_rev_id is NULL then 0 
+		when rev_description = 'Issued For As-Built' then '1.0' 
+		when rev_description = 'Issued For Construction' then '0.95' 
+		when rev_description = 'Issued For Review By Architect And Engineer' then '0.85' 
+		when sign_off_signoff > 0 then 0.80
+		when third_pass_signoff > 0 then 0.70
+		when second_pass_signoff > 0 then 0.50
+		when first_pass_signoff > 0 then 0.30
+		else '0.00' 
+	END as dwg_percent_done
+	from front_desk_bim_areas
+	left join drawinglog on (drawinglog.jobinfo_id = front_desk_bim_areas.jobinfo_id and front_desk_bim_areas.name = drawinglog.area and drawinglog.type = 'Plumb/Pipe')
+	left join drawinglog_revs on (drawinglog_revs.drawing_id = drawinglog.drawing_id and (
+			drawinglog_revs.rev_description = 'Issued For Review By Architect And Engineer' or
+			drawinglog_revs.rev_description = 'Issued For Construction' or 
+			drawinglog_revs.rev_description = 'Issued For As-Built'
+			)
+		)
+	where front_desk_bim_areas.jobinfo_id = '$job->jobinfo_id'
+	group by front_desk_bim_areas.area_id,drawinglog.drawing_id
+	order by front_desk_bim_areas.name,drawinglog_revs.rev_description
+	";
+	
+	$dwg_pipe_progress_sub_query="
+	select *,
+	sum(drawing) as total_dwgs,
+	sum(dwg_percent_done) as level_drawings_done,
+	CASE
+		when total_sheets < sum(drawing) then 0 
+		else (total_sheets - sum(drawing))
+	END as drawings_missing,
+	CASE
+		when total_sheets < sum(drawing) then 0
+		when sign_off_signoff > 0 then (( total_sheets - sum(drawing)) * 0.80 )
+		when third_pass_signoff > 0 then (( total_sheets - sum(drawing)) * 0.70 )
+		when second_pass_signoff > 0 then (( total_sheets - sum(drawing)) * 0.50 )
+		when first_pass_signoff > 0 then (( total_sheets - sum(drawing)) * 0.30 )
+		else '0.00'
+	END as missing_sheets_done
+	from ($dwg_pipe_progress_sub_sub_query) as dwg_summary
+	group by dwg_summary.name";
+	
+	$dwg_pipe_progress_query="
+	select 
+	sum(total_sheets) as total_dwgs,
+	sum(level_drawings_done + missing_sheets_done) as done_dwgs
+	from ($dwg_pipe_progress_sub_query) as dwg_completion_summary";
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$dwg_sheet_progress_sub_sub_query="
+	select 
+	CASE
+		when drawinglog_revs.dwg_rev_id > '0' then 1
+		else '0'
+	END as drawing,
+	name,
+	drawinglog.drawing_id,
+	sm_sheets,
+	plumb_sheets,
+	sm_sheets as total_sheets,
+	sign_off_signoff,
+	second_pass_signoff,
+	third_pass_signoff,
+	first_pass_signoff,
+	rev_description,
+	CASE
+		when drawinglog_revs.dwg_rev_id is NULL then 0 
+		when rev_description = 'Issued For As-Built' then '1.0' 
+		when rev_description = 'Issued For Construction' then '0.95' 
+		when rev_description = 'Issued For Review By Architect And Engineer' then '0.85' 
+		when sign_off_signoff > 0 then 0.80
+		when third_pass_signoff > 0 then 0.70
+		when second_pass_signoff > 0 then 0.50
+		when first_pass_signoff > 0 then 0.30
+		else '0.00' 
+	END as dwg_percent_done
+	from front_desk_bim_areas
+	left join drawinglog on (drawinglog.jobinfo_id = front_desk_bim_areas.jobinfo_id and front_desk_bim_areas.name = drawinglog.area and drawinglog.type = 'Sheet Metal')
+	left join drawinglog_revs on (drawinglog_revs.drawing_id = drawinglog.drawing_id and (
+			drawinglog_revs.rev_description = 'Issued For Review By Architect And Engineer' or
+			drawinglog_revs.rev_description = 'Issued For Construction' or 
+			drawinglog_revs.rev_description = 'Issued For As-Built'
+			)
+		)
+	where front_desk_bim_areas.jobinfo_id = '$job->jobinfo_id'
+	group by front_desk_bim_areas.area_id,drawinglog.drawing_id
+	order by front_desk_bim_areas.name,drawinglog_revs.rev_description
+	";
+	
+	$dwg_sheet_progress_sub_query="
+	select *,
+	sum(drawing) as total_dwgs,
+	sum(dwg_percent_done) as level_drawings_done,
+	CASE 
+		when total_sheets < sum(drawing) then 0
+		else (total_sheets - sum(drawing))
+	END as drawings_missing,
+	CASE
+		when total_sheets < sum(drawing) then 0
+		when sign_off_signoff > 0 then (( total_sheets - sum(drawing)) * 0.80 )
+		when third_pass_signoff > 0 then (( total_sheets - sum(drawing)) * 0.70 )
+		when second_pass_signoff > 0 then (( total_sheets - sum(drawing)) * 0.50 )
+		when first_pass_signoff > 0 then (( total_sheets - sum(drawing)) * 0.30 )
+		else '0.00' 
+	END as missing_sheets_done
+	from ($dwg_sheet_progress_sub_sub_query) as dwg_summary
+	group by dwg_summary.name";
+	
+	$dwg_sheet_progress_query="
+	select 
+	sum(total_sheets) as total_dwgs,
+	sum(level_drawings_done + missing_sheets_done) as done_dwgs
+	from ($dwg_sheet_progress_sub_query) as dwg_completion_summary";
+	
+	
+	
+	
+	
+	//echo "<tr><td colspan=15>";tabledump($dwg_pipe_progress_sub_query);echo "</td></tr>";
+	//if ($job->contract_num=="5070") { echo "<tr><td colspan=15>";tabledump($dwg_pipe_progress_sub_query);echo "</td></tr>"; }
+	
+	//$dwg_sheet_progress_query="select if (sum(dwgs) is null,0,sum(dwgs)) as total_dwgs, if (sum(value) is null,0,sum(value)) as done_dwgs from (select '1' as dwgs, sum(1) as total_revs,sheet_num,drawinglog_revs.rev_description as description, CASE when rev_description = 'Issued For Review By Architect And Engineer' then '0.80' when rev_description = 'Issued For Construction' then '0.95' when rev_description = 'Issued For As-Built' then '1.0' else '0.00' END as value from drawinglog left join drawinglog_revs on (drawinglog.drawing_id = drawinglog_revs.drawing_id and (drawinglog_revs.rev_description = 'Issued For Review By Architect And Engineer' or drawinglog_revs.rev_description = 'Issued For Construction' or drawinglog_revs.rev_description = 'Issued for As-Built')) where jobinfo_id = '$job->jobinfo_id' and type = 'Sheet Metal' group by drawinglog.drawing_id order by drawinglog_revs.rev_description) as mytable";
+	
+	
+	
+	$dwg_pipe_progress=getoneb($dwg_pipe_progress_query);
+	$dwg_sheet_progress=getoneb($dwg_sheet_progress_query);
+
+
+	$total_est_sheets=$job->bim_estimated_sheet_sheets + $job->bim_estimated_pipe_sheets;
+	$total_dwgs_done=$dwg_sheet_progress->done_dwgs + $dwg_pipe_progress->done_dwgs;
+	if ($total_dwgs_done>0) {
+		$actual_hours_per_dwg=$ActualHours/$total_dwgs_done;
+		$actual_hours_per_dwg_nice=format_long_decimal($actual_hours_per_dwg,1);
+		} else {
+		$actual_hours_per_dwg="!";
+		$actual_hours_per_dwg_nice="!";
+		}
+
+	if ($total_est_sheets>0) {
+		$est_hours_per_dwg=$CurrEstHours/$total_est_sheets;
+		$est_hours_per_dwg_nice=format_long_decimal($est_hours_per_dwg,1);
+		} else {
+		$est_hours_per_dwg_nice="!";
+		$est_hours_per_dwg="!";
+		}
+	if ($total_est_sheets>0) {
+		$hours_at_complete="!";
+		$hours_at_complete_nice="!";
+		if (($actual_hours_per_dwg>0)&&($total_est_sheets>0)) {
+			$hours_at_complete=$actual_hours_per_dwg * $total_est_sheets;
+			$hours_at_complete_nice=gap_num($hours_at_complete);
+			}
+		} else {
+		$hours_at_complete="!";
+		$hours_at_complete_nice="!";
+		}
+	if (($hours_at_complete!="!")&&($CurrEstHours>0)) {
+		$percent_at_complete=$hours_at_complete/$CurrEstHours;
+		$percent_at_complete_nice=gap_num($percent_at_complete * 100) . " %";
+		} else {
+		$percent_at_complete="!";
+		$percent_at_complete_nice="!";
+		}
+	
+	echo "<tr align=center bgcolor=$bgcolor><td>
+				$job_nice
+			</td><td>
+				$job->display_name
+			</td><td>
+				" . gap_num($OrigEstHours) . "
+			</td><td>
+				" . gap_num($changes) . "
+			</td><td>
+				" . gap_num($CurrEstHours) . "
+			</td><td>
+				" . gap_num($ActualHours) . " 
+			</td><td>
+				" . gap_num($job->bim_estimated_sheet_sheets) . "
+			</td><td>
+				" . gap_num($job->bim_estimated_pipe_sheets) . "
+			</td><td title=\"$dwg_pipe_progress->total_dwgs started\">
+				" . format_long_decimal($dwg_sheet_progress->done_dwgs,1) . "
+			</td><td title=\"$dwg_sheet_progress->total_dwgs started\">
+				" . format_long_decimal($dwg_pipe_progress->done_dwgs,1) . "
+			</td><td>
+				$est_hours_per_dwg_nice
+			</td><td>
+				$actual_hours_per_dwg_nice
+			</td><td>
+				$hours_at_complete_nice
+			</td><td>
+				$percent_at_complete_nice
+			</td></tr>";
+	}
+echo "</table></font>";
+
+mh_navs_footer();
+?>

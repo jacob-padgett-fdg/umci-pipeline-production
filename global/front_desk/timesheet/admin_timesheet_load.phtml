@@ -1,0 +1,22 @@
+<?
+if (!($admin_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+$timesheet_id=escapeshellcmd($ts_id);
+$timesheet_info=getone("select * from timesheet_index where timesheet_id = '$timesheet_id'");
+
+# SUID to the user's login ID.
+$current_user_id=$timesheet_info->employee_id;
+
+# Register a variable so we know where we came from
+session_register('timesheet_escape_sheet');
+$timesheet_escape_sheet="admin_reports";
+if ($come_back_to!="") $timesheet_escape_sheet=escapeshellcmd($come_back_to);
+
+forward("timesheet_edit&timesheet_id_new=$timesheet_id");
+
+
+
+
+
+
+?>

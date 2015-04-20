@@ -1,0 +1,15 @@
+<?
+
+if ($pal_id=="") die("Pal Application Error");
+else $pal_id=addslashes($pal_id);
+
+$pal_info=getone("select * from pal where pal_id = '$pal_id'");
+$pal_info->app_record_id=$pal_info->pal_id;
+$pal_info->app_reference=$pal_info->pal_num;
+$pal_info->description=$pal_info->short_description;
+pal_item_show($pal_info);
+//echo "shrunk";
+
+
+
+?>

@@ -1,0 +1,14 @@
+<?
+include ('fd_document_box_header.phtml');
+$gcrfi_num=addslashes($gcrfi_num);
+$gcrfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$doc_edit_info->app_record_id'");
+$gcrfi_dupe=getoneb("select * from gcrfilog where jobinfo_id = '$gcrfi_info->jobinfo_id' and section = '$gcrfi_info->section' and gcrfi_num = '$gcrfi_num'");
+if (!($gcrfi_dupe)) {
+	@mysql_query("update gcrfilog set gcrfi_num = '$gcrfi_num' where gcrfi_id = '$doc_edit_info->app_record_id'");
+	$input_style="";
+	} else {
+	$input_style='style="background: red; color: white; font-weight: bold;"';
+	$gcrfi_num=htmlspecialchars($gcrfi_info->gcrfi_num);
+	}
+echo "<input $input_style type=text size=8 name=gcrfi_num id=doc_box_gcrfi_num value=\"$gcrfi_num\" onchange=fd_doc_change_gcrfi_num('$doc_info->doc_id','$doc_edit_info->doc_id')>";
+?>

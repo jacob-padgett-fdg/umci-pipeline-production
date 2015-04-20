@@ -1,0 +1,186 @@
+<?
+require('header.phtml');
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+
+fd_navs_header();
+
+function is_valid_viewpoint_job($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
+
+$job=is_valid_viewpoint_job($global_jobinfo->contract_num);
+echo "<table style=\"border: 1px solid black; text-align: right; font-size: 75%;\" cellspacing=0 cellpadding=2><tr bgcolor=$fd_color_4><td colspan=8 align=center>
+<b>Current Financial Details</b></td></tr>
+<tr bgcolor=$fd_color_1><td style=\"border-right: 1px solid black; text-align: center;\">
+	Cost Type
+</td><td colspan=3 align=center style=\"border-right: 1px solid black;\">
+	Hours
+</td><td colspan=4 align=center>
+	Cost
+</td></tr>
+
+<tr bgcolor=$fd_color_1><td align=center style=\"border-right: 1px solid black;\">
+	&nbsp;
+</td><td align=center>
+	Est
+</td><td align=center>
+	Act
+</td><td align=center style=\"border-right: 1px solid black;\">
+	Remain
+</td><td align=center>
+	Est
+</td><td align=center>
+	Act
+</td><td align=center>
+	Rem Cmtd
+</td><td align=center>
+	Remain
+</td></tr>
+";
+
+
+$tbquery="
+select JCCP.Job, JCCP.Phase,
+sum(JCCP.CurrEstHours) as CurrEstHours,
+sum(JCCP.ActualHours) as ActualHours, 
+
+sum(JCCP.CurrEstCost) as CurrEstCost,
+sum(JCCP.ActualCost) as ActualCost,
+sum(JCCP.RemainCmtdCost) as CommittedCost
+from JCCP with (NOLOCK)
+Left outer JOIN JCCH with (NOLOCK) on JCCP.Phase = JCCH.Phase and JCCH.Job = JCCP.Job and JCCH.JCCo = JCCP.JCCo and JCCH.CostType = JCCP.CostType
+where JCCP.JCCo = 1 and JCCP.Job like '$job->job%'
+group by JCCP.Job,JCCP.Phase
+order by JCCP.Job,JCCP.Phase
+";
+
+
+$lastjob="";
+
+$tbres=mssql_query($tbquery);
+while ($tbrow=@mssql_fetch_object($tbres)) {
+	$this_job=ereg_replace(" ","",$tbrow->Job);
+	if ($lastjob!=$this_job) {
+		$lastjob=$this_job;
+		$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
+		echo "<tr><td colspan=8 align=center bgcolor=\"$fd_color_4\"><b>$tbrow->Job / $vp_sub_job_info->Description</b></td></tr>";
+		}
+	$phase_info=ms_getoneb("select * from JCPM with (NOLOCK) where Phase = '$tbrow->Phase' and PhaseGroup = 1");
+	$phase_info->Phase=ereg_replace("[ -]*$","",$phase_info->Phase);
+	
+	$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+	$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+	$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+	$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+	$hours_remaining=gap_num($hours_remaining);
+	
+	$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+	$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+	$tbrow->CommittedCost=gap_num($tbrow->CommittedCost);
+	$cost_remaining=gap_num($cost_remaining);
+	
+	
+	if (($tbrow->CurrEstHours==0)&&
+		($tbrow->ActualHours==0)&&
+		($tbrow->CommittedCost==0)&&
+		($tbrow->ActualCost==0)) continue;
+	
+	
+	
+	echo "
+	<tr><td align=left style=\"border-right: 1px solid black;\">
+		$phase_info->Phase&nbsp;-&nbsp;$phase_info->Description
+	</td><td>
+		$tbrow->CurrEstHours
+	</td><td>
+		$tbrow->ActualHours
+	</td><td style=\"border-right: 1px solid black;\">
+		$hours_remaining
+	</td><td>
+		$tbrow->CurrEstCost
+	</td><td>
+		$tbrow->ActualCost
+	</td><td>
+		$tbrow->CommittedCost
+	</td><td>
+		$cost_remaining
+	</td></tr>
+	";
+	}
+
+
+
+$tbtotalquery="select sum(OrigEstHours) as OrigEstHours,sum(CurrEstHours) as CurrEstHours,sum(ActualHours) as ActualHours,	sum(CurrEstCost) as CurrEstCost,sum(ActualCost) as ActualCost , sum(RemainCmtdCost) as CommittedCost from JCCP with (NOLOCK) where JCCo = 1 and Job like '$job->job%' group by JCCo";
+$tbrow=ms_getoneb($tbtotalquery);
+$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+
+$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+$tbrow->CommittedCost=gap_num($tbrow->CommittedCost);
+
+$cost_remaining=gap_num($cost_remaining);
+$hours_remaining=gap_num($hours_remaining);
+
+echo "
+<tr bgcolor=$fd_color_1><td align=left style=\"border-right: 1px solid black;\">
+	Total
+</td><td>
+	$tbrow->CurrEstHours
+</td><td>
+	$tbrow->ActualHours
+</td><td style=\"border-right: 1px solid black;\">
+	<font color=$hourscolor>$hours_remaining</font>
+</td><td>
+	$tbrow->CurrEstCost
+</td><td>
+	$tbrow->ActualCost
+</td><td>
+	$tbrow->CommittedCost
+</td><td>
+	<font color=$costcolor>$cost_remaining</font>
+</td></tr>
+</table>
+";
+
+fd_navs_footer();exit;
+?>

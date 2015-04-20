@@ -1,0 +1,17 @@
+<?
+$issue_history_id=addslashes($issue_history_id);
+$contacts_id=addslashes($contacts_id);
+
+$query="insert into mis_issue_concerned_parties set issue_history_id = '$issue_history_id',contacts_id = '$contacts_id', us_or_them = 'them'";
+
+//echo "$query";
+@mysql_query($query);
+
+$info=getone("select * from mis_issue_history where issue_history_id = '$issue_history_id'");
+forward("issue_edit_userchange&issue_id=$info->issue_id");
+
+
+
+
+
+?>

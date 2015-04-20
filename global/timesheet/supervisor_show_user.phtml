@@ -1,0 +1,88 @@
+<?
+
+if (!(i_have_underlings($global_user->employee_num))) {
+	die("ERROR: Security violation. The authorities have been notified!");
+	}
+
+if ($underling_id=="") $underling_id=$last_underling_id;
+$underling_id=addslashes($underling_id);
+session_register('last_underling_id');
+$last_underling_id=$underling_id;
+$underling_info=getone("select * from contacts where contacts_id = '$underling_id'");
+
+
+echo "
+<html><body bgcolor=white>
+<a href=$pagename?mode=supervisor_user_selection><font color=blue>Return to user selection</font></a><br>
+
+<script>
+function tl(timesheet_id) {
+    document.location='$pagename?mode=supervisor_timesheet_load&come_back_to=$mode&ts_id=' + timesheet_id;
+    }
+function mark_as_new(timesheet_id) {
+	if (confirm('Return timesheet to user?'))
+    document.location='$pagename?mode=supervisor_mark_as_new&ts_id=' + timesheet_id;
+    }
+function supervisor_timesheet_approve(timesheet_id) {
+	document.location='$pagename?mode=supervisor_timesheet_approve&ts_id=' + timesheet_id;
+	}
+</script>
+
+<table border=0 cellpadding=5 width=100%>
+<tr><td align=center bgcolor=#dddddd><h2>Timesheets awaiting approval</h2></td></tr>
+</table>
+
+
+<table border=0 cellpadding=3>
+<tr><td></td><td>Name</td><td>ST</td><td>OT</td><td>DT</td><td>V</td><td>S</td><td>H</td><td>Total</td><td>Status</td><td>Week&nbsp;Ending</td></tr>
+";
+	
+	$query_complete="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and employee_id = '$underling_info->contacts_id' and reviewed = 'N' order by week_ending desc";
+	$res_ts=@mysql_query($query_complete);
+	while($row=@mysql_fetch_object($res_ts)) {
+	    $week_end=invali_date($row->week_ending);
+		
+		$ts_info=timesheet_summary_info($row->timesheet_id);		
+		
+		if ($row->status=="new") {
+		$fontwarn="<font color=red>";
+		$fontwarned="</font>";
+		} else {
+		$fontwarn="";
+		$fontwarned="";
+		}
+                                                                
+		echo "<tr><td>
+			$ts_info->shift_tag
+		</td><td>
+			<a href=javascript:tl($row->timesheet_id);>$fontwarn$row->last_name, $row->first_name$fontwarned</a>
+		</td><td>
+			$ts_info->st
+		</td><td>
+			$ts_info->ot
+		</td><td>
+			$ts_info->dt
+		</td><td>   
+			$ts_info->v
+		</td><td>   
+			$ts_info->s
+		</td><td>   
+			$ts_info->h
+		</td><td>
+			$ts_info->hours
+		</td><td>
+			$fontwarn$row->status$fontwarned
+		</td><td>
+			$week_end
+		</td><td>
+			<a href=javascript:supervisor_timesheet_approve('$row->timesheet_id');><font color=green>$fontwarn Approve $fontwarned</font></a>
+		";if ($row->status == 'complete') {
+		echo "</td><td><a href=javascript:mark_as_new('$row->timesheet_id');><font color=red>Return to user</font></a>";
+		}
+		echo "
+		</td></tr>";
+		}
+		
+echo "</table>";
+
+?>

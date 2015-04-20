@@ -1,0 +1,113 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+//$report_name="baldwin";
+check_report_permissions();
+if ($dept!="") $dept=addslashes($dept);
+
+echo "<form name=select_dept method=get action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=report_name value=\"aging_by_dept\">
+<select name=dept onchange=\"submit()\">
+<option value=\"$dept_info->PRDept\">$dept_info->Description</option>
+";
+
+//$res=mssql_query("select * from PRDP where PRCo = 1 order by Description");
+$res=mssql_query("select * from JCDM with (NOLOCK) where JCCo = 1 and OpenRevAcct like '13010.%' order by Description");
+
+while ($row=@mssql_fetch_object($res)) {
+	$selected="";
+	if ($row->Department==$dept) $selected="selected";
+	echo "<option value=\"$row->Department\" $selected>($row->Department) $row->Description</option>";
+	}
+echo "</select></form>";
+
+if ($dept!="") {
+	$hide_headers='Y';
+	$query="select * from jobinfo where active = 'Y' and job_type like '$dept%' order by contract_num";
+	$jlres=@mysql_query($query);
+	
+	$grand_total_aged=0;
+	$grand_total_due_30=0;
+	$grand_total_due_60=0;  
+	$grand_total_due_90=0;
+	$grand_total_due_91=0;
+	$grand_total_retainage=0;
+	$grand_total_contract_amounts=0;
+	$grand_total_retainage=0;
+	
+	
+	
+	
+	
+	while ($jlrow=@mysql_fetch_object($jlres)) {
+		$global_jobinfo=$jlrow;
+		$global_jobinfo_id=$global_jobinfo->jobinfo_id;
+		$jobinfo_id=$global_jobinfo->jobinfo_id;
+		include("baldwin_aging.phtml");
+		$report_name="aging_by_dept";
+		$grand_total_aged=$grand_total_aged + $total_aged;
+		$grand_total_due_30=$grand_total_due_30 + $total_due_30;
+		$grand_total_due_60=$grand_total_due_60 + $total_due_60;
+		$grand_total_due_90=$grand_total_due_90 + $total_due_90;
+		$grand_total_due_91=$grand_total_due_91 + $total_due_91;
+		$grand_total_retainage=$grand_total_retainage + $total_retainage;
+		$grand_total_contract_amounts=$grand_total_contract_amounts + $contract_info->ContractAmt;
+		
+		}
+	echo "<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td>
+		<b>Total Aged</b>
+	</td><td align=right>
+		\$" . gap_num($grand_total_aged) . "
+	</td></tr>
+
+	<tr><td>
+		<b>Total Current</b>
+	</td><td align=right>
+		\$" . gap_num($grand_total_due_30) . "
+	</td></tr>
+	
+	<tr><td>
+		<b>Total 31-60</b>
+	</td><td align=right>
+		\$" . gap_num($grand_total_due_60) . "
+	</td></tr>
+	
+	<tr><td>
+		<b>Total 61-90</b>
+	</td><td align=right>
+		\$" . gap_num($grand_total_due_90) . "
+	</td></tr>
+	
+	<tr><td>
+		<b>Total Over 90</b>
+	</td><td align=right>
+		\$" . gap_num($grand_total_due_91) . "
+	</td></tr>
+	
+	<tr><td>
+		<b>Total Retainage</b>
+	</td><td align=right>
+		\$" . gap_num($grand_total_retainage) . "
+	</td></tr>
+	
+	<tr><td>
+		<b>Total All Contracts</b>
+	</td><td align=right>
+		\$" . gap_num($grand_total_contract_amounts) . "
+	</td></tr>
+	</table>
+	";
+	
+	}
+mh_navs_footer();
+exit;
+mh_navs_footer();
+?>

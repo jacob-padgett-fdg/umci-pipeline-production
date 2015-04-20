@@ -1,0 +1,22 @@
+<?
+$category_edit_delete_id=escapeshellcmd($category_edit_delete_id);
+
+$query="select * from issue_res_issues where issue_res_category_id = '$category_edit_delete_id'";
+$res=@mysql_query($query);
+
+$rescount=@mysql_num_rows($res);
+
+if ($rescount!=0) {
+	require("header2.phtml");
+	echo "Error: This category is not empty, and can not be deleted!!!!<p>
+	<a href=$pagename?mode=category_edit_list><font color=blue>Continue</font></a>";
+	exit;
+	}
+
+
+$query2="delete from issue_res_category where issue_res_category_id = '$category_edit_delete_id'";
+
+@mysql_query($query2);
+forward('category_edit_list');
+
+?>

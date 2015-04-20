@@ -1,0 +1,133 @@
+<?
+
+if ($el_id=="") die("Failed in $mode. el_id is missing. Please contact your system administrator!");
+else $el_id=addslashes($el_id);
+
+if ($frequency_in_months!="") $frequency_in_months=addslashes($frequency_in_months);
+else $frequency_in_months="12";
+
+$is_belt=FALSE;
+$is_filter=FALSE;
+
+if ($materials_id!="") {
+	$materials_id=escapeshellcmd($materials_id);
+	$is_belt=is_belt($materials_id);
+	$is_filter=is_filter($materials_id);
+	}
+
+if ($clear_materials_list_id=='Y') $material_list_id="";
+$materials_list_info=material_info($material_list_id,1);
+$is_belt=is_belt($material_list_id);
+$is_filter=is_filter($material_list_id);
+
+if ($material_list_id=="") {
+	$query="select * from svc_materials_list where material_list_id = material_list_parent and disabled = 'N' order by type,name";
+	} else {
+	$material_info=getone("select * from svc_materials_list where material_list_id = '$material_list_id' and disabled = 'N' order by type,name");
+	$query="select * from svc_materials_list where material_list_id != '$material_list_id' and material_list_parent = '$material_list_id' and disabled = 'N' order by type,name";
+	}
+echo "$materials_list_info->materials_browse_link<br>";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->type=="cat")	
+	echo "<a style=\"text-decoration: none\" href=$pagename?mode=svc_agreement_equipment_event_add_materials&el_id=$el_id&material_list_id=$row->material_list_id&sched_index_id=$sched_index_id&materials_id=$materials_id><font color=black>+&nbsp;</font><font color=blue>$row->name</font></a><br>";
+	if ($row->type=="item")	
+	echo "&nbsp;&nbsp;&nbsp;&nbsp;<a href=$pagename?mode=svc_agreement_equipment_event_add_materials&el_id=$el_id&material_list_id=$row->material_list_id&sched_index_id=$sched_index_id&materials_id=$materials_id><font color=black>$row->name</font></a><br>";
+	}
+
+echo "<table border=1>";
+
+if ($materials_list_info->type=="item") {
+	echo "
+	<form name=el_ev_add method=post action=$pagename>
+	<input type=hidden name=mode value=svc_agreement_equipment_event_submit_materials>
+	<input type=hidden name=materials_id value=$item_info->materials_id>
+	<input type=hidden name=sched_index_id value=\"$item_info->sched_index_id\">
+	<input type=hidden name=material_list_id value=\"$materials_list_info->material_list_id\">
+	<input type=hidden name=el_id value=$el_id>
+	
+	<tr><td>
+		<b>In Customer Summary:</b>
+	</td><td>
+		<input type=checkbox name=show_in_summary checked>
+	</td></tr>
+	";
+	
+	if ($is_belt) {
+		echo "
+		<tr><td>
+			<b>Show under \"belts\"?</b>
+		</td><td>
+			<input type=checkbox name=suppliment_maint_type_count checked>
+		</td></tr>";
+		}
+
+
+	if ($is_filter) {
+		echo "
+		<tr><td>
+			<b>Show under \"filters\"?</b>
+		</td><td>
+			<input type=checkbox name=suppliment_maint_type_count checked>
+		</td></tr>";
+		}
+
+	echo "
+	<tr><td>
+		<b title=Optional>Estimated&nbsp;First&nbsp;Use&nbsp;Date:</b>
+	</td><td>";
+		datebox("","el_ev_add.event_date");echo"
+	</td></tr>
+	
+	<tr><td>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td>
+			<b>Interval:</b>
+		</td><td align=right>
+			every&nbsp;
+		</td></tr>
+		</table>
+	</td><td>
+		<input size=4 type=text name=frequency_in_months value=\"$frequency_in_months\"> months
+	</td></tr>
+	";
+	
+	
+	$materials_list_info->name=htmlspecialchars($materials_list_info->name);
+	echo "<tr><td><b>Name:</b></td><td>";
+	if ($materials_list_info->ss_name!='Y') 
+		echo "<input type=hidden name=name value=\"$materials_list_info->name\">$materials_list_info->name";
+	else
+		echo "<input type=text name=name value=\"$materials_list_info->name\">";
+	echo "</td></tr>";
+				
+	echo "<tr><td><b>Unit:</b></td><td>";
+	if ($materials_list_info->ss_name!='Y') 
+		echo "<input type=hidden name=qty_name value=\"$materials_list_info->qty_name\">$materials_list_info->qty_name";
+	else 
+		echo "<input type=text name=qty_name value=\"$materials_list_info->qty_name\">";
+	echo "</td></tr>";
+				
+	echo "<tr><td><b>Cost:</b></td><td>";
+	if ($materials_list_info->ss_cost!='Y') 
+		echo "<input type=hidden name=cost value=\"$materials_list_info->cost\">$materials_list_info->cost";
+	else 
+		echo "<input type=text name=cost value=\"$materials_list_info->cost\">";
+	echo "</td></tr>";
+
+	echo "
+	<tr><td>
+		<b>Qty:</b>
+	</td><td>
+		<input type=text size=5 name=qty value=\"1\">
+	</td></tr>
+	
+	<tr><td colspan=2 align=right>
+		<input type=submit value=Save>
+	</td></tr>
+	
+	";
+	}
+echo "</table></form>";
+
+?>

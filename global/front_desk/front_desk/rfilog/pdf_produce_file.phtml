@@ -1,0 +1,45 @@
+<?
+include("../webfile$devel/storage_settings.cfg");
+
+
+if ($doc_id=="") die("ERR(1)");
+$doc_id=addslashes($doc_id);
+$doc_info=getoneb("select * from documents where doc_id = '$doc_id' and doc_type = 'rfi'");
+if (!($doc_info)) die("ERR(2)");
+$rfi_info=getoneb("select * from rfilog where rfi_id = '$doc_info->app_record_id'");
+if (!($rfi_info)) die("ERR(3)");
+$rfi_id=$rfi_info->rfi_id;
+
+$job=getoneb("select * from jobinfo where jobinfo_id = '$doc_info->jobinfo_id'");
+$sequence=ereg_replace("[^0-9]","",$sequence);
+if ($sequence=="") die("ERR(4)");
+$sequence=addslashes($sequence); // Shouldn't really be needed, should always be the same, but why not..
+$seq_pretty=sprintf("%'04d",$sequence);
+$contract_num=$job->contract_num;
+
+
+
+
+
+
+$file_letter="a";
+@mkdir("/tmp/front_desk");
+@mkdir("/tmp/front_desk/cook_a_batch");
+@mkdir("/tmp/front_desk/cook_a_batch/$global_user->login_name");
+@mkdir("/tmp/front_desk/cook_a_batch/$global_user->login_name/$job->contract_num");
+@chdir("/tmp/front_desk/cook_a_batch/$global_user->login_name/$job->contract_num");
+
+
+require_once('pdf_lib2.inc');
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$number=$job->fd_rfi_template_number;
+require("rfi_render_pdf${number}.phtml");
+
+$file_contents=$pdf->ezOutput();
+$output_file_name=$seq_pretty . $file_letter . "_-_${contract_num}_-_umcrfi_-_$rfi_info->rfi_num.pdf";
+file_put_contents($output_file_name,$file_contents);
+if (!(is_file($output_file_name))) die("ERR(5)");
+
+echo "OK";
+exit;
+?>

@@ -1,0 +1,48 @@
+<?
+require_once('viewpoint_connect_ro.phtml');
+//@mssql_connect("viewpoint","reddwarf","cl01st3r");
+//@mssql_select_db("Viewpoint");
+require_once("viewpoint_libs.inc");
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/timesheet/timesheet_libs.inc");
+require("header.phtml");
+
+$contract_num=escapeshellcmd($contract_num);
+$jobinfo=getoneb("select * from jobinfo where contract_num = '$contract_num'");
+
+if (!($jobinfo)) {
+	$job_res=is_viewpoint_job($contract_num);
+	if ($job_res) {
+		//die("It is a viewpoint Job ($job_res->job)");
+		$vp_job_num=ereg_replace("^[ 0]*","",$job_res->job);
+		$vp_job_num=ereg_replace("[- ]*$","",$vp_job_num);
+		//die ($vp_job_num);
+		@mysql_query("insert into jobinfo set contract_num = '$vp_job_num'");
+		$insert_id=@mysql_insert_id();
+		echo "<script>
+		opener.location=\"$pagedir/index.html?mode=get_vp_job_info&job_num=$vp_job_num\";
+		self.close();
+		</script>";
+		//https://pipeline.umci.com/global/joblist-devel/index.html?mode=get_vp_job_info&job_num=4001
+		exit;
+		}
+	
+	
+	echo "Error: No job matching the criteria was found. Please try again.<hr>";
+	include ("gotojobform.phtml");
+	exit;
+	} else {
+	if ($jobinfo->active == "Y") {
+		echo "<script>
+		opener.location=\"$pagedir/index.html?mode=jobinfo_edit&jobinfo_id=$jobinfo->jobinfo_id\";
+		self.close();
+		</script>";
+		} else {
+		echo "<script>
+		opener.location=\"$pagedir/index.html?mode=jobinfo_edit&jobinfo_id=$jobinfo->jobinfo_id\";
+		self.close();
+		</script>";
+		}		
+	}
+
+?>

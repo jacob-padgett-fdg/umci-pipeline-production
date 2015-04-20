@@ -1,0 +1,45 @@
+<?
+if ($area_id=="") die("Application error! Invalid area selected.");
+
+$area_id=addslashes($area_id);
+
+$area_info=getoneb("select * from front_desk_bim_areas where area_id = '$area_id'");
+
+$parent=getoneb("select * from front_desk_bim_areas 
+where 
+jobinfo_id = '$area_info->jobinfo_id' and 
+sort_priority < '$area_info->sort_priority' 
+order by sort_priority desc
+limit 1");
+/*tabledump("select * from front_desk_bim_areas 
+where 
+jobinfo_id = '$area_info->jobinfo_id' and 
+sort_priority < '$area_info->sort_priority' 
+order by sort_priority desc
+limit 1");
+
+echo "<hr>select * from front_desk_bim_areas 
+where 
+jobinfo_id = '$area_info->jobinfo_id' and 
+sort_priority < '$area_info->sort_priority' 
+order by sort_priority desc
+limit 1<hr>";
+*/
+if ($parent) {
+	//echo "swap: $area_info->area_id and $parent->area_id<p>";
+	@mysql_query("update front_desk_bim_areas set sort_priority = '999' where area_id = '$parent->area_id'");
+	@mysql_query("update front_desk_bim_areas set sort_priority = '$parent->sort_priority' where area_id = '$area_info->area_id'");
+	@mysql_query("update front_desk_bim_areas set sort_priority = '$area_info->sort_priority' where area_id = '$parent->area_id'");
+	forward("bim_schedule_update&jobinfo_id=$area_info->jobinfo_id");
+	} else {
+	die("Application Error: couldn't acquire parent!");
+	}
+
+
+
+
+
+
+
+
+?>

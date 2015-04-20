@@ -1,0 +1,14 @@
+<?
+//echo "$el_ev_id";
+if ($el_ev_id!="") $el_ev_id=addslashes($el_ev_id);
+$el_ev_info=getone("select * from svc_agreement_equipment_events where el_ev_id = '$el_ev_id'");
+$el_ev_info->description=addslashes($el_ev_info->description);
+@mysql_query("delete from svc_agreement_equipment_events where el_id = '$el_ev_info->el_id' and description = '$el_ev_info->description'");
+
+echo "<script>
+opener.document.location.reload();
+self.close();
+</script>";
+
+
+?>

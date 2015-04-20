@@ -1,0 +1,121 @@
+<?
+if (!($write)) die_security();
+if ($submitval=='Cancel') {
+	echo "<font size=+2>Changes discarded.....</font><hr>";
+	forward('main');
+	exit;
+	}
+	
+$jobinfo_id=addslashes($global_jobinfo_id);
+$creator=addslashes($global_user->contacts_id);
+if ($gcrfi_id!="") {
+	$gcrfi_id=addslashes($gcrfi_id);
+	$gcrfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$gcrfi_id'");
+	$jobinfo_id=$gcrfi_info->jobinfo_id;
+	$query_start="update";
+	$query_end="where gcrfi_id = '$gcrfi_info->gcrfi_id'";
+	$creator=$gcrfi_info->creator;
+	$initial_review_done=checkfix($initial_review_done);
+	} else {
+	$query_start="insert into";
+	$gcrfi_info->gcrfi_date=date('Y-m-d');
+	$query_end="";
+	$jobinfo_id=$global_jobinfo_id;
+	if ($global_jobinfo_id=="") die("ERROR: Why aren't we in a specific job?!?!?!");
+	}
+
+$pm_notes=addslashes($pm_notes);
+$section=addslashes($current_gcrfilog_section);
+$gcrfi_num=addslashes($gcrfi_num);
+$key_description=addslashes($key_description);
+$gcrfi_image_id=addslashes($gcrfi_image_id);
+$sub_rfi_num=addslashes($sub_rfi_num);
+$question=addslashes($question);
+$solution=addslashes($solution);
+$response_needed_date=vali_date($response_needed_date);
+$reply=addslashes($reply);
+$reply_from=addslashes($reply_from);
+$reply_date=vali_date($reply_date);
+$rep_id=addslashes($rep_id);
+$sent_to_id=addslashes($sent_to_id);
+$sent_to_date=vali_date($sent_to_date);
+$attached_sheets=checkfix($attached_sheets);
+$attached_sheet_name=addslashes($attached_sheet_name);
+$spec=addslashes($spec);
+$cpm_schedule_id=addslashes($cpm_schedule_id);
+$bldg=addslashes($bldg);
+$floor=addslashes($floor);
+//$has_cost=checkfix($has_cost);
+$has_cost=addslashes($has_cost);
+
+$query_middle=" gcrfilog set
+jobinfo_id = '$jobinfo_id',
+section = '$current_gcrfilog_section',
+gcrfi_num = '$gcrfi_num',
+sub_rfi_num = '$sub_rfi_num', 
+gcrfi_date = '$gcrfi_info->gcrfi_date',
+creator = '$creator',
+key_description = '$key_description',
+gcrfi_image_id = '$gcrfi_image_id',
+question = '$question',
+solution = '$solution',
+response_needed_date = '$response_needed_date',
+attached_sheets = '$attached_sheets',
+attached_sheet_name = '$attached_sheet_name',
+reply = '$reply',
+reply_from = '$reply_from',
+reply_date = '$reply_date',
+has_cost = '$has_cost',
+rep_id = '$rep_id',
+sent_to_id = '$sent_to_id',
+sent_to_date = '$sent_to_date',
+cpm_schedule_id = '$cpm_schedule_id',
+spec = '$spec',
+bldg = '$bldg',
+floor = '$floor',
+pm_notes = '$pm_notes',
+initial_review_done = '$initial_review_done'";
+
+$query=$query_start . $query_middle . $query_end;
+
+$res=@mysql_query($query);
+if (!($res)) die("ERROR: Database update failed. Debug information:<hr>$query");
+if ($gcrfi_id=="") {
+	$gcrfi_info->gcrfi_id=@mysql_insert_id();
+	}
+//sync_to_rfilog($gcrfi_id);
+
+$doc_id=fd_get_doc_id($gcrfi_info->gcrfi_id);
+sync_rfi_logs();
+
+
+if (($dwg!="")||($grid_ref!="")) {
+	$dwg=addslashes($dwg);
+	$grid_ref=addslashes($grid_ref);
+	@mysql_query("insert into gcrfi_dwg_refs set gcrfi_id = '$gcrfi_info->gcrfi_id',dwg = '$dwg', grid_ref = '$grid_ref'");
+	}
+if ($submitval=="OK") forward("main");
+if (($submitval=="Save and Add Files")||($submitval=='Apply')) {
+	forward("gcrfi_edit&gcrfi_id=$gcrfi_info->gcrfi_id");
+	exit;
+	}
+if ($submitvalalt=='Apply') {
+	forward("gcrfi_edit&gcrfi_id=$gcrfi_info->gcrfi_id");
+	exit;
+	}
+if ($submitval=="Prev") {
+	$prev_gcrfi_num=round($gcrfi_info->gcrfi_num - 1);
+	$new_gcrfi_info=getoneb("select * from gcrfilog where jobinfo_id = '$gcrfi_info->jobinfo_id' and section = '$gcrfi_info->section' and gcrfi_num <= $prev_gcrfi_num order by (gcrfi_num + 1) desc limit 1");
+	}
+if ($submitval=="Next") {
+	$next_gcrfi_num=round($gcrfi_info->gcrfi_num + 1);
+	$new_gcrfi_info=getoneb("select * from gcrfilog where jobinfo_id = '$gcrfi_info->jobinfo_id' and section = '$gcrfi_info->section' and gcrfi_num >= $next_gcrfi_num order by ( gcrfi_num + 1 ) limit 1");
+	}
+if ($new_gcrfi_info) {
+	forward("gcrfi_edit&gcrfi_id=$new_gcrfi_info->gcrfi_id");
+	exit;
+	}
+forward('main');
+
+exit;
+?>

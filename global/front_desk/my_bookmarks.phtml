@@ -1,0 +1,109 @@
+<?
+session_write_close();
+if ($update_bookmark=="true") {
+	//$new_window=addslashes($new_window);
+	if ($new_window!='Y') $new_window='N';
+	if ($link_id!="") {
+		$link_id=addslashes($link_id);
+		$query_start="update my_home_links set ";
+		$query_end=" where link_id = '$link_id' ";
+		} else {
+		$query_start="insert into my_home_links set ";
+		$query_end="";
+		}
+	$link_text=addslashes($link_text);
+	$link_url=addslashes($link_url);
+	$url_parts=explode(":",$link_url);
+	$len=sizeof($url_parts);
+	if ($len < 2) $link_url="http://" . $link_url;
+	$query_middle=" owner_id = '$global_user_id', link_text = '$link_text', link_url = '$link_url', new_window = '$new_window' ";
+	$query_full=$query_start . $query_middle . $query_end;
+	@mysql_query($query_full);
+	}
+
+//echo "<hr>$delete_bookmark<hr>";
+if ($delete_bookmark=="true") {
+	//echo "I tried to delete something...";
+	if ($link_id=="") die("ERROR: Action failure. Please contact your system administrator");
+	else $link_id=addslashes($link_id);
+	$link_info=getoneb("select * from my_home_links where link_id = '$link_id'");
+	if ($link_info) {
+		if ($global_user_id!=$link_info->owner_id) die_security();
+		}
+	@mysql_query("delete from my_home_links where link_id = '$link_id'");
+	}
+
+if ($global_user_id<3) {
+	$fork_text="Fork";
+	$fork_description="LINW for users";
+	} else {
+	$fork_text="LINW";
+	$fork_description="Fork for the geeks";
+	}
+	
+echo "
+<div style=\"width: 100%; background: $fd_color_4;\">
+	<div style=\"float: right;\">
+		&nbsp;<a style=\"text-decoration: none;\" href=javascript:show_bookmark_form('')>
+		<font size=-2 color=blue>Add</font></a>&nbsp;
+	</div>
+	&nbsp;<b><font size=-1>My&nbsp;Bookmarks</font></b>
+</div>
+
+<form name=bookmark_edit method=post action=\"$pagename\">
+<div style=\"display: none; padding: 7px; text-align: left; background: $fd_color_3\" id=\"bookmark_form_div\">
+	<table border=0 cellspacing=0 cellpadding=0>
+	<tr><td>
+		<b>Name:</b>
+	</td><td>
+		<input id=link_text type=text size=15 name=link_text>&nbsp;<input type=button onclick=\"save_bookmark('')\" value=Add>
+	</td></tr>
+	
+	<tr><td>
+		<b>URL:</b>
+	</td><td>
+		<input id=link_url type=text size=25 name=link_url>
+	</td></tr>
+	<tr><td>
+		<b title=\"$fork_description\">$fork_text:</b>
+	</td><td>
+		<input type=checkbox id=new_window name=new_window $row->new_window><i>&nbsp;(launches&nbsp;in&nbsp;new&nbsp;window)</i>
+	</td></tr>
+	</table>
+</div>
+</form>
+";
+
+$res=@mysql_query("select * from my_home_links where owner_id = '$global_user_id' order by link_text,link_id");
+$count=@mysql_num_rows($res);
+
+while ($row=@mysql_fetch_object($res)) {
+	$target_spec='';
+	if ($row->new_window=='Y') $target_spec="target=browser$row->link_id";
+	if ($row->link_text=="") $row->link_text="??????";
+	$row->new_window=checkbreak($row->new_window);
+	echo "<div style=\"float: right;\"><a style=\"text-decoration: none;\" href=\"javascript:show_bookmark_form($row->link_id,'$row->new_window')\"><i><font size=-2>Edit</i></a>&nbsp;</font></div><a $target_spec style=\"text-decoration: none;\" href=\"$row->link_url\"><font size=-1 color=blue>&nbsp;&nbsp;$row->link_text</font></a>
+	<div id=\"bookmark_form_div$row->link_id\" style=\"display: none; background: $fd_color_3; padding: 7px; text-align: left;\">
+	<form name=bookmark_edit$row->link_id>
+	<table><tr><td><b>Name:</b></td><td><input size=15 type=text id=\"link_text$row->link_id\" name=\"link_text$row->link_id\" value=\"$row->link_text\">
+	<input type=button onclick=\"save_bookmark($row->link_id)\" value=Save></td></tr>
+	<tr><td><b>URL:</b></td><td><input size=25 type=text id=\"link_url$row->link_id\" name=\"link_url$row->link_id\" value=\"$row->link_url\"></td></tr>
+	<tr><td>
+		<b title=\"$fork_description\">$fork_text:</b>
+	</td><td>
+		<input id=\"new_window$row->link_id\" type=checkbox name=new_window $row->new_window><i>&nbsp;(launches&nbsp;in&nbsp;new&nbsp;window)</i>
+	</td></tr>
+	<tr><td colspan=2 align=center>
+		<input type=button onclick=\"delete_bookmark($row->link_id)\" value=Delete>
+	</td></tr>
+	</table>
+	</form>
+	</div>
+	<br>"; 
+	}
+
+if ($count<1) {
+	echo "<p><b>No Bookmarks</b><br>Click \"Add\" to add some!</b>";
+	}
+
+?>

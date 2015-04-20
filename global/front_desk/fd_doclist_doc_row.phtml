@@ -1,0 +1,59 @@
+<?
+$error=0;
+if (($row_doc_id=="")&&(!($row))) {
+	echo "<td colspan=2 align=center><b>ERROR: missing vital row information!</b></td>";
+	$error=1;
+	}
+if ($doc_id=="") {
+	echo "<td colspan=2 align=center><b>ERROR: missing vital document information!</b></td>";
+	$error=1;
+	}
+
+$row_doc_id=addslashes($row_doc_id);
+if (!($row)) $row=getoneb("select * from documents where doc_id = '$row_doc_id'");
+$doc_id=addslashes($doc_id);
+
+$link=getoneb("select * from documents_links where doca = '$doc_id' and docb = '$row->doc_id' limit 1");
+if ($toggle=='Y') {
+	if ($link) {
+		$update_query="call doc_link_delete($doc_id,$row_doc_id)";
+		} else {
+		$update_query="call doc_link($doc_id,$row_doc_id,$global_user_id,'')";
+		}
+	@mysql_query($update_query);
+	$link=getoneb("select * from documents_links where doca = '$doc_id' and docb = '$row->doc_id' limit 1");
+	}
+
+$bstart="";
+$bend="";
+if ($link) {
+	$row_bg="$umc_standard_blue";
+	$bstart="<b>";
+	$bend="</b>";
+	} else {
+	$row_bg="";
+	}
+if ($global_browser=='IE') {
+	if ($toggle!='Y')
+		echo "
+		<td id=\"1_$row_doc_id\">
+		";
+		
+		echo "<font size=\"-1\">$bstart***$row->app_reference&nbsp;&nbsp;***$bend</font>";
+	if ($toggle!='Y')
+		echo "
+		</td><td id=\"2_$row_doc_id\">
+			<font size=\"-1\">$row->description</font>
+		</td>
+		";
+	} else {
+	echo "
+	<td id=\"1_$row_doc_id\" bgcolor=\"$row_bg\"\>
+		<font size=\"-1\">***$row->app_reference&nbsp;&nbsp;***</font>
+	</td><td id=\"2_$row_doc_id\" bgcolor=\"$row_bg\">
+		<font size=\"-1\">$row->description</font>
+	</td>
+	";
+	}
+
+?>

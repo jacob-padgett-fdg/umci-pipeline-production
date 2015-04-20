@@ -1,0 +1,85 @@
+<?php
+session_write_close();
+include("reports/report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+
+include ("graph1/jpgraph.php");
+include ("graph1/jpgraph_line.php");
+
+$ydata=array();
+$textx=array();
+$max=0;
+$contract_num=get_vp_contract_num();
+$res=@mssql_query("select sum(ActualCost) as cost,ActualDate Date from JCCD with (NOLOCK) where JCCo = 1 and Job like '$contract_num%' and (CostType = 2 or CostType = 3 or CostType = 4 ) group by ActualDate order by ActualDate");
+
+$results_count=@mssql_num_rows($res); 
+if ($results_count<1) {
+    // GPH MARK - absolute path
+	$fullpath="/data/web/pipeline/images/na.jpg";
+	$fsize=@filesize($fullpath);
+	jpg_mime_header("na.jpg");
+	@readfile($fullpath);
+	exit;
+	}
+
+
+$l1=0;
+$l2=0;
+$l3=0;
+$l4=0;
+$l5=0;
+$l6=0;
+$l7=0;
+$l8=0;
+
+while ($row=@mssql_fetch_object($res)) {
+	$l1=$l2;
+	$l2=$l3;
+	//$l3=$row->cost;
+	$l3=$l4;
+	$l4=$l5;
+	$l5=$row->cost;
+//	$l5=$l6;
+	$l6=$l7;
+	//$l7=$l8;
+	$l7=$row->cost;
+	$l8=$row->cost;
+	$hybrid=($l1 + $l2 + $l3 + $l4 + $l5) / 5;
+	//array_push($ydata,$row->cost);
+	array_push($ydata,$hybrid);
+	$actdate=date('m/d/y',strtotime($row->Date));
+	array_push($textx,$actdate);
+	}
+$graph = new Graph(475,300,"auto");	
+$graph->SetScale("intlin",'','',0,sizeof($ydata));
+$graph->SetMarginColor("$fd_color_1");
+
+//$graph->SetBackgroundGradient("$fd_color_4","black:0.8",GRAD_HOR,BGRAD_PLOT);
+$graph->SetBackgroundGradient("$fd_color_4:1.1","black:0.5",GRAD_HOR,BGRAD_PLOT);
+$graph->SetTitleBackground("$fd_color_4:1.1",TITLEBKG_STYLE1);
+
+
+// Create the linear plots
+$lineplot=new LinePlot($ydata);
+$lineplot->SetColor("$fd_color_3");
+$lineplot->SetWeight(1);
+
+//$graph->SetMarginColor("red");
+$lineplot->SetLegend("Cost");
+$graph->legend->Pos(0.05,0.7,"right","center");
+//$graph->legend->
+$graph->xaxis->SetTickLabels($textx);
+$graph->xaxis->SetLabelAngle(90);
+
+$graph->Add($lineplot);
+
+$graph->img->SetMargin(80,65,30,65);
+$graph->title->Set("Matl/Subs/Equip (5 day rolling avg)");
+$graph->xaxis->SetPos("min");
+$graph->yaxis->title->Set("Cost");
+$graph->yaxis->SetTitleMargin(60);
+
+// Display the graph
+$graph->Stroke();
+?>

@@ -1,0 +1,29 @@
+<?
+//echo "hello...<hr>$REQUEST_URI";
+$doc_id=addslashes($doc_id);
+$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+if ($doc_info) {
+	if ($limit_to_type!="") {
+		$limit_to_type=addslashes($limit_to_type);
+		$limit_query=" and doc_type = '$limit_to_type' ";
+		}
+	$query="select * from documents_links right join documents on (documents_links.docb = documents.doc_id) where documents_links.doca = '$doc_id' and documents.doc_type != 'pal' and documents.doc_type != 'inbound' $limit_query";
+	//tabledump($query);
+	$doc_list_res=@mysql_query($query);
+	//$res=@mysql_query("select *");
+	$count=@mysql_num_rows($doc_list_res);
+	if ($count>0) {
+		echo "<table border=1 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td align=center bgcolor=$fd_color_4><b><font size=-2>Currently Selected Files</font></b></td></tr>
+		";
+		}
+	while ($row=@mysql_fetch_object($doc_list_res)) {
+		echo "<tr><td><font size=-2>&nbsp;$row->app_reference - $row->description</font></td></tr>";
+		}
+	if ($count>0) {
+		echo "</table>";
+		}
+	}
+
+
+?>

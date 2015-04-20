@@ -1,0 +1,39 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified!");
+
+$maint_type=escapeshellcmd($maint_type);
+$description=escapeshellcmd($description);
+$def_times_a_year=clean_float($def_times_a_year);
+$def_min_times_a_year=clean_float($def_min_times_a_year);
+$alternate_frequency_options=checkfix($alternate_frequency_options);
+$salesman_selects_start_date=checkfix($salesman_selects_start_date);
+
+
+if ($maint_type_id!="") {
+	$maint_type_id=escapeshellcmd($maint_type_id);
+	$query="update svc_maint_types set 
+	maint_type = '$maint_type', 
+	description = '$description',
+	def_times_a_year = '$def_times_a_year',
+	def_min_times_a_year = '$def_min_times_a_year',
+	alternate_frequency_options = '$alternate_frequency_options',
+	salesman_selects_start_date = '$salesman_selects_start_date'
+	
+	where maint_type_id = '$maint_type_id'";
+	} else {
+	$query="insert into svc_maint_types set 
+	maint_type = '$maint_type', 
+	description = '$description',
+	def_times_a_year = '$def_times_a_year',
+	def_min_times_a_year = '$def_mint_times_a_year',
+	alternate_frequency_options = '$alternate_frequency_options',
+	salesman_selects_start_date = '$salesman_selects_start_date'
+	
+	";
+	}
+
+@mysql_query($query);
+
+forward('lists_maintenance_types');
+
+?>

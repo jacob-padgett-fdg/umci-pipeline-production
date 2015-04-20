@@ -1,0 +1,7 @@
+<?
+require_once('querylib.inc');
+$contacts_id=escapeshellcmd($contacts_id);
+$query="insert into bidlist_notifications set contacts_id = '$contacts_id'";
+@mysql_query($query);
+forward('notifications');
+?>

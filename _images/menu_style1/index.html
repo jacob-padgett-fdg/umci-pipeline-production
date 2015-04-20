@@ -1,0 +1,93 @@
+<?
+require_once("../../includes/config.php");
+$Page = "menus";
+$headElements = "<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />";
+
+include("../../includes/header.php");
+?> 
+			
+<? include("../../includes/leftcol.php"); ?>
+			
+			<div id="maincol">
+			
+			<h1>Style #1</h1>
+			<h2>This is a FREE menu style.  Download the source code below.</h2>
+	
+	
+	<h4>The Menu</h4>
+	
+				
+			<div id="menucase">
+			
+			
+	<div id="styleone">
+	<ul>
+	<li><a href="" title="">Home</a></li>
+	<li><a href="" title="">About Us</a></li>
+	<li><a href="" title="" class="current">Services</a></li>
+	<li><a href="" title="">Our Work</a></li>
+	<li><a href="" title="">Contact Us</a></li>
+	</ul>
+	</div>
+	
+	
+	
+	
+	
+	</div>
+	
+		
+	<h4>FAQ</h4>
+	<ul class="bul">
+	<li>Entire menu system is less than 3KB.</li>
+	<li>2 image files, 1 css file, 1 html file</li>
+	<li>Has been tested and works in over 150 broswer/operating system combos</li>
+	<li>It's FREE for you to use</li>
+	</ul>
+	
+	<h4>Source Code</h4>
+	<p>Check out the source code below or download a zip file containing all necessary html, css, and images below.</p>
+	<p><img src="<?=$CONFIG_URL?>/images/layout/zipfile.gif" alt="download zip file for css menu" height="16" width="16" /> <a href="<?=$CONFIG_URL?>/menus/style1/style1.zip">Download style #1 css menu</a></p>
+	
+			<h4>CSS Code</h4>
+			<p>Here is a view of the code used for Style #5.  You will need to make sure that the paths to the images within this code are either relative or direct to wherever you store the image files on your site.</p>
+			
+<pre><code><b>&lt;</b>style type="text/css"<b>&gt;</b>
+<br />
+<strong><br />#styleone{</strong>position:<em>relative</em>;display:<em>block</em>;height:<em>21px</em>;font-size:<em>11px</em>;<br />font-weight:<em>bold</em>;background:<em>transparent url(images/bgOFF.gif) repeat-x top left</em>;<br />font-family:<em>Arial,Verdana,Helvitica,sans-serif</em>;border-bottom:<em>1px solid #d9d9d9</em><strong>;}</strong>
+<br />
+<strong>#styleone ul{</strong>margin:<em>0</em>;padding:<em>0</em>;list-style-type:<em>none</em>;width:<em>auto</em>;<strong>}</strong><br />
+<strong>#styleone ul li{</strong>display:<em>block</em>;float:<em>left</em>;0 1px 0 0<strong>}</strong>
+<br />
+<strong>#styleone ul li a{</strong>display:<em>block</em>;float:<em>left</em>;color:<em>#034895</em>;text-decoration:<em>none</em>;<br />padding:<em>3px 20px 0 20px</em>;height:<em>18px</em>;<strong>}</strong>
+<br />
+<strong>#styleone ul li a:hover,#styleone ul li a.current{</strong>color:<em>#034895</em>;<br />background:<em>transparent url(images/bgON.gif) repeat-x top left</em>;}
+<br />
+&lt;/</b>style<b>&gt;
+</b></code></pre>
+
+<h4>HTML Code</h4>
+<p>As you can see, you will need to wrap your unordered list with a div to identify the menu style.  The "services" tab has the ON state by adding the "current" class to the A tag.</p>
+<pre><code>
+<?
+$str = "<div id=\"styleone\">
+<ul>
+<li><a href=\"\" title=\"\">Home</a></li>
+<li><a href=\"\" title=\"\">About Us</a></li>
+<li><a href=\"\" title=\"\" class=\"current\">Services</a></li>
+<li><a href=\"\" title=\"\">Our Work</a></li>
+<li><a href=\"\" title=\"\">Contact Us</a></li>
+</ul>
+</div>";
+echo nl2br(htmlentities($str)); ?>
+</code></pre>
+
+<h4>Image Files</h4>
+<p>Download the image files below.</p>
+<p><a href="images/bgOFF.gif">bgOFF.gif</a></p>
+<p><a href="images/bgON.gif">bgON.gif</a></p>
+
+			</div>
+<?
+include("../../includes/footer.php");
+?>

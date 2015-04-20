@@ -1,0 +1,791 @@
+<?
+//$auth_backend_database_global_user_id="158"; //bendres
+// $auth_backend_database_global_user_id="22"; //dsmith
+//$auth_backend_database_global_user_id="314"; //sbrooks
+//$auth_backend_database_global_user_id="11"; //beppler
+//$auth_backend_database_global_user_id="3"; //jbush
+//$auth_backend_database_global_user_id="399"; //mboyer
+//$auth_backend_database_global_user_id="4827"; //tlowery
+//$auth_backend_database_global_user_id="2455"; //wrose
+//$auth_backend_database_global_user_id="2381"; //tboysen
+//$auth_backend_database_global_user_id="5"; //rgaylor
+//$auth_backend_database_global_user_id="4016"; //mnichols
+//$auth_backend_database_global_user_id="1"; //cbond
+//$auth_backend_database_global_user_id="2"; //jeffb
+
+//$fd_negative_cf_seen=FALSE;
+
+
+
+
+
+
+
+require('viewpoint_connect_ro.phtml');
+require('viewpoint_libs.inc');
+require('reports/report_lib.inc');
+session_write_close();
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Functions... 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+function notify_header($section,$onclick="",$detail_text="") {
+	global $fd_color_3;
+	if ($onclick!="") $style_add="cursor: hand; cursor: pointer;";
+	echo "<div onclick=\"$onclick\" style=\"$style_add background: $fd_color_3; font-size: 12px; border: 1px solid black;\"><b>$section</b></div>";
+	}
+
+function return_notify_header($section,$onclick="",$detail_text="") {
+	global $fd_color_3;
+	if ($onclick!="") $style_add="cursor: hand; cursor: pointer;";
+	return "<div onclick=\"$onclick\" style=\"$style_add background: $fd_color_3; font-size: 12px; border: 1px solid black;\"><b>$section</b></div>";
+	}
+
+function print_pal_cell_header($subject,$onclick="") {
+	global $fd_color_2;
+	notify_header($subject);
+	echo "<table style=\"font-size: 12px; border: 1px solid black;\" cellspacing=0 cellpadding=3 width=\"100%\">
+		<tr bgcolor=$fd_color_2><td>
+			Job/Doc
+		</td><td>
+			PAL#
+		</td><td>
+			Action Description
+		</td><td>
+			Assignments
+		</td><td>
+			Due
+		</td></tr>";
+	}
+
+function return_pal_cell_header($subject,$onclick="") {
+	global $fd_color_2;
+	return 	return_notify_header($subject,$onclick) ."<table style=\"font-size: 12px; border: 1px solid black;\" cellspacing=0 cellpadding=3 width=\"100%\">
+		<tr bgcolor=$fd_color_2><td>
+			Job/Doc
+		</td><td>
+			PAL#
+		</td><td>
+			Action Description
+		</td><td>
+			Assignments
+		</td><td>
+			Due
+		</td></tr>";
+	}
+
+function print_pal_cell($pal_bud_obj) {
+	global $pagename,$fd_color_1, $fd_color_1,$pal_cell_toggle;
+	$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$pal_bud_obj->jobinfo_id'");
+	$job_display=ereg_replace(" ","&nbsp;",substr($jobinfo->display_name,0,15));
+	if ($pal_cell_toggle!="odd") {
+		$pal_cell_toggle="odd";
+		$row_bg="#ffffff";
+		} else {
+		$row_bg=$fd_color_1;
+		$pal_cell_toggle="even";
+		}
+	if ($pal_bud_obj->creator_review_required=='Y') {
+		if ($global_user_id==$pal_bud_obj->creator_id) {
+			$row_bg="yellow";
+			}
+		}
+	
+	$asslistquery="select * from pal_assignments right join contacts on (pal_assignments.owner_id = contacts.contacts_id) where pal_id = '$pal_bud_obj->pal_id' order by login_name";
+	$asslistres=@mysql_query($asslistquery);
+	$assees="";
+	$ass_splitter="";
+	$creator=getoneb("select * from contacts where contacts_id = '$pal_bud_obj->creator_id'");
+	$cr_txt="From:&nbsp;$creator->login_name<br>";
+	while ($ass=@mysql_fetch_object($asslistres)) {
+		$textbg="";
+		if ($ass->viewed!='Y') $textbg="yellow";
+		if ($ass->signed_off=='Y') $textbg="green";
+		$textcolor="black";
+		if ($ass->mso=='Y') $textcolor="red";
+		$assees=$assees . $ass_splitter . "<font style=\"color: $textcolor; background: $textbg;\">$ass->login_name</font>";
+		$ass_splitter=" ";
+		}
+	$due=invali_date($pal_bud_obj->pass_signed_off_date,'/');
+	echo "
+	<tr bgcolor=\"$row_bg\" onclick=\"document.location='$pagename?mode=open_doc&doc_id=$pal_bud_obj->doc_id&pal_open_bitte_schon=$pal_bud_obj->pal_id'\" style=\"cursor: hand; cursor: pointer;\"><td>
+		<i><font title=\"$job_display\">$jobinfo->contract_num<br>$pal_bud_obj->doc_type-$pal_bud_obj->app_reference</font></i>
+	</td><td>
+		$pal_bud_obj->pal_num
+	</td><td>
+		$pal_bud_obj->pal_short_description
+	</td><td>
+		$cr_txt$assees
+	</td><td>
+		<font size=-1><i>$due</i></font>
+	</td></tr>
+	";
+	}
+function return_pal_cell($pal_bud_obj) {
+	global $pagename,$fd_color_1, $fd_color_1,$pal_cell_toggle,$global_user_id;
+	$return="";
+	$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$pal_bud_obj->jobinfo_id'");
+	$job_display=ereg_replace(" ","&nbsp;",substr($jobinfo->display_name,0,15));
+	if ($pal_cell_toggle!="odd") {
+		$pal_cell_toggle="odd";
+		$row_bg="#ffffff";
+		} else {
+		$row_bg=$fd_color_1;
+		$pal_cell_toggle="even";
+		}
+	if ($pal_bud_obj->pal_creator_review_required=='Y') {
+		if ($global_user_id==$pal_bud_obj->creator_id) {
+			$row_bg="yellow";
+			}
+		}
+	$my_unviewed_assignment=getoneb("select * from pal_assignments where pal_id = '$pal_bud_obj->pal_id' and owner_id = '$global_user_id' and viewed != 'Y' limit 1");
+	if ($my_unviewed_assignment) $row_bg="yellow";
+	
+	//$row_bg="yellow";
+	//echo "<pre>";print_r($pal_bud_obj);echo"</pre>";die();
+	$asslistquery="select * from pal_assignments right join contacts on (pal_assignments.owner_id = contacts.contacts_id) where pal_id = '$pal_bud_obj->pal_id' order by login_name";
+	$asslistres=@mysql_query($asslistquery);
+	$assees="To:&nbsp;<i>";
+	$ass_splitter="";
+	$creator=getoneb("select * from contacts where contacts_id = '$pal_bud_obj->creator_id'");
+	$cr_txt="Frm:&nbsp;<i>$creator->login_name</i><br>";
+	while ($ass=@mysql_fetch_object($asslistres)) {
+		$textbg="";
+		if ($ass->viewed!='Y') $textbg="yellow";
+		if ($ass->signed_off=='Y') $textbg="green";
+		$textcolor="black";
+		if ($ass->mso=='Y') $textcolor="red";
+		$assees=$assees . $ass_splitter . "<font style=\"color: $textcolor; background: $textbg;\">$ass->login_name</font>";
+		$ass_splitter=" ";
+		}
+	$assees=$assees . "</i>";
+	$due=invali_date($pal_bud_obj->pass_signed_off_date,'/');
+	$return=$return . "
+	<tr bgcolor=\"$row_bg\" onclick=\"document.location='$pagename?mode=open_doc&doc_id=$pal_bud_obj->doc_id&pal_open_bitte_schon=$pal_bud_obj->pal_id'\" style=\"cursor: hand; cursor: pointer;\"><td>
+		<i><font title=\"$job_display\">$jobinfo->contract_num<br>$pal_bud_obj->doc_type-$pal_bud_obj->app_reference</font></i>
+	</td><td>
+		$pal_bud_obj->pal_num
+	</td><td>
+		$pal_bud_obj->pal_short_description
+	</td><td>
+		$cr_txt$assees
+	</td><td>
+		<font size=-1><i>$due</i></font>
+	</td></tr>
+	";
+	return ($return);
+	}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Prepare negative cash flow variables/session vars before output occurs.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//$fd_negative_cf_seen=FALSE; // Comment to switch to a first load only model
+if (!($fd_negative_cf_seen)) {
+	session_register('fd_negative_cf_seen');
+	$fd_negative_cf_seen=TRUE;
+	$fd_show_negative_cash=TRUE;
+	//echo "Nacho 1";
+	}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Everyone the Employee of the month
+//////////////////////////////////////////////////////////////////////////////////////////////////
+echo "
+<div style=\"background: $fd_color_4\"><font size=-1><b>UMC Insider</b></font></div>
+<center>";
+echo "
+<a href=$pagename?mode=news_blasts><b><font color=blue>U-Connections</font></b></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"https://pipeline.umci.com/global/front_desk/?mode=my_reference_center_lookup&reference_id=110\"><font color=blue><b>UMC&nbsp;Core&nbsp;Values</b></font></a>
+</center>";
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show negative cash flow alerts/summaries
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//$global_user->employee_num="2571"; $global_user->display_name="Smith, Doug";$adminuser=TRUE;
+//$global_user->employee_num="4511"; $global_user->display_name="Damitio, Pat";
+//$global_user->employee_num="6389"; $global_user->display_name="Russo, Steve"; 
+//$global_user->employee_num="9177"; $global_user->display_name="Shaeffer, Ralph";
+//$global_user->employee_num="8947"; $global_user->display_name="Nichols, Marshal";
+//$global_user->employee_num="7008"; $global_user->display_name="Boyer, Maria";
+//$global_user->employee_num="5605"; $global_user->display_name="Eppler, Bryan";
+//$global_user->employee_num="5002"; $global_user->display_name="Endres, Brett";
+//$global_user->employee_num="6085"; $global_user->display_name="Brooks, Steve";
+
+if ($fd_show_negative_cash) {
+	$cursor="";
+	$onclick="";
+	$showed_neg_cf=FALSE;
+	$will_show_neg_cf=FALSE;
+	if (getoneb("select * from front_desk_reports_permissions where report_id = 43 and contacts_id = '$global_user->contacts_id' limit 1")) {
+		$cursor=" cursor: hand; cursor: pointer;";
+		$onclick="onclick=\"document.location='$pagename?mode=report_show&report_name=negative_job_cash_report'\"";
+		}
+	echo "<div $onclick style=\"${cursor}padding: 0px; border: 0px solid black;\">";
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//	Show PM's their negative cash flow total
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// Am I a PM (A real one, not a Front Desk one)
+	// then show me my negative cashflow total..
+	/////////////////////////////////////////////////
+	$is_real_pm=ms_getoneb("select top 1 * from JCCM where ContractStatus = 1 and JCCo = 1 and udpm1 = '$global_user->employee_num' and Contract like '0%' and Contract != '00000-%'");
+	if ($is_real_pm) {
+		$will_show_neg_cf=TRUE;
+		$totals=ms_getoneb("select sum(1) as count, sum(CashFlow) as CashFlow from UMC_Financial_Summary_By_Contract where PM = '$global_user->employee_num' and CashFlow < 0 group by PM");
+		//die("select sum(1) as count, sum(CashFlow) as CashFlow from UMC_Financial_Summary_By_Contract where PM = '$global_user->employee_num' and CashFlow < 0 and CashFlow is not null");
+		if ($totals) {
+			$showed_neg_cf=TRUE;
+			$totals->CashFlowGap=gap_num("$totals->CashFlow");
+			$cfgap=gap_num("$totals->CashFlow",'$');
+			//echo "<pre>{x}$totals->CashFlow{x}</pre>";
+			echo "<div style=\"width: 496px; border: 2px solid black;\"><div style=\"width: 482px; border: 7px solid red; background: $fd_color_1;\"><b><font size=+2 color=black>Negative cash flow from your jobs<br>$cfgap</font></b></div></div>";
+			}
+		}
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//	Show department heads their negative cash flow total
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//ms_tabledump("select top 1 * from UMC_Financial_Summary_By_Contract where DepartmentHead = '$global_user->employee_num'");
+	//ms_tabledump("select top 1 * from JCCM as CONTRACTS left join JCCM as OVERHEAD on ( CONTRACTS.JCCo = OVERHEAD.JCCo AND CONTRACTS.Department = OVERHEAD.Department AND ( OVERHEAD.Contract like 'AA%' or OVERHEAD.Contract like 'BB%' or OVERHEAD.Contract like 'CC%' or OVERHEAD.Contract like 'DD%' ) AND OVERHEAD.Contract NOT LIKE '%-999') where 	CONTRACTS.ContractStatus = 1 AND CONTRACTS.JCCo = 1 AND CONTRACTS.Contract LIKE '0%' AND CONTRACTS.Contract <> '00000-' AND OVERHEAD.udpm1 = '$global_user->employee_num'");
+	//$is_dept_head=ms_getoneb("select top 1 * from JCCM where ContractStatus = 1 and JCCo = 1 and udpm1 = '$global_user->employee_num' and Contract like '0%' and Contract != '00000-%'");
+	$is_dept_head=ms_getoneb("select top 1 * from JCCM as CONTRACTS left join JCCM as OVERHEAD on ( CONTRACTS.JCCo = OVERHEAD.JCCo AND CONTRACTS.Department = OVERHEAD.Department AND ( OVERHEAD.Contract like 'AA%' or OVERHEAD.Contract like 'BB%' or OVERHEAD.Contract like 'CC%' or OVERHEAD.Contract like 'DD%' ) AND OVERHEAD.Contract NOT LIKE '%-999') where 	CONTRACTS.ContractStatus = 1 AND CONTRACTS.JCCo = 1 AND CONTRACTS.Contract LIKE '0%' AND CONTRACTS.Contract <> '00000-' AND OVERHEAD.udpm1 = '$global_user->employee_num'");
+	if ($is_dept_head) {
+		$will_show_neg_cf=TRUE;
+		$totals=ms_getoneb("select sum(1) as count, sum(CashFlow) as CashFlow from UMC_Financial_Summary_By_Contract where DepartmentHead = '$global_user->employee_num' and CashFlow < 0");
+		//ms_tabledump("select sum(1) as count, sum(CashFlow) as CashFlow from UMC_Financial_Summary_By_Contract where DepartementHead = '$global_user->employee_num' and CashFlow < 0");
+		if ($totals) {
+			$showed_neg_cf=TRUE;
+			$totals->CashFlowGap=gap_num("$totals->CashFlow");
+			$cfgap=gap_num("$totals->CashFlow",'$');
+			//echo "<pre>{x}$totals->CashFlow{x}</pre>";
+			echo "<div style=\"width: 496px; border: 2px solid black;\"><div style=\"width: 482px; border: 7px solid red; background: $fd_color_1;\"><b><font size=+2 color=black>Negative cash flow for your department(s)<br>$cfgap</font></b></div></div>";
+			}
+		}
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//	Show Principals and Contract admins the UMC negative cash flow total
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//$is_principal=is_umc_principal();
+	//if ($is_principal||(member_of_global_group_named('Contract Admin'))) {
+	if (getoneb("select * from front_desk_reports_permissions where contacts_id = '$global_user->contacts_id' and report_id = 43 and admin_user = 'Y' limit 1")) {
+		$will_show_neg_cf=TRUE;
+		$totals=ms_getoneb("select sum(1) as count, sum(CashFlow) as CashFlow from UMC_Financial_Summary_By_Contract where CashFlow < 0");
+		//ms_tabledump("select sum(1) as count, sum(CashFlow) as CashFlow from UMC_Financial_Summary_By_Contract where DepartementHead = '$global_user->employee_num' and CashFlow < 0");
+		if ($totals) {
+			$showed_neg_cf=TRUE;
+			$totals->CashFlowGap=gap_num("$totals->CashFlow");
+			$cfgap=gap_num("$totals->CashFlow",'$');
+			//echo "<pre>{x}$totals->CashFlow{x}</pre>";
+			echo "<div style=\"width: 496px; border: 2px solid black;\"><div style=\"width: 482px; border: 7px solid red; background: $fd_color_1;\"><b><font size=+2 color=black>Negative cash flow total for UMC<br>$cfgap</font></b></div></div>";
+			}
+		}
+	
+	if (($will_show_neg_cf) && (!($showed_neg_cf))) {
+		echo "<div style=\"width: 496px; border: 2px solid black; background: $fd_color_6;\">No negative cash flow to present.<br>Thank you.</div>";
+		}
+	echo "</div>";
+	}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show the top of the My Notification section.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+echo "
+<div style=\"background: $fd_color_4\"><font size=-1><b>My Notifications</b></font></div>
+";
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show People their tasks from the 'My projects' work queue
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+$sum=getoneb("select sum(1) as total from front_desk_my_projects where owner_id = '$global_user_id' and complete = 'N'");
+//if (getoneb("select * from front_desk_my_projects where owner_id = '$global_user_id' and complete = 'N' limit 1")) {
+if ($sum->total>0) {
+	if ($sum->total>2) $total_showing=2;
+	else $total_showing=$sum->total;
+	notify_header("$totals->subccount My Projects Top Priorities (Showing $total_showing/$sum->total)","document.location='$pagename?mode=report_show&report_name=my_projects'");
+	$query="select * from front_desk_my_projects where owner_id = '$global_user_id' and complete = 'N' order by sort_priority asc limit 2";
+	$res=@mysql_query($query);
+	$projcount=0;
+	while ($row=@mysql_fetch_object($res)) {
+		$projcount++;
+		echo "<div onclick=\"document.location='$pagename?mode=report_show&report_name=my_projects'\" style=\"cursor: hand; cursor: pointer; text-align: left; font-weight: bold; border-bottom: 1px solid black; width: 100%;\">$projcount - $row->project_name</div>";
+		}
+	}
+
+
+
+/*
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show People their Email count if we can.. 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+if ($front_desk_imap_password_cache!="") {
+	//$imap_connect_string="{ackerman.umci.com:143/notls/imap4/novalidate-cert}INBOX";
+	//$imap_connect_string="{ackerman.umci.com:993/ssl/novalidate-cert}INBOX";
+	$imap_connect_string="{ackerman.umci.com:993/ssl/validate-cert}INBOX";
+	$user_mbox=imap_open($imap_connect_string,"$global_user->login_name","$front_desk_imap_password_cache");
+	if ($user_mbox) {
+		$current_mbox_search=imap_search($user_mbox,"UNSEEN");
+		$new_msg_count=sizeof($current_mbox_search);
+		//print_r($new_msg_count);
+		//echo "*$current_mbox_search*";
+		if (($current_mbox_search!="") && ($new_msg_count>0)) {
+			notify_header("$new_msg_count&nbsp;unread&nbsp;emails&nbsp;in&nbsp;INBOX</b>","open_webmail()");
+			$message_array=imap_sort($user_mbox,SORTARRIVAL,1);
+			$count=0;
+			while (($count<3)&&($msg_id=@array_shift($message_array))) {
+				$msg_info=@imap_fetch_overview($user_mbox,$msg_id);
+				$bstart="";
+				$bend="";
+				$msg=$msg_info[0];
+				if ($msg->seen==0) {
+					$bstart="<b>";
+					$bend="</b>";
+					}
+				echo "<div style=\"border-bottom: 1px solid black; text-align: left; height: 20px; width: 65%; overflow: hidden; float: right;\">$bstart<font size=-1>&nbsp;&nbsp;$msg->subject</font>$bend</div>";
+				echo "<div style=\"border-bottom: 1px solid black; text-align: left; height: 20px; width: 35%; overflow: hidden;\">$bstart<font size=-1>$msg->from</font>$bend</div>";
+				$count++;
+				}
+			}
+		}
+	@imap_close($user_mbox);
+	}
+*/
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show PM's their unread PO's over $5000
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//$global_user_id="158";
+$output="";
+$total_po_count=0;
+//$i_am_a_pm=getoneb("select * from jobinfo where project_manager_id = '$global_user_id' and active = 'Y' limit 1");
+//if (!($i_am_a_pm)) $i_am_a_pm=getoneb("select * from front_desk_job_pms where contacts_id = '$global_user_id' limit 1");
+$return_to_url=base64_encode("/global$devel/front_desk$devel/?mode=my_home");
+if (i_am_a_pm()) {
+	//$job_list=@mysql_query("select * from jobinfo where project_manager_id = '$global_user_id' and active = 'Y' order by contract_num");
+	$job_list=@mysql_query(pm_list_my_jobs_query());
+	//$line=mysql_fetch_object($job_list);
+	//echo "<pre>";print_r($job_list);echo "</pre>";
+	//tabledump(pm_list_my_jobs_query());exit;
+	//echo "<hr>" . pm_list_my_jobs_query() . "<hr>";
+	$unread_po_count=0;
+	
+	$output=$output . "
+	<table style=\"font-size: 11px; border: 1px solid black;\" cellspacing=0 cellpadding=3 width=\"100%\">
+	<tr><td><b>Job #</b></td><td><b>PO #</b></td><td align=left><b>Vendor</b></td><td><b>Date</b></td><td><b>Amount</b></td></tr>
+	";
+	while ($jobrow=@mysql_fetch_object($job_list)) {
+		//$contract_num="0$jobrow->contract_num";
+		$contract_num=get_vp_contract_num($jobrow->jobinfo_id);
+		//echo "<hr>$jobrows->jobinfo_id/$contract_num<hr><pre>";print_r($jobrows);echo "</pre>";
+		$unviewed_po_query="
+		select 
+		polist.PO,polist.TotalCostSum,Vendor,OrderDate
+		from (
+		select POHD.PO as PO,POHD.Vendor as Vendor, POHD.OrderDate as OrderDate,
+		sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum
+		from POHD with (NOLOCK)
+		left join POIT with (NOLOCK) on POHD.PO = POIT.PO and POIT.POCo = 1
+		where POIT.Job like '$contract_num%' and POHD.POCo = 1
+		group by POHD.PO,Vendor,POHD.OrderDate ) polist 
+		left join zz_umc_fd_po_review_history with (NOLOCK) on 
+			polist.PO = zz_umc_fd_po_review_history.PO and 
+			polist.TotalCostSum = zz_umc_fd_po_review_history.last_amount and 
+		zz_umc_fd_po_review_history.Employee = '$global_user->employee_num'
+		where po_hist_id is null
+		and polist.TotalCostSum > 4999
+		";
+		//ms_tabledump($unviewed_po_query);
+		//echo "<hr>$unviewed_po_query<hr>";exit;
+		//echo "hi";flush();
+		$vpres=@mssql_query($unviewed_po_query);
+		//echo "ni2";exit;		
+		$count=@mssql_num_rows($vpres);
+		$unread_po_count=$unread_po_count + $count;
+		while ($po=@mssql_fetch_object($vpres)) {
+		if (($total_po_count<2) || ($expand_lpo==1)) {
+				if ($last_job!=$jobrow->contract_num) {
+					$last_job=$jobrow->contract_num;
+					if ($expand_lpo==1) 
+					$output=$output . "<tr><td colspan=4 align=center><a href=$pagename?mode=report_show&report_name=po_mark_all_read&job_to_clear=$last_job><font color=blue><i>mark all $last_job PO's as read</i></font></a></td></tr>";
+					}
+				$vendor=ms_getoneb("select * from APVM with (NOLOCK) where VendorGroup = 1 and Vendor = '$po->Vendor'");
+				$po->TotalCostSum=round($po->TotalCostSum,2);
+				$orderdate=date('m/d/y',strtotime($po->OrderDate));
+				$output = $output . "<tr>
+				<td style=\"border-bottom: 1px solid black;\">$jobrow->contract_num</td>
+				<td style=\"border-bottom: 1px solid black;\">
+				<a href=/global$devel/front_desk$devel/?mode=report_show&report_name=po_show&global_jobinfo_id_set=$jobrow->jobinfo_id&return_to_url=${return_to_url}&po_number=$po->PO><font color=blue>$po->PO</font></a></td>
+				<td style=\"border-bottom: 1px solid black; text-align: left;\">$vendor->Name</td>
+				<td style=\"border-bottom: 1px solid black; text-align: left;\">$orderdate</td>
+				<td style=\"border-bottom: 1px solid black;\">$po->TotalCostSum</td></tr>";
+				}
+			$total_po_count++;
+			}
+		}
+	$output = $output . "</table>";
+	if ($expand_lpo!=1) notify_header("<b>+</b> Large PO's For Review <i>($total_po_count total)</i>","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('lpo');");
+	else notify_header("<b>-</b> Large PO's For Review <i>($total_po_count total)</i>","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('none')");
+	echo "$output";
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show PM's their unread PO's
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//$global_user_id="158";
+$output="";
+$total_po_count=0;
+//$i_am_a_pm=getoneb("select * from jobinfo where project_manager_id = '$global_user_id' and active = 'Y' limit 1");
+//if (!($i_am_a_pm)) $i_am_a_pm=getoneb("select * from front_desk_job_pms where contacts_id = '$global_user_id' limit 1");
+$return_to_url=base64_encode("/global$devel/front_desk$devel/?mode=my_home");
+if (i_am_a_pm()) {
+	//$job_list=@mysql_query("select * from jobinfo where project_manager_id = '$global_user_id' and active = 'Y' order by contract_num");
+	$job_list=@mysql_query(pm_list_my_jobs_query());
+	//$line=mysql_fetch_object($job_list);
+	//echo "<pre>";print_r($job_list);echo "</pre>";
+	//tabledump(pm_list_my_jobs_query());exit;
+	//echo "<hr>" . pm_list_my_jobs_query() . "<hr>";
+	$unread_po_count=0;
+	
+	$output=$output . "
+	<table style=\"font-size: 11px; border: 1px solid black;\" cellspacing=0 cellpadding=3 width=\"100%\">
+	<tr><td><b>Job #</b></td><td><b>PO #</b></td><td align=left><b>Vendor</b></td><td><b>Date</b></td><td><b>Amount</b></td></tr>
+	";
+	while ($jobrow=@mysql_fetch_object($job_list)) {
+		//$contract_num="0$jobrow->contract_num";
+		$contract_num=get_vp_contract_num($jobrow->jobinfo_id);
+		//echo "<hr>$jobrows->jobinfo_id/$contract_num<hr><pre>";print_r($jobrows);echo "</pre>";
+		$unviewed_po_query="
+		select 
+		polist.PO,polist.TotalCostSum,Vendor,OrderDate
+		from (
+		select POHD.PO as PO,POHD.Vendor as Vendor, POHD.OrderDate as OrderDate,
+		sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum
+		from POHD with (NOLOCK)
+		left join POIT with (NOLOCK) on POHD.PO = POIT.PO and POIT.POCo = 1
+		where POIT.Job like '$contract_num%' and POHD.POCo = 1
+		group by POHD.PO,Vendor,POHD.OrderDate ) polist 
+		left join zz_umc_fd_po_review_history with (NOLOCK) on 
+		polist.PO = zz_umc_fd_po_review_history.PO and 
+		polist.TotalCostSum = zz_umc_fd_po_review_history.last_amount and 
+		zz_umc_fd_po_review_history.Employee = '$global_user->employee_num'
+		where po_hist_id is null";
+		//ms_tabledump($unviewed_po_query);
+		//echo "<hr>$unviewed_po_query<hr>";exit;
+		//echo "hi";flush();
+		$vpres=@mssql_query($unviewed_po_query);
+		//echo "ni2";exit;		
+		$count=@mssql_num_rows($vpres);
+		$unread_po_count=$unread_po_count + $count;
+		while ($po=@mssql_fetch_object($vpres)) {
+		if (($total_po_count<2) || ($expand_po==1)) {
+				if ($last_job!=$jobrow->contract_num) {
+					$last_job=$jobrow->contract_num;
+					if ($expand_po==1) 
+					$output=$output . "<tr><td colspan=4 align=center><a href=$pagename?mode=report_show&report_name=po_mark_all_read&job_to_clear=$last_job><font color=blue><i>mark all $last_job PO's as read</i></font></a></td></tr>";
+					}
+				$vendor=ms_getoneb("select * from APVM with (NOLOCK) where VendorGroup = 1 and Vendor = '$po->Vendor'");
+				$po->TotalCostSum=round($po->TotalCostSum,2);
+				$orderdate=date('m/d/y',strtotime($po->OrderDate));
+				$output = $output . "<tr>
+				<td style=\"border-bottom: 1px solid black;\">$jobrow->contract_num</td>
+				<td style=\"border-bottom: 1px solid black;\">
+				<a href=/global$devel/front_desk$devel/?mode=report_show&report_name=po_show&global_jobinfo_id_set=$jobrow->jobinfo_id&return_to_url=${return_to_url}&po_number=$po->PO><font color=blue>$po->PO</font></a></td>
+				<td style=\"border-bottom: 1px solid black; text-align: left;\">$vendor->Name</td>
+				<td style=\"border-bottom: 1px solid black; text-align: left;\">$orderdate</td>
+				<td style=\"border-bottom: 1px solid black;\">$po->TotalCostSum</td></tr>";
+				}
+			$total_po_count++;
+			}
+		}
+	$output = $output . "</table>";
+	if ($expand_po!=1) notify_header("<b>+</b> PO's For Review <i>($total_po_count total)</i>","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('po');");
+	else notify_header("<b>-</b> PO's For Review <i>($total_po_count total)</i>","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('none')");
+	echo "$output";
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show PM's their total Unapproved invoice count/totals.. 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+if (i_am_a_pm()) {
+	$output="";
+	//$job_list=@mysql_query("select * from jobinfo where project_manager_id = '$global_user_id' and active = 'Y' order by contract_num");
+	$job_list=@mysql_query(pm_list_my_jobs_query());
+	$inv_total=0;
+	$inv_count=0;
+	$old_apui_date=date('m/d/Y',strtotime('-2 weeks'));
+	if ($expand_apui!=1) {
+		while ($job_row=@mysql_fetch_object($job_list)) {
+			if (strlen($job_row->contract_num)==4) $job_row->Job="0$job_row->contract_num";
+			else $job_row->Job="$job_row->contract_num";
+			$po_job=get_vp_contract_num($job_row->jobinfo_id);
+			//echo "<hr>$job_row->contract_num<hr>$job_row->Job";
+			//$apui_query="
+			//SELECT *,APUI.UniqueAttchID AS apuiattach
+			//FROM APUI
+			//RIGHT OUTER JOIN APVM ON ( APUI.Vendor = APVM.Vendor and APUI.VendorGroup = APVM.VendorGroup )
+			//WHERE APUI.APCo = 1 and (APUI.udJOB LIKE '$job_row->Job%') AND (APUI.APCo = 1)";
+			$apui_query="
+			SELECT sum(InvTotal) as InvTotal, sum(1) as count
+			FROM APUI with (NOLOCK)
+			WHERE APUI.APCo = 1 and (APUI.udJOB LIKE '$po_job%') AND (APUI.APCo = 1) AND (APUI.udentrydate < '$old_apui_date')";
+			//WHERE APUI.APCo = 1 and (APUI.udJOB LIKE '$job_row->Job%') AND (APUI.APCo = 1)";
+			//ms_tabledump($apui_query);
+			$inv_info=ms_getoneb($apui_query);
+			$inv_total=$inv_total + $inv_info->InvTotal;
+			$inv_count=$inv_count + $inv_info->count;
+			}
+		$inv_total=gap_num($inv_total);
+		//echo "<hr>$inv_total / $inv_count";
+		if ($inv_count>0) 	
+				notify_header("<b>+</b> Unapproved Invoices<i> ($inv_count for a total of \$$inv_total)</i>","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('apui')");
+		} else {
+		$oucput="";
+		$output=$output . "<table style=\"font-size: 11px; border: 1px solid black;\" cellspacing=0 cellpadding=3 width=\"100%\">
+		<tr><td colspan=7 align=center><font color=red><b>Note: Only invoices entered more than two weeks ago should appear.</b></font></td></tr>";
+		$last_job_num="";
+		while ($job_row=@mysql_fetch_object($job_list)) {
+			if (strlen($job_row->contract_num)==4) $job_row->Job="0$job_row->contract_num";
+			else $job_row->Job="$job_row->contract_num";
+			$apui_query="
+			SELECT sum(InvTotal) as InvTotal, sum(1) as count
+			FROM APUI with (NOLOCK)
+			WHERE APUI.APCo = 1 and (APUI.udJOB LIKE '$job_row->Job%') AND (APUI.APCo = 1) AND (APUI.udentrydate < '$old_apui_date')";
+			$inv_info=ms_getoneb($apui_query);
+			$inv_total=$inv_total + $inv_info->InvTotal;
+			$inv_count=$inv_count + $inv_info->count;
+			if ($inv_info->count>0) {
+				if ($last_job_num!=$job_row->Job) {
+					$last_job_num=$job_row->Job;
+					$output=$output . "<tr><td style=\"border-bottom: 1px solid black;\" colspan=7 bgcolor=$fd_color_2 align=center><b>$last_job_num - $job_row->display_name</b></td></tr>";
+					}
+				$detail_apui_query="
+				SELECT *,APUI.UniqueAttchID AS apuiattach
+				FROM APUI with (NOLOCK)
+				RIGHT OUTER JOIN APVM with (NOLOCK) ON ( APUI.Vendor = APVM.Vendor and APUI.VendorGroup = APVM.VendorGroup )
+				WHERE APUI.APCo = 1 and (APUI.udJOB LIKE '$job_row->Job%') AND (APUI.APCo = 1) AND (APUI.udentrydate < '$old_apui_date')";
+				$inv_details=@mssql_query($detail_apui_query);
+				while ($inv_detail=@mssql_fetch_object($inv_details)) {
+					$po_link="";
+					$po_image_link="";
+					$po_num=ereg_replace("/$job_row->Job$","",$inv_detail->Description);
+					$po_header=ms_getoneb("select * from POHD with (NOLOCK) where POCo = 1 and PO = '$po_num'");
+					if ($po_header) {
+							$po_image_link=vp_attachment_view_link($po_header->UniqueAttchID);
+							$po_link="<a href=\"$pagename?mode=report_show&report_name=po_show&return_to_url=$return_to_url&po_number=$po_header->PO\"><img border=0 src=/images/tiny_paper.jpg></a>&nbsp;";
+							}
+					$inv_total_nice=gap_num($inv_detail->InvTotal);
+					$output=$output . "<tr><td style=\"border-bottom: 1px solid black;\">
+							$inv_detail->Name
+						</td><td style=\"border-bottom: 1px solid black;\">
+							$inv_detail->APRef
+						</td><td style=\"border-bottom: 1px solid black;\">
+							$inv_detail->Description
+						</td><td style=\"border-bottom: 1px solid black;\">
+							$po_image_link&nbsp;$po_link</td>
+						</td><td align=right style=\"border-bottom: 1px solid black;\">
+							$inv_total_nice
+						</td><td style=\"border-bottom: 1px solid black;\">
+							$inv_detail->Notes
+						</td><td style=\"border-bottom: 1px solid black;\">
+							";$link=vp_attachment_view_link("$inv_detail->apuiattach");$output=$output . "
+							$link
+						</td></tr>
+						";
+					}
+				}
+			}
+		$output=$output . "</table>";
+		$inv_total=gap_num($inv_total);
+		notify_header("<b>-</b> Unapproved Invoices<i> ($inv_count for a total of \$$inv_total)</i>","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('none')");
+		echo "$output";
+		}
+
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show Everyone the PAL's they created
+//////////////////////////////////////////////////////////////////////////////////////////////////
+$output="";
+$pal_cell_toggle="";
+$query="select * from pal_buddies where creator_id = '$global_user_id' and status != 'complete' group by pal_id order by jobinfo_id, pal_num + 1";
+$pals=@mysql_query($query);
+$pals_count=@mysql_num_rows($pals);
+$step=0;
+if ($pals_count>0) {
+	if ($expand_pal_them!=1) $output=$output . return_pal_cell_header("+ PAL's I Assigned <i>($pals_count total)</i>","notify_expand('pal_them')");
+	else $output=$output . return_pal_cell_header("- PAL's I Assigned <i>($pals_count total)</i>","notify_expand('pal_none')");
+	while ($pcell=@mysql_fetch_object($pals)) {
+		if (($step<2)||($expand_pal_them==1))
+			$output=$output . return_pal_cell($pcell);
+		$step++;
+		}
+	$output=$output . "</table>";
+	}
+echo "$output";
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show Everyone the PAL's assigned to them
+//////////////////////////////////////////////////////////////////////////////////////////////////
+$output="";
+$pal_cell_toggle="";
+$query="select * from pal_buddies where owner_id = '$global_user_id' and pass_signed_off = 'N'";
+$pals=@mysql_query($query);
+$pals_count=@mysql_num_rows($pals);
+$step=0;
+if ($pals_count>0) {
+	if ($expand_pal_me!=1) $output=$output . return_pal_cell_header("+ PAL's Assigned to me <i>($pals_count total)</i>","notify_expand('pal_me')");
+	else $output=$output . return_pal_cell_header("- PAL's Assigned to me <i>($pals_count total)</i>","notify_expand('pal_none')");
+	while ($pcell=@mysql_fetch_object($pals)) {
+		if (($step<2)||($expand_pal_me==1))
+			$output=$output . return_pal_cell($pcell);
+		$step++;
+		}
+	$output=$output . "</table>";
+	}
+echo "$output";
+
+
+///////////////////////////////////////////////////////////////////////////
+//	Point IT People to their IT requests
+///////////////////////////////////////////////////////////////////////////
+
+if (member_of_global_group_named("IT")) {
+	$kbox_connection=@mysql_connect("kbox","R1","r00tb33r");
+	@mysql_select_db("ORG1",$kbox_connection);
+	$kbox_res=@mysql_query("select HD_TICKET.ID as ID,USER_NAME,TITLE,HD_STATUS.NAME as STATUS ,DUE_DATE from HD_TICKET left join USER on (USER.ID = HD_TICKET.OWNER_ID) left join HD_STATUS on (HD_STATUS.ID = HD_TICKET.HD_STATUS_ID) where ( USER_NAME = '$global_user->login_name' or USER_NAME is NULL ) and HD_STATUS.NAME != 'Done' and HD_STATUS.NAME != 'Closed' and HD_STATUS.NAME != 'Need More Info / Waiting on user' order by DUE_DATE,ID",$kbox_connection);
+	$kbox_count=@mysql_num_rows($kbox_res);
+	if ($kbox_count>0) {
+		notify_header("$kbox_count KBOX Items currently open","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('none');document.location='http://kbox/adminui/ticket_list.php?__SPRESTORE';");
+		while ($krow=@mysql_fetch_object($kbox_res)) {
+			$background="#ffffff";
+			if ($krow->USER_NAME!=$global_user->login_name) $background="#ffaaaa";
+			echo "<div onclick=\"document.location='http://kbox/adminui/ticket?ID=$krow->ID'\" title=\"KBOX ID: $krow->ID\" style=\"background: $background; cursor: hand; cursor: pointer; width: 100%; border-bottom: 1px solid black; font-size: 13px; font-weight: bold;\" align=left><div style=\"float: left;\">$krow->STATUS&nbsp;&nbsp;-&nbsp;&nbsp;</div><div style=\"float: right;\">$row->DUE_DATE</div>$krow->TITLE</div>";
+			}
+		}
+	@mysql_close($kbox_connection);
+	@mysql_connect($dbserver,$auth_database_user,$auth_database_pass);
+	}
+
+
+
+///////////////////////////////////////////////////////////////////////////
+//	Point Contract Admins to their subcontract requests
+///////////////////////////////////////////////////////////////////////////
+
+if (member_of_global_group_named("Contract Admin")) {
+	$totals=getoneb("select sum(1) as subccount from subcontracts where status = 'processing' or status = 'submitted'");
+	if ($totals->subccount>0) {
+		$contract_admin_mgr=getoneb("select * from contacts where contacts_id = 133");
+		notify_header("$totals->subccount Subcontracts Currently Need Attention","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('none')");
+		$list_subcontracts_qry="select * from subcontracts right join jobinfo on (jobinfo.jobinfo_id = subcontracts.jobinfo_id) left join contacts on (contacts.contacts_id = jobinfo.contract_admin) where subcontracts.status = 'processing' or subcontracts.status = 'submitted' order by employee_num";
+		$res=@mysql_query($list_subcontracts_qry);
+		echo "<table cellspacing=0 cellpadding=3 width=100% style=\"color: blue; font-size: 11px;\">";
+		while ($row=@mysql_fetch_object($res)) {
+			if (($row->subcontractor_type_id==12)&&($row->other_subcontractor_type!="")) {
+				$sub_type_name=ereg_replace(" ","&nbsp;",$row->other_subcontractor_type);
+			} else {
+				$sub_type=getoneb("select * from subcontractor_types where subcontractor_type_id = '$row->subcontractor_type_id'");
+				$sub_type_name=ereg_replace(" ","&nbsp;",$sub_type->sub_type);
+			}
+			if ($row->contacts_id=="") $contract_admin=ereg_replace(" ","&nbsp;",$contract_admin_mgr->display_name);
+			else $contract_admin=$row->last_name . ",&nbsp;" . $row->first_name;
+			$submitted_by_info=getoneb("select * from contacts where contacts_id = '$row->submitted_by'");
+			$doc_info=getoneb("select * from documents where doc_type = 'subcontracts' and app_record_id = '$row->subcontracts_id'");
+			if ($doc_info) $open_link="/global/front_desk$devel/?mode=open_doc&doc_id=$doc_info->doc_id";
+			else $open_link="";
+			echo "<tr valign=top align=left onmouseover=\"this.style.background='#dddddd'\" onmouseout=\"this.style.background='#ffffff'\" style=\"cursor: hand; cursor: pointer;\" onclick=\"document.location='$open_link'\"><td>$contract_admin</td><td>$row->contract_num</td><td>$row->job_name</td><td>$sub_type_name</td><td title=\"$submitted_by_info->display_name on $row->submit_date\">$row->status</td></tr>";
+			}
+		echo "</table>";
+		}
+	
+	
+	}
+///////////////////////////////////////////////////////////////////////////
+//	Point out peoples upcoming TRAXX Items for them.. 
+///////////////////////////////////////////////////////////////////////////
+$today_mysql=date('Y-m-d');
+$traxxqry="select * from bidlist_cache where status = 'Active' and bid_date_mysql >= '$today_mysql' and revision = '' and
+		(
+		creator = '$global_user_id' or
+		owner = '$global_user_id' or
+		walk_through_employee = '$global_user_id' or
+		project_sponsor = '$global_user_id' or 
+		to_lead = '$global_user_id' or 
+		to_plm = '$global_user_id' or 
+		to_htg = '$global_user_id' or
+		to_metal = '$global_user_id' or
+		to_proc = '$global_user_id' or
+		to_prop = '$global_user_id' or
+		to_gct = '$global_user_id' or
+		struct_eng = '$global_user_id' or
+		mech_eng = '$global_user_id' or
+		architect = '$global_user_id' 
+		)";
+$traxxres=@mysql_query($traxxqry);
+$traxxcount=mysql_num_rows($traxxres);
+if ($traxxcount>0) {
+	notify_header("$traxxcount Current/Upcoming Traxx Items","");
+	echo "<table cellspacing=0 cellpadding=3 width=100% style=\"color: blue; font-size: 11px;\">";
+	while ($row=@mysql_fetch_object($traxxres)) {
+		$open_link="/global/traxx/index.html?mode=proposal_edit&bidlist_id=$row->bidlist_id target=traxx_temp_win";
+		echo "<tr align=left onmouseover=\"this.style.background='#dddddd'\" onmouseout=\"this.style.background='#ffffff'\" style=\"cursor: hand; cursor: pointer;\" onclick=\"document.location='$open_link'\"><td>$row->proposal_num$row->revision</td><td>$row->project</td><td>$row->bid_date</td><td>$row->proposal_type</td></tr>";
+		}
+	echo "</table>";
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//	Show Everyone Front Desk News (especially unread)
+//////////////////////////////////////////////////////////////////////////////////////////////////
+$output="";
+$recent_date=date('Y-m-d',strtotime('6 days ago'));
+if ($expand_news!=1) $output=$output . return_notify_header("+ Front Desk News","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('news')");
+else $output=$output . return_notify_header("- Front Desk News","this.style.background='yellow';this.innerHTML='<b>Updating.. Please Wait.</b>';notify_expand('none')");
+$newsres=@mysql_query("select * from front_desk_news order by date_added desc, news_id desc limit 15");
+$newscount=@mysql_num_rows($newsres);
+if ($newscount<=2) $expand_news=1;	// Always expand if there's only one item
+while ($newsrow=@mysql_fetch_object($newsres)) {
+	if (($newsrow->date_added > $recent_date)||($expand_news==1)) {
+		$default_display='block';
+		if ($newsrow->date_added<=$recent_date) $default_display='none';
+		$pb_info=getoneb("select * from contacts where contacts_id = '$newsrow->creator_id'");
+		@mysql_query("insert into front_desk_news_history set news_id = '$newsrow->news_id', contacts_id = '$global_user->contacts_id'");
+		$viewcount=getoneb("select sum(1) as total from front_desk_news_history where news_id = '$newsrow->news_id' and contacts_id = '$global_user->contacts_id'");
+		//tabledump("select sum(1) as total from front_desk_news_history where news_id = '$newsrow->news_id' and contacts_id = '$global_user->contacts_id'");
+		$newscolor=$fd_color_1;
+		$newscolor2="#ffffff";;
+		if ($viewcount->total < 3) $newscolor="#dd4444";
+		$date=invali_date($newsrow->date_added,'/');
+		$output = $output . "
+		<div onclick=\"toggle_news_text($newsrow->news_id)\" style=\"font-size: 11px; border-top: 3px solid white; background: $newscolor; cursor: hand; cursor: pointer; padding: 5px; text-align: center;\"><div style=\"float: left;\">$date</div><div style=\"float: right;\"><i>$pb_info->first_name&nbsp;$pb_info->last_name</i></div><b>$newsrow->news_subject</b></div>
+		<div id=\"news_text_$newsrow->news_id\" style=\"font-size: 11px; padding: 10px; display: $default_display; background: $newscolor2; line-height: 1.2; text-align: left;\"><font size=-1>$newsrow->news_text</font></div>";
+		}
+	}
+echo "$output";
+
+if ($adminuser) {
+	echo "
+    <form name=new_news method=post action=$pagename>
+    <input type=hidden name=mode value=fd_news_submit>
+	<table id='add_news_form' border=0 style=\"display: none;\" cellspacing=0 cellpadding=2>
+      <tr align=left ><td>Subject:</td><td><input type=text name=news_subject size=25></td></tr>
+	<tr><td>
+	  Details:
+    </td><td>
+      <textarea cols=30 rows=1 onfocus='this.rows=15' onblur='this.rows=1' name=news_text></textarea>
+    </td></tr>
+	
+	<tr><td>
+	  Type
+    </td><td>
+      <select name=news_type><option>trivial</option><option>important</option><option>critical</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<input type=submit value=\"Add\">
+    </td></tr>
+      
+	</form>
+	</table>
+	<div style=\"float: right;\"><a href=\"javascript:show_add_news_form()\"><font color=blue>Add</font></a></div>
+	";
+	}
+
+
+?>

@@ -1,0 +1,12 @@
+<?
+
+$options=unserialize(base64_decode($options_encoded));
+if (!($options)) die("Application error decoding options in fd_doclist2_doc_row");
+
+$row=getoneb("select * from documents where doc_id = '" . addslashes($row_doc_id) . "'");
+
+if (!($row)) die("Application error! Invalid row information in fd_doclist2_doc_row.");
+
+$options['toggle']='Y';
+fd_doclist_doc_row($options,$row);
+?>

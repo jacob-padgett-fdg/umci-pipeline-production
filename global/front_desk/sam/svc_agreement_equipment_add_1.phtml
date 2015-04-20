@@ -1,0 +1,28 @@
+<?
+require('header.phtml');
+$agreement_id=escapeshellcmd($agreement_id);
+//$query="select * from svc_equip_categories order by category";
+
+$res=@mysql_query($query);
+echo "
+<form name=eq_add_1_age method=get action=$pagename>
+<input type=hidden name=mode value=svc_agreement_equipment_add_2>
+<input type=hidden name=agreement_id value=\"$agreement_id\">
+How old is this equipment?&nbsp;
+<input type=text size=3 name=age onchange=submit()>&nbsp;yrs&nbsp;old<br>
+<input type=submit value=\"--Next->\">
+</form>
+
+<a href=$pagename?mode=svc_agreement_equipment_add_3
+&agreement_id=$agreement_id&
+category_id=$row->category_id><font color=blue>$row->category</font></a><br>";
+
+
+
+
+
+
+
+
+
+?>

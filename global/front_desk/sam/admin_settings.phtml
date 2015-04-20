@@ -1,0 +1,30 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified!");
+require("header.phtml");
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><br>
+
+<center><h2>Administrative Settings</h2></center>
+<hr>
+<a href=$pagename/all_tasks.pdf?blah=blah&mode=monster_task_lists_pdf&blah=blah/all_tasks.pdf><font color=blue>Monster Task Lists PDF</font></a>
+<p>
+
+<a href=/global/contacts/ target=_contacts_win><font color=blue>Contacts</font></a><br>
+<a href=$pagename?mode=lists_agreement_types><font color=blue>Manage Types - Agreements</font></a><br>
+<a href=$pagename?mode=lists_maintenance_types><font color=blue>Manage Types - Maintenance</font></a><br>
+<a href=$pagename?mode=lists_labor_types><font color=blue>Manage Types - Labor</font></a>
+<p>
+<a href=$pagename?mode=lists_equip_categories><font color=blue>Manage Equipment Categories</font></a><br>
+<p>
+<hr>
+<a href=$pagename?mode=lists_equip_types><font color=blue>Manage Equipment Types</font></a><br>
+<a href=$pagename?mode=lists_material_types><font color=blue>Manage Materials Options</font></a><br>
+
+";
+
+
+
+
+
+?>

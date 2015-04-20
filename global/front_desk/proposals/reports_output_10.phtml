@@ -1,0 +1,417 @@
+<?
+require('header.phtml');
+include('../front_desk/reports/report_lib.inc');
+if ($year=="") $year=date('Y');
+
+
+/*
+tabledump("select proposal_num,sum(1) as dupes from bidlist 
+		where 
+		year(bid_date) = '$year' and
+		show_in_bid_total_calc = 'Y'
+		and status not like '%lead%' and 
+		status != 'No Bid' and 
+		proposal_type != 'Budget'
+		group by proposal_num
+		order by dupes,proposal_num
+
+		");
+*/
+
+$sql_case="
+		case
+		when proposal_type = 'Budget' then 'NA' 
+		when awarded = 'Y' and winning_bid = 'N' then 'N' 
+		when awarded = 'Y' and winning_bid = 'Y' then 'Y'
+		when awarded = 'N' then 'N'
+		when awarded = '' then 'P'
+		else 'P' END ";
+
+
+
+echo "
+<a href=$pagename?mode=reports><font color=blue>Return to reports</font></a><br>
+<form name=report_10_form method=post action=$pagename>
+<input type=hidden name=mode value=$mode>
+<table bgcolor=white border=1 cellspacing=0 cellpadding=0>
+<tr><td colspan=15 bgcolor=$fd_color_4 align=center>
+<b>Hit Rates by Group for ";dropbox("select year(bid_date) as year, year(bid_date) year_text from bidlist where year(bid_date) != 0 group by year order by year",$year,1,"submit()",2);echo"</b>
+</td></tr>
+</form>
+";
+
+
+
+$group_list_query="select bidlist_umcgroups.name,bidlist.umcgroups_id from bidlist 
+right join bidlist_umcgroups on (bidlist.umcgroups_id = bidlist_umcgroups.umcgroups_id)
+where name != 'Service'
+group by bidlist.umcgroups_id
+order by bidlist_umcgroups.name";
+
+$group_list_res=@mysql_query($group_list_query);
+while ($group_info=@mysql_fetch_object($group_list_res)) {
+	echo "<tr bgcolor=$fd_color_1><td colspan=15 align=center><b><a href=$pagename?mode=reports_output_12&year=$year&umcgroups_id=$group_info->umcgroups_id>$group_info->name</a></b></td></tr>
+	<tr align=center><td colspan=2>&nbsp;</td><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td><td>YTD</td></tr>
+	";
+	$bid_data=array();
+	$month=1;
+	
+	$totals_array=array();
+	while ($month<13) {
+		$bids_total_query="select bidlist_umcgroups.name,bid_date,proposal_num,project,awarded,winning_bid, 
+		$sql_case as status,
+		sum(1) as matches, sum(bid_amount) as dollars
+		from bidlist 
+		right join bidlist_umcgroups on (bidlist.umcgroups_id = bidlist_umcgroups.umcgroups_id) 
+		right join bidlist_results on (bidlist.bidlist_id = bidlist_results.bidlist_id and company = 968)
+		where 
+		proposal_type != 'Budget'
+		and year(bid_date) = '$year'
+		and month(bid_date) = '$month'
+		and bidlist.umcgroups_id = '$group_info->umcgroups_id'
+		and show_in_bid_total_calc = 'Y'
+		and status not like '%lead%' 
+		and status != 'No Bid'
+		group by year(bid_date)
+		order by status
+		";
+		//tabledump($bids_total_query);
+		$bids_total_info=getoneb($bids_total_query);
+		if ($bids_total_info->matches=="") $bids_total_info->matches="0";
+		$totals_array[$month]["matches"]=$bids_total_info->matches;
+		$totals_array["ytd"]["matches"]=$bids_total_info->matches + $totals_array["ytd"]["matches"];
+		$totals_array[$month]["dollars"]=$bids_total_info->dollars;
+		$totals_array["ytd"]["dollars"]=$bids_total_info->dollars + $totals_array["ytd"]["dollars"];
+		$month++;
+		}
+
+	$month=1;
+	//$status_list=array("Won","Lost","Active","Budget");
+	$status_list=array("Won","Lost","Active");
+	foreach ($status_list as $current_status) {
+		echo "<tr><td>$current_status</td>
+		<td>
+		<table border=0 cellspacing=0 cellpadding=0>
+		<tr><td style=\"border-bottom: 1px solid black;\">Bids</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">%&nbsp;Bids</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">Dollars</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">%&nbsp;Dollars</td></tr>
+		</table>
+		</td>
+		";
+		$current_status_symbol="*";
+		if ($current_status=="Won") $current_status_symbol="Y";
+		if ($current_status=="Lost") $current_status_symbol="N";
+		if ($current_status=="Active") $current_status_symbol="P";
+		if ($current_status=="Budget") $current_status_symbol="NA";
+		$month=1;
+		$total_bids=$totals_array[$month]["matches"];
+		$total_dollars=$totals_array[$month]["dollars"];
+		$ytd_bids=0;
+		$ytd_dollars=0;
+		while ($month<13) {
+			$all_bids_query="select bidlist_umcgroups.name,bidlist.umcgroups_id,bid_date,proposal_num,project,awarded,winning_bid, 
+			$sql_case as status,
+			sum(1) as matches,sum(bid_amount) as dollars
+			from bidlist 
+			right join bidlist_umcgroups on (bidlist.umcgroups_id = bidlist_umcgroups.umcgroups_id) 
+			right join bidlist_results on (bidlist.bidlist_id = bidlist_results.bidlist_id and company = 968)
+			where year(bid_date) = '$year'
+			and month(bid_date) = '$month'
+			and bidlist.umcgroups_id = '$group_info->umcgroups_id'
+			and  
+			$sql_case = '$current_status_symbol'
+			and show_in_bid_total_calc = 'Y'
+			and status not like '%lead%' 
+			and status != 'No Bid'
+			group by bidlist_umcgroups.name
+			";
+			$monthdata=getoneb($all_bids_query);
+			if ($monthdata->matches=="") $monthdata->matches="0";
+			if ($monthdata->dollars=="") $monthdata->dollars="0";
+			
+			if ($totals_array[$month]["matches"]<1) { $percent_bids="&nbsp;"; }
+			else $percent_bids=round($monthdata->matches / $totals_array[$month]["matches"] * 100);
+			
+			if ($totals_array[$month]["dollars"]<1) { $percent_dollars="&nbsp;"; }
+			else $percent_dollars=round($monthdata->dollars / $totals_array[$month]["dollars"] * 100);
+			
+			$ytd_bids=$ytd_bids + $monthdata->matches;
+			$ytd_dollars=$ytd_dollars + $monthdata->dollars;
+			
+			echo "<td align=center>
+			<table style=\"text-align: center;\" width=100% border=0 cellspacing=0 cellpadding=0>
+			<tr><td style=\"border-bottom: 1px solid black;\">
+			<a href=$pagename?mode=reports_output_12&year=$year&month=$month&sql_case_res=$current_status_symbol&umcgroups_id=$group_info->umcgroups_id>
+			$monthdata->matches</a></td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">$percent_bids</td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">" . gap_num($monthdata->dollars) . "&nbsp;</td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">$percent_dollars&nbsp;</td></tr>
+			</table>
+			</td>";
+			$month++;
+			}
+		if ($totals_array["ytd"]["matches"]==0) $ytd_percent_bids="&nbsp;";
+		else $ytd_percent_bids=round($ytd_bids / $totals_array["ytd"]["matches"] * 100);
+		
+		if ($totals_array["ytd"]["dollars"]=="0") $ytd_percent_dollars="&nbsp;";
+		else $ytd_percent_dollars=round($ytd_dollars / $totals_array["ytd"]["dollars"] * 100);
+		
+		
+		echo "<td align=center><table style=\"text-align: center;\" width=100% border=0 cellspacing=0 cellpadding=0>
+		<tr><td style=\"border-bottom: 1px solid black;\"><a href=$pagename?mode=reports_output_12&year=$year&sql_case_res=$current_status_symbol&umcgroups_id=$group_info->umcgroups_id>$ytd_bids</a></td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">$ytd_percent_bids</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">" . gap_num($ytd_dollars) . "</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">$ytd_percent_dollars&nbsp;</td></tr></table></td></tr>";
+		
+		
+		
+		}
+		echo "<tr><td valign=middle>Total</td>
+		<td>
+		<table border=0 cellspacing=0 cellpadding=0>
+		<tr><td style=\"border-bottom: 1px solid black;\">Bids</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">%&nbsp;Bids</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">Dollars</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">%&nbsp;Dollars</td></tr>
+		</table>
+		</td>	
+		";
+		$month=1;
+		while ($month<13) {
+			$total_bids=$totals_array[$month]["matches"];
+			$total_dollars=$totals_array[$month]["dollars"];
+			echo "<td align=center>
+			<table style=\"text-align: center;\" width=100% border=0 cellspacing=0 cellpadding=0>
+			<tr><td style=\"border-bottom: 1px solid black;\">
+			<a href=$pagename?mode=reports_output_12&year=$year&month=$month&umcgroups_id=$group_info->umcgroups_id>
+			$total_bids</a></td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">100</td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">" . gap_num($total_dollars) . "</td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">100</td></tr>
+			</table>
+			</td>";
+			$month++;
+			}
+			
+			echo "<td align=center>
+			<table style=\"text-align: center;\" width=100% border=0 cellspacing=0 cellpadding=0>
+			<tr><td style=\"border-bottom: 1px solid black;\"><a href=$pagename?mode=reports_output_12&year=$year&umcgroups_id=$group_info->umcgroups_id>" . $totals_array["ytd"]["matches"] . "</a></td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">100</td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">" . gap_num($totals_array["ytd"]["dollars"]) . "</td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">100</td></tr>
+			</table>
+			</td>";
+		echo "</tr>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		$current_status="Budget";
+		$current_status_symbol="NA";
+
+		echo "<tr><td>$current_status</td>
+		<td>
+		<table width=100% border=0 cellspacing=0 cellpadding=0>
+		<tr><td style=\"border-bottom: 1px solid black;\">Budgets</td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">Dollars</td></tr>
+		</table>
+		</td>
+		";
+		$month=1;
+		$total_bids=$totals_array[$month]["matches"];
+		$total_dollars=$totals_array[$month]["dollars"];
+		$ytd_bids=0;
+		$ytd_dollars=0;
+		while ($month<13) {
+			$all_bids_query="select bidlist_umcgroups.name,bidlist.umcgroups_id,bid_date,proposal_num,project,awarded,winning_bid, 
+			$sql_case as status,
+			sum(1) as matches,sum(bid_amount) as dollars
+			from bidlist 
+			right join bidlist_umcgroups on (bidlist.umcgroups_id = bidlist_umcgroups.umcgroups_id) 
+			right join bidlist_results on (bidlist.bidlist_id = bidlist_results.bidlist_id and company = 968)
+			where year(bid_date) = '$year'
+			and month(bid_date) = '$month'
+			and bidlist.umcgroups_id = '$group_info->umcgroups_id'
+			and  
+			$sql_case = '$current_status_symbol'
+			and show_in_bid_total_calc = 'Y'
+			and status not like '%lead%' 
+			and status != 'No Bid'
+			group by bidlist_umcgroups.name
+			";
+			$monthdata=getoneb($all_bids_query);
+			if ($monthdata->matches=="") $monthdata->matches="0";
+			if ($monthdata->dollars=="") $monthdata->dollars="0";
+			
+			if ($totals_array[$month]["matches"]<1) { $percent_bids="&nbsp;"; }
+			else $percent_bids=round($monthdata->matches / $totals_array[$month]["matches"] * 100);
+			
+			if ($totals_array[$month]["dollars"]<1) { $percent_dollars="&nbsp;"; }
+			else $percent_dollars=round($monthdata->dollars / $totals_array[$month]["dollars"] * 100);
+			
+			$ytd_bids=$ytd_bids + $monthdata->matches;
+			$ytd_dollars=$ytd_dollars + $monthdata->dollars;
+			
+			echo "<td align=center>
+			<table style=\"text-align: center;\" width=100% border=0 cellspacing=0 cellpadding=0>
+			<tr><td style=\"border-bottom: 1px solid black;\"><a href=$pagename?mode=reports_output_12&year=$year&month=$month&sql_case_res=$current_status_symbol&umcgroups_id=$group_info->umcgroups_id>$monthdata->matches</a></td></tr>
+			<tr><td style=\"border-bottom: 1px solid black;\">" . gap_num($monthdata->dollars) . "&nbsp;</td></tr>
+			</table>
+			</td>";
+			$month++;
+			}
+		if ($totals_array["ytd"]["matches"]==0) $ytd_percent_bids="&nbsp;";
+		else $ytd_percent_bids=round($ytd_bids / $totals_array["ytd"]["matches"] * 100);
+		
+		if ($totals_array["ytd"]["dollars"]=="0") $ytd_percent_dollars="&nbsp;";
+		else $ytd_percent_dollars=round($ytd_dollars / $totals_array["ytd"]["dollars"] * 100);
+		
+		
+		echo "<td align=center><table style=\"text-align: center;\" width=100% border=0 cellspacing=0 cellpadding=0>
+		<tr><td style=\"border-bottom: 1px solid black;\"><a href=$pagename?mode=reports_output_12&year=$year&sql_case_res=$current_status_symbol&umcgroups_id=$group_info->umcgroups_id>$ytd_bids</a></td></tr>
+		<tr><td style=\"border-bottom: 1px solid black;\">" . gap_num($ytd_dollars) . "</td></tr>
+		</table></td></tr>";
+		
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	}
+echo "</table>";
+
+
+
+
+/*
+
+		$bids_total_query="select bidlist_umcgroups.name,bid_date,proposal_num,project,awarded,winning_bid, 
+		case 
+		when awarded = 'Y' and winning_bid = 'N' then 'N' 
+		when awarded = 'Y' and winning_bid = 'Y' then 'Y'
+		else awarded END as status,
+		sum(1) as matches, sum(bid_amount) as dollars
+		from bidlist 
+		right join bidlist_umcgroups on (bidlist.umcgroups_id = bidlist_umcgroups.umcgroups_id) 
+		right join bidlist_results on (bidlist.bidlist_id = bidlist_results.bidlist_id and company = 968)
+		where year(bid_date) = '2008'
+		and month(bid_date) = '12'
+		and bidlist.umcgroups_id = '4'
+		and awarded != 'NA'
+		and show_in_bid_total_calc = 'Y'
+		group by bidlist.bidlist_id
+		order by status
+		";
+*/
+//tabledump($bids_total_query);
+
+
+
+
+
+
+
+/*
+
+
+
+$all_bids_query="select bidlist_umcgroups.name,bid_date,proposal_num,project,awarded,winning_bid, 
+case 
+when awarded = 'Y' and winning_bid = 'N' then 'N' 
+when awarded = 'Y' and winning_bid = 'Y' then 'Y'
+else awarded END as status,
+sum(1) as matches,sum(bid_amount) as dollars
+from bidlist 
+right join bidlist_umcgroups on (bidlist.umcgroups_id = bidlist_umcgroups.umcgroups_id) 
+right join bidlist_results on (bidlist.bidlist_id = bidlist_results.bidlist_id and company = 968)
+where year(bid_date) = '$year'
+and show_in_bid_total_calc = 'Y'
+group by bidlist_umcgroups.name,status
+order by status
+";
+
+
+*/
+
+
+
+//tabledump($all_bids_query);
+
+
+
+
+
+?>

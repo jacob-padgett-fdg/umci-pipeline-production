@@ -1,0 +1,15 @@
+<?
+require_once('viewpoint_connect_ro.phtml');
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/timesheet/timesheet_libs.inc");
+
+$no_output=1;
+$ajres=@mysql_query("select * from jobinfo where active = 'Y' order by contract_num");
+while ($ajrow=@mysql_fetch_object($ajres)) {
+	$job_num=$ajrow->contract_num;
+	require("get_vp_job_info.phtml");
+	}
+if ($shell_script!=1) forward('main');
+?>

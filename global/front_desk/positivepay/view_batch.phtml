@@ -1,0 +1,158 @@
+<?
+if ($batch_id!="") $batch_id=addslashes($batch_id);
+else die("Application error! Invalid batch history!");
+log_batch_activity($batch_id,"Batch viewed");
+
+$batch_history_info=getone("select * from positivepay_batch_history where batch_id = '$batch_id'");
+
+$batch_dollars=$batch_history_info->batch_total / 100;
+$ap_dollars=$batch_history_info->ap_total / 100;
+$pr_dollars=$batch_history_info->pr_total / 100;
+$output_date=invali_date($batch_history_info->output_date);
+//$output_time=$batch_history_info->output_time;
+
+$batch_average=round($batch_history_info->batch_total / $batch_history_info->total_checks / 100,2);
+$ap_average=@round($batch_history_info->ap_total / $batch_history_info->total_checks_ap / 100,2);
+$pr_average=@round($batch_history_info->pr_total / $batch_history_info->total_checks_pr / 100,2);
+
+echo "
+<a href=$pagename?mode=batch_mgmt><font color=blue>Exit</font></a><p>
+<script>
+	function view_raw_data() {
+		";
+		if ($global_browser=='IE') echo "document.getElementById('raw_data').style.display='inline';";
+		else echo "document.getElementById('raw_data').style.display='table-cell';";
+		echo"
+		}
+	function view_history() {
+		open('$pagename?mode=batch_history_view&batch_id=$batch_history_info->batch_id','batch_view_win','width=600,height=500');
+		}
+</script>
+
+
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td colspan=2 align=center bgcolor=$umc_standard_blue>
+	<b>Batch Information</b>
+</td></tr>
+
+<tr><td>
+	Batch Number
+</td><td>
+	$batch_history_info->batch_number
+</td></tr>
+
+<tr><td>
+	Output Plugin
+</td><td>
+	$batch_history_info->output_plugin
+</td></tr>
+
+<tr><td>
+	Date
+</td><td>
+	$output_date
+</td></tr>
+
+<tr><td>
+	Time
+</td><td>
+	$batch_history_info->output_time
+</td></tr>
+
+<tr><td>
+	Batch Dollars
+</td><td>
+	$batch_dollars
+</td></tr>
+
+<tr><td>
+	Batch Checks
+</td><td>
+	$batch_history_info->total_checks
+</td></tr>
+
+<tr><td>
+	Batch Average
+</td><td>
+	$batch_average
+</td></tr>
+
+<tr><td>
+	AP Dollars
+</td><td>
+	$ap_dollars
+</td></tr>
+
+<tr><td>
+	AP Checks
+</td><td>
+	$batch_history_info->total_checks_ap
+</td></tr>
+
+<tr><td>
+	AP Avg.
+</td><td>
+	$ap_average
+</td></tr>
+
+<tr><td>
+	PR Dollars
+</td><td>
+	$pr_dollars
+</td></tr>
+
+<tr><td>
+	PR Checks
+</td><td>
+	$batch_history_info->total_checks_pr
+</td></tr>
+
+<tr><td>
+	PR Avg.
+</td><td>
+	$pr_average
+</td></tr>
+
+";
+
+
+
+if ($batch_history_info->output_plugin=='Key') {
+	echo "
+	<tr><td colspan=2 align=center>
+		<a href=\"$pagename?mode=batch_download_file&batch_id=$batch_history_info->batch_id&foo=maybe/positive_pay_batch_$batch_history_info->batch_number.txt?blah=blah&foo=for_sure\"><font color=blue>Download File</font></a>
+	</td></tr>
+	";
+	}
+
+if ($batch_history_info->output_plugin=='Wells') {
+	echo "
+	<tr><td colspan=2 align=center>
+		<a href=\"$pagename?mode=wells_send&batch_id=$batch_history_info->batch_id\" target=\"wells_send_win\"><font color=blue>Send file to Wells Fargo</font></a>
+	</td></tr>
+	";
+	}
+
+
+
+echo"
+<tr><td colspan=2 align=center>
+	<a href=javascript:view_history();><font color=blue>View History</font></a>
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	<a href=javascript:view_raw_data();><font color=blue>View Raw Data</font></a>
+</td></tr>
+
+<tr><td colspan=2 id=\"raw_data\" style=\"display: none\">
+	<pre>$batch_history_info->output_file</pre>
+</td></tr>
+
+</table>
+";
+
+
+
+
+
+?>

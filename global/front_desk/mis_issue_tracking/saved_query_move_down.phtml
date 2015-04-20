@@ -1,0 +1,14 @@
+<?
+$query_id=addslashes($query_id);
+$query_info=getone("select * from mis_issue_saved_queries where contacts_id = '$global_user_id' and query_id = '$query_id'");
+
+if ($query_info->priority <= 100) {
+	$query_info->priority = $query_info->priority + 1;
+	}
+	
+$query="update mis_issue_saved_queries set priority = '$query_info->priority' where query_id = '$query_id'";
+
+@mysql_query($query);
+forward('saved_queries');
+
+?>

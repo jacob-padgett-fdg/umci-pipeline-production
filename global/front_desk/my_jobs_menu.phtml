@@ -1,0 +1,50 @@
+<?
+session_write_close();
+$my_jobs_query="select 
+	jobinfo.jobinfo_id,contract_num
+	from jobinfo 
+	left join contacts_groups on (jobinfo.jobinfo_id = contacts_groups.jobinfo_id) 
+	left join contacts_groups_members on (contacts_groups.group_id = contacts_groups_members.group_id) 
+	left join front_desk_job_admins on (jobinfo.jobinfo_id = front_desk_job_admins.jobinfo_id) 
+	left join front_desk_job_foreman on (jobinfo.jobinfo_id = front_desk_job_foreman.jobinfo_id)
+	where jobinfo.active = 'Y' and
+	( contacts_groups_members.contacts_id = '$global_user_id' or
+	jobinfo.project_manager_id = '$global_user_id' or
+	jobinfo.detailing_lead_id = '$global_user_id' or
+	front_desk_job_admins.contacts_id = '$global_user_id' or 
+	front_desk_job_foreman.foreman_id = '$global_user_id' or
+	jobinfo.contract_admin = '$global_user_id'
+	
+	) 
+	group by jobinfo_id
+	order by contract_num
+	";
+//echo "<hr>$my_jobs_query<hr>";
+echo "<table width=100% border=0 cellspacing=0 cellpadding=3>";
+$res=@mysql_query($my_jobs_query);
+while ($row=@mysql_fetch_object($res)) {
+	/////////////////////////////////////////
+	$new_tasks_style="";
+	$task_summary="";
+	$pal_active=getone("select sum(1) as total from pal_buddies where jobinfo_id = '$row->jobinfo_id' and owner_id = '$global_user_id' and status = 'active' and pass_signed_off = 'N'");
+	if ($pal_active->total!="") {
+		$pal_new=getone("select sum(1) as total from pal_buddies where jobinfo_id = '$row->jobinfo_id' and owner_id = '$global_user_id' and status = 'active' and viewed = 'N'");
+		if ($pal_new->total=="") {
+			$pal_new->total='0';
+			} else {
+			$new_tasks_style="border: 1px solid red; background: yellow;";
+			}
+		$task_summary="<font size=-1><i>&nbsp;($pal_new->total/$pal_active->total)</i></font>";
+		}
+	/////////////////////////////////////////
+	$jobmark="";
+	$jobinfo=getoneb("select project_manager_id,display_name,contract_num from jobinfo where jobinfo_id = '$row->jobinfo_id'");
+	if ($jobinfo->project_manager_id==$global_user->contacts_id) $jobmark="*&nbsp;";
+	echo "<tr style=\"$new_tasks_style cursor: hand; cursor: pointer;\" onclick=\"load_job($row->jobinfo_id)\" onmouseover=\"this.style.background_orig=this.style.background;this.style.background='#dddddd'\" onmouseout=\"this.style.background=this.style.background_orig\"><td>
+		<font size=-1><b>$jobmark$jobinfo->contract_num</b>&nbsp;-&nbsp;$jobinfo->display_name</font>
+		</td><td>
+			$task_summary
+		</td></tr>";
+	}
+echo "<tr><td>&nbsp;</td></tr></table>";
+?>

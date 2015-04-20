@@ -1,0 +1,60 @@
+<?
+$bid_time_orig=$bid_time;
+require_once('querylib.inc');
+$today_mysql=date('Y-m-d');
+$bidlist_id=addslashes($bidlist_id);
+$bid_info=load_proposal_info($bidlist_id);
+$old_bid_date_mysql=vali_date($bid_info->bid_date);
+$status=$bid_info->status;
+
+$query_head="update bidlist set ";
+$query_data="";
+$data_seperator="";
+$query_tail=" where bidlist_id = '$bidlist_id'";
+
+
+if ($proposal_form_required=="true") include("proposal_submit_required.phtml");
+if ($proposal_form_estimating_assignments=="true") include("proposal_submit_estimating_assignments.phtml");
+if ($proposal_form_estimating_walk_through=="true") include("proposal_submit_estimating_walk_through.phtml");
+if ($proposal_form_project_data=="true") include("proposal_submit_project_data.phtml");
+if ($proposal_form_bid_docs=="true") include("proposal_submit_bid_docs.phtml");
+if ($proposal_form_bid_bond=="true") include("proposal_submit_bid_bond.phtml");
+if ($proposal_form_owner=="true") include("proposal_submit_owner.phtml");
+//include("proposal_submit_bid_results.phtml");
+if ($proposal_form_bid_results=="true") include("proposal_submit_bid_results.phtml");
+if ($proposal_form_tracking=="true") include("proposal_submit_tracking.phtml");
+if ($proposal_form_lead_logs=="true") include("proposal_submit_lead_logs.phtml");
+include("proposal_submit_bidlist_notify_check.phtml");
+
+if ($query_data=="") die("ERROR: No data to be updated! Strange, and probably a problem... Please contact your system administrator.");
+$query=$query_head . $query_data . $query_tail;
+
+$res=@mysql_query($query);
+if (!($res)) die("ERROR: Query failed. Please contact your system administrator.<p>Failed query:<hr>$query");
+
+$bid_info=bidlist_cache_update($bidlist_id);
+
+if (($bid_info->status!="Lead")&&($bid_info->status!="Dead Lead")) {
+	if (($bid_info->bid_date_mysql!=$old_bid_date_mysql)&&($bid_info->bid_date_mysql<$today_mysql)) {
+		echo "
+		<script>
+		alert('Warning: New bid date is in the past!');
+		</script>
+		";
+		}
+	}
+
+
+if ($targetmode=="") $targetmode="proposal";
+
+if ($target=="") $target='main';
+if ($target=="failed_required") { forward("${targetmode}_edit&bidlist_id=$bidlist_id&failed_required=true"); exit; }
+if ($target=="searchpage") { forward("proposal_search"); exit; }
+if ($target=="reload") { forward("{$targetmode}_edit&bidlist_id=$bidlist_id"); exit; }
+if ($target=="main") { forward("main"); exit; }
+if ($target=="go_up") { forward("${targetmode}_edit&bidlist_id=$bid_info->proposal_id_up"); exit; }
+if ($target=="go_down") { forward("${targetmode}_edit&bidlist_id=$bid_info->proposal_id_down"); exit; }
+
+echo "ERROR: Undefined Target! Please contact your system administrator. You may <a href=$pagename><font color=blue>continue from the main menu</font></a> if you would like.";
+
+?>

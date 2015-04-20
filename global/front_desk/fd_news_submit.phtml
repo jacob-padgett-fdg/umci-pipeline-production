@@ -1,0 +1,9 @@
+<?
+if (!($adminuser)) die_security();
+$news_subject=addslashes($news_subject);
+$news_text=addslashes($news_text);
+$news_type=addslashes($news_type);
+
+@mysql_query("insert into front_desk_news set creator_id = '$global_user_id', date_added = now(), news_subject = '$news_subject', news_text = '$news_text', news_type = '$news_type'");
+forward('my_home');
+?>

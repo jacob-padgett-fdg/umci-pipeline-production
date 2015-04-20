@@ -1,0 +1,16 @@
+<?
+$rfi_id=addslashes($rfi_id);
+$rfi_info=getone("select * from rfilog where rfi_id = '$rfi_id'");
+require_once('pdf_lib2.inc');
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$number=$global_jobinfo->fd_rfi_template_number;
+require("rfi_render_pdf${number}.phtml");
+
+$doc_id=fd_get_doc_id($rfi_info->rfi_id);
+if ($doc_id>0) {
+	$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+	@mysql_query("insert into documents_review_history set doc_id = '$doc_id', contacts_id = '$global_user_id', last_modified_time = '$doc_info->last_modified', ip_address = '$REMOTE_ADDR'");
+	}
+$pdf->ezStream();
+exit;
+?>

@@ -1,0 +1,73 @@
+<?
+//require('querylib.inc');
+mysql_select_db("global");
+//tabledump("show tables");
+
+
+$tres=@mysql_query("show tables");
+echo "Searching for new contact fields...<p><pre>";
+
+$count=0;
+while ($trow=@mysql_fetch_object($tres)) {
+	if ($count>=100) {
+			$count=0;
+			echo "<br>T";
+			flush();
+		} else {
+			echo "T";
+			flush();
+		}
+	$count++;
+	//echo "$trow->Tables_in_global<br>";
+	$table="$trow->Tables_in_global";
+	$fres=@mysql_query("describe $table");
+	while ($frow=@mysql_fetch_object($fres)) {
+		//echo ".";flush();
+		if ($count>=100) {
+				$count=0;
+				echo "<br>.";
+				flush();
+			} else {
+				echo ".";
+				flush();
+			}
+		$count++;
+		$field=$frow->Field;
+		$fieldtype=$frow->Type;
+		if (!(getoneb("select * from contacts_fk_list where db_table = '$table' and table_field = '$field'"))) {
+				$test=strncmp("$fieldtype","int",3);
+				if ($test==0) $is_int=TRUE;
+					else $is_int=FALSE;
+				if($is_int) {
+					mysql_query("insert into contacts_fk_list set db_table = '$table', table_field = '$field', is_contact = '?', fk_description = 'Could be a contact ($field_type)'");
+					//echo "<font color=blue>$table / $field of type $fieldtype is not marked</font><br>";
+					echo "<b><font color=blue>C</font></b>";
+					$count++;
+				} else {
+					mysql_query("insert into contacts_fk_list set db_table = '$table', table_field = '$field', is_contact = 'N', fk_description = 'Automatically detected. Not a contact. ($field_type)'");
+					//echo "<font color=green>$table / $field of type $fieldtype is not marked</font><br>";
+					echo "<font color=blue>N</font>";
+					$count++;
+				}
+			}
+		}
+	}
+
+echo "</pre>
+<p>
+<b>Done searching for new contact records...</b>";
+flush();
+sleep(5);
+forward("f_key_reconcile");
+
+
+//$res=@mysql_query("select * from contacts_fk_list");
+//while ($row=@mysql_fetch_object($res)) {
+//	list($table,$field)=explode(".",$row->fk_name);
+//	$query="update contacts_fk_list set db_table = '$table', table_field = '$field', is_contact = 'Y' where fk_list_id = '$row->fk_list_id'";
+//	@mysql_query($query);
+//	}
+
+
+
+?>

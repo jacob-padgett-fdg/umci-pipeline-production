@@ -1,0 +1,55 @@
+<?
+require('header.phtml');
+
+if (!($adminuser)) die("ERROR: Security Violation! The authorities have been notified");
+
+
+echo "
+<script>
+function vrfy_labor_new () {
+	if (confirm('Are you sure? This should be used very rarely!!!')) document.labor_types_add.submit();
+	}
+</script>
+<a href=$pagename?mode=admin_settings><font color=blue>Return to admin settings</font></a><br>
+
+<center><h2>Manage Labor Types</h2></center><hr>
+
+<form name=labor_types_add method=post action=$pagename>
+<input type=hidden name=mode value=lists_labor_type_edit>
+<input type=button onclick=vrfy_labor_new() value=Add>
+</form>
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=#eeeeee><td>
+	<b>Labor Type</b>
+</td><td>
+	<b>ST</b>
+</td><td>
+	<b>OT</b>
+</td><td>
+	<b>DT</b>
+</td></tr>
+";
+
+$res=@mysql_query("select * from svc_labor_types");
+
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<a href=$pagename?mode=lists_labor_type_edit&labor_type_id=$row->labor_type_id><font color=blue>$row->labor_type</font></a>
+		</td><td>
+			$row->st_rate
+		</td><td>
+			$row->ot_rate
+		</td><td>
+			$row->dt_rate
+		</td></tr>
+		";
+	}
+echo "</table>";
+
+
+
+//tabledump("select * from svc_labor_types");
+
+
+?>

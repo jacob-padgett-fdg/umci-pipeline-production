@@ -1,0 +1,58 @@
+<?
+set_time_limit("900");
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+include("lam_lib.inc");
+mh_navs_header();
+
+$query="select *,sum(1) as resp_count from front_desk_reports_safety_incidents left join contacts on (contacts.contacts_id = front_desk_reports_safety_incidents.employee_id) group by employee_id, work_day, description order by work_day, alphasort, incident_type";
+$res=@mysql_query($query);
+echo "
+
+<a href=$pagename?mode=$mode&report_name=incident_rates><font color=blue>Back to incident report</font></a><p>
+<a href=$pagename?mode=$mode&report_name=incident_edit><i><font color=blue>New Incident</font></i></a>
+
+<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=$fd_color_4><td>
+	<b>Employee</b>
+</td><td>
+	<b>Foreman</b>
+</td><td>
+	<b>Date</b>
+</td><td>
+	<b>Week Ending</b>
+</td><td>
+	<b>Type</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	&nbsp;
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$date=invali_date($row->work_day,"/");
+	$we=invali_date($row->week_ending,"/");
+	$fmn=getoneb("select * from contacts where contacts_id = '$row->foreman_id'");
+	echo "<tr><td>
+			$row->display_name
+		</td><td>
+			$fmn->display_name ($row->resp_count)
+		</td><td>
+			$date
+		</td><td>
+			$we
+		</td><td>
+			$row->incident_type
+		</td><td>
+			$row->description
+		</td><td>
+			<a href=$pagename?mode=$mode&report_name=incident_edit&incident_id=$row->incident_id><i><font color=blue>edit</font></i></a>
+		</td></tr>
+		";
+	}
+echo "</table>";
+mh_navs_footer();
+?>

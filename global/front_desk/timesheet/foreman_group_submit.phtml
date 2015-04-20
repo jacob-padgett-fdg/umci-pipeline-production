@@ -1,0 +1,31 @@
+<?
+if ($global_user->timesheet_group_one_foreman!='Y') die_security();
+
+if ($group_id!="") {
+$group_id=addslashes($group_id);
+$sql_command="update";
+$sql_where="where group_id = '$group_id'";
+} else {
+$sql_command="insert into";
+$sql_where="";
+}
+
+$group_name=addslashes($group_name);
+$group_description=addslashes($group_description);
+
+$query="$sql_command timesheet_foreman_groups set
+foreman_id = '$global_user->contacts_id',
+group_name = '$group_name',
+group_description = '$group_description'
+$sql_where ";
+
+$res=@mysql_query($query);
+
+if (!($res)) die("ERROR: Update Failed! Contact your system administrator if you believe this is not something you did.<br>Failed Query Below<hr>$query");
+if ($group_id=="") {
+	$group_id=@mysql_insert_id();
+	forward("main");
+	} else {
+	forward("foreman_group_edit&group_id=$group_id");
+	}
+?>

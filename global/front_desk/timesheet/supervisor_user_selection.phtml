@@ -1,0 +1,55 @@
+<?
+
+if (!(i_have_underlings($global_user->employee_num))) {
+	die("ERROR: Security violation. The authorities have been notified!");
+	}
+$res=query_underlings($global_user->employee_num);
+
+echo "
+<html><body bgcolor=white>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+
+<table border=0 cellpadding=5 width=100%>
+<tr><td align=center bgcolor=#dddddd><h2>Users I supervise</h2></td></tr>
+</table>
+<table border=0 cellpadding=5>
+";
+
+
+$underling_info=getoneb("select * from contacts where employee_num = $global_user->employee_num");
+$sick_hrs=gap_num(employee_sick_hours($underling_info->employee_num));
+$vac_hrs=gap_num(employee_vacation_hours($underling_info->employee_num));
+echo "<tr bgcolor=#f3f3f3><td><b>$underling_info->last_name, $underling_info->first_name</b></td><td><a href=$pagename?mode=supervisor_show_user&underling_id=$underling_info->contacts_id><font color=blue>Timesheets</font></a></td><td>Available Sick Hours: $sick_hrs</td><td>Available Vacation Hours: $vac_hrs</a></td></tr>";
+
+
+
+while($row=@mssql_fetch_object($res)) {
+	$underling_info=getoneb("select * from contacts where employee_num = $row->PREmp");
+	if ($underling_info) {
+		$sick_hrs=gap_decimal(employee_sick_hours($underling_info->employee_num));
+		$vac_hrs=gap_decimal(employee_vacation_hours($underling_info->employee_num));
+		
+		echo "<tr><td>$underling_info->last_name, $underling_info->first_name</td><td><a href=$pagename?mode=supervisor_show_user&underling_id=$underling_info->contacts_id><font color=blue>Timesheets</font></a></td><td>Available Sick Hours: $sick_hrs</td><td>Available Vacation Hours: $vac_hrs</a></td></tr>";
+		
+		//$micromanage="Y";
+		if ($micromanage=='Y') {
+			if (i_have_underlings($underling_info->employee_num)) {
+				$uu_res=query_underlings($underling_info->employee_num);
+				while($uu_row=@mssql_fetch_object($uu_res)) {
+					$underling_info=getoneb("select * from contacts where employee_num = $uu_row->PREmp");
+					$sick_hrs=gap_decimal(employee_sick_hours($underling_info->employee_num));
+					$vac_hrs=gap_decimal(employee_vacation_hours($underling_info->employee_num));
+					echo "<tr bgcolor=$fd_color_1><td>$underling_info->last_name, $underling_info->first_name</td><td><a href=$pagename?mode=supervisor_show_user&underling_id=$underling_info->contacts_id><font color=blue>Timesheets</font></a></td><td>Available Sick Hours: $sick_hrs</td><td>Available Vacation Hours: $vac_hrs</a></td></tr>";
+					}
+				}
+			}
+		
+		
+		
+		} else {
+		echo "Non-fatal error. Underling info lost. Please contact your system administrator";
+		}
+	}
+echo "</table>";
+
+?>

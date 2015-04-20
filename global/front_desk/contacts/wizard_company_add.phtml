@@ -1,0 +1,67 @@
+<?
+//require('querylib.inc');
+if ($return_to!="") {
+	$return_to=addslashes($return_to);
+	$abort_url=base64_decode($return_to);
+	}
+
+echo "
+<script>
+function try_again() {
+	alert('Search again then!');
+	}
+function noway() {
+	alert(\"I don't agree. Please be be less specific until you've found *SOMETHING*!\");
+	}
+</script>
+
+<font size=+1><b>Please search for the company first (be vague please!)</b></font><br>
+<form name=site_company_select method=GET action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=return_to value=\"$return_to\">
+<input type=text name=search_items value=\"$search_items_list\">
+<input type=submit value=\"Search\">
+</form>
+<script>
+document.site_company_select.search_items.focus();
+</script>
+";
+
+
+if ($search_items!="") {
+	$search_items=escapeshellcmd($search_items);
+	$search_items_list=$search_items;
+	$search_items_array=explode(" ",$search_items);
+	$seperator="";
+	$query="select * from contacts where contact_type = 'company' and (";
+	while($row=@each($search_items_array)) {
+		$query=$query . $seperator . " display_name like '%$row[1]%' ";
+		$seperator=" or ";
+		}
+	$query=$query . ") order by alphasort";
+ 	
+ 	//contact_table($query);
+	$sres=@mysql_query($query);
+	$srow_count=@mysql_num_rows($sres);
+	echo "<table border=1 cellspacing=0 cellpadding=3>";
+	while ($srow=@mysql_fetch_object($sres)) {
+		//echo "<tr><td>$srow->display_name</td></tr>";
+		echo "<tr><td>$srow->display_name</td><td>";
+		contact_edit_in_popup($srow->contacts_id,"Edit",1);
+		echo "</td></tr>";
+		}
+	echo "</table>";
+	if ($srow_count < 1) {
+		echo "
+		<b>Are you sure your search was vague enough? </b>
+		<a href=javascript:noway();><font color=blue>Yes</font></a> / 
+		<a href=javascript:try_again();><font color=blue>No</font></a> /
+		<a href=$abort_url><font color=blue>Cancel</font></a>";
+		} else {
+		echo "
+		<b>Are you sure the company isn't listed above? </b>
+		<a href=$pagename?mode=contacts_edit&is_company=Y&contact_type=company&return_to=$return_to><font color=blue>Yes</font></a> /
+		<a href=$abort_url><font color=blue>No</font></a>";
+		}
+	}
+?>

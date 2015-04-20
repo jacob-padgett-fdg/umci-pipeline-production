@@ -1,0 +1,68 @@
+<?
+if ($show_jobinfo_id=="") die("app error");
+$show_jobinfo_id=addslashes($show_jobinfo_id);
+$addr_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$show_jobinfo_id'");
+
+$ups="";
+if ($addr_jobinfo->ups_ok=="Y") $ups="<img style=\"cursor: hand; cursor: pointer;\" onclick=\"toggle_job_ups($addr_jobinfo->jobinfo_id)\" src=\"/images/fd_ups_okay_tiny.png\">";
+else $ups="<img style=\"cursor: hand; cursor: pointer;\" onclick=\"toggle_job_ups($addr_jobinfo->jobinfo_id)\" src=\"/images/fd_ups_noway_tiny.png\">";
+
+
+echo "
+<table border=0 cellspacing=0 cellpadding=1 style=\"border: 1px solid black; background: $fd_color_1;\">
+<tr><td valign=top>
+	<input type=text size=12 name=new_address_name id=\"new_address_name\" value=\"name\"><br>
+	&nbsp;<input type=checkbox  name=new_is_ups id=new_is_ups>&nbsp;UPS<br>
+	&nbsp;<input type=checkbox name=new_is_job_office id=new_is_job_office>&nbsp;off-site&nbsp;trailer
+</td><td valign=top>
+<textarea name=new_address rows=2 cols=20 id=\"new_address\">address</textarea>
+<textarea name=new_address rows=2 cols=20 id=\"new_notes\">notes</textarea>
+</td><td>
+	<input type=button style=\"background: $fd_color_3;\" value=\"+\" onclick=\"javascript:add_address();\">
+</td></tr></table>
+
+<table border=0 cellspacing=0 cellpadding=2>
+<tr valign=top><td></td><td>
+	<b>Job&nbsp;Site</b>
+</td><td style=\"border: 1px solid black;\">
+	$addr_jobinfo->job_site_address
+</td><td colspan=3>
+	$ups
+</td></tr>
+";
+
+
+
+$ups="";
+
+
+//tabledump("select * from jobinfo_addresses where jobinfo_id = '$show_jobinfo_id'");
+
+$res=@mysql_query("select * from jobinfo_addresses where jobinfo_id = '$show_jobinfo_id' order by sort_priority");
+while($row=@mysql_fetch_object($res)) {
+	if ($row->is_ups=="Y") $ups="<img style=\"cursor: hand; cursor: pointer;\" onclick=\"toggle_ups($row->address_id)\" src=\"/images/fd_ups_okay_tiny.png\">";
+	else $ups="<img style=\"cursor: hand; cursor: pointer;\" onclick=\"toggle_ups($row->address_id)\" src=\"/images/fd_ups_noway_tiny.png\">";
+	
+	if ($row->is_job_office=="Y") $job_office="<img onclick=\"alert('You much delete and add this address again to modify this option!')\" src=\"/images/job_office_tiny.png\">";
+	else $job_office="";
+	
+	if ($been_around==1) {
+		$up_it_link="<img style=\"cursor: hand; cursor: pointer;\" src=\"/images/up_it.png\" onclick=\"move_address_up($row->address_id)\">";
+		}
+	echo "<tr valign=top><td>
+			$up_it_link
+		</td><td>
+			<b>$row->description</b>
+		</td><td style=\"border: 1px solid black;\">
+			$row->address
+		</td><td>
+			$ups
+		</td><td>
+			$job_office
+		</td><td>
+			<img style=\"cursor: hand; cursor: pointer;\" src=\"/images/x_it.png\" onclick=\"delete_address($row->address_id)\">
+		</td></tr>";
+	$been_around=1;
+	}
+echo "</table>";
+?>

@@ -1,0 +1,64 @@
+<?
+//require('querylib.inc');
+$query="select * from contacts_fk_list where ((is_contact != 'Y') and (is_contact != 'N')) order by db_table, table_field";
+$res=@mysql_query($query);
+
+$rowcount=@mysql_num_rows($res);
+
+if ($rowcount==0) {
+	echo "<b>There are no unresolved database fields. Proceeding to contact search.</b><p>";
+	flush();
+	sleep (10);
+	forward('f_key_contact_search');
+	exit;
+	}
+echo "
+<script>
+function mark_contact(fk_list_id,is_contact) {
+	if ((is_contact!='Y')&&(is_contact!='N')) {
+		alert('Application error!');
+		} else {
+		open('$pagename?mode=f_key_mark_field&fk_list_id=' + fk_list_id + '&is_contact=' + is_contact,'fk_mark_win','width=100,height=100');
+		}
+	}
+
+function show_the_data(fk_list_id) {
+	open('$pagename?mode=f_key_field_dump&fk_list_id=' + fk_list_id,'fk_field_dump','width=200,height=800');
+	}
+
+</script>
+
+
+<table border=1 cellspacing=0 cellpadding=0><tr><td><table cellspacing=0>";
+
+$shade="#ffffff";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr bgcolor=\"$shade\"><td>
+			$row->db_table
+		</td><td>
+			$row->table_field
+		</td><td>
+			<a href=javascript:mark_contact($row->fk_list_id,'Y');><font color=blue>Is Contact</font></a>
+		</td><td>
+			&nbsp;&nbsp;&nbsp;<a href=javascript:mark_contact($row->fk_list_id,'N');><font color=blue>Not Contact</font></a>
+		</td><td>
+			&nbsp;&nbsp;&nbsp;<a href=javascript:show_the_data($row->fk_list_id);><font color=blue><i>View Data</i></font></a>
+		</td></tr>";
+		
+	if ($shade=="#ffffff") $shade="#eeeeee";
+	else $shade="#ffffff";
+	}
+echo "</table></table>";
+//tabledump($query);
+
+
+
+
+
+
+
+
+
+
+?>

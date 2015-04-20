@@ -1,0 +1,53 @@
+<?
+
+//echo "<b>Sending email to jeffb@umci.com...<b><hr>";
+//mail("jeffb@umci.com","test email from php","This is a test email send from php.. I should get one every time the main page loads in mis_issue_requests..");
+
+
+if ($global_user->umc_emp!='Y') die("This DB is currently only available for UMC employees<p>");
+
+
+echo "
+<html><head><title>MIS Request Page</title></head><body bgcolor=#ffffff>
+<table border=0 align=left cellspacing=0 cellpadding=0><tr><td>
+<a href=$pagename?kill_session_info=1><font color=blue>Logout</font></a><br>
+<a href=$pagename_up><font color=blue>Exit</font></a>
+</td></tr></table>
+<center>";
+
+$query="select 
+	mis_issue_index.issue_id,it_category_id,priority,name,mis_issue_index.status,creator,requested_completion,expected_completion,reference_this_issue 
+	from mis_issue_index
+	where 
+		mis_issue_index.status != 'approved' and 
+		creator = '$global_user_id'
+		order by issue_id
+		";
+
+category_show($query,"My Requests",1);
+
+
+
+
+
+
+$query="select 
+	mis_issue_index.issue_id,it_category_id,priority,name,mis_issue_index.status,creator,requested_completion,expected_completion,reference_this_issue 
+	
+	from 
+	
+	mis_issue_index,mis_issue_history,mis_issue_concerned_parties 
+	
+	where 
+		mis_issue_index.status != 'approved' and 
+		mis_issue_index.issue_id = mis_issue_history.issue_id and 
+		mis_issue_history.issue_history_id = mis_issue_concerned_parties.issue_history_id and 
+		current_hist_item = 'Y' and 
+		( mis_issue_concerned_parties.contacts_id = '$global_user_id') and
+		creator != '$global_user_id' and  
+		mis_issue_concerned_parties.us_or_them = 'them' group by mis_issue_index.issue_id";
+
+
+category_show($query,"Other Items Concerning Me",1);
+echo "</center></body></html>";
+?>

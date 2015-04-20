@@ -1,0 +1,59 @@
+<?
+//tabledump("select * from mis_issue_saved_queries where contacts_id = '$global_user_id' order by priority");
+
+$res=@mysql_query("select * from mis_issue_saved_queries where contacts_id = '$global_user_id' order by priority");
+
+echo "
+<html><body bgcolor=#ffffff>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><p>
+
+
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td>
+	<b>Search Name</b>
+</td><td>
+	<b>Result Count</b>
+</td><td>
+	<b>Main Menu</b>
+</td><td>
+	<b>Search Priority</b>
+</td><td align=center>
+	<b>Move</b>
+</td><td align=center>
+	&nbsp;
+</td><td align=center>
+	&nbsp;
+</td></tr>
+
+";
+while($row=@mysql_fetch_object($res)) {
+	echo "
+	<tr><td>
+		<a href=$pagename?mode=show_saved_query&query_id=$row->query_id><font color=blue>$row->query_name</font></a>
+	</td><td align=center>
+		";echo(mysql_num_rows(@mysql_query($row->query)));echo"
+	</td><td align=center>
+		<a href=$pagename?mode=saved_query_toggle_main_menu&query_id=$row->query_id><font color=blue>$row->default_query</font></a>
+	</td><td align=center>
+		$row->priority
+	</td><td>
+		<a href=$pagename?mode=saved_query_move_up&query_id=$row->query_id>
+		<font color=blue>UP</font>
+		/<a href=$pagename?mode=saved_query_move_down&query_id=$row->query_id>
+		<font color=blue>DOWN</font>
+	</td><td>
+		&nbsp;<a href=$pagename?mode=saved_query_rename&query_id=$row->query_id><i>Rename</i></a>&nbsp;
+	</td><td>
+		&nbsp;<a href=$pagename?mode=saved_query_delete&query_id=$row->query_id><i>Delete</i></a>&nbsp;
+	</td></tr>
+	";
+	}
+
+
+
+
+
+
+
+
+?>

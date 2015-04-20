@@ -1,0 +1,98 @@
+<?
+
+if ($bidlist_id!="") $bidlist_id=escapeshellcmd($bidlist_id);
+else die("ERROR: No bidlist_id specified! Please contact your system administrator or try again");
+
+echo "<html><head><title>$application_name - Proposal Sub-Type Edit</title></head>
+<body bgcolor=#ffffff onclose=close_clean()>";
+
+
+
+$query="select project_subtype_id from bidlist_bid_projsubtypes where bidlist_id = '$bidlist_id'";
+//tabledump($query);
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$typearray[]=$row->project_subtype_id;
+	}
+
+
+
+$lasttitle1="";
+$lasttitle2="";
+
+$select1="<select name=project_subtype_id size=20>";
+$select2="<select name=project_subtype_id size=20>";
+
+
+
+$query="select * from bidlist_projectsubtypes order by projgroup,project_subtype";
+//tabledump($query);
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) {
+	if (@in_array($row->project_subtype_id,$typearray)) {
+		if ($lasttitle1!=$row->projgroup) $select1=$select1 . "<option value=''>$row->projgroup</option>";
+		$select1=$select1 . "<option value=\"$row->project_subtype_id\">&nbsp;&nbsp;$row->project_subtype</option>";
+		$lasttitle1=$row->projgroup;
+	} else {
+		if ($lasttitle2!=$row->projgroup) $select2=$select2 . "<option value=''>$row->projgroup</option>";
+		$select2=$select2 . "<option value=\"$row->project_subtype_id\">&nbsp;&nbsp;$row->project_subtype</option>";
+		$lasttitle2=$row->projgroup;
+		}
+	}
+
+$select1=$select1 . "</select>";
+$select2=$select2 . "</select>";
+
+
+echo "
+<script>
+	function close_clean() {
+	opener.apply_changes();
+	self.close();
+	}
+</script>
+
+<table border=0>
+
+<tr><td align=center>
+	<b>Available Categories</b>
+</td><td>
+</td><td align=center>
+	<b>Selected</b>
+</td></tr>
+
+<tr><td>
+	<form name=sidea method=post action=$pagename>
+
+	$select2
+	<input type=hidden name=mode value=project_subtypes_add>
+	<input type=hidden name=bidlist_id value=\"$bidlist_id\">
+</td><td>
+	<input type=submit value='-->'>
+
+
+	</form>
+	<form name=sideb method=post action=$pagename>
+
+
+
+	<input type=submit value='<--'>
+
+</td><td valign=center>
+	<input type=hidden name=mode value=project_subtypes_remove>
+	<input type=hidden name=bidlist_id value=\"$bidlist_id\">
+	$select1
+
+
+
+
+	</form>
+</td></tr>
+</table>
+
+<p>
+
+<a href=javascript:close_clean();><font color=blue>Save/Close</font></a>";
+
+?>

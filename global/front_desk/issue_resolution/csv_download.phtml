@@ -1,0 +1,19 @@
+<?
+if ($issue_res_category_id) testrights("read_only");
+
+header("Content-type: text/comma-seperated-file");
+$query="
+	select 
+
+	conflict_id,bld_floor,grid,summary,solution,actual_solution,responsibility,
+	completed_by,due_date,last_action,completed,approved,tainted as timestamp,
+	login_name as owner, email
+	from issue_res_issues,contacts
+	
+	where issue_res_category_id = '$issue_res_category_id'
+	and c_parent = contacts_id
+	and issue_parent = 0
+	";
+require('filter_builder.phtml');
+csvdump($query);
+?>

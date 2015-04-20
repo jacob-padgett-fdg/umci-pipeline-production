@@ -1,0 +1,85 @@
+<?
+require('header.phtml');
+require_once('querylib.inc');
+require_once('local.inc');
+
+if ($hr_openings_id!="") {
+	$hr_openings_id=addslashes($hr_openings_id);
+	$job_info=getone("select * from hr_openings where hr_openings_id = '$hr_openings_id'");
+	if ($job_info->salary==0) $job_info->salary="";
+	if ($job_info->salary_doe=="Y") $job_info->salary_doe="DOE";
+	else $job_info->salary_doe="";
+	//echo "<hr>select * from hr_openings where hr_openings_id = '$hr_openings_id'<hr>";
+	} else {
+	die ("Application error!");
+	}
+
+
+
+echo "
+<a href=$pagename?mode=main><font color=blue><i>Return to Listings</i></font></a>&nbsp;&nbsp;&nbsp;<a href=$pagename?mode=apply&hr_openings_id=$hr_openings_id><font color=blue><i>Apply</i></font></a>
+<center><h2>Job Opening Details</h2>
+<table border=2 cellspacing=0 cellpadding=0 width=600><tr><td align=center>
+<table border=1 cellspacing=0 cellpadding=4 width=600>
+
+<tr><td>
+	<b>Job Title</b>
+</td><td>
+	$job_info->job_title
+</td></tr>
+
+<tr><td>
+	<b>Position Type</b>
+</td><td>
+	$job_info->position_type
+</td></tr>
+
+<tr><td>
+	<b>Location</b>
+</td><td>
+	";
+	$location_info=getoneb("select * from contacts where contacts_id = '$job_info->site_id'");
+	//contactsbox("select * from contacts where ( company_id = '968' or contacts_id = '968') and (contact_type = 'site' or contact_type = 'company')",$job_info->site_id,"site_id");
+	echo"$location_info->display_name<br>
+	$location_info->address_city, $location_info->address_state
+</td></tr>
+
+<tr><td>
+	<b>Description</b>
+</td><td>
+	$job_info->job_description_text
+</td></tr>
+
+<tr><td valign=top>
+	<b>Salary</b>
+</td><td valign=top>
+	$job_info->salary_doe<br>
+	$job_info->salary
+</td></tr>
+
+<tr><td>
+	<b>Application Deadline</b>
+</td><td>
+	";//datebox(invali_date($job_info->deadline),"job_opening_edit.deadline");
+	$job_info->deadline=invali_date($job_info->deadline);
+	echo"$job_info->deadline
+</td></tr>
+
+</table>
+</form>
+";
+
+if ($new==TRUE) exit;
+
+//echo "<b><font size=+1>Essential Functions/Major Responsibilities:</font></b><hr>";
+
+//bullets($job_info->hr_openings_id,"responsibilites");
+bullets($job_info->hr_openings_id,"",1);
+
+
+echo "
+</td></tr>
+</table>
+</center>
+";
+?>

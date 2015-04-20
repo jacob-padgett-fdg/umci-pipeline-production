@@ -1,0 +1,55 @@
+<?
+if ($doc_id!="") $doc_id=addslashes($doc_id);
+$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+if (!($doc_info)) die('DOC_ID ERROR: Invalid doc_id. Please contact your system administrator!');
+
+if ($file_group_id!="") {
+	$attachments_info=getoneb("select max(sort_priority) as max_sort from documents_attachments where doc_id = '$doc_info->doc_id'");
+	if ($attachments_info->max_sort=="") $attachments_info->max_sort='0';
+	$newmax=$attachments_info->max_sort + 1;
+	$file_group_id=addslashes($file_group_id);
+	@mysql_query("insert into documents_attachments set doc_id = '$doc_info->doc_id', file_group_id = '$file_group_id', contacts_id = '$global_user_id',sort_priority = '$newmax'");
+	}
+
+
+
+echo "<table border=1 cellspacing=0 cellpadding=4 style=\"width: 100%; border: 1px solid black;\">
+<tr><form name=\"fdaful\"><input type=hidden name=mode value=fd_doc_attachments_show><input type=hidden name=doc_id value=\"$doc_info->doc_id\">
+<td colspan=5 align=center bgcolor=\"$fd_color_4\" style=\"border: 1px solid black;\">
+<b>$doc_info->doc_type - $doc_info->app_reference / Attached Documents</b><br>
+
+<b>Upload:</b>";
+webfilebox($row->file_group_id,'file_group_id',"opener.document.fdaful.submit()");
+echo "
+</form>
+
+</td></tr>
+";
+$res=@mysql_query("select * from documents_attachments where doc_id = '$doc_info->doc_id' order by sort_priority");
+echo "
+
+<tr><td><b>Uploaded By</b></td><td><b>Time</b></td><td><b>File(s)</b></td><td><b>Description</b></td><td>&nbsp;</td></tr>
+";
+while ($row=@mysql_fetch_object($res)) {
+	$uploader=getoneb("select * from contacts where contacts_id = '$row->contacts_id'");
+	$dl_link=webfile_paperclip_view($row->file_group_id);
+	$file_group_info=load_file_group_info($row->file_group_id);
+	echo "<tr><td>
+			$uploader->display_name
+		</td><td>
+			<font size=-1><i>$row->upload_time</i></font>
+		</td><form name=\"fdaf_$row->file_group_id\"><input type=hidden name=mode value=fd_doc_attachments_show><input type=hidden name=doc_id value=\"$doc_info->doc_id\"><td>
+			";
+			webfilebox($row->file_group_id,'file_group_id',"",8);
+			echo "
+		</td></form><td>
+			$file_group_info->description
+		</td><td>
+			$dl_link
+		</td></tr>";
+	}
+echo "</table>";
+
+
+
+?>

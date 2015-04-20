@@ -1,0 +1,6 @@
+<?
+if (!($suid_check)) die ("ERROR: Security Violation! The authorities are being notified!");
+
+$current_user_id = escapeshellcmd($assume_id);
+forward('main');
+?>

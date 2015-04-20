@@ -1,0 +1,405 @@
+<?
+
+$rfi_info->rfi_date=invali_date($rfi_info->rfi_date);
+$rfi_info->rfi_num=ereg_replace('.00$','',"$rfi_info->rfi_num");
+
+$job_info=getoneb("select * from jobinfo where jobinfo_id = '$rfi_info->jobinfo_id'");
+$creator_info=getoneb("select * from contacts where contacts_id = '$rfi_info->creator'");
+$border_right=576;
+
+$fontsize="10";
+$standard_gap="16";
+$my_loc="710";
+
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+$pdf->ezSetMargins(36,36,36,36);
+////////////////////////////////////////////////////////
+// The logo and header/address junk
+////////////////////////////////////////////////////////
+$pdf->addPngFromFile('hoffman_logo.png',57,697,58,58);
+$pdf->addText(127,742,10,"<b>Hoffman Construction Company</b>");
+$pdf->addText(127,729.5,9,"2000 W Marine View Drive, Bldg 1990");
+$pdf->addText(127,719,9,"Everett, WA  98207");
+$pdf->addText(127,703,11,"<b>P-155 BEQ, HCC Job # 335007</b>");
+
+
+$pdf->addText(340,742,15,"<b>Request for Information/</b>");
+$pdf->addText(307,723,15,"<b>Supplementary Instruction  #</b>");
+	$pdf->line(515,717,573,717);
+
+
+$pdf->addText(487,702,12,"<b>Date</b>");
+	$pdf->line(515,699,573,699);
+
+$pdf->addText(404,683,12,"<b>Date Reply Needed</b>");
+	$pdf->line(515,681,573,681);
+
+$pdf->addText(349,666,10,"<b>Originator Company</b>");
+	$pdf->line(447,664,573,664);// tweak it longer later
+
+$pdf->addText(419,651,10,"<b>Originator RFI/ASI #</b>");
+	$pdf->line(515,647,573,647);
+
+$pdf->addText(401,634,10,"Total pages in document:");
+	$pdf->line(515,630,573,630);
+
+
+
+$pdf->addText(56,651,10,"<b>Title:</b>");
+	$pdf->line(53,648,367,648);
+
+$pdf->addText(56,634,10,"<b>Reference:</b>");
+	$pdf->line(53,631,367,631);
+
+
+
+$pdf->line(54,622,367,622);			$pdf->line(372,622,574,622); // Top
+$pdf->line(54,622,54,178);			$pdf->line(372,622,372,307);$pdf->line(372,301,372,182); // Left
+$pdf->line(367,622,367,178);		$pdf->line(574,622,574,307);$pdf->line(574,301,574,182); // Right
+$pdf->line(54,178,574,178);			$pdf->line(372,307,574,307); $pdf->line(372,301,574,301); $pdf->line(372,182,574,182); // Bottom
+
+//$pdf->setLineStyle(1,'','',array(1,0));
+
+$pdf->line(54,178,54,39);
+$pdf->line(574,178,574,39);
+$pdf->line(54,39,574,39);
+
+
+
+$route_spacing=13.6;
+$route_start=606;
+$route_end=307;
+$current_y=$route_start;
+$pdf->setLineStyle(.5,'','',array(1,0));
+while ($current_y>$route_end) {
+	$pdf->line(372, $current_y, 574, $current_y);
+	$current_y=$current_y - $route_spacing;
+	}
+$pdf->setLineStyle(1,'','',array(1,0));
+
+$pdf->line(448, $route_start, 448, $route_end);
+$pdf->line(516, $route_start, 516, $route_end);
+
+
+
+$pdf->addText(374,610,12,"<b>Routing</b>");
+$pdf->addText(374,597,10,"From");
+$pdf->addText(450,597,10,"To");
+$pdf->addText(517.5,597,10,"Date");
+
+$pdf->addText(380,284,11,"<b>Cost Impact:</b>");
+
+$pdf->addText(375,266,10,"<b>ROM Estimate:</b>");
+$pdf->line(448,263,574,263);
+$pdf->addText(385,254,8,"Note Breakdown attached; or is to follow and date");
+
+
+$pdf->addText(57,610,12,"<b>Issue:</b>");
+//$pdf->addText(57,405,12,"<b>Proposed Solution:</b>");
+$pdf->addText(57,167,12,"<b>Response:</b>");
+$pdf->addText(121,167,10,"(Responder Initial) - note attached pages, if any");
+
+// Keep this at the bottom cause we mess with the line style and I 
+// don't want to have to fix it..
+//$pdf->setLineStyle(1,'','',array(2.9,.9));
+//$pdf->line(54,417,367,417);
+
+$grres=@mysql_query("select * from rfi_dwg_refs where rfi_id = '$rfi_info->rfi_id'");
+$dwggridtxt="";
+$grcount=0;
+$grstart="Mechanical-";
+while ($grrow=@mysql_fetch_object($grres)) {
+	$dwggridtxt=$dwggridtxt . " (Dwg: $grrow->dwg, Ref: $grrow->grid_ref)";
+	$grcount++;
+	
+	
+	//$pdf->addText (40,$my_loc,$fontsize,"Dwg:");
+	//$pdf->addText (65,$my_loc,$fontsize,$grrow->dwg);
+	//$pdf->line(64,$my_loc - 1,116,$my_loc - 1);
+	//$pdf->addText (118,$my_loc,$fontsize, "Grid Ref:");
+	//$pdf->addText (159,$my_loc,$fontsize,$grrow->grid_ref);
+	//$pdf->line(158,$my_loc - 1,216,$my_loc - 1);
+	//$my_loc = $my_loc - $standard_gap;
+	//$count++;
+	//$bump='no';
+	
+	}
+if ($grcount>2) $grstart="";
+
+// OK, the blank form is done, now let's fill it in.. 
+$pdf->addText(110,651,8,"$rfi_info->key_description");
+$pdf->addText(110,634,7,"$grstart$dwggridtxt");
+$rfi_info->rfi_date=invali_date($rfi_info->rfi_date , "/");
+$pdf->addText(520,701,8,"$rfi_info->rfi_date");
+$rfi_info->response_needed_date=invali_date($rfi_info->response_needed_date , "/");
+$pdf->addText(520,683,8,"$rfi_info->response_needed_date");
+
+$pdf->addText(460,667,8,"University Mechanical");
+$pdf->addText(535,650,8,"$rfi_info->rfi_num");
+
+$pdf->addText(535,633,8,"1"); // Total pages in document
+$rfi_info->sent_to_date=invali_date($rfi_info->sent_to_date,'/');
+$pdf->addText(525,583,8,$rfi_info->sent_to_date);
+$pdf->addText(458,583,8,"MR/Hoffman");
+$sender_initials=$creator_info->first_name . " " . $creator_info->last_name;
+$pdf->addText(373,583,8,"$sender_initials/UMC");
+
+$pdf->ezSetMargins(36,36,59,245);
+
+$pdf->ezSetY(610);
+$pdf->ezText($rfi_info->question,8,array('spacing'=>'0.9'));
+
+$pdf->y=$pdf->y - 10;
+$start_proposed_solution='530';
+if ($start_proposed_solution>$pdf->y) $start_proposed_solution=$pdf->y;
+// Keep this at the bottom cause we mess with the line style and I 
+// don't want to have to fix it..
+$pdf->setLineStyle(1,'','',array(2.9,.9));
+$pdf->line(54, $start_proposed_solution, 367, $start_proposed_solution);
+
+
+$pdf->addText(57,$start_proposed_solution - 12,12,"<b>Proposed Solution:</b>");
+
+$pdf->ezSetY($start_proposed_solution - 14);
+$pdf->ezText($rfi_info->solution,8,array('spacing'=>'0.9'));
+
+$pdf->ezSetMargins(36,36,59,42);
+$pdf->ezSetY(160);
+$pdf->ezText($rfi_info->reply,8,array('spacing'=>'0.9'));
+
+
+
+
+
+if ($rfi_info->has_cost=='N') $rfi_info->rom='N/A';
+if ($rfi_info->rom=='0') $rfi_info->rom="";
+$pdf->addText(460,284,10,"$rfi_info->has_cost");
+$pdf->addText(460,266,10,"$rfi_info->rom");
+
+
+
+
+
+
+
+
+
+
+//$pdf->addText(488,690,8,"<b>Hoffman Contruction Company</b>");
+
+//$pdf->addText(488,680,8,"$lhead_site_p2");
+//$pdf->addText(488,670,8,"$lhead_site->address_city,$lhead_site->address_state");
+//$pdf->addText(488,660,8,"$lhead_site->address_zip");
+//$pdf->addText(488,640,8,"<b>Phone $lhead_site->phone $lhead_site->phone_ext</b>");
+//$pdf->addText(488,630,8,"Fax $lhead_site->phone_fax");
+
+
+
+if (FALSE) { 
+///////////////////////////////////////////////////////
+
+// Header
+$pdf->ezStartPageNumbers(550,35,10,'',"JOB $job_info->contract_num UMCRFI $rfi_info->rfi_num, Created By: $creator_info->first_name $creator_info->last_name                                      Page {PAGENUM} of {TOTALPAGENUM}");
+$pdf->ezText("RFI - REQUEST FOR INFORMATION",20);
+
+
+// Job find RFI # information
+$my_start_y=$my_loc;
+$pdf->addText(36,$my_loc,$fontsize,"<b>Input Date:</b>");
+$pdf->addText(95,$my_loc,$fontsize,"$rfi_info->rfi_date");
+$my_loc=$my_loc - $standard_gap;
+$pdf->addText(36,$my_loc,$fontsize,"<b>Job #:</b>");
+$pdf->addText(95,$my_loc,$fontsize,"$job_info->contract_num");
+$my_loc=$my_loc - $standard_gap;
+$pdf->addText(36,$my_loc,$fontsize,"<b>Project:</b>");
+$pdf->addText(95,$my_loc,$fontsize,"$job_info->display_name");
+$my_loc=$my_start_y;
+$pdf->addText(316,$my_loc,$fontsize,"<b>UMC RFI #:</b>");
+$pdf->addText(375,$my_loc,$fontsize,"$rfi_info->rfi_num");
+$my_loc=$my_loc - $standard_gap;
+$pdf->addText(316,$my_loc,$fontsize,"<b>GC RFI #:</b>");
+$pdf->addText(375,$my_loc,$fontsize,"$rfi_info->gc_rfi_num");
+//$list=fd_short_doc_list($doc_id);die();
+//printr($list);die();
+$my_loc=$my_loc - $standard_gap;
+if ($rfi_info->sub_rfi_num!="") {	
+	$pdf->addText(316,$my_loc,$fontsize,"<b>Sub RFI #:</b>");
+	$pdf->addText(375,$my_loc,$fontsize,"$rfi_info->sub_rfi_num");
+	}
+
+$pdf->setStrokeColor(.3,.3,.3);
+$pdf->setLineStyle(.1);
+
+$my_loc=$my_loc - ($standard_gap /2);
+// Main description stuff
+$box_top=$my_loc;
+$my_loc=$my_loc - $standard_gap;
+$pdf->addText (40,$my_loc,$fontsize,"Subject: " . substr($rfi_info->key_description,0,65));
+$pdf->line(79,$my_loc - 1,339,$my_loc - 1);
+$pdf->addText (341,$my_loc,$fontsize,"Spec: $rfi_info->spec");
+$pdf->line(369,$my_loc - 1,460,$my_loc - 1);
+$my_loc=$my_loc - $standard_gap;
+if ($rfi_info->cpm_schedule_id!="") {
+	$pdf->addText (248,$my_loc,$fontsize - 1,"Sched Ref: $rfi_info->cpm_schedule_id");
+	$pdf->line(295,$my_loc - 1,359,$my_loc - 1);
+	}
+$pdf->addText (362,$my_loc,$fontsize,"Bldg: $rfi_info->bldg");
+$pdf->line(385,$my_loc - 1,410,$my_loc - 1);
+$pdf->addText (412,$my_loc,$fontsize,"Floor: $rfi_info->floor");
+$pdf->line(438,$my_loc - 1,460,$my_loc - 1);
+$count=1;
+
+$bump='yes';
+
+if ( $bump == 'yes' ) $my_loc=$my_loc - $standard_gap;
+$box_end=$my_loc+($standard_gap / 2);
+
+// Box for the main description stuff
+//$box_end=630;
+$pdf->line(36,$box_top,465,$box_top);
+$pdf->line(36,$box_end,465,$box_end);
+$pdf->line(36,$box_top,36,$box_end);
+$pdf->line(465,$box_top,465,$box_end);
+
+// Box for the question
+$box_top=$box_end - 9;
+$pdf->ezSetY($box_top);
+$boxdata=array(36,$box_top,$border_right,$box_top,$border_right,$box_top - 14,36,$box_top - 14);
+$pdf->setColor(.7,.7,.7);
+$pdf->polygon($boxdata,4,1);
+$pdf->setColor(0,0,0);
+
+$pdf->ezText("<b>Question:</b>\r\n$rfi_info->question\r\n",$fontsize,array('aleft'=>'46','aright'=>'566'));
+if ($pdf->y > 510) $pdf->y=510;
+$box_end=$pdf->y;
+$pdf->line(36,$box_top,$border_right,$box_top);
+$pdf->line(36,$box_end,$border_right,$box_end);
+$pdf->line(36,$box_top,36,$box_end);
+$pdf->line($border_right,$box_top,$border_right,$box_end);
+
+
+////////////////////////////////////////////////////////////
+// Box for the solution
+// Note, much of this is done twice, because we roll back a
+// transaction if we end up on a new page.
+////////////////////////////////////////////////////////////
+$page=$pdf->ezPageCount;
+$pdf->transaction('start');
+$pdf->ezSetY($box_top);
+$box_top=$box_end - 9;
+$pdf->ezSetY($box_top);
+$boxdata=array(36,$box_top,$border_right,$box_top,$border_right,$box_top - 14,36,$box_top - 14);
+$pdf->setColor(.7,.7,.7);
+$pdf->polygon($boxdata,4,1);
+$pdf->setColor(0,0,0);
+
+$pdf->ezText("<b>Recommended Solution:</b>\r\n$rfi_info->solution\r\n",$fontsize,array('aleft'=>'46','aright'=>'566'));
+if ($pdf->y > 390) $pdf->y=390;
+$box_end=$pdf->y;
+$border_right=576;
+$paged=0;
+if ($pdf->ezPageCount!=$page) {
+	$paged=1;
+	$pdf->transaction('rewind');
+	$pdf->ezNewPage();
+	$box_top=$pdf->y;
+	
+	$boxdata=array(36,$box_top,$border_right,$box_top,$border_right,$box_top - 14,36,$box_top - 14);
+	$pdf->setColor(.7,.7,.7);
+	$pdf->polygon($boxdata,4,1);
+	$pdf->setColor(0,0,0);
+
+	$pdf->ezText("<b>Solution:</b>\r\n$rfi_info->solution\r\n",$fontsize,array('aleft'=>'46','aright'=>'566'));
+	$box_end=$pdf->y;
+	$border_right=576;
+	$pdf->line(36,$box_top,$border_right,$box_top);
+	} else {
+	$pdf->transaction('commit');
+	}
+$pdf->line(36,$box_top,$border_right,$box_top);
+$pdf->line(36,$box_end,$border_right,$box_end);
+$pdf->line(36,$box_top,36,$box_end);
+$pdf->line($border_right,$box_top,$border_right,$box_end);
+////////////////////////////////////////////////////////////
+
+$rep_info=getoneb("select * from contacts where contacts_id = '$rfi_info->rep_id'");
+if (!($rep_info)) $rep_info=getoneb("select * from contacts where contacts_id = '$rfi_info->creator'");
+
+
+$pdf->ezText("<b>Additional Cost: </b> $rfi_info->has_cost");
+$pdf->ezText("<b>UMC Rep: </b> $rep_info->display_name");
+$pdf->ezText("<b>Response Needed by: </b> " . invali_date($rfi_info->response_needed_date));
+
+if (($rfi_info->attached_sheets=='Y')&&($rfi_info->attached_sheet_name!="")) $rfi_info->attached_sheets=$rfi_info->attached_sheet_name;
+$pdf->ezText("<b>Attached Sheets: </b> $rfi_info->attached_sheets");
+$sent_to_info=getoneb("select * from contacts where contacts_id = '$rfi_info->sent_to_id'");
+if ($sent_to_info->contact_type=="contact") {
+	//$comp_temp=getoneb("select * from contacts where contacts_id = '$sent_to_info->
+	$sent_to_company_text=" @ $sent_to_info->company ";
+	}
+$pdf->ezText("<b>Submitted to: </b> $sent_to_info->display_name $sent_to_company_text<i>(" . invali_date($rfi_info->sent_to_date) . ")</i>");
+
+
+
+
+
+
+
+$box_end=$pdf->y;
+////////////////////////////////////////////////////////////
+// Box for the Reply
+// Note, much of this is done twice, because we roll back a
+// transaction if we end up on a new page.
+////////////////////////////////////////////////////////////
+$page=$pdf->ezPageCount;
+$pdf->transaction('start');
+$box_top=$box_end-9;
+$pdf->ezSetY($box_top);
+$boxdata=array(36,$box_top,$border_right,$box_top,$border_right,$box_top - 14,36,$box_top - 14);
+$pdf->setColor(.7,.7,.7);
+$pdf->polygon($boxdata,4,1);
+$pdf->setColor(0,0,0);
+
+$reply_from_info=getoneb("select * from contacts where contacts_id = '$rfi_info->reply_from'");
+if ($reply_from_info->contact_type=="contact") {
+	$reply_comp_info=getoneb("select * from contacts where contacts_id = '$reply_from_info->company_id'");
+	$reply_from_text="$reply_from_info->first_name $reply_from_info->last_name of $reply_comp_info->display_name";
+	} else {
+	$reply_from_text="$reply_from_info->display_name";
+	}	
+
+
+$reply_date_text=invali_date($rfi_info->reply_date);
+if ($reply_date_text=="") $on="";
+else $on="on";
+
+$pdf->ezText("<b>Response               </b>  From: $reply_from_text $on $reply_date_text\r\n$rfi_info->reply\r\n",$fontsize,array('aleft'=>'46','aright'=>'566'));
+if (($paged==0)&&($pdf->y>200)) $pdf->y=200;
+$box_end=$pdf->y;
+$border_right=576;
+if ($pdf->ezPageCount!=$page) {
+	$pdf->transaction('rewind');
+	$pdf->ezNewPage();
+	$box_top=$pdf->y;
+	$boxdata=array(36,$box_top,$border_right,$box_top,$border_right,$box_top - 14,36,$box_top - 14);
+	$pdf->setColor(.7,.7,.7);
+	$pdf->polygon($boxdata,4,1);
+	$pdf->setColor(0,0,0);
+
+	$pdf->ezText("<b>Response               </b>  From: $reply_from_text $on $reply_date_text\r\n$rfi_info->reply\r\n",$fontsize,array('aleft'=>'46','aright'=>'566'));
+	//$pdf->ezText("<b>Reply:</b>\r\n$rfi_info->reply\r\n",$fontsize,array('aleft'=>'46','aright'=>'566'));
+	$box_end=$pdf->y;
+	$border_right=576;
+	$pdf->line(36,$box_top,$border_right,$box_top);
+	} else {
+	$pdf->transaction('commit');
+	}
+$pdf->line(36,$box_top,$border_right,$box_top);
+$pdf->line(36,$box_end,$border_right,$box_end);
+$pdf->line(36,$box_top,36,$box_end);
+$pdf->line($border_right,$box_top,$border_right,$box_end);
+////////////////////////////////////////////////////////////
+
+}
+
+?>

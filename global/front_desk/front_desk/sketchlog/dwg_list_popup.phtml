@@ -1,0 +1,12 @@
+<?
+$sketchlog_id=addslashes($sketchlog_id);
+$sketch_info=getoneb("select * from sketchlog where sketchlog_id = '$sketchlog_id'");
+
+$query="select drawing_id,type,sheet_num,description from drawinglog where jobinfo_id = '$sketch_info->jobinfo_id' order by type, sort_priority,sheet_num,description";
+tabledump($query);
+//echo "<hr>$query<hr>";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	}
+
+?>

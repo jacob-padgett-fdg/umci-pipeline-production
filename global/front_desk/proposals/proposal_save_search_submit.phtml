@@ -1,0 +1,40 @@
+<?
+
+$search_query=$last_search_query;
+$output_mode=$last_search_output_mode;
+
+
+$action="insert into";
+//$main_query=" bidlist_saved_queries set contacts_id = '$global_user_id',
+$where="";
+
+if ($query_id!="") {
+	$query_id=escapeshellcmd($query_id);
+	$action="update";
+	$tmp=getone("select * from bidlist_saved_queries where query_id = '$query_id'");
+	$search_query=$tmp->query;
+	$output_mode=$tmp->query_output_mode;
+	$where="where query_id = '$query_id'";
+	}
+
+$sort_num=clean_int($sort_num);
+$query_name=escapeshellcmd($query_name);
+$query=escapeshellcmd($search_query);
+$query_output_mode=escapeshellcmd($output_mode);
+//echo "<hr>$query_output_mode<hr>";
+
+$main_query=" bidlist_saved_queries set contacts_id = '$global_user_id', sort_num = '$sort_num', query_name = '$query_name', query = '$query', query_output_mode = '$query_output_mode' ";
+$full_query=$action . $main_query . $where;
+
+//echo "$full_query";exit;
+$res=@mysql_query($full_query);
+
+
+if ($query_id=="") $query_id=@mysql_insert_id();
+
+forward("$pagename&mode=proposal_saved_search_show&query_id=$query_id");
+
+
+
+
+?>

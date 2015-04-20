@@ -1,0 +1,23 @@
+<?
+
+if ($doc_id!="") $doc_id=addslashes($doc_id);
+else die("Document identification error!");
+$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+$color="$fd_color_4";
+
+if (!($fd_attachments_already_shown)) {
+	$attachments=getoneb("select sum(1) as total from documents_attachments where doc_id = '$doc_info->doc_id'");
+	if ($attachments->total=="") {
+		$attachments->total='0';
+		}
+		if ($attachments->total>=1) {
+		$color="#ff8888";
+		}
+	echo "<a style=\"background: $color;\" href=javascript:show_document_attachments($doc_info->doc_id)><font color=blue><i>$attachments->total&nbsp;Attachments</i></font></a>&nbsp;&nbsp;&nbsp;&nbsp;";
+	}
+
+
+if ($global_user->umc_emp=='Y') echo "<a href=javascript:show_document_history($doc_id)><font color=blue><i>Show&nbsp;History</i></a>";
+$date_as_int=date('Ymd');
+@mysql_query("insert into documents_review_history set doc_id = '$doc_id',contacts_id = '$global_user_id', date_as_int = '$date_as_int', last_modified_time = '$doc_info->last_modified', ip_address = '$REMOTE_ADDR'");
+?>

@@ -1,0 +1,18 @@
+<?
+session_write_close();
+require('header.phtml');
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+
+echo "<h2>MJCS not implemented yet</h2>";
+
+
+
+
+
+
+//fd_navs_footer();exit;
+?>

@@ -1,0 +1,142 @@
+<?
+
+if ($start_date=="") die("Error: You must specify a start_date!");
+if ($end_date=="") die("Error: You must specify an end_date!");
+$start_date=vali_date($start_date);
+$end_date=vali_date($end_date);
+if ($employee!="") {
+	$employee=addslashes($employee);
+	$query="select * from timesheet_time left join contacts on 
+		(timesheet_time.employee_id = contacts.contacts_id)
+		
+		where 
+		 employee_id = '$employee' and 
+		 workday >= '$start_date' and
+		 workday <= '$end_date' and 
+		 earnings_code = '7' and
+		 comments like '% miles - %'
+		 
+		 
+		 
+		 
+		 order by workday";
+	} else {
+	$query="select * from timesheet_time left join contacts on (timesheet_time.employee_id = contacts.contacts_id)
+	where
+		workday>= '$start_date' and
+		workday<= '$end_date' and 
+		earnings_code = '7' and 
+		comments like '% miles - %'
+	order by alphasort,workday
+	";
+	
+	}
+
+echo "
+<b><font size=+2>Mileage Report</font></b><br>
+<i>$start_date to $end_date</i>
+
+
+<table border=1 cellspacing=0 cellpadding=3>";
+$res=@mysql_query($query);
+$g_total=0;
+$s_total=0;
+$g_total_miles=0;
+$s_total_miles=0;
+$current=0;
+while ($row=@mysql_fetch_object($res)) {
+	if ($current!=$row->contacts_id) {
+		if ($current != 0) {
+			echo "
+			<tr><td colspan=3>
+				&nbsp;
+			</td><td>
+				$s_total_miles
+			</td><td>
+				$s_total
+			</td></tr>";
+			$s_total_miles=0;
+			$s_total=0;
+			}
+		
+		echo "<tr><td colspan=5 bgcolor=#eeeeee><h3>$row->display_name</h3></td></tr>
+		<tr bgcolor=#eeeeee><td>
+			<b>Date</b>
+		</td><td>
+			<b>Job #</b>
+		</td><td>
+			<b>Description</b>
+		</td><td>
+			<b>Miles</b>
+		</td><td>
+			<b>Dollars</b>
+		</td></tr>
+		";
+		}
+	$miles=ereg_replace(" .*$","",$row->comments);
+	
+	$s_total_miles=$s_total_miles + $miles;
+	$s_total=$row->dollars + $s_total;
+	$g_total=$g_total + $row->dollars;
+	$g_total_miles=$g_total_miles + $miles;
+	$current=$row->contacts_id;
+	$date=invali_date($row->workday);
+	
+	
+	echo "<tr><td>
+			$date
+		</td><td>
+			$row->job_num
+		</td><td>
+			$row->job_desc
+		</td><td>
+			$miles
+		</td><td>
+			$row->dollars
+		</td></tr>
+		";
+	}
+echo "
+
+<tr><td colspan=3>
+	&nbsp;
+</td><td>
+	$s_total_miles
+</td><td>
+	$s_total
+</td></tr>
+
+<tr><td colspan=5 bgcolor=#eeeeee><h3>Grand Totals</h3></td></tr>
+<tr><td colspan=3>
+	&nbsp;
+</td><td>
+	$g_total_miles
+</td><td>
+	$g_total
+</td></tr>";
+//tabledump($query);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

@@ -1,0 +1,35 @@
+<?
+
+if (!($issue_res_admin))
+	die("Error: You shouldn't be here, so go away now!!!!");
+
+$issue_res_application_active=escapeshellcmd($issue_res_application_active);
+$issue_res_application_description=escapeshellcmd($issue_res_application_description);;
+$issue_res_application_name=escapeshellcmd($issue_res_application_name);
+
+if ($issue_res_edit_application_id==""){
+	$new=1;
+	$query=" insert into issue_res_application
+		(issue_res_application_name,issue_res_application_description,issue_res_application_active,jobinfo_id)
+		values
+		('$issue_res_application_name','$issue_res_application_description','$issue_res_application_active','$global_jobinfo_id')";
+	} else {
+	$new=0;
+	$query="update issue_res_application set
+		issue_res_application_name = '$issue_res_application_name',
+		issue_res_application_description = '$issue_res_application_description',
+		issue_res_application_active = '$issue_res_application_active'
+		where issue_res_application_id = '$issue_res_edit_application_id'";
+	}
+
+
+//echo "<hr>$query<hr>";exit;
+
+$res=@mysql_query($query);
+
+if(!($res))
+	die("Error: Update failed. Change could not be made. Please contact your system administrator for help.<p>Failed query:<hr>$query");
+	
+forward('app_edit_list');
+
+?>

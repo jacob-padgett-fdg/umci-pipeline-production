@@ -1,0 +1,22 @@
+<?
+if ($group_id=="") {
+	$group_id=$foreman_last_group;
+	if ($group_id!="") forward("foreman_show_group&group_id=$group_id");
+	}
+if ($group_id!="") $group_id=escapeshellcmd($group_id);
+	else die("ERROR: Missing group_id. Contact your system administrator, or try again (start over)");
+session_register('foreman_last_group');
+$foreman_last_group=$group_id;
+$week_ending=vali_date($week_ending);
+
+$query="select * from timesheet_index,timesheet_group_members,contacts where timesheet_index.week_ending = '$week_ending' and contacts.contacts_id = timesheet_index.employee_id and timesheet_index.employee_id = timesheet_group_members.employee_id and group_id = '$group_id' and status = 'new' order by last_name,first_name,contacts.employee_num";
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$query1="update timesheet_index set status = 'complete' where timesheet_id = '$row->timesheet_id'";
+	$query2="update timesheet_time set timesheet_status = 'complete' where timesheet_id = '$row->timesheet_id'";
+	@mysql_query($query1);
+	@mysql_query($query2);
+	}
+forward("foreman_show_group&group_id=$group_id");
+?>

@@ -1,0 +1,111 @@
+<?
+set_time_limit(900);
+if(ini_get('zlib.output_compression')) ini_set('zlib.output_compression', 'Off');
+ob_end_clean();
+
+$seq_info=getone("select max(seq_num) as seq_num from timesheet_sequence");
+
+echo "
+<script>
+function tl(timesheet_id) {
+    document.location='$pagename?mode=timesheet_load&come_back_to=$mode&ts_id=' + timesheet_id;
+	}
+
+function process_timesheets() {
+	document.location='$pagename/umc_timesheets-prseq_$payroll_seq-$seq_info->seq_num.csv?mode=payroll_process_timesheets';
+	}
+
+</script>
+";
+
+
+///////////////////////////////////////////////////////////////////////////////////
+//////        Loop through the timesheets
+///////////////////////////////////////////////////////////////////////////////////
+$query1="select * from timesheet_index,contacts where status = 'processing' and contacts.contacts_id = timesheet_index.employee_id and contacts.timesheet_payroll_sequence_num = '$payroll_seq' order by timesheet_index.employee_num";
+$res1=@mysql_query($query1);
+$ts_count=1;
+
+while($row1=@mysql_fetch_object($res1)) {
+echo "Verifying Timesheet #$ts_count for <a href=javascript:tl('$row1->timesheet_id')>$row1->last_name, $row1->first_name</a><br>";
+flush();
+$OK="true";
+
+
+///////////////////////////////////////////////////////////////////////////////////
+///////       Verify Timesheet Data
+///////////////////////////////////////////////////////////////////////////////////
+
+$query2="select * from timesheet_time where employee_num = '$row1->employee_num' and timesheet_status = 'processing'";
+$res2=@mysql_query($query2);
+
+$valid_employee=ms_getoneb("select * from PREH with (NOLOCK) where PRCo = 1 and Employee = '$row1->employee_num' and ActiveYN = 'Y'");
+if (!($valid_employee)) {
+	echo "<li>Employee Not Active Error: Employee Number: $row1->employee_num ($row1->display_name)</li>";
+	$OK="false";
+	}
+
+while($row2=@mysql_fetch_object($res2)) {
+	
+	
+	
+	if (!(is_valid_viewpoint_job($row2->job_num))) {
+		echo "<li>Job Error: $row2->job_num<br></li>";
+		$OK="false";
+		}
+		
+	if ( ($row2->earnings_code >= 5) && ($row2->earnings_code <= 7) ) {
+		if (!(is_valid_viewpoint_spt_phase($row2->phase,$row2->job_num))) {
+			echo "<li>Phase Error: Phase $row2->phase is invalid on job $row2->job_num<br></li>";
+			$OK="false";
+			}
+		} else {
+		if (!(is_valid_viewpoint_labor_phase($row2->phase,$row2->job_num))) {
+		//	echo "<li>Phase Error: $row2->phase<br></li>";
+			echo "<li>Phase Error: Phase $row2->phase is invalid on job $row2->job_num<br></li>";
+			$OK="false";
+			}
+		}
+	}
+$ts_count++;
+}
+
+
+
+
+/////////////////////////////////////////////////////////
+// Output the status page, and the comma seperated file.
+/////////////////////////////////////////////////////////
+
+
+if ($OK=="true") {
+	echo "
+	<html><head><title>Payroll download verify</title></head>
+	<body bgcolor=#ffffff>
+	<hr>
+	<center><h2>Verification Successful</h2></center>
+	
+	The timesheet data has been checked for invalid entries.<p>
+	
+	Download of the timesheet data file should begin automatically any second.<br>
+	If the download doesn't start automatically, then 
+	<a href=javascript:process_timesheets();>click here</a> to manually
+	start the download.
+	<p>
+	<hr>
+	<a href=$pagename?mode=payroll_timesheet_selection><font color=blue>
+	Return to timesheet queues</font></a>
+	
+	</body></html>
+	
+	<script>
+	setTimeout(\"process_timesheets()\",3000);
+	</script>
+	";
+} else {
+	echo "
+	<hr>
+	There was an ERROR in the time verification. The error should be detailed above. Please correct this error (probably a closed job or something) before continueing.
+	";
+	}
+?>

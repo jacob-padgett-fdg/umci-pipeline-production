@@ -1,0 +1,84 @@
+<?
+require('settings-auto.cfg');
+require('global-auth.inc');
+require('viewpoint_connect_ro.phtml');
+require('viewpoint_libs.inc');
+//ms_tabledump("select top 200 * from PRPH where ChkType = 'C' and PRGroup = 3 order by PREndDate desc");
+
+
+//$week_ending="12-27-2008";
+
+if ($week_ending_only !="") {
+	$week_ending=$week_ending_only;
+	}
+
+
+if ($week_ending=="") {
+	echo "<form name=pick_a_stinking_week_ending_man method=get action=$pagename>
+	<input type=hidden name=mode value=\"$mode\">
+	";datebox("","week_ending");echo"
+	<input type=submit value=Run>
+	</form>";
+	exit;
+	}
+
+//$week_ending="01-03-2009";
+$work_week_info=date_info($week_ending);
+$end_date=$work_week_info->week_end;
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
+// If we were given something in "week_ending_only"
+// then we don't do a range, we just do that week
+// ending date only.
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
+if ($week_ending_only!="") {
+	$start_date=$end_date;
+	} else {
+	$start_date=$work_week_info->week_start;
+	}
+///////////////////////////////////////////////////
+$pay_year=date('Y');
+//$pay_year="2009";
+
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+// All the employees that received compensation this year.. 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+//$query="SELECT * from PREH where PRGroup = 3 and PRCo = 1 and ActiveYN = 'Y'";
+//ms_tabledump($query);
+
+$query="
+SELECT PRDT.Employee
+FROM PRDT with (NOLOCK)
+INNER JOIN PRPC with (NOLOCK) ON 
+PRDT.PREndDate = PRPC.PREndDate AND PRDT.PRGroup = PRPC.PRGroup
+WHERE
+(PRDT.PRCo = 1) AND 
+(PRPC.PRCo = 1) AND 
+(PRDT.EDLType = 'E') AND 
+(PRDT.PRGroup = 3) AND
+(PRPC.LimitMth >= '1/1/$pay_year') AND  
+(PRPC.LimitMth <= '12/31/$pay_year') AND
+(PRDT.EDLCode = 1 OR
+PRDT.EDLCode = 2 OR
+PRDT.EDLCode = 3 OR
+( PRDT.EDLCode >= 8 AND PRDT.EDLCode <= 15 ) OR
+PRDT.EDLCode = 144)
+group by PRDT.Employee
+order by PRDT.Employee
+";
+//ms_tabledump($query);exit;
+//$start_date="12-12-2009";
+
+$res=@mssql_query($query);
+while ($row=@mssql_fetch_object($res)) {
+	$current_employee_num=$row->Employee;
+	$data=$data . tm_process_employee($row->Employee,$start_date,$end_date,$pay_year);
+	}
+$data=$data . tm_data_footer();
+tm_data_store();
+echo "$data";
+
+?>

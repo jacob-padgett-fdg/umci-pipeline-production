@@ -1,0 +1,72 @@
+<?
+
+if ($issue_completed=='Y') {
+	include('issue_edit_complete.phtml');
+	exit;
+	}
+
+$today=date('Y-m-d');
+
+$expected_completion=vali_date($expected_completion);
+$priority=addslashes($priority);
+
+$issue_id=addslashes($issue_id);
+//$last_hist_info=getoneb("select * from mis_issue_history where issue_id = '$issue_id' and status = 'current'");
+$last_hist_info=get_current_fixed($issue_id);
+//echo "Made it...";
+$next_action_date=vali_date($next_action_date);
+$notes=addslashes($notes);
+$it_notes=addslashes($it_notes);
+$it_days_required=addslashes($it_days_required);
+if ($next_action=="") $next_action=$last_hist_info->action_required;
+$next_action=addslashes($next_action);
+$issue_history_id=addslashes($issue_history_id);
+$us_or_them=addslashes($us_or_them);
+$name=addslashes($name);
+if ($current_project=="on") $project_status="current"; else $project_status="active";
+
+$query="update mis_issue_history set status = 'updated', current_hist_item = 'N', actual_completion_date = '$today' where issue_history_id = '$issue_history_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query");
+$query="update mis_issue_history set status = 'updated',current_hist_item = 'N' where status = 'current' and issue_id = '$issue_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+$query="update mis_issue_history set current_hist_item = 'N' where issue_id = '$issue_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+$query="update mis_issue_index set name = '$name',status = '$project_status',expected_completion = '$expected_completion',it_days_required = '$it_days_required' where issue_id = '$issue_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+$query="insert into mis_issue_history set issue_id = '$issue_id',action_required = '$next_action', notes = '$notes', it_notes = '$it_notes', status = 'current', expected_completion_date = '$next_action_date',us_or_them = '$us_or_them',entered_by = '$global_user_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+
+///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+//	Copy forward interested parties
+///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+$last_insert_id=@mysql_insert_id($global_link_id);
+
+
+$query="select * from mis_issue_concerned_parties where issue_history_id = '$issue_history_id' and us_or_them = 'them'";
+$res_concerned=@mysql_query($query);
+while($row=@mysql_fetch_object($res_concerned)){
+	$query="insert into mis_issue_concerned_parties set contacts_id = '$row->contacts_id',issue_history_id='$last_insert_id',us_or_them = 'them'";
+	$res=@mysql_query($query);
+	if (!($res)) die ("ERROR: Query failed. Contact your sys admin.<p>Failed Query<hr>$query");
+	}
+
+$count=0;
+while($user_id=@$us_ids[$count]) {
+	$user_id=addslashes($user_id);
+	$query="insert into mis_issue_concerned_parties set issue_history_id = '$last_insert_id',contacts_id = '$user_id',us_or_them = 'us'";
+	$res=@mysql_query($query);
+	if (!($res)) echo "<P>ERROR: Unable to submit query. Please contact your system administrator.<br>Failed query:<hr>$query";
+	$count++;
+	}
+
+$update_quiet=checkfix($update_quiet);
+if ($update_quiet!='Y') {
+    // GPH MARK - absolute path
+	exec("/data/web/pipeline/php/global/mis_issue_tracking-devel/mail_for_changes.php $issue_id");
+	}
+
+forward("$mis_issue_last_main_action");
+
+?>

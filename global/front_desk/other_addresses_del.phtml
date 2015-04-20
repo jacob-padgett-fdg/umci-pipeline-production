@@ -1,0 +1,7 @@
+<?
+
+$address_id=addslashes($address_id);
+$show_jobinfo_id=addslashes($show_jobinfo_id);
+mysql_query("delete from jobinfo_addresses where address_id = '$address_id'");
+include("other_addresses.phtml");
+?>

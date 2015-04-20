@@ -1,0 +1,93 @@
+<?
+require("header.phtml");
+fd_navs_header();
+
+$file_ro=0;
+
+if ($file_cabinet_id!="") {
+	$file_cabinet_id=addslashes($file_cabinet_id);
+	$file_cabinet_info=getoneb("select * from file_cabinet where file_cabinet_id = '$file_cabinet_id'");
+	$file_ro=2;
+	//$file_cabinet_info->tree_id=addslashes($tree_id);
+	$tree_id=$file_cabinet_info->tree_id;
+	} else {
+	$tree_id=addslashes($tree_id);
+	}
+$tree_info=getoneb("select * from file_cabinet_tree where tree_id = '$tree_id'");
+
+if (!($tree_info)) die("Application error. Directory information error!");
+
+
+
+$create_date=invali_date($file_cabinet_info->create_date);
+$creator=getoneb("select * from contacts where contacts_id = '$file_cabinet_info->creator'");
+echo "
+<script src='/javascript/cal2.js'></script>
+<form name=file_cabinet_edit>
+<input type=hidden name=mode value=file_cabinet_submit>
+<input type=hidden name=file_cabinet_id value=\"$file_cabinet_info->file_cabinet_id\">
+<input type=hidden name=tree_id value=\"$tree_info->tree_id\">
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr><td>
+	Description:
+</td><td>
+	<input type=text name=description value=\"$file_cabinet_info->description\">
+</td></tr>
+
+<tr><td>
+	File:
+</td><td>
+	";webfilebox($file_cabinet_info->file_group_id,"file_group_id","",1 + $file_ro);echo"
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	<input type=submit value=Save>
+</td></tr>
+
+<tr><td>
+	Location:
+</td><td>
+	$file_cabinet_info->folder_name
+</td></tr>
+
+<tr><td>
+	Created by:
+</td><td>
+	$creator->display_name
+</td></tr>
+
+<tr><td>
+	Create date:
+</td><td>
+	$create_date
+</td></tr>	
+	
+</form>
+<script>
+function delete_this_record() {
+	if (confirm(\"Delete this record and all attachments?\")) {
+		document.location='$pagename?mode=file_cabinet_delete&file_cabinet_id=$file_cabinet_info->file_cabinet_id';
+		}
+	}
+</script>
+
+";
+
+if (($file_cabinet_info->creator==$global_user_id) || (member_of_global_group_named("IT"))) {
+	echo "<tr><td colspan=2><a href=javascript:delete_this_record()><b>Delete</b></a></td></tr>";
+	}
+
+echo "
+<tr><td colspan=2>";
+	$doc_id=fd_get_doc_id($file_cabinet_info->file_cabinet_id);
+	pal_box($doc_id);echo"
+</td></tr>
+</table>
+";
+
+
+
+
+fd_navs_footer();
+?>

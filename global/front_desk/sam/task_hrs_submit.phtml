@@ -1,0 +1,22 @@
+<?
+
+if ($task_id=="") die("ERROR: Application Error. Please contact your system administrator!");
+
+$task_id=escapeshellcmd($task_id);
+$labor_type_id=escapeshellcmd($labor_type_id);
+$hrs=clean_float($hrs);
+
+if ($task_hrs_id!="") {
+	$task_hrs_id=escapeshellcmd($task_hrs_id);
+	$query="update svc_task_hrs set task_id = '$task_id',labor_type_id='$labor_type_id',hrs='$hrs' where task_hrs_id = '$task_hrs_id'";
+	} else {
+	$query="insert into svc_task_hrs set task_id = '$task_id',labor_type_id='$labor_type_id',hrs='$hrs'";
+	}
+
+//echo "$query";exit;
+@mysql_query($query);
+
+
+forward("task_item_edit&task_id=$task_id");
+
+?>

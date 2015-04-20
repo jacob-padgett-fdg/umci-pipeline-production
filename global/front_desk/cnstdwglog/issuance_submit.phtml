@@ -1,0 +1,41 @@
+<?
+if (!((fd_manager($global_jobinfo_id))||(pm_for_this_job())||($adminuser))) die_security("mode: $mode");
+
+if ($name=="") die("application error (name)");
+
+$name=addslashes($name);
+$sort_priority=addslashes($sort_priority);
+$description=addslashes($description);
+$issuance_type=addslashes($issuance_type);
+$issuance_date=vali_date($issuance_date);
+
+if ($issuance_id!="") {
+	$issuance_id=addslashes($issuance_id);
+	$query_start="update";
+	$query_end="where issuance_id = '$issuance_id'";
+	} else {
+	$section=current_section();
+	$query_start="insert into";
+	$query_end=", section = '$section'";
+	}
+$query_middle="
+cnstdwglog_issuances
+
+set 
+jobinfo_id = '$global_jobinfo_id',
+name = '$name',
+sort_priority = '$sort_priority',
+description = '$description',
+issuance_type = '$issuance_type',
+issuance_date = '$issuance_date'
+";
+
+$query=$query_start . $query_middle . $query_end;
+
+$res=@mysql_query($query);
+if (!($res)) die("Query error:<hr>$query");
+
+fill_all_gaps();
+
+forward('main');
+?>

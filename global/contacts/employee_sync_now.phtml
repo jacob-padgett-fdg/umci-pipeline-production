@@ -1,0 +1,21 @@
+<?
+//require_once('querylib.inc');
+
+echo "Please Wait.. This will take a minute...<hr>
+Verifying all employee data....<p>
+<pre>
+";
+flush();
+
+include('employee_sync.phtml');
+
+echo "
+</pre>
+<p>
+COMPLETE!!!!!!!!!!!!!!!!!!!
+<p>
+";
+forward('main');
+
+
+?>

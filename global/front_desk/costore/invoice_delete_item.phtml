@@ -1,0 +1,37 @@
+<?
+if ($cart_id=="") die("Application error: Invalid ID");
+
+$cart_id=addslashes($cart_id);
+$cart_id_info=getone("select * from costore_cart where cart_id = '$cart_id'");
+
+$invoice_info=getoneb("select * from costore_cart_invoice where invoice_id = '$cart_id_info->invoice_id'");
+
+if ($invoice_info->billing_jobinfo_id > 0) {
+	$bjinfo=getoneb("select * from jobinfo where jobinfo_id = '$invoice_info->billing_jobinfo_id'");
+	} else {
+	$bginfo=FALSE;
+	}
+
+$update=FALSE;
+if ($adminuser) {
+	$update=TRUE;
+	} else {
+	if ($bjinfo) {
+		if ($bjinfo->project_manager_id == $global_jobinfo_id) {
+			$update=TRUE;
+			}
+		}
+	}
+
+if (($invoice_info->cart_status=="accepted")||($invoice_info->cart_status=="complete")) {
+	die("Error: can't modify contents of invoice with this status!");
+	} else {
+	if ($update) {
+		@mysql_query("delete from costore_cart where cart_id = '$cart_id_info->cart_id'");
+		$new_totals=@mysql_query("");
+		$new_totals=getoneb("select sum(total_dollars) as total_dollars, sum(quantity) as total_count from costore_cart  where invoice_id = '$invoice_info->invoice_id'");
+		@mysql_query("update costore_cart_invoice set cart_count = '$new_totals->total_count', cart_total = '$new_totals->total_dollars' where invoice_id = '$invoice_info->invoice_id'");
+		}
+	}
+forward("invoice_manage&invoice_id=$invoice_info->invoice_id");
+?>

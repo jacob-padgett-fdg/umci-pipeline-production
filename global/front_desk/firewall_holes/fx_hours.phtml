@@ -1,0 +1,21 @@
+<?
+require('queeg_settings.cfg');
+require('global-auth.inc');
+$decrease=addslashes($decrease);
+
+
+//$conn=@mysql_connect($dbserver,$smb_guest_user,$smb_guest_pass);
+//@mysql_select_db($dbname);
+
+$fx_info=getone("select * from misc_data where data_type = 'firewall_hole_fieldcentrix'");
+
+if ($decrease=="yes") {
+	if ($fx_info->data > 0) {
+		$fx_info->data=$fx_info->data - 1;
+		$query="update misc_data set data = '$fx_info->data' where data_type = 'firewall_hole_fieldcentrix'";
+		@mysql_query($query);
+		}
+	}
+echo "$fx_info->data";
+exit;
+?>

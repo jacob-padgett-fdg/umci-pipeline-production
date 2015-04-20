@@ -1,0 +1,23 @@
+<?
+////////////////////////////////////////////////////////////////
+//	Branch and exit if pdf output was requested 
+//	(the extra html would corrupt the pdf)
+////////////////////////////////////////////////////////////////
+if ($search_output_mode=="proposal_search_output_3") {
+	$search_output_mode($basequery,"Search Results");
+	exit;
+	}
+if ($search_output_mode=="") $search_output_mode=$last_search_output_mode;
+////////////////////////////////////////////////////////////////
+//	Normal output is produced below...
+////////////////////////////////////////////////////////////////
+require('header.phtml');
+echo "<a href=$pagename?mode=proposal_search><font color=blue>Return to search form</font></a><p>";
+$search_output_mode=ereg_replace("[^a-zA-Z0-9_]","",$search_output_mode);
+echo "<hr>$search_output_mode<hr>";
+$search_output_mode($basequery,"Search Results");
+if ($proposals_show_search_stats=='Y') {
+	proposal_search_stats_box($basequery,"Search Stats");
+	}
+
+?>

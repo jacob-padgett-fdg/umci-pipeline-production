@@ -1,0 +1,11 @@
+<?
+if (!(is_admin())) die_security();
+
+if ($el_id=="") die("ERROR: No el_id! Application error. Please contact your system administrator!");
+else $el_id=addslashes($el_id);
+
+$cost=equip_list_item_total_cost($el_id,1);
+
+//echo "<Total: $cost";
+
+?>

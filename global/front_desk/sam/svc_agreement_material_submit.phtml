@@ -1,0 +1,52 @@
+<?
+
+$sched_index_id=escapeshellcmd($sched_index_id);
+$material_list_id=escapeshellcmd($material_list_id);
+$name=addslashes($name);
+$qty_name=escapeshellcmd($qty_name);
+$qty=escapeshellcmd($qty);
+$cost=float_clean($cost);
+
+
+if ($materials_id!="") {
+	$materials_id=escapeshellcmd($materials_id);
+	$query="update svc_agreement_materials set
+	sched_index_id = '$sched_index_id',
+	material_list_id = '$material_list_id',
+	name = '$name',
+	qty_name = '$qty_name',
+	qty = '$qty',
+	cost = '$cost'
+	where materials_id = '$materials_id'";
+	if (($qty=="")||($qty==0)) {
+		@mysql_query("delete from svc_agreement_materials where materials_id = '$materials_id'");
+		}
+	} else {
+	$query="insert into svc_agreement_materials set
+	sched_index_id = '$sched_index_id',
+	material_list_id = '$material_list_id',
+	name = '$name',
+	qty_name = '$qty_name',
+	qty = '$qty',
+	cost = '$cost'";
+	}
+
+//echo "<hr>$query<hr>";exit;
+
+@mysql_query($query);
+
+
+forward("svc_agreement_materials_edit&sched_index_id=$sched_index_id");
+
+
+
+
+
+
+
+
+
+
+
+
+?>

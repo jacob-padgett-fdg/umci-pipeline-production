@@ -1,0 +1,98 @@
+<?
+require("viewpoint_connect_ro.phtml");
+require("viewpoint_libs.inc");
+require("../webfile$devel/storage_settings.cfg");
+require("../webfile$devel/local.inc");
+
+//////////////////////////////////////////////////////////////////
+// If we got the PHP version of the attachment id, then go back
+// around to ourselves, but use the viewpoint version of the 
+// attachment id instead... 
+//////////////////////////////////////////////////////////////////
+if ($php_attach_id!="") {
+	$vp_attach_id=vp_attachment_id($php_attach_id);
+	//die($vp_attach_id);
+	$attachment_info=ms_getoneb("select * from HQAT with (NOLOCK) where UniqueAttchID = '$vp_attach_id'");
+	$attachment_info->DocName=ereg_replace('\\\\','/',$attachment_info->DocName);
+	$filename=basename($attachment_info->DocName);
+	header("location:https://pipeline.umci.com/global/front_desk$devel/index.html?mode=vp_attachment_download&vp_attach_id=$vp_attach_id&b=a/images/$filename");
+	exit;
+	}
+//////////////////////////////////////////////////////////////////
+//  Get the viewpoint list of attached files based on the
+//	uniqueattachid.. (Usually just 1 file..)
+//////////////////////////////////////////////////////////////////
+//ms_tabledump("select *,convert(varchar(38),UniqueAttchID) as FDAttachID from HQAT where UniqueAttchID = '$vp_attach_id'");
+$att_list_res=@mssql_query("select *,convert(varchar(38),UniqueAttchID) as FDAttachID from HQAT with (NOLOCK) where UniqueAttchID = '$vp_attach_id'");
+$att_list_count=@mssql_num_rows($att_list_res);
+
+if ($att_list_count==1) {
+	//die("foooooo");
+	$attachment_info=mssql_fetch_object($att_list_res);
+	$hq_attachment_id=$attachment_info->AttachmentID;
+	}
+//////////////////////////////////////////////////////////////////
+//	Print a list of links if we have more than 1 file
+//////////////////////////////////////////////////////////////////
+if ($att_list_count>1) {
+	echo "<h2>There are muliple attachments.. Please select which attachment you'd like.</h2><hr><table border=0 cellspacing=0 cellpadding=5>
+	<tr><td>
+		<b>Scanned/Added by</b>
+	</td><td>
+		<b>Date</b>
+	</td><td>
+		<b>Form/Table</b>
+	</td><td>
+		<b>Action</b>
+	</td></tr>
+	";
+	while ($att_row=@mssql_fetch_object($att_list_res)) {
+		$filename=basename($att_row->DocName);
+		echo "<tr><td>
+				$att_row->AddedBy
+			</td><td>
+				$att_row->AddDate
+			</td><td>
+				$att_row->FormName/$att_row->TableName
+			</td><td>
+				<a href=\"https://pipeline.umci.com/global/front_desk$devel/index.html?mode=vp_attachment_download&hq_attachment_id=$att_row->AttachmentID&b=a/images/$filename\">Open</a>
+			</td></tr>";
+		}
+	echo "</table>";
+	// If we're here, we don't want to actually display a file, so we better
+	// just exit and display when we can be more specific..
+	exit;
+	}
+////////////////////////////////////////////////////////////////////
+// OK, if we're this far, we're under the impression that we can
+// and would like to display the actual image file on the screen
+// at this point
+////////////////////////////////////////////////////////////////////
+
+if ($hq_attachment_id=="") die("ERROR: Error loading image. Couldn't determine the correct unique attachment id.");
+if (!($attachment_info)) {
+	$hq_attachment_id=addslashes($hq_attachment_id);
+	$attachment_info=ms_getoneb("select * from HQAT with (NOLOCK) where AttachmentID = '$hq_attachment_id'");
+	//ms_tabledump("select * from HQAT where AttachmentID = '$hq_attachment_id'");
+	}
+if (!($attachment_info)) die("ERROR: Error loading image. Couldn't determine the correct unique attachment id (2).");
+$doc=ereg_replace('\\\\','/',$attachment_info->DocName);
+// GPH MARK - absolute path
+$doc_relative=eregi_replace('//jupiter/data/images/Viewpoint/','',$doc);
+$basename=basename($doc);
+$actual_doc=$vp_docs_path . $doc_relative;
+//die($actual_doc);
+$actual_doc2=strtolower($vp_docs_path . $doc_relative);
+$mime_type=mime_type_from_filename($basename);
+header("Content-disposition: inline; filename=\"$basename\"");
+header("Content-type: $mime_type");
+header("Content-Transfer-Encoding: binary");
+//header("Content-Length: $file->file_size");
+header("Expires: 0");
+header("Cache-Control: private");
+header("Pragma: cache");
+
+//if (is_file($actual_doc)) readfile($actual_doc);
+//else 
+readfile($actual_doc2);
+?>

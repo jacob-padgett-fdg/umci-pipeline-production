@@ -1,0 +1,279 @@
+<?
+if ($been_here_done_that!=1) {
+$been_here_done_that=1;
+require_once('viewpoint_connect_ro.phtml');
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/timesheet/timesheet_libs.inc");
+
+function is_recovery_job($job_num){
+	//echo "<hr>$job_num";
+	$phases_locked=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_num' and LockPhases = 'Y'");
+	if ($phases_locked) {
+		//echo "<hr>locked $job_num";
+		$query="select * from JCJP with (NOLOCK) INNER JOIN JCCH with (NOLOCK) on JCJP.JCCo = JCCH.JCCo and JCJP.Job = JCCH.Job and JCJP.Phase = JCCH.Phase where JCJP.Job = '$job_num' and JCJP.Phase LIKE '25110%' and JCJP.JCCo = 1 and JCJP.ActiveYN = 'Y'";
+		//ms_tabledump($query);
+		$phase_ret=ms_getoneb($query);
+		//if ($phase_ret) {echo "<tr><td>recovery job: $job_num</td><td>"; ms_tabledump($query); echo "</td></tr>";}
+		} else {
+		$query="select * from JCPC with (NOLOCK) ,JCPM with (NOLOCK) where JCPC.Phase = JCPM.Phase and JCPC.PhaseGroup = 1 and JCPM.PhaseGroup = 1 and JCPC.Phase LIKE '25110%'";
+		$phase_ret=ms_getoneb($query);
+		}
+	return($phase_ret);
+}
+
+function ms2mydate($date) {
+	return date('Y-m-d',@strtotime($date));
+	}
+
+function find_employee($employee_num) {
+	$emp_info=getoneb("select * from contacts where employee_num = '$employee_num'");
+	if ($emp_info) return $emp_info->contacts_id;
+	else return $emp_info;
+	}
+
+function find_web_contact($vpcustnum=0,$vpcustname="",$current_cust_web_id="") {
+	if ($vpcustname!="") $vpcustname=addslashes($vpcustname);
+	if ($vpcustnum>0) {
+		$webinfo=getoneb("select * from contacts where vp_cust_num = '$vpcustnum'");
+		if ($webinfo) {
+			return $webinfo->contacts_id;
+			exit;
+			}
+		if ($current_cust_web_id>0) {
+			$current_cust_web_info=getoneb("select * from contacts where contacts_id = '$current_cust_web_id'");
+			if ($current_cust_web_info->vp_cust_num==0) {
+				@mysql_query("update contacts set vp_cust_num = '$vpcustnum' where contacts_id = '$current_cust_web_id'");
+				//die("I should have just set a customer # in web contacts");
+				}
+			}
+		}
+	if ($vpcustname!="") {
+		$webinfo=getoneb("select * from contacts where display_name = '$vpcustname'");
+		if ($webinfo) {
+			if ($vpcustnum>0) {
+				@mysql_query("update contacts set vp_cust_num = '$vpcustnum' where contacts_id = '$webinfo->contacts_id'");
+				}
+			return $webinfo->contacts_id;
+			exit;
+			}
+		}
+	return FALSE;
+	}
+
+}
+
+
+$job_num=addslashes($job_num);
+
+$job_res=is_viewpoint_job($job_num);
+if (is_recovery_job($job_res->job)) $work_recovery_job='Y';
+else $work_recovery_job='N'; 
+
+//if (FALSE) $work_recovery_job='Y';
+//	else $work_recovery_job='N'; 
+$webjobnum=ereg_replace("^0*","",$job_res->job);
+$webjobnum=ereg_replace("[- ]*$","",$webjobnum);
+$jobinfo=getoneb("select * from jobinfo where contract_num = '$webjobnum'");
+$query="select * from JCJM with (NOLOCK) , JCCM with (NOLOCK) where JCJM.JCCo = 1 and JCCM.JCCo = 1 and JCJM.Job = '$job_res->job' and JCJM.Contract = JCCM.Contract";
+//ms_tabledump($query);
+$vp_jobinfo=ms_getoneb($query);
+$vp_custinfo=ms_getoneb("select * from ARCM with (NOLOCK) where CustGroup = 1 and Customer = '$vp_jobinfo->Customer'");
+$query_start="update jobinfo set ";
+$query_end="where jobinfo_id = '$jobinfo->jobinfo_id'";
+
+
+
+$job_name=$vp_jobinfo->Description;
+//if ($jobinfo->display_name=="") $jobinfo->display_name=addslashes($vp_jobinfo->Description);
+//else $jobinfo->display_name=addslashes($jobinfo->display_name);
+
+if ($jobinfo->fd_forced_job_name!="") {
+	$jobinfo->display_name=addslashes($jobinfo->fd_forced_job_name);
+	} else {
+	$jobinfo->display_name=addslashes($vp_jobinfo->Description);
+	}
+
+//if ($jobinfo->display_name=="") $jobinfo->display_name=addslashes($vp_jobinfo->Description);
+$start_date=ms2mydate($vp_jobinfo->uddatesetup);
+$complete_date=ms2mydate($vp_jobinfo->ProjCloseDate);
+$final_complete_date=ms2mydate($vp_jobinfo->ActualCloseDate);
+$contract_or_po=addslashes($vp_jobinfo->CustomerReference);
+
+$tmpown=find_web_contact("",$vp_jobinfo->udownername);
+if ($tmpown) $owner_id=$tmpown;
+else $owner_id=$jobinfo->owner_id;
+
+$tmpgeneral=find_web_contact($vp_custinfo->Customer,$vp_custinfo->Name,$jobinfo->general_id);
+if ($tmpgeneral) $general_id=$tmpgeneral;
+else $general_id=$jobinfo->general_id;
+
+$tmparch=find_web_contact('',$vp_custinfo->ArchitectName);
+if ($tmparch) $architect_id=$tmparch;
+else $architect_id=$jobinfo->architect_id;
+
+$contract_admin=find_employee($vp_jobinfo->udcontractadministrator);
+$safety_rep=find_employee($vp_jobinfo->udsafetyrep);
+$project_manager_id=find_employee($vp_jobinfo->ProjectMgr);
+$project_sponsor_id=find_employee($vp_jobinfo->udPROJECTSPONSOR);
+
+
+$contract_type="";
+switch ($vp_jobinfo->udCONTRACTTYPE) {
+	case "FP":	$contract_type="Fixed Price";
+				break;;
+	
+	case "GM":	$contract_type="GMAX";
+				break;;
+	
+	case "CP":	$contract_type="Cost+";
+				break;;
+	
+	case "TM":	$contract_type="T & M";
+				break;;
+	default:	$contract_type=$jobinfo->contract_type;
+				break;;
+	}
+
+
+$design_build="";
+switch ($vp_jobinfo->udDESIGNTYPE) {
+	case "PS":	$design_build="Plan/Spec";
+				break;;
+	
+	case "DA":	$design_build="Design Assist";
+				break;;
+	
+	case "DB":	$design_build="Design Build";
+				break;;
+	
+	case "":	$design_build="";
+				break;;
+	
+	default:	$design_build=$jobinfo->design_build;
+				break;;
+	}
+$job_cost=$vp_jobinfo->udtemplate;
+$contract_amount_orig=$vp_jobinfo->OrigContractAmt;
+$contract_amount_current=$vp_jobinfo->ContractAmt;
+$contract_amount_billed=$vp_jobinfo->BilledAmt;
+
+/////////////////////////////////////////////////////////
+// if the job is closed, we should do this.. we need
+// to find out if it's a soft close or hard close though..
+//$contract_amount_final=$contract_amount_current;
+/////////////////////////////////////////////////////////
+if ($vp_jobinfo->JobStatus=='3') {
+	$active='N';
+	} else {
+	$active='Y';
+	$final_complete_date="";
+	}
+
+$fed_pub="";
+switch ($vp_jobinfo->udpripubfed) {
+	case "1":	$fed_pub='Prv';
+				break;;
+				
+	case "2":	$fed_pub='Pub';
+				break;;
+				
+	case "3":	$fed_pub='Fed';
+				break;;
+	
+	default:	$fed_pub='';
+				break;;			
+	}
+
+
+if ($vp_jobinfo->udConfidential=='Y') $confidential='Y';
+else $confidential='N';
+
+$job_site_address=$vp_jobinfo->ShipAddress . "
+" . $vp_jobinfo->ShipCity . ", " . $vp_jobinfo->ShipState . " " . $vp_jobinfo->ShipZip;
+
+$job_type="";
+switch ($vp_jobinfo->Department) {
+	case "100": 	$job_type="100 - Major Projects";
+					break;;
+	case "101": 	$job_type="101 - Major Projects Indirect";
+					break;;
+	case "110": 	$job_type="110 - South";
+					break;;
+	case "111": 	$job_type="111 - South Indirect";
+					break;;
+	case "120": 	$job_type="120 - Industrial";
+					break;;
+	case "121": 	$job_type="121 - Industrial Indirect";
+					break;;
+	case "190": 	$job_type="190 - Special Projects";
+					break;;
+	case "191": 	$job_type="191 - Special Projects Indirect";
+					break;;
+	default:		$job_type="Error";
+					break;;
+	}
+
+
+$job_name=addslashes($job_name);
+$job_site_address=addslashes($job_site_address);
+
+$vp_jobinfo->udownername=addslashes($vp_jobinfo->udownername);
+$query_middle="
+
+job_name = '$job_name',
+display_name = '$jobinfo->display_name',
+start_date = '$start_date',
+expected_complete_date = '$complete_date',
+complete_date = '$final_complete_date',
+contract_or_po = '$contract_or_po',
+general_id = '$general_id',
+owner_id = '$owner_id',
+viewpoint_owner_text = '$vp_jobinfo->udownername',
+contract_admin = '$contract_admin',
+safetyrep = '$safety_rep',
+project_manager_id = '$project_manager_id',
+project_sponsor_id = '$project_sponsor_id',
+architect_id = '$architect_id',
+contract_type = '$contract_type',
+design_build = '$design_build',
+job_cost = '$job_cost',
+contract_amount_orig = '$contract_amount_orig',
+contract_amount_current = '$contract_amount_current',
+contract_amount_billed = '$contract_amount_billed',
+fed_pub = '$fed_pub',
+confidential = '$confidential',
+job_type = '$job_type',
+job_site_address = '$job_site_address',
+work_recovery_job = '$work_recovery_job',
+active = '$active'
+";
+
+$full_query=$query_start . $query_middle . $query_end ;
+$update_res=@mysql_query($full_query);
+if (!($update_res)) echo "death by foo! Query failed<hr>$full_query\r\n";
+//echo "just ran query for job $job_res->job - pm set to $project_manager_id\r\n";
+
+
+if ($active=='N') {
+	mysql_query("update jobinfo set contract_amount_final = '$contract_amount_current' " . $query_end); 
+	}
+
+if (($active=='N')&&($active!=$jobinfo->active)) {
+	$mailres=@mysql_query("select * from jobinfo_close_notifications");
+	while ($mailrow=@mysql_fetch_object($mailres)) {
+		queue_email($mailrow->contacts_id,"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num has been closed on the web page..");
+		}
+	//queue_email('2993',"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num as been closed on the web page..");
+	//queue_email('1685',"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num as been closed on the web page..");
+	//queue_email('124',"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num as been closed on the web page..");
+	//queue_email('133',"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num as been closed on the web page..");
+	//queue_email('2',"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num as been closed on the web page..");
+	//queue_email('199',"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num as been closed on the web page..");
+	//queue_email('198',"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num as been closed on the web page..");
+	//queue_email('2620',"Closed Job: $jobinfo->contract_num","Job number $jobinfo->contract_num as been closed on the web page..");
+	}
+if ($no_output!=1) forward("jobinfo_edit&target_tab=1&jobinfo_id=$jobinfo->jobinfo_id");
+
+?>

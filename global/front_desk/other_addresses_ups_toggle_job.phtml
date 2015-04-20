@@ -1,0 +1,7 @@
+<?
+$show_jobinfo_id=addslashes($show_jobinfo_id);
+$show_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$show_jobinfo_id'");
+if ($show_jobinfo->ups_ok=='Y') @mysql_query("update jobinfo set ups_ok = 'N' where jobinfo_id = '$show_jobinfo->jobinfo_id'");
+else @mysql_query("update jobinfo set ups_ok = 'Y' where jobinfo_id = '$show_jobinfo->jobinfo_id'");
+include("other_addresses.phtml");
+?>

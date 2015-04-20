@@ -1,0 +1,21 @@
+<?
+
+$issue_id=addslashes($issue_id);
+$it_category_id=addslashes($it_category_id);
+
+$query="update mis_issue_index set it_category_id = '$it_category_id' where issue_id = '$issue_id'";
+//echo "$query";
+
+@mysql_query($query);
+echo"
+<html><body bgcolor=#ffffff>
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+</html>
+";
+
+
+
+?>

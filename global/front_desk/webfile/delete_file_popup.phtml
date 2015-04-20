@@ -1,0 +1,14 @@
+<?
+if ($files_id!="") $files_id=addslashes($files_id);
+$file_info=getone("select * from webfile_files where files_id = '$files_id'");
+//if (!(($writeable)||($file_info->owner==$global_user_id))) die_security();
+if (!(($writable)||($file_info->owner==$global_user_id))) die_security();
+
+delete_webfile_file($files_id,1);
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+?>

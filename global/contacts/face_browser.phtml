@@ -1,0 +1,31 @@
+<?
+
+require("../front_desk/mh_lib.inc");
+require("header.phtml");
+mh_navs_header();
+
+$res=@mysql_query("select * from contacts where contact_type = 'contact' and umc_emp = 'Y' and current = 'Y' and ( employee_group = 3 || email != '' ) order by alphasort");
+require("header.phtml");
+echo "
+<a href=$pagename?mode=main><font color=blue>Main Contacts Menu</font></a>
+<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=$fd_color_4><td align=center colspan=2>
+	<h2>Faces at UMC</h2>
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$picurl="/global/webfile/question_mark.jpg";
+	if ($row->photo_file_group_id>0) {
+		$file_info=getoneb("select * from webfile_files where file_group_id = '$row->photo_file_group_id' limit 1");
+		$picurl=webfile_medium_image_icon($file_info->files_id);
+		}
+	echo "<tr><td valign=top>
+		";contact_view("$row->display_name",$row->contacts_id);echo"
+	</td><td>
+	<img height=150 src=$picurl>
+	</td></tr>";
+	}
+echo "</table>";
+mh_navs_footer();
+?>

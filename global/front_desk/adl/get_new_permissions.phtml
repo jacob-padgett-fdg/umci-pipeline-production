@@ -1,0 +1,13 @@
+#!/usr/local/bin/php
+<?
+require("querylib.inc");
+require("viewpoint_connect_ro.phtml");
+require("global_connect_rw.phtml");
+$res=mssql_query("select * from HRRM with (NOLOCK) where PRCo = 1 and udapproveddriverreportprm = 'Y'");
+if (!($res)) die("VP Sync error.. could not run query of current users!");
+@mysql_query("delete from access where application_name = 'adl' and type = 'full'");
+while ($row=@mssql_fetch_object($res)) {
+	$contact_info=getoneb("select * from contacts where employee_num = '$row->PREmp'");
+	@mysql_query("insert into access set application_name = 'adl', contacts_id = '$contact_info->contacts_id', type = 'full',rightsmode = 'grant'");
+	}
+?>

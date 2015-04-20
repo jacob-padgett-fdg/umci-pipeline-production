@@ -1,0 +1,37 @@
+<?
+//require('querylib.inc');
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=$contacts_last_main_mode><font color=blue>Cancel</font></a>
+<p>
+	<ul><li><a href=$pagename?mode=companies><font color=blue>
+	Companies
+	</font></a><p>
+	
+	<li><a href=$pagename?mode=people><font color=blue>
+	People
+	</font></a><p>
+	
+	<li><a href=$pagename?mode=everything><font color=blue>
+	EVERYTHING
+	</font></a><P>
+
+	<li><a href=$pagename?mode=employees_current><font color=blue>
+	Employees - Current
+	</font></a><br>
+	<li><a href=$pagename?mode=employees_not_current><font color=blue>
+	Employees - Not Current
+	</font></a><p>
+	
+	<li><a href=$pagename?mode=not_employees_current><font color=blue>
+	Non-Employees - Current
+	</font></a><br>
+	<li><a href=$pagename?mode=not_employees_not_current><font color=blue>
+	Non-Employees - Not Current
+	</font></a><p>
+	</ul>
+	
+";
+
+?>

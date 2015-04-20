@@ -1,0 +1,332 @@
+<?
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+
+if (!(pm_for_this_job())) check_report_permissions();
+
+function is_valid_viewpoint_job($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
+
+
+$ct_array=cost_type_array();
+
+$show_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$show_jobinfo_id'");
+if (!($jobinfo)) $job=is_valid_viewpoint_job($global_jobinfo->contract_num);
+else $job=is_valid_viewpoint_job($show_jobinfo->contract_num);
+
+$last_closed_query="select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 1 and Status = 1 order by PREndDate desc";
+$last_closed=ms_getoneb($last_closed_query);
+$closed_date=date('m/d/Y',strtotime($last_closed->PREndDate));
+
+$summary_info=job_financial_summary("$job->job");
+
+
+echo "
+<table style=\"border: 1px solid black; text-align: right; font-size: 75%;\" cellspacing=0 cellpadding=2>
+
+
+<tr><td colspan=9>
+	<table border=1 cellspacing=0 cellpadding=2>
+	<tr><td bgcolor=$fd_color_4 align=center colspan=8>
+		<b>Contract Status</b>
+	</td></tr>
+
+	<tr><td align=left bgcolor=$fd_color_3>
+		Orig Contract
+	</td><td>
+		$summary_info->orig_contract_amount_gap_num
+	</td><td align=left bgcolor=$fd_color_3>
+		Gross Billed
+	</td><td>
+		$summary_info->billedamt_gap_num
+	</td><td align=left bgcolor=$fd_color_3>
+		Received Amt
+	</td><td>
+		$summary_info->receivedamt_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Committed Subs
+	</td><td>
+		$summary_info->rcc_subcontracts_gap_num
+	</td></tr>
+
+	<tr><td align=left bgcolor=$fd_color_3>
+		Change Orders
+	</td><td>
+		<a href=\"javascript:open_change_orders($global_jobinfo_id)\">$summary_info->change_orders_gap_num</a>
+	</td><td align=left bgcolor=$fd_color_3>
+		Net Billed
+	</td><td>
+		$summary_info->netbilledamt_gap_num
+	</td><td align=left bgcolor=$fd_color_3>
+		Paid to date
+	</td><td>
+		$summary_info->paidtodate_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Committed Matl
+	</td><td>
+		$summary_info->rcc_material_gap_num
+	</td></tr>
+
+	<tr><td align=left bgcolor=$fd_color_3>
+		Curr Contract
+	</td><td>
+		$summary_info->current_contract_amount_gap_num
+	</td><td align=left bgcolor=$fd_color_3>
+		Retainage
+	</td><td>
+		$summary_info->retainage_gap_num
+	</td><td align=left bgcolor=$fd_color_3>
+		Net Cash Flow
+	</td><td>
+		$summary_info->netcashflow_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Committed Equip
+	</td><td>
+		$summary_info->rcc_equipment_gap_num
+	</td></tr>
+	</table>
+</td></tr>
+
+<tr bgcolor=$fd_color_4><td colspan=9 align=center><div style=\"float: right;\"><a href=$pagename?mode=report_show&report_name=baldwin_full>Full Detail</a></div><b>Payroll last closed: $closed_date</b></td></tr>
+<tr bgcolor=$fd_color_1><td style=\"border-right: 1px solid black; text-align: center;\">
+	Cost Type
+</td><td colspan=3 align=center style=\"border-right: 1px solid black;\">
+	Hours
+</td><td colspan=4 align=center style=\"border-right: 1px solid black;\">
+	Cost
+</td><td align=center>
+	Composite
+</td></tr>
+
+<tr bgcolor=$fd_color_1><td align=center style=\"border-right: 1px solid black;\">
+	&nbsp;
+</td><td align=center>
+	Est
+</td><td align=center>
+	Act
+</td><td align=center style=\"border-right: 1px solid black;\">
+	Remain
+</td><td align=center>
+	Est
+</td><td align=center>
+	Act
+</td><td align=center title=\"Comitted, without tax included\">
+	<font size=-1>Cmt no tx</font>
+</td><td align=center style=\"border-right: 1px solid black;\">
+	Remain
+</td><td align=center>
+	Rates
+</td></tr>
+";
+$tbquery="select replace(replace(substring(Phase,1,2),'26','25'),'29','25') as PhasePart,
+	sum(CurrEstHours) as CurrEstHours,
+	sum(ActualHours) as ActualHours, 
+	
+	sum(CurrEstCost) as CurrEstCost,
+	sum(ActualCost) as ActualCost,
+	sum(RemainCmtdCost) as RemainCmtdCost,
+	CostType
+	from JCCP with (NOLOCK) where JCCo = 1 and Job like '$job->job%' 
+	group by replace(replace(substring(Phase,1,2),'26','25'),'29','25'),CostType
+	
+	order by CASE when CostType = 4 then 3 when CostType = 3 then 4 else CostType END,PhasePart";
+
+$total_composite_hours=0;
+$total_composite_dollars=0;
+
+$tbres=@mssql_query($tbquery);
+$apui_info=ms_getoneb("SELECT SUM(InvTotal) AS total,SUM(1) AS count FROM APUI with (NOLOCK) WHERE (udJOB LIKE '$job->job%') AND (APCo = 1) GROUP BY APCo");
+$remain_committed_total=0;
+
+
+function clear_ct_totals() {
+	global $ct_totals;
+	$ct_totals->h_est=0;
+	$ct_totals->h_act=0;
+	$ct_totals->h_rem=0;
+	$ct_totals->c_est=0;
+	$ct_totals->c_act=0;
+	$ct_totals->c_cmt=0;
+	$ct_totals->c_rem=0;
+	}
+
+function print_ct_totals($ct) {
+	global $ct_total_rows,$ct_totals,$fd_color_1,$ct_array;
+	$ct_text=$ct_array[$ct];
+	if (($ct_totals->h_act!=0)&&($ct_totals->c_act!=0)) {
+		$composite=format_long_decimal($ct_totals->c_act/$ct_totals->h_act,2);
+		} else {
+		$composite="N/A";
+		}
+	//print_r($ct_totals);
+	echo "
+	<tr bgcolor=$fd_color_1><td align=left style=\"border-right: 1px solid black;\">
+	$ct_text totals
+	</td><td>
+		" . gap_num($ct_totals->h_est) . "
+	</td><td>
+		" . gap_num($ct_totals->h_act) . "
+	</td><td style=\"border-right: 1px solid black;\">
+		" . gap_num($ct_totals->h_rem) . "
+	</td><td>
+		" . gap_num($ct_totals->c_est) . "
+	</td><td>
+		" . gap_num($ct_totals->c_act) . "
+	</td><td>
+		" . gap_num($ct_totals->c_cmt) . "
+	</td><td style=\"border-right: 1px solid black;\">
+		" . gap_num($ct_totals->c_rem) . " 
+	</td><td>
+		$composite
+	</td></tr>
+	";
+	}
+
+function add_to_ct_totals($ct) {
+	global 	$ct_total_rows,$ct_type_last,$tbrow,$ct_totals;
+	if ($ct_total_rows[$ct]=="") $ct_total_rows[$ct]=0;
+	if ($ct_type_last!=$ct) {
+		if ($ct_total_rows[$ct_type_last]>1) print_ct_totals($ct_type_last);
+		clear_ct_totals();
+		}
+	$ct_type_last=$ct;
+	$ct_total_rows[$ct]=$ct_total_rows[$ct] + 1;
+	$ct_totals->h_est=$ct_totals->h_est + $tbrow->CurrEstHours;
+	$ct_totals->h_act=$ct_totals->h_act + $tbrow->ActualHours;
+	$ct_totals->h_rem=$ct_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+	$ct_totals->c_est=$ct_totals->c_est + $tbrow->CurrEstCost;
+	$ct_totals->c_act=$ct_totals->c_act + $tbrow->ActualCost;
+	$ct_totals->c_cmt=$ct_totals->c_cmt + $tbrow->RemainCmtdCost;
+	$ct_totals->c_rem=$ct_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+	}
+$ct_type_last=0;
+clear_ct_totals();
+
+
+while ($tbrow=@mssql_fetch_object($tbres)) {
+	if (($tbrow->CurrEstHours == 0) && 
+	($tbrow->ActualHours == 0) &&
+	($tbrow->CurrEstCost == 0) &&
+	($tbrow->RemainCmtdCost == 0) &&
+	($tbrow->ActualCost == 0)) continue;
+	
+	add_to_ct_totals($tbrow->CostType);
+	if ($tbrow->ActualHours >0) {
+		$composite=round($tbrow->ActualCost / $tbrow->ActualHours,2);
+		$total_composite_hours=$total_composite_hours + $tbrow->ActualHours;
+		$total_composite_dollars=$total_composite_dollars + $tbrow->ActualCost;
+		//$composite=$tbrow->ActualCost / $tbrow->ActualHours;
+		} else {
+		$composite="N/A";
+		}
+	$remain_committed_total=$tbrow->RemainCmtdCost + $remain_committed_total;
+	$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+	$category=phase_cat($tbrow->PhasePart);
+	$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+	$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+	$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+	$hours_remaining=gap_num($hours_remaining);
+	
+	$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+	$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+	$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
+	$cost_remaining=gap_num($cost_remaining);
+	
+	//switch $tbrow->CostType
+	$cttext=$ct_array[$tbrow->CostType];
+	echo "
+	<tr><td align=left style=\"border-right: 1px solid black;\">
+		";
+		if ($tbrow->PhasePart==55) {
+			echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->PhasePart-$category ($cttext)</font></a>";
+			} else {
+			echo "$tbrow->PhasePart-$category ($cttext)";
+			}
+		echo "
+	</td><td>
+		$tbrow->CurrEstHours
+	</td><td>
+		$tbrow->ActualHours
+	</td><td style=\"border-right: 1px solid black;\">
+		$hours_remaining
+	</td><td>
+		$tbrow->CurrEstCost
+	</td><td>
+		$tbrow->ActualCost
+	</td><td>
+		$tbrow->RemainCmtdCost
+	</td><td style=\"border-right: 1px solid black;\">
+		$cost_remaining
+	</td><td>
+		$composite
+	</td></tr>
+	";
+	}
+add_to_ct_totals($ct_type_last);
+
+$ap_color="#FFFFFF";
+$apui_info->total=gap_num($apui_info->total);
+
+if ($summary_info->apui_persistent_count > 0) {
+	$apui_persistent_color="#eeaaaa";
+	}
+
+
+echo "
+<tr bgcolor=$fd_color_1><td align=left style=\"border-right: 1px solid black;\">
+	Total
+</td><td>
+	$summary_info->curresthours_gap_num
+</td><td>
+	$summary_info->actualhours_gap_num
+</td><td style=\"border-right: 1px solid black;\">
+	$summary_info->hours_remaining_gap_num
+</td><td>
+	$summary_info->currestcost_gap_num
+</td><td style=\"background: $fd_color_3;\">
+	<b>$summary_info->actualcost_gap_num</b>
+</td><td>
+	$summary_info->remaincmtdcost_gap_num
+</td><td>
+	$summary_info->cost_remaining_gap_num
+</td><td>
+	$summary_info->total_composite_rate_decimal
+</td></tr>
+
+</table>";
+?>

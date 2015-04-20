@@ -1,0 +1,268 @@
+<?
+
+	// Paging stuff..
+	include("fd_log_paging.phtml");
+	$vbwidth="150px";
+	echo "
+	<table id='sub_application_main_table' border=1 cellspacing=0 cellpadding=5>
+	<thead>
+	<tr><td colspan=17>";
+	
+		//<div class=noprint style=\"position: absolute; border: 2px solid black;\"><form name=search method=post action=$pagename>Search:&nbsp;<input type=text name=search_text value=\"$search_text\">";dropbox_search($search_array);echo"<input type=submit value='Go'></form></div>
+		search_div();
+		echo "<center><b><font size=+2>UMC RFI Log</font><br>Job $global_jobinfo->contract_num:&nbsp;$global_jobinfo->job_name<br>$today</b>
+		
+		<div id=\"noprint\">
+		<a href=$pagename?mode=rfi_edit&jobinfo_id=$global_jobinfo->jobinfo_id><font color=blue>New RFI</font></a><br>
+		<a href=$pagename?mode=$mode&filter_mode=$filter_mode&view=full_detail><font color=blue>Full Detail View</font></a>
+		
+		<p>";
+		if ($filter_mode=="") $filter_mode="All";
+		echo "
+		<form name=filter_select method=post action=\"$pagename\">
+		<input type=hidden name=mode value=\"$mode\">
+		Showing:&nbsp;<select name=filter_mode onchange=submit();>
+		<option>All</option>
+		<option value=\"Open\" ";if ($filter_mode=="Open") echo "selected"; echo ">UMC Open</option>
+		<option ";if($filter_mode=="Pending") echo "selected"; echo ">Pending</option>
+		<option ";if($filter_mode=="Overdue") echo "selected"; echo ">Overdue</option>";
+		
+		if ($global_jobinfo->front_desk_hide_rfilog_posting!='Y') {
+			echo "
+			<option ";if($filter_mode=="Detailing Incomplete") echo "selected"; echo ">Detailing Incomplete</option>
+			<option ";if($filter_mode=="Cad Not Updated") echo "selected"; echo ">Cad Not Updated</option>
+			$rs_options
+			<option ";if($filter_mode=="Detailing Required") echo "selected"; echo ">Detailing Required</option>";
+			}
+		echo "
+		</select>&nbsp;$current_query_len&nbsp;items
+		</form>
+		$page_page_insert
+		</div>
+		<div id=printme>
+		Showing: $filter_mode
+		</div>
+		</center>
+	</td></tr>
+	
+	
+	<tr class=floatheader bgcolor=\"$fd_color_4\"><td class=noprint>
+		&nbsp;
+	</td><td>
+		<b>Reviewed</b>
+	</td><td>
+		<b>Sent</b>
+	</td><td>
+		<b>UMC #</b>
+	</td><td>
+		<b>GC #</b>
+	</td><td>
+		<b>Sub #</b>
+	</td><td>
+		<b>Bldg</b>
+	</td><td>
+		<b>Floor</b>
+	</td><td>
+		<b>Subject</b>
+	</td><td>
+		<b>Date&nbsp;Submitted</b>
+	</td><td>
+		<b>Response Required</b>
+	</td><td>
+		<b>Received</b>
+	</td><td>
+		<b>Days Late</b>
+	</td><td>
+		<b>Creator</b>
+	</td>";
+	
+	
+	
+	if ($global_jobinfo->front_desk_hide_rfilog_posting!='Y') {
+	echo "
+	<td>
+		<b>Det Complete</b>
+	</td><td>
+		<b>PM Complete</b>
+	</td><td>
+		<b>Cost/Sched Impact</b>
+	</td>";
+	}
+	
+	if ($write) {
+		echo "
+	<td style=\"width: $vbwidth;\">
+		<b>Viewed by</b>
+	</td><td>
+		<b>Notes</b>
+		</td>
+		";
+		}
+	
+	echo "</tr>
+	</thead>
+	<tbody "; if ($global_browser!='IE') echo "class=floatheader";echo">
+	";
+
+	while($row=@mysql_fetch_object($res)) {
+		$temp_doc_id=fd_get_doc_id($row->rfi_id);
+		$file_batch=batch_this_document($temp_doc_id);
+		$viewers_list_res=@mysql_query("select login_name,display_name from documents_review_history right join contacts on (documents_review_history.contacts_id = contacts.contacts_id) where doc_id = '$temp_doc_id' group by documents_review_history.contacts_id");
+		$viewers_list="";
+		$vl_sep="";
+		$vl_wrap=1;
+		while ($vl_user=mysql_fetch_object($viewers_list_res)) {
+			$viewers_list=$viewers_list . $vl_sep . "$vl_user->login_name";
+			if ($vl_wrap==3) {
+				$vl_sep="<br>";
+				$vl_wrap=1;
+				} else {
+				$vl_sep=",";
+				}
+			$vl_wrap++;
+			}
+		$rowbgcolor="#ffffff";
+		$company_info=getoneb("select * from contacts where contacts_id = '$row->company_id'");
+		$site_info=getoneb("select * from contacts where contacts_id = '$row->site_id'");
+		$creator_info=getoneb("select * from contacts where contacts_id = '$row->creator'");
+		$attention_info=getoneb("select * from contacts where contacts_id = '$row->attention_to_id'");
+		$seen_it=getoneb("select * from documents_review_history where doc_id = '$temp_doc_id' and contacts_id = '$global_user_id' limit 1");
+		if (!($seen_it)) { $rowbgcolor="#ffffaa"; }
+		
+		
+		$row->rfi_date=invali_date($row->rfi_date,'/');
+		$reply_date=invali_date($row->reply_date);
+		
+		if ($reply_date=="") $reply_date=date('Y-m-d');
+		else $reply_date=vali_date($reply_date);
+		
+		$daysqry="select datediff('$reply_date','$row->response_needed_date') as overdue";
+		$days=getoneb($daysqry);
+		
+		$row->response_needed_date=invali_date($row->response_needed_date,'/');
+		$row->reply_date=invali_date($row->reply_date);
+		if ($row->reply_date=="") $row->reply_date="&nbsp;";
+		if ($row->response_needed_date=="") $row->response_needed_date="&nbsp;";
+		if ($days->overdue=="") $days->overdue="&nbsp;";
+		if ($row->sub_rfi_num=="") $row->sub_rfi_num="&nbsp;";
+		if ($row->key_description=="") $row->key_description="&nbsp;";
+		
+		$gcrfi_text=fd_text_doc_list($temp_doc_id,'gcrfi');
+		$row->det_complete_date=invali_date($row->det_complete_date);
+		
+		$row->pm_complete_date=invali_date($row->pm_complete_date);
+		if ($row->pm_complete_date!="") $rowbgcolor=$fd_color_2;
+		$row->rfi_num=ereg_replace('.00$','',"$row->rfi_num");
+		$gc_paperclip="";
+		echo "<tr bgcolor=\"$rowbgcolor\"><td class=noprint>
+				$file_batch&nbsp;
+			</td><td>
+				$row->pm_review_done&nbsp;
+			</td><td>
+				$row->sent&nbsp;
+			</td><td>";
+				if (($write)||(($guest)&&($global_user_id==$row->creator))) {
+					echo "<a href=$pagename?mode=rfi_edit&rfi_id=$row->rfi_id><font color=blue>$row->rfi_num</font></a>";
+				} else {
+					echo "<a href=$pagename?mode=rfi_display_pdf&rfi_id=$row->rfi_id&blah=blah/pdf_download/rfi.pdf><font color=blue>$row->rfi_num</font></a>";
+				}
+				
+				echo "&nbsp;
+			</td><td valign=top>";
+				//$gcrfi_text=ereg_replace(" ","&nbsp;",$gcrfi_text);
+				
+				
+				$temp_doc_info=getoneb("select * from documents where doc_type = 'rfi' and app_record_id = '$row->rfi_id'");
+				$gc_doc_list_res=@mysql_query("select * from documents_links left join documents on (documents_links.docb = documents.doc_id) where doc_type = 'gcrfi' and doca = '$temp_doc_info->doc_id' order by app_reference,doc_id");
+				while ($gc_row_info=@mysql_fetch_object($gc_doc_list_res)) {
+					$gc_rfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$gc_row_info->app_record_id'");
+					$gc_paperclip=webfile_paperclip_view($gc_rfi_info->gcrfi_image_id);
+					echo "$gc_paperclip&nbsp;$gc_row_info->doc_type&nbsp;$gc_row_info->app_reference<br>";
+					
+					}
+				//tabledump("select * from documents_links left join documents on (documents_links.docb = documents.doc_id) where doc_type = 'gcrfi' and doca = '$temp_doc_info->doc_id' order by app_reference,doc_id");
+
+				/*
+				if ($gcrfi_text!="&nbsp;") {
+				$temp_doc_info=getoneb("select * from documents where doc_type = 'rfi' and app_record_id = '$row->rfi_id'");
+				$gc_doc_info=getoneb("select * from documents_links left join documents on (documents_links.docb = documents.doc_id) where doc_type = 'gcrfi' and doca = '$temp_doc_info->doc_id' limit 1");
+				if ($gc_doc_info) {
+					//$gc_doc_list_res=@mysql_query("select * from documents_links left join documents on (documents_links.docb = documents.doc_id) where doc_type = 'gcrfi' and doca = '$temp_doc_info->doc_id' limit 1");
+					$gc_doc_info=getoneb("select * from gcrfilog where gcrfi_id = '$gc_doc_info->app_record_id'");
+					if ($gc_doc_info) {
+						$gc_paperclip=webfile_paperclip_view($gc_doc_info->gcrfi_image_id);
+						}
+					}
+				}
+				*/
+				
+				
+				
+			$row->sent_to_date=invali_date($row->sent_to_date,'/');
+			if ($days->overdue<0) $days->overdue=0;
+			
+			//<table width=100% border=0 cellspacing=0 cellpadding=2><tr><td>$gcrfi_text</td><td>$gc_paperclip</td></tr></table>
+			
+			echo "
+			
+			</td><td>
+				$row->sub_rfi_num&nbsp;
+			</td><td>
+				$row->bldg&nbsp;
+			</td><td>
+				$row->floor&nbsp;
+			</td><td>
+				$row->key_description&nbsp;
+			</td><td>
+				$row->sent_to_date&nbsp;
+			</td><td>
+				$row->response_needed_date&nbsp;
+			</td><td>
+				$row->reply_date&nbsp;
+			</td><td>
+				$days->overdue&nbsp;
+			</td><td>
+				$creator_info->display_name&nbsp;
+			</td>";
+			
+			
+			if ($global_jobinfo->front_desk_hide_rfilog_posting!='Y') {
+			echo "
+			<td>
+				$row->det_complete_date&nbsp;
+			</td><td>
+				$row->pm_complete_date&nbsp;
+			</td><td>
+				$row->has_cost&nbsp;
+			</td>";
+			}
+			
+			
+			if ($write) {
+			echo "
+				<td stle=\"width: $vbwidth;\">
+					$viewers_list&nbsp;
+				</td><td>";
+					$row->pm_notes=ereg_replace("\r\n","<p>",substr("$row->pm_notes",0.500));
+					echo "$row->pm_notes&nbsp;
+				</td>";
+				}
+			echo "
+			</tr>";
+		}
+	$temp_doc_id="";
+	echo "<tr><td colspan=17 height=100%></td></tr></tbody></table>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

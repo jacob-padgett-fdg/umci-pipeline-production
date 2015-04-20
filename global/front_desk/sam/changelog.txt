@@ -1,0 +1,652 @@
+
+----------------------------------------------------------------------------
+Fri Jun 25 15:21:31 PDT 2004
+sam-0.2
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Wed Jul  7 14:33:43 PDT 2004
+sam-0.3
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Jul 19 15:44:15 PDT 2004
+sam-0.4
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Tue Jul 27 09:39:13 PDT 2004
+sam-0.5
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Sun Aug  1 11:48:25 PDT 2004
+sam-0.6
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Tue Aug 17 15:00:08 PDT 2004
+sam-0.7
+----------------------------------------------------------------------------
+made a bunch of changes.. can't remember what though...
+
+
+----------------------------------------------------------------------------
+Thu Sep  2 15:43:22 PDT 2004
+sam-0.8
+----------------------------------------------------------------------------
+fixed contacts
+fixed sorting for agreement types
+fixed some other junk but I can't remember what anymore
+
+
+----------------------------------------------------------------------------
+Fri Sep  3 10:29:54 PDT 2004
+sam-0.9
+----------------------------------------------------------------------------
+fixed contactsbox for manufacturer on equipment to use new contactsbox syntax, both in starter wizard and in equipment edit.
+
+
+----------------------------------------------------------------------------
+Fri Sep 24 10:11:37 PDT 2004
+sam-0.10
+----------------------------------------------------------------------------
+Finished skeliton for agreement finalization additions and modifications amoung other things
+
+
+----------------------------------------------------------------------------
+Tue Nov  9 14:56:00 PST 2004
+sam-0.11
+----------------------------------------------------------------------------
+equipment summary draft 1 complete
+option to copy equipment is available
+
+
+
+----------------------------------------------------------------------------
+Fri Nov 12 18:05:14 PST 2004
+sam-0.12
+----------------------------------------------------------------------------
+Finished main predictive services event stuff.
+Still need to do oil analysis.. 
+Still need to add routines to look at misc event table when calculating equipment cost.
+Still need to add misc materials and equipment events to customer summary.. 
+
+
+
+----------------------------------------------------------------------------
+Tue Nov 16 16:18:26 PST 2004
+sam-0.13
+----------------------------------------------------------------------------
+Feature complete version.. at least all the vital features.. Creates a valid document, and can represent all needed equipment types, and material options including strangely scheduled items
+
+
+----------------------------------------------------------------------------
+Tue Nov 16 16:20:09 PST 2004
+sam-1.0
+----------------------------------------------------------------------------
+upgraded version number to version 1.0
+
+
+----------------------------------------------------------------------------
+Thu Nov 18 13:29:59 PST 2004
+sam-1.1
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Thu Nov 18 13:43:25 PST 2004
+sam-1.2
+----------------------------------------------------------------------------
+changed the copy equipment function to keep the previous serial number and tag number.
+they will be incorrect, but it's easier to modify them than it is to type them in from scratch.
+
+
+----------------------------------------------------------------------------
+Fri Nov 19 10:52:25 PST 2004
+sam-1.3
+----------------------------------------------------------------------------
+now supports super-fast changing of serial number and tag number
+
+
+----------------------------------------------------------------------------
+Tue Nov 23 14:19:52 PST 2004
+sam-1.4
+----------------------------------------------------------------------------
+added equipment deletes
+fixed equipment copying
+added the ability to remove equipment_event items..
+...(at least for materials)...
+Added a bunch of output to the normal document to make it into an executive summary...
+A few other fixes and clean ups...
+
+
+
+----------------------------------------------------------------------------
+Tue Nov 23 15:12:31 PST 2004
+sam-1.5
+----------------------------------------------------------------------------
+added the ability to add a maintenance type back, after you and turned it off by setting the times a year setting to 0
+
+
+----------------------------------------------------------------------------
+Wed Nov 24 10:04:08 PST 2004
+sam-1.6
+----------------------------------------------------------------------------
+fixed a couple delete and maintenance type add problems
+
+
+----------------------------------------------------------------------------
+Wed Nov 24 18:12:27 PST 2004
+sam-1.7
+----------------------------------------------------------------------------
+limitted belts to a max of 1 per year.
+Made a lot of spelling corrections, and wording fixes.
+Still need to round off pennies.
+Still need to fix filter count right.
+Still neeed to create dynamic plurality for wording in signature page.
+
+
+
+----------------------------------------------------------------------------
+Mon Nov 29 11:05:28 PST 2004
+sam-1.8
+----------------------------------------------------------------------------
+set the timeout to 15 minutes.. not sure why it seems to have lowered itself from 10 down to 4 for no reason...
+
+
+----------------------------------------------------------------------------
+Mon Nov 29 11:22:51 PST 2004
+sam-1.9
+----------------------------------------------------------------------------
+Fixed agreement price and payment price on signature page so that the numbers come out nice and evenly (no cents, no division rounding skew from payment price -> total_agreement_price)
+
+
+----------------------------------------------------------------------------
+Mon Nov 29 11:30:25 PST 2004
+sam-1.10
+----------------------------------------------------------------------------
+maybe I've got the timeout issue fixed! :/
+
+
+----------------------------------------------------------------------------
+Mon Nov 29 11:35:46 PST 2004
+sam-1.11
+----------------------------------------------------------------------------
+one more try for the time limit
+
+
+----------------------------------------------------------------------------
+Mon Nov 29 11:59:32 PST 2004
+sam-1.12
+----------------------------------------------------------------------------
+fixed the timeout issue.. which turned out to be poor mime-type support in IE again.
+Timeouts were never an issue.
+
+
+----------------------------------------------------------------------------
+Mon Nov 29 14:55:11 PST 2004
+sam-1.13
+----------------------------------------------------------------------------
+fixed a belt counting problem (equip_events ignored).
+fixed a belt counting variable stomping problem (in the print-out function).
+
+
+
+----------------------------------------------------------------------------
+Mon Nov 29 15:35:29 PST 2004
+sam-1.14
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Nov 29 18:27:36 PST 2004
+sam-1.15
+----------------------------------------------------------------------------
+cover sheet changes.
+final filter counting changes.
+document should be 'perfect' for now...
+
+
+
+----------------------------------------------------------------------------
+Tue Nov 30 09:01:31 PST 2004
+sam-1.16
+----------------------------------------------------------------------------
+added the ability to make agreements new again if you're an admin
+
+
+----------------------------------------------------------------------------
+Tue Nov 30 09:55:43 PST 2004
+sam-1.17
+----------------------------------------------------------------------------
+temporary change to make esp scope of service page print on a psp
+
+
+----------------------------------------------------------------------------
+Tue Nov 30 09:58:53 PST 2004
+sam-1.18
+----------------------------------------------------------------------------
+oops
+
+
+----------------------------------------------------------------------------
+Fri Dec  3 08:03:37 PST 2004
+sam-1.19
+----------------------------------------------------------------------------
+changed how the equipment age info is aquired.. annoying, only for the esp agreements)
+
+
+----------------------------------------------------------------------------
+Mon Dec  6 18:31:38 PST 2004
+sam-1.20
+----------------------------------------------------------------------------
+added the monster task list download
+
+
+----------------------------------------------------------------------------
+Thu Dec  9 16:44:23 PST 2004
+sam-1.21
+----------------------------------------------------------------------------
+Task lists can now be copied and pasted manually.
+Users can now change the status of their agreement back the New.
+Term length can not be changed (temporary).
+Effective date can not be changed (temporary also).
+Admins can now easily look at agreements made by other users.
+Misc materials renamed to material schedule.
+A few other bugs/fixes...
+
+
+
+----------------------------------------------------------------------------
+Tue Dec 14 11:21:29 PST 2004
+sam-1.22
+----------------------------------------------------------------------------
+disabled hotwired scope of service page.
+
+
+----------------------------------------------------------------------------
+Tue Dec 14 15:03:20 PST 2004
+sam-1.23
+----------------------------------------------------------------------------
+fixed accidental ownership change bug
+
+
+----------------------------------------------------------------------------
+Tue Dec 14 17:49:23 PST 2004
+sam-1.24
+----------------------------------------------------------------------------
+added edit line item option to edit task lists with
+
+
+----------------------------------------------------------------------------
+Tue Dec 14 18:15:21 PST 2004
+sam-1.25
+----------------------------------------------------------------------------
+added automatic copy of psp task list to isp task list if isp task list is empty.
+
+
+----------------------------------------------------------------------------
+Thu Dec 16 09:38:05 PST 2004
+sam-1.26
+----------------------------------------------------------------------------
+psp -> esp synchronization is up and automatic.
+All existing psp information has been synchronized to esp.
+
+
+
+----------------------------------------------------------------------------
+Thu Dec 16 18:26:08 PST 2004
+sam-1.27
+----------------------------------------------------------------------------
+Added the ESP_FUDGE_FACTOR to allow esp docs.
+Added the ESP age cost addition..
+Added the small agreement (in)efficiency fix. Use show totals to view efficiency factor.
+Added the ability for a supervisor to approve of equipment older than the approval required age. Until it is approved, this agreement goes nowhere...
+A number of other fixes and updates and improvements, and hopefully not backward steps.
+
+
+
+----------------------------------------------------------------------------
+Fri Dec 17 10:27:20 PST 2004
+sam-1.28
+----------------------------------------------------------------------------
+fixed zero items in schedule bug for svc_agreement_edit_new.
+
+
+----------------------------------------------------------------------------
+Mon Dec 20 11:25:38 PST 2004
+sam-1.29
+----------------------------------------------------------------------------
+moved the page numbers down a bit.
+verified all calculations.
+removed the 'show totals' options from the salesperson screens.
+
+
+
+----------------------------------------------------------------------------
+Mon Dec 20 12:36:36 PST 2004
+sam-1.30
+----------------------------------------------------------------------------
+fixed missing header info on second pages of task lists
+
+
+----------------------------------------------------------------------------
+Mon Dec 20 14:09:42 PST 2004
+sam-1.31
+----------------------------------------------------------------------------
+changed margins on task lists to prevent a large number of orphaned lines. There were a ton of task lists that ended up with just one entry on their second page.
+
+
+----------------------------------------------------------------------------
+Mon Jan 10 17:52:55 PST 2005
+sam-1.32
+----------------------------------------------------------------------------
+change fields for contact info in agreement_edit_new to not be read-only
+now that all employees have access to change/modify contact info.
+
+(hopefully prevents people trying to change contact record info
+to try to change the contact)
+
+
+----------------------------------------------------------------------------
+Tue Jan 11 17:58:51 PST 2005
+sam-1.33
+----------------------------------------------------------------------------
+added the Misc Charges section the the agreement options (located on the
+svc_agreement_edit_finishing page).
+
+
+----------------------------------------------------------------------------
+Mon Jan 17 14:02:36 PST 2005
+sam-1.34
+----------------------------------------------------------------------------
+Added the ability to make exceptions to the 1 belt per year rule, and changed
+some stuff around to let it look OK in the inspection summary.
+
+
+
+----------------------------------------------------------------------------
+Wed Jan 19 12:29:19 PST 2005
+sam-1.35
+----------------------------------------------------------------------------
+gave the admin users the ability to just specify the final agreement price.
+
+
+----------------------------------------------------------------------------
+Wed Jan 19 13:09:00 PST 2005
+sam-1.36
+----------------------------------------------------------------------------
+added the ability to approve all equipment on an agreement all at once
+
+
+----------------------------------------------------------------------------
+Wed Jan 26 10:01:20 PST 2005
+sam-1.37
+----------------------------------------------------------------------------
+added billing frequency option.. currently only monthly or quarterly exist.
+
+
+----------------------------------------------------------------------------
+Wed Jan 26 15:00:50 PST 2005
+sam-1.38
+----------------------------------------------------------------------------
+created a method to copy agreements.
+Icludes the ability to copy from esp -> psp and psp -> esp, and other
+types of agreements can be handled there, but are not configured yet, and
+will require a fair amount of work (isp's)
+
+
+----------------------------------------------------------------------------
+Mon Jan 31 10:11:08 PST 2005
+sam-1.39
+----------------------------------------------------------------------------
+fixed the per month / per quarter wording problem on the signature page.
+
+
+----------------------------------------------------------------------------
+Wed Feb  2 11:03:54 PST 2005
+sam-1.40
+----------------------------------------------------------------------------
+fixed the copy agreement bug
+
+
+----------------------------------------------------------------------------
+Thu Feb  3 14:56:51 PST 2005
+sam-1.41
+----------------------------------------------------------------------------
+greatly improved the ability to audit the cost of an agreement.
+Still needs work.. Need to show the misc_charges that are applied agreement
+wide (like truck charges), and still need to show more links for justification
+and totals under some sections..
+
+
+----------------------------------------------------------------------------
+Fri Feb  4 15:59:34 PST 2005
+sam-1.42
+----------------------------------------------------------------------------
+executive summary improvements
+
+
+----------------------------------------------------------------------------
+Mon Feb  7 14:53:40 PST 2005
+sam-1.43
+----------------------------------------------------------------------------
+fixed blank page spacing problem
+
+
+----------------------------------------------------------------------------
+Mon Feb  7 17:17:31 PST 2005
+sam-1.44
+----------------------------------------------------------------------------
+increased inflation from 3% to 5%
+
+
+----------------------------------------------------------------------------
+Fri Feb 11 12:55:07 PST 2005
+sam-1.45
+----------------------------------------------------------------------------
+Standardized the user interface a bit.
+Added a number of options for agreement status changes that allow you
+to go directly back to new from partially completed etc.
+Added a new status 'Presenting' that sends an email to Rich, and
+also updates the service proposal log with the information from SAM.
+Fixed the ' BU ' typo in the contract (should have been 'BY'.
+Completed the ISP Scope of service page/function.
+Changed the wording on the other Scope of Service pages.
+...and more.. all for three easy payments of $49.99!!!!!
+
+
+
+----------------------------------------------------------------------------
+Mon Feb 14 11:14:24 PST 2005
+sam-1.46
+----------------------------------------------------------------------------
+fix companies so they can be seperate from the contact presented to.
+
+
+----------------------------------------------------------------------------
+Mon Feb 14 12:12:19 PST 2005
+sam-1.47
+----------------------------------------------------------------------------
+added a function to allow a user to give away ownership, or for an admin
+to go in and modify/take it as needed.
+
+
+----------------------------------------------------------------------------
+Wed Feb 16 15:19:21 PST 2005
+sam-1.48
+----------------------------------------------------------------------------
+added the anual sum only billing frequency option.
+
+
+----------------------------------------------------------------------------
+Fri Feb 18 09:00:46 PST 2005
+sam-1.49
+----------------------------------------------------------------------------
+oops.. fixed the wording on the sig page for the annual lump sum option
+
+
+----------------------------------------------------------------------------
+Fri Mar 11 14:43:17 PST 2005
+sam-1.50
+----------------------------------------------------------------------------
+finished getting rid of the different agreement types.. they're all basically
+the same type now, with a flag or two changed (sometimes).
+
+ISP is now shorted to psp, just like esp is shorted to psp.. but isp's
+automatically have a minimum maintenances a year of zero, so they can
+go as low/cheesy as they'd like.
+
+
+----------------------------------------------------------------------------
+Fri Mar 11 15:15:23 PST 2005
+sam-1.51
+----------------------------------------------------------------------------
+OK, fixed the IPS->PSP full sync problem.. normal operations were OK, but the
+huge batch copy from one to the other wasn't working right..
+
+
+----------------------------------------------------------------------------
+Tue Mar 15 14:40:38 PST 2005
+sam-1.52
+----------------------------------------------------------------------------
+freed up the ability to select a person from a differenct company as the contact
+
+
+----------------------------------------------------------------------------
+Thu Mar 24 16:02:23 PST 2005
+sam-1.53
+----------------------------------------------------------------------------
+make that crap live
+
+
+----------------------------------------------------------------------------
+Fri Apr  1 12:57:32 PST 2005
+sam-1.54
+----------------------------------------------------------------------------
+allow users to mark agreements as new again even after presenting
+
+
+----------------------------------------------------------------------------
+Fri Apr  8 12:09:35 PDT 2005
+sam-1.55
+----------------------------------------------------------------------------
+added document override date
+
+
+----------------------------------------------------------------------------
+Mon Apr 11 12:38:19 PDT 2005
+sam-1.56
+----------------------------------------------------------------------------
+added a quick selection for the task lists, so that you can ctrl-c copy a clean task list
+
+
+----------------------------------------------------------------------------
+Thu Apr 21 12:21:05 PDT 2005
+sam-1.57
+----------------------------------------------------------------------------
+changed location to site/location on equipment detail for customer document.
+
+
+----------------------------------------------------------------------------
+Wed May  4 10:44:50 PDT 2005
+sam-1.58
+----------------------------------------------------------------------------
+updated authentication
+
+
+----------------------------------------------------------------------------
+Wed May 18 09:35:43 PDT 2005
+sam-1.59
+----------------------------------------------------------------------------
+tons of changes.......
+
+1: fixed bug where company gets lost on create.
+2: moved document generation to finalizing stage
+3: stored generated document using webfile library
+4: added a revision field to the document.. also printed on sig page
+5: changed format of title page to go with new cover
+6: fixed up copying of agreement type down to ISP version
+7: added the ability to shorten the term of an agreement
+8: fixed an agreement copy bug that kept the misc options from copying
+9: various other bugfixes and enhancements
+
+
+
+----------------------------------------------------------------------------
+Thu May 19 16:13:49 PDT 2005
+sam-1.60
+----------------------------------------------------------------------------
+changed truck charges from $35 -> $45
+
+
+----------------------------------------------------------------------------
+Thu May 19 18:12:08 PDT 2005
+sam-1.61
+----------------------------------------------------------------------------
+fixed some document handling, and added the
+ability to mark a document as signed...
+
+
+----------------------------------------------------------------------------
+Mon Dec 31 10:53:57 PST 2007
+sam-1.63
+----------------------------------------------------------------------------
+fixed bugs from security audit
+
+
+----------------------------------------------------------------------------
+Wed Feb 27 08:49:57 PST 2008
+sam-1.64
+----------------------------------------------------------------------------
+break the (optional) link between PSP and ISP
+
+
+----------------------------------------------------------------------------
+Tue May 13 17:06:35 PDT 2008
+sam-1.65
+----------------------------------------------------------------------------
+fixed task lists so they borrow from other types correctly
+
+
+----------------------------------------------------------------------------
+Mon May 19 09:48:21 PDT 2008
+sam-1.66
+----------------------------------------------------------------------------
+changed the ESP scope page back to a non-bch version that
+doesn't provide for replacement equipment...
+
+
+----------------------------------------------------------------------------
+Fri Sep 19 17:41:15 PDT 2008
+sam-1.67
+----------------------------------------------------------------------------
+added search of agreements, notes on agreements and download to excel
+
+
+----------------------------------------------------------------------------
+Tue Sep 23 09:54:21 PDT 2008
+sam-1.68
+----------------------------------------------------------------------------
+fixed up a little bit with more notes for andrea
+
+
+----------------------------------------------------------------------------
+Fri Sep 26 11:47:50 PDT 2008
+sam-1.69
+----------------------------------------------------------------------------
+added model number for excel download of equip list
+
+
+----------------------------------------------------------------------------
+Fri May 22 10:25:19 PDT 2009
+sam-1.70
+----------------------------------------------------------------------------
+go andrea.. new working and payment period
+

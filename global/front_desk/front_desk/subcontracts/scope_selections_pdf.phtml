@@ -1,0 +1,141 @@
+<?
+$subcontracts_id=addslashes($subcontracts_id);
+$subcontracts_info=getoneb("select * from subcontracts where subcontracts_id = '$subcontracts_id'");
+$job_information=getoneb("select * from jobinfo where jobinfo_id = '$subcontracts_info->jobinfo_id'");
+
+if ($subcontracts_info->subcontractor_type_id>0) {
+	$s_type_info=getoneb("select * from subcontractor_types where subcontractor_type_id = '$subcontracts_info->subcontractor_type_id'");
+	}
+
+
+$subcontractor_info=getoneb("select * from contacts where contacts_id = '$subcontracts_info->subcontractor_id'");
+$subcontractor_contact_info=getoneb("select * from contacts where contacts_id = '$subcontracts_info->subcontractor_contact'");
+$prime_contractor_info=getoneb("select * from contacts where contacts_id = '$subcontracts_info->prime_contractor'");
+$owner_info=getoneb("select * from contacts where contacts_id = '$subcontracts_info->owner'");
+
+if ($subcontracts_info->subcontractor_type_id==12) {
+	if ($subcontracts_info->other_subcontractor_type!="") $s_type_info->sub_type=$subcontracts_info->other_subcontractor_type;
+	}
+
+require_once('pdf_lib2.inc');
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->ezSetMargins(18,36,72,72);$pdf->y=792 - 18;
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+if ($subcontracts_info->job_name_alias!="") $job_name=$subcontracts_info->job_name_alias;
+else $job_name=$job_information->display_name;
+
+$font_size="10";
+$header_font_size=$font_size;
+$spaces="                                 ";
+
+//$pdf->y=792;
+$y=$pdf->y;
+$pdf->ezText("Project Name:",$header_font_size);
+$pdf->y=$y;$pdf->ezText("$spaces$job_name",$header_font_size);
+
+$y=$pdf->y;$pdf->ezText("UMC Job #:",$header_font_size);
+$pdf->y=$y;$pdf->ezText("$spaces$job_information->contract_num",$header_font_size);
+
+$y=$pdf->y;$pdf->ezText("Subcontractor:",$header_font_size);
+$pdf->y=$y;$pdf->ezText("$spaces$subcontractor_info->display_name",$header_font_size);
+
+$y=$pdf->y;$pdf->ezText("Contract Amount:",$header_font_size);
+$subcontracts_info->contract_amount=format_long_decimal($subcontracts_info->contract_amount);
+$pdf->y=$y;$pdf->ezText("$spaces\$$subcontracts_info->contract_amount",$header_font_size);
+
+
+if (($subcontracts_info->status!="complete")&&($subcontracts_info->status!="processing")) {
+	$pdf->ezText("<b>Draft Scope Document</b>",$font_size + 6,array("justification"=>"center"));
+	//$pdf->ezText("<b>Draft Scope Document($subcontracts_info->status)</b>",$font_size + 6,array("justification"=>"center"));
+	//$pdf->addText(220,400,50,"DRAFT",315);
+	}
+
+
+
+
+$pdf->ezText("<b>$subcontracts_info->exhibit_name</b>",$font_size + 3,array("justification"=>"center"));
+$pdf->ezText("SUBCONTRACTOR SCOPE LIST",$font_size + 1,array("justification"=>"center"));
+$pdf->ezText("$s_type_info->sub_type Scope",$font_size + 1,array("justification"=>"center"));
+
+//$pdf->ezText("",$font_size + 1);
+$pdf->ezText("",$font_size + 1);
+
+$pdf->ezTableDumpStart();
+$pdf->ezTableDumpAdd("","DESCRIPTION","INCLUDED");
+
+
+$scope_res=@mysql_query("select * from subcontractor_scope_selections where subcontractor_type_id = '$subcontracts_info->subcontractor_type_id' and subcontracts_id = '$subcontracts_info->subcontracts_id' order by sort_priority");
+while ($current=@mysql_fetch_object($scope_res)) {
+	if ($current->in_scope!="Yes") $current->in_scope="           $current->in_scope";
+	$pdf->ezTableDumpAdd($current->sort_priority,$current->description,$current->in_scope);
+	}
+
+$pdf->ezTableDumpPrint(1,array(
+		"width"=>"464",
+		"showLines"=>"1",
+		"rowGap"=>"1.4",
+		"cols"=>array(
+				"0"=>array("width"=>"30"),
+				"2"=>array("width"=>"62")
+			)
+		));
+
+
+
+$sig_page_start=$pdf->ezPageCount;
+$pdf->transaction('start');
+
+$pdf=pdf_render_if_available($pdf,$subcontracts_info->subcontracts_id,1);
+
+$pdf->ezText("
+<i>This list is for clarification and is not intended to replace or limit the subcontractor scope as described in the contract documents.
+
+");
+$underline="______________________________________";
+$pdf->ezText("$underline           $underline
+","",array("justification"=>"center"));
+$pdf->addText(80,$pdf->y,$font_size,"University Mechanical Contractors, Inc.");
+$pdf->addText(322,$pdf->y,$font_size,"$subcontractor_info->display_name");
+
+
+//if ($pdf->ezPageCount!=$sig_page_start) {
+if (FALSE) {
+	$pdf->transaction('rewind');
+	$pdf->ezNewPage();
+	$pdf=pdf_render_if_available($pdf,$subcontracts_info->subcontracts_id,1);
+
+	$pdf->ezText("
+	<i>This list is for clarification and is not intended to replace or limit the subcontractor scope as described in the contract documents.
+	
+	");
+	$underline="______________________________________";
+	$pdf->ezText("$underline           $underline
+	","",array("justification"=>"center"));
+	$pdf->addText(80,$pdf->y,$font_size,"University Mechanical Contractors, Inc.");
+	$pdf->addText(322,$pdf->y,$font_size,"$subcontractor_info->display_name");
+	} else {
+	$pdf->transaction('commit');
+	}
+
+
+
+
+
+
+if (($subcontracts_info->status!="complete")&&($subcontracts_info->status!="processing")) {
+	$pdf->setColor(1,.3,.3);
+	$pdf->addText(180,320,100,"DRAFT",330);
+	$pdf->setColor(0,0,0);
+	}
+
+
+
+
+
+
+
+
+$pdf->ezStream();
+
+?>

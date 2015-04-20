@@ -1,0 +1,17 @@
+<?
+
+if ($report_name=="") die("application error");
+else $report_name=addslashes($report_name);
+//phpinfo();
+//@mysql_query("insert into front_desk_page_history set page_type = 'report', name = '$report_name', contacts_id = '$global_user_id', review_time = now(), additional_info = '$REQUEST_URI'");
+
+//////////////////////////////////////////////
+// Authentication layers goes here..
+//////////////////////////////////////////////
+
+//if ($global_user->umc_emp!='Y') die("Most reports are for UMC Employee use only! Please let UMC's <a href=mailto:jeffb@umci.com>database administrator</a> know how you triggered this error, as it likely indicates an application error!<p>Thank you.. ");
+
+//////////////////////////////////////////////
+include("reports/$report_name.phtml");
+
+?>

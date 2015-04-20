@@ -1,0 +1,93 @@
+<?
+if ($field_prefix!="") {
+	$field_prefix=addslashes($field_prefix);
+	} else {
+	die ("Application error: Field not specified!");
+	}
+if ($area!="") {
+	$area=addslashes($area);
+	} else {
+	die ("Application error: Area not specified!");
+	}
+
+$changes=FALSE;
+if ($sign_me_off=='Y') {
+	@mysql_query("update front_desk_bim_areas set ${field_prefix}_signoff = '$global_user_id', ${field_prefix}_signoff_date = now() where area_id = '$area'");
+	$changes=TRUE;
+	}
+
+if ($sign_me_off=='N') {
+	@mysql_query("update front_desk_bim_areas set ${field_prefix}_signoff = '0', ${field_prefix}_signoff_date = '0000-00-00' where area_id = '$area'");
+	$changes=TRUE;
+	}
+if ($changes) {
+	echo "<script>
+	opener.document.location.reload();
+	
+	
+	
+	
+	</script>
+	";
+	}
+
+
+$area_info=getoneb("select * from front_desk_bim_areas where area_id = '$area'");
+$field_info=getoneb("select 
+	${field_prefix} as reqd,
+	${field_prefix}_signoff_date as so_date,
+	${field_prefix}_signoff as so_contact
+	from front_desk_bim_areas where area_id = '$area'");
+
+
+
+
+echo "<center><h2>$area_info->name/$field_prefix</h2></center><hr>
+<table border=0 cellspacing=0 cellpadding=10 width=100%>
+<tr><td>
+	<b>Scheduled Date:</b>
+</td><td>
+	" . invali_date($field_info->reqd,'/') . "
+</td></tr>";
+
+
+if ($field_info->so_contact > 0) {
+	$so_contact_info=getoneb("select * from contacts where contacts_id = '$field_info->so_contact'");
+	$so_date=invali_date($field_info->so_date,'/');
+	echo "
+	<tr><td>
+		<b>Signed off by:</b>
+	</td><td>
+		$so_contact_info->display_name
+	</td></tr>
+	
+	<tr><td>
+		<b>Signed off on:</b>
+	</td><td>
+		$so_date
+	</td></tr>
+	
+	<tr><td colspan=2 align=center><a href=$pagename?mode=$mode&field_prefix=$field_prefix&area=$area&sign_me_off=N><font color=red>Mark this item as not completed</font></a></td></tr>
+		
+	
+	";
+	
+	} else {
+	
+	echo "<tr><td colspan=2 align=center><a href=$pagename?mode=$mode&field_prefix=$field_prefix&area=$area&sign_me_off=Y><font color=blue>Mark this item as completed</font></a></td></tr>";
+	
+	}
+
+echo "
+
+<tr><td colspan=2 align=center>
+	<a href='javascript:self.close()'><font color=blue>Close this window</font></a>
+</td></tr>
+
+
+</table>";
+
+
+
+
+?>

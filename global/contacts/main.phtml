@@ -1,0 +1,95 @@
+<?
+require("header.phtml");
+//require('querylib.inc');
+require("header.phtml");
+require("../front_desk/mh_lib.inc");
+mh_navs_header();
+//require('header.phtml');
+
+//echo "$auth_session_toggle_link<br>$auth_session_exit_link<br>";
+
+	//<a href=$pagename?mode=contact_search><font color=blue> Search for contact</font></a> <i>(in other databases)</i><br>
+echo "<center>";
+if ($adminuser) {
+	echo "
+	<div style=\"float: left;\">
+	<table border=1 cellspacing=0 cellpadding=4>
+	<tr bgcolor=$fd_color_4><td colspan=2><b>Admin Functions</b></td></tr>
+	<tr><td colspan=2><a href=$pagename?mode=eom_list><font color=blue> Employee of the month maintenance</font></a></td></tr>
+
+	<tr><td colspan=2><a href=$pagename?mode=exceptions_list><font color=blue> Contact Excepctions List</font></a></td></tr>
+	<tr><td colspan=2><a href=$pagename?mode=contact_maint_nightly><font color=blue> Contact Db Maintenence Script</font></a></td></tr>
+	<tr><td colspan=2><a href=$pagename?mode=f_key_search><font color=blue> Fix Duplicate Contact</font></a></td></tr>
+	<tr><td colspan=2><a href=$pagename?mode=restriction_rules><font color=blue> Contact Restriction Rules</font></a></td></tr>
+	</table>
+	</div>
+	";
+	}
+
+contact_table(recent_contacts_query(),1,"My Recent Contacts");
+
+echo "
+<table border=1 cellspacing=0  width=600 cellpadding=2>
+<tr bgcolor=$fd_color_4><td align=center>
+	<b>Quick Links</b>
+</td></tr>
+
+<tr><td>
+	<a href=$pagename?mode=face_browser><font color=blue>Employee Face Browser</font></a><br>
+	<a href=$pagename?mode=companies><font color=blue>Companies</font></a><br>
+	<a href=$pagename?mode=people><font color=blue>People</font></a><br>
+	<a href=$pagename?mode=everything><font color=blue>EVERYTHING</font></a><br>
+	<a href=$pagename?mode=employees_current><font color=blue>Employees - Current</font></a><br>
+	<a href=$pagename?mode=employees_not_current><font color=blue>Employee - Not Current</font></a><br>
+</td></tr>
+
+<tr bgcolor=$fd_color_4><td align=center>
+	<b>Search Contacts</b>
+</td></tr>
+<tr><td>
+
+	";
+
+if (($search_items=="") && ($contacts_last_search_items!="")) {
+	$search_items=$contacts_last_search_items;
+	}
+
+
+if ($search_items!="") {
+	session_register('contacts_last_search_items');
+	$contacts_last_search_items=$search_items;
+	$search_items_input=htmlspecialchars($search_items);
+	$search_items=escapeshellcmd($search_items);
+	
+	$search_items_array=explode(" ",$search_items);
+	$seperator="";
+	$query="select * from contacts where ";
+	while($row=@each($search_items_array)) {
+		$query=$query . $seperator . " ( display_name like '%$row[1]%' or login_name like '%$row[1]%' ) ";
+		$seperator=" or ";
+		}
+	$query=$query . " order by alphasort";
+}
+
+if ($search_items!="") echo "<div style=\"float: right;\"><a href=$pagename?mode=contact_add_wizard><font color=blue>Add a Contact</font></a></div>";
+
+echo"
+<div style=\"float: right;\"><a href=$pagename?mode=search><font color=blue><i>Advanced Search</i></font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<form name=company_search method=post action=\"$pagename\">
+<input type=hidden name=mode value=main>
+<input type=text name=search_items value=\"$search_items_input\">
+<input type=submit value=\"Quick Search\">
+</form>
+";
+
+if ($search_items!="") contact_table($query);
+	echo "
+</td></tr>
+
+</table>
+
+</center>
+";
+
+mh_navs_footer();
+?>

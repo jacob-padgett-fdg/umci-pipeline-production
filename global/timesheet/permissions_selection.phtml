@@ -1,0 +1,38 @@
+<?
+
+echo "<html><body bgcolor=white>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+";
+
+$granted_query="select * from contacts,timesheet_permissions where timesheet_owner = '$global_user->contacts_id' and contacts_id = timesheet_guest order by last_name,first_name,employee_num";
+$granted=@mysql_query($granted_query);
+
+if ( (@mysql_num_rows($granted)) > 0 ) {
+	echo "<table border=1 cellpadding=10 width=100%><tr bgcolor=#dddddd><td align=center><h2>Users with permissions to my timesheets</h2></td></tr></table>";
+	while($row=@mysql_fetch_object($granted)) {
+		echo "<a href=$pagename?mode=permissions_delete&timesheet_guest=$row->contacts_id><font color=blue><i>Remove</i></font></a> $row->last_name, $row->first_name ($row->login_name)<br>";
+		}
+	}
+
+
+echo "<table border=1 cellpadding=10 width=100%><tr bgcolor=#dddddd><td align=center><h2>Users without permissions to my timesheets</h2></td></tr></table>";
+
+$ungranted_query="select * from contacts where umc_emp = 'Y' and current = 'Y' and login_name != '' order by last_name,first_name,employee_num";
+$ungranted=@mysql_query($ungranted_query);
+//tabledump($ungranted_query);
+
+while($row=@mysql_fetch_object($ungranted)) {
+	$search_query="select timesheet_guest from timesheet_permissions where timesheet_owner = '$global_user->contacts_id' and timesheet_guest = '$row->contacts_id'";
+	//echo "<hr>$search_query<hr>";
+	//tabledump($search_query);
+	if ((!(getoneb($search_query))) && ($global_user->contacts_id != $row->contacts_id)) {
+		echo "<a href=$pagename?mode=permissions_add&timesheet_guest=$row->contacts_id><font color=blue>Add</font></a> $row->last_name, $row->first_name ($row->login_name)<br>";
+		}
+	
+	
+	}
+
+
+
+
+?>

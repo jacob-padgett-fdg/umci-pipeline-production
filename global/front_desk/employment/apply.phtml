@@ -1,0 +1,42 @@
+<?
+if ($hr_openings_id!="") $hr_openings_id=addslashes($hr_openings_id);
+if (($application_id=="")&&($application_id_session!="")) $application_id=$application_id_session;
+
+if (($application_id!="")&&($hr_openings_id!="")) {
+	forward("opening_apply&hr_openings_id=$hr_openings_id&application_id=$application_id");
+	exit;
+	}
+
+
+
+echo "
+<center><p>&nbsp;<p>&nbsp;<p>
+<font size=+2>
+<a href=$pagename?mode=application_edit_vitals&app_mode_new=vitals&hr_openings_id=$hr_openings_id><font color=blue>
+New application</font></a><p>
+
+";
+if ($hr_openings_id=="") {
+	echo "
+	or<p>
+	<a href=$pagename?mode=application_find&hr_openings_id=$hr_openings_id><font color=blue>
+	Edit/update application</font></a><p>
+	";
+	} else {
+	echo "
+	or<p>
+	<a href=$pagename?mode=application_find&hr_openings_id=$hr_openings_id><font color=blue>
+	Resubmit application for this position</font></a><p>";
+	}
+
+
+echo "</font>";
+
+
+
+
+
+
+
+
+?>

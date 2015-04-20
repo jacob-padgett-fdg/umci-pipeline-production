@@ -1,0 +1,37 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+@mysql_select_db('mysql');
+$res=@mysql_query("select * from proc");
+
+//tabledump("select * from proc");
+echo "<table border=1 cellspacing=0 cellpadding=5>";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr bgcolor=$fd_color_4><td valign=top>
+			<b>Type:</b> $row->type
+		</td><td valign=top>
+			<b>Name:</b> $row->specific_name
+		</td><td valign=top>
+			<b>Parameters:</b> $row->param_list
+		</td></tr>
+		
+		<tr><td colspan=3>
+<pre>
+drop $row->type if exists $row->specific_name;
+delimiter |
+
+create $row->type $row->specific_name ($row->param_list)
+$row->body
+|
+delimiter ;
+</pre>
+		</td></tr>
+		";
+	}
+echo "</table>";
+mh_navs_footer();
+?>

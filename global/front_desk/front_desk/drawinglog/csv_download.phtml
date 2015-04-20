@@ -1,0 +1,23 @@
+<?
+//$query=addslashes($query);
+$query=ereg_replace("select \* from drawinglog where ","",$query);
+$query="select * from drawinglog where " . $query;
+
+
+header('Expires: 0');
+header('Cache-control: private');
+header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+header('Content-Description: File Transfer');
+header('Content-Type: application/vnd.ms-excel');
+header("Content-disposition: attachment; filename=shop_dwg_log_-_$global_jobinfo->contract_num.xls");
+
+
+//echo "<pre>";
+//echo "<pre>$query</pre><hr>";
+//excel_dump($query);
+csvdump($query);
+//echo "</pre>";
+
+
+
+?>

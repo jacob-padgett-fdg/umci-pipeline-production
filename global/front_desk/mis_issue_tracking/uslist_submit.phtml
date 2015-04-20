@@ -1,0 +1,45 @@
+<?
+
+
+if ($direction=="us") {
+	$count=0;
+	while ($them_id[$count] != "") {
+		$user_id=addslashes($them_id[$count]);
+		//echo "$them_id[$count]<p>";
+		if (!(getoneb("select * from mis_issue_uslist where contacts_id = '$user_id' limit 1"))) {
+			@mysql_query("insert into mis_issue_uslist set contacts_id = '$user_id'");
+			} else {
+			echo "Non-fatal ERROR: ID ($user_id) Already existed in list..<hr>";
+			}
+		$count++;
+		}
+	forward('uslist');
+	exit;
+	}
+
+
+if ($direction=="them") {
+	$count=0;
+	while ($us_id[$count] != "") {
+		$user_id=addslashes($us_id[$count]);
+		//echo "$us_id[$count]<p>";
+		if (getoneb("select * from mis_issue_uslist where contacts_id = '$user_id' limit 1")) {
+			@mysql_query("delete from mis_issue_uslist where contacts_id = '$user_id'");
+			} else {
+			echo "Non-fatal ERROR: ID ($user_id) Already existed in list..<hr>";
+			}
+		$count++;
+		}
+	forward('uslist');
+	exit;
+	}
+
+
+
+
+echo "ERROR: The form was not submitted correctly (no correct direction specified). Please contact your system administrator.";
+exit;
+
+
+
+?>

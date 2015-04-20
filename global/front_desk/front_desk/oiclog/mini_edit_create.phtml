@@ -1,0 +1,23 @@
+<?
+$doc_type="oiclog";
+include ('fd_document_box_header.phtml');
+
+$oic_num=addslashes($oic_num);
+if ($doc_edit_info) die('Application mode error. Please contact your system administrator.');
+$doc_info_old=getoneb("select * from documents where app_reference = '$oic_num' and jobinfo_id = '$doc_info->jobinfo_id' and section = '$doc_info->section' and doc_type = '$doc_type'");
+if (!($doc_info_old)) {
+	@mysql_query("insert into oiclog set oic_number = '$oic_num', section = '$doc_info->section', jobinfo_id = '$doc_info->jobinfo_id'");
+	$doc_info_old=getoneb("select * from documents where app_reference = '$oic_num' and jobinfo_id = '$doc_info->jobinfo_id' and section = '$doc_info->section' and doc_type = '$doc_type'");
+	}
+if ($doc_info_old) {
+	$doc_edit_id=$doc_info_old->doc_id;
+	$doc_edit_info=getoneb("select * from documents where doc_id = '$doc_edit_id'");
+	if ($one_selection_only=='Y') {
+		$doclistres=@mysql_query("select * from documents_links where doca = '$doc_info->doc_id'");
+		while ($dlres=@mysql_fetch_object($doclistres)) @mysql_query("call doc_link_delete('$dlres->doca','$dlres->docb')");
+		}
+	@mysql_query("call doc_link('$doc_info->doc_id','$doc_edit_id','$global_user_id','doc_linker2 (doc created)')");
+	include("mini_edit.phtml");exit;
+	}
+die("Application error. Record not added.");
+?>

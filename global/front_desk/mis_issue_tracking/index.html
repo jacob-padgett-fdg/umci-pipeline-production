@@ -1,0 +1,33 @@
+<?
+require("settings.cfg");
+require('global-auth.inc');
+
+require("querylib.inc");
+
+echo "
+
+
+
+<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"15; URL=http://kbox/userui/ticket_list.php?QUEUE_ID=1\">
+<body bgcolor=white>
+<font size=+1><b>The location for this page has changed! Please update your bookmarks accordingly.
+After a short time you will be forwarded to the correct location or you can 
+
+<a href=http://kbox/userui/ticket_list.php?QUEUE_ID=1>
+<font color=blue>here</font></a> to continue.
+";
+
+
+
+
+/*
+$it_category_id="1";
+if ($mode!="") {
+	if (is_readable("$mode.phtml")) { 
+		include("$mode.phtml");  } else { include ("badmode.phtml"); }
+	} else {
+	$mode="main";
+	include ("main.phtml");
+	}
+*/
+?>

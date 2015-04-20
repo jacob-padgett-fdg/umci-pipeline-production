@@ -1,0 +1,66 @@
+<?
+session_write_close();
+$mouseovercolor="blue";
+$mouseoutcolor="";
+$selectedcolor="white";
+$jobinfo_id=addslashes($jobinfo_id);
+
+$new_tasks_style="";
+$task_summary="";
+$pal_active=getone("select sum(1) as total from pal_buddies where jobinfo_id = '$jobinfo_id' and owner_id = '$global_user_id' and status = 'active' and pass_signed_off = 'N'");
+if ($pal_active->total!="") {
+	$pal_new=getone("select sum(1) as total from pal_buddies where jobinfo_id = '$jobinfo_id' and owner_id = '$global_user_id' and status = 'active' and viewed = 'N'");
+	if ($pal_new->total=="") {
+		$pal_new->total='0';
+		} else {
+		$new_tasks_style="border: 1px solid red; background: yellow;";
+		}
+	$task_summary="<font size=-1><i>&nbsp;($pal_new->total/$pal_active->total)</i></font>";
+	}
+
+if ($current_app=='front_desk') $class="selectnav";
+else $class="normnav";
+
+echo "
+<div onmouseover=my_tasks_menu_hold() onmouseout=my_tasks_menu_release() id=\"my_tasks\" style=\"z-index: 2; left: 200px; top: 200px; border: 0px solid black; max-height: 600; overflow: auto; max-width: 400px; background: #ffffff; position: absolute; display: none;\"></div>
+<div onmouseover=my_tasks_menu_hold() onmouseout=my_tasks_menu_release() id=\"my_task_items_div\" style=\"z-index: 2; border: 0px solid black; max-height: 600; overflow: auto; max-width: 400px; background: #ffffff; position: absolute; display: none;\"></div>
+<div onmouseover=my_tasks_menu_hold() onmouseout=my_tasks_menu_release() id=\"my_pal_details_div\" style=\"z-index: 2; border: 0px solid black; max-height: 600; overflow: auto; max-width: 400px; background: #ffffff; position: absolute; display: none;\"></div>
+<table class=noprint cellspacing=0 cellpadding=4 style=\"border: 0px solid black;border-collapse: collapse;\" width=100%>
+<tr class=noprint><td id=\"fd_fd_nav_button\" class=\"$class\" onclick=\"document.location='/global/front_desk$devel/?mode=main';\"><b>Front&nbsp;Desk</b></td></tr>
+<tr class=noprint><td class=normnav style=\"$new_tasks_style\" id=\"my_tasks_nav_button\" onclick=\"toggle_my_tasks_div($jobinfo_id)\"><b>My&nbsp;Tasks</b>$task_summary
+</td></tr>";
+
+$onclick_base="document.location='/global/front_desk$devel/";
+
+
+if ($devel=="") {
+	$res=@mysql_query("select * from front_desk_job_applications natural join front_desk_applications where jobinfo_id = '$jobinfo_id' and front_desk_applications.devel_only = 'N' order by sort_priority,app_short_description");
+	} else {
+	$res=@mysql_query("select * from front_desk_job_applications natural join front_desk_applications where jobinfo_id = '$jobinfo_id' order by sort_priority,app_short_description");
+	}
+
+
+while($row=@mysql_fetch_object($res)) {
+	$onclick=$onclick_base . "$row->app_name$devel/'";$class="normnav";
+	if ($current_app==$row->app_name) $class="selectnav";
+	//if ($row->app_short_description=="OIC Log") {
+	//	if ($global_jobinfo->oic_prefix!="") $row->app_short_description=$global_jobinfo->oic_prefix . " Log";
+	//	}
+	$row->app_short_description=ereg_replace(" ","&nbsp;",$row->app_short_description);
+	echo "<tr><td class=\"$class\" onclick=\"$onclick\"><b>$row->app_short_description</b></td></tr>";
+	}
+
+$app='pal';$onclick=$onclick_base . "$app$devel/'";$class="normnav";
+if ($current_app==$app) { /*$onclick="";*/$class="selectnav"; }
+echo "<tr><td class=\"$class\" onclick=\"$onclick\"><b>P.A.L.</b></td></tr>";
+
+$app='inbound';$onclick=$onclick_base . "$app$devel/'";$class="normnav";
+$inbound_scans=scan_count($jobinfo_id);
+if ($current_app==$app) { 
+	$onclick="";$class="selectnav"; 
+	}
+$buttoncolor="";
+if ($inbound_scans>0) $buttoncolor=$fd_color_3;
+echo "<tr><td class=\"$class\" style=\"background: $buttoncolor;\" onclick=\"$onclick\"><b>Inbound</b>&nbsp;($inbound_scans)</td></tr>
+</table>";
+?>

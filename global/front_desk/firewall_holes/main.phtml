@@ -1,0 +1,58 @@
+<?
+require_once('querylib.inc');
+
+$vp_info=getone("select * from misc_data where data_type = 'firewall_hole_viewpoint'");
+$fx_info=getone("select * from misc_data where data_type = 'firewall_hole_fieldcentrix'");
+
+
+$vp_perms=getoneb("select * from misc_data where data_type = firewall_access_vp and data = '$global_user->contacts_id'");
+$fx_perms=getoneb("select * from misc_data where data_type = firewall_access_fx and data = '$global_user->contacts_id'");
+
+
+echo "<html><head><title>UMC Firewall Hole Puncher</title></head><body bgcolor=#ffffff>
+<h2><center>Hours of Access Remaining</center></h2>
+<hr>
+";
+
+if ($adminuser)	echo "<a href=$pagename?mode=userperms><font color=blue>User Permissions</font></a>";
+
+echo "
+<form name=fw_holes method=post action=\"$pagename\">
+<input type=hidden name=mode value='firewall_holes_submit'>
+<table border=2>
+<tr><td>
+	Viewpoint Hrs Remaining
+</td><td>
+	";
+	if (($vp_perms)||($adminuser)) 
+	echo "<input type=text size=4 name='vp_hours' value='$vp_info->data'>";
+	else 
+	echo "$vp_info->data<input type=hidden size=4 name='vp_hours' value='$vp_info->data'>";
+echo "
+</td></tr>
+
+<tr><td>
+	Fieldcentrix Hrs Remaining
+</td><td>";
+	if (($fx_perms)||($adminuser)) 
+	echo "<input type=text size=4 name='fx_hours' value='$fx_info->data'>";
+	else
+	echo "$fx_info->data<input type=hidden size=4 name='fx_hours' value='$fx_info->data'>";
+echo "
+</td></tr>
+
+<tr><td colspan=2 align=right>
+<input type=submit value=\"Change\">
+</td></tr>
+
+</table>
+</form>
+<i>Hours are reduced once an hour. <p>Add an extra hour just to make sure it doesn't get reduced earlier than you expected.</i>
+
+<hr>
+<a href=$pagename_up><font color=blue>Exit</font></a>
+</body>
+</html>
+";
+
+?>

@@ -1,0 +1,143 @@
+<?
+$jobinfo_id=addslashes($jobinfo_id);
+$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+
+if ($rename_area_id!="") {
+	if ($rename_name!="") $rename_name=addslashes($rename_name);
+	else $rename_name="??????";
+	$rename_area_id=addslashes($rename_area_id);
+	//echo "update front_desk_bim_areas set name = '$name' where area_id = '$rename_area_id'<hr>";exit;
+	@mysql_query("update front_desk_bim_areas set name = '$rename_name' where area_id = '$rename_area_id'");
+	forward("bim_setup&jobinfo_id=$jobinfo->jobinfo_id");
+	exit;
+	}
+
+//die("went right past rename_area_id");
+
+
+
+if ($delete_area_id!="") {
+	$delete_area_id=addslashes($delete_area_id);
+	@mysql_query("delete from front_desk_bim_areas where area_id = '$delete_area_id'");
+	} else {
+
+	$area_id=addslashes($area_id);
+	$field=addslashes($field);
+
+	switch ($field) {
+		case "plumb_mep_id":
+		case "sm_sheets":
+		case "sm_sheets_orig":
+		case "sm_mep_id":
+		case "plumb_sheets":		
+		case "plumb_sheets_orig":	$value=addslashes($value);break;;
+
+		case "sleeving_decking": 	$value=vali_date($value);break;;
+		
+		default:					$field=$field . "_input";
+									$value=vali_date($value);
+									break;;
+		}
+
+
+		//die("<hr>update front_desk_bim_areas set $field = '$value' where area_id = '$area_id'<hr>");
+		if ($area_id!="") @mysql_query("update front_desk_bim_areas set $field = '$value' where area_id = '$area_id'");
+
+		}
+/////////////////////////////////////////////////////////////////////////////////////
+//	OK, there has been a change to the schedule.. Please recalculate everything
+//	from scratch.. 
+/////////////////////////////////////////////////////////////////////////////////////
+
+@mysql_query("update front_desk_bim_areas set 
+	first_pass = '0000-00-00',
+	second_pass = '0000-00-00',
+	third_pass = '0000-00-00',
+	sign_off = '0000-00-00',
+	sm_fab_due = '0000-00-00'
+	where jobinfo_id = '$jobinfo->jobinfo_id'");
+// OK, we're back to scratch, lets calculate
+$area_list_res=@mysql_query("select * from front_desk_bim_areas where jobinfo_id = '$jobinfo->jobinfo_id' order by sort_priority");
+$last_area="";
+$last_area->sign_off="0000-00-00";
+while ($area=@mysql_fetch_object($area_list_res)) {
+	$area->first_pass=$area->first_pass_input;
+	if ($area->first_pass_input=="0000-00-00") $area->first_pass=$last_area->sign_off;
+	
+	$area->second_pass=$area->second_pass_input;
+	if ($area->second_pass_input=="0000-00-00") if ($area->first_pass!="0000-00-00") $area->second_pass=date('Y-m-d',strtotime($area->first_pass . " + 7 days"));
+
+	$area->third_pass=$area->third_pass_input;
+	if ($area->third_pass_input=="0000-00-00") if ($area->second_pass!="0000-00-00") $area->third_pass=date('Y-m-d',strtotime($area->second_pass . " + 7 days"));
+
+	$area->sign_off=$area->sign_off_input;
+	if ($area->sign_off_input=="0000-00-00") if ($area->third_pass!="0000-00-00") $area->sign_off=date('Y-m-d',strtotime($area->third_pass . " + 7 days"));
+	
+	$area->sm_fab_due=$area->sm_fab_due_input;
+	if ($area->sm_fab_due_input=="0000-00-00") {
+		if ($area->sleeving_decking!="0000-00-00") $area->sm_fab_due=date('Y-m-d',strtotime($area->sleeving_decking . " + 2 weeks"));
+		}
+	
+	$area_update_query="update front_desk_bim_areas set
+		first_pass = '$area->first_pass',
+		second_pass = '$area->second_pass',
+		third_pass = '$area->third_pass',
+		sign_off = '$area->sign_off',
+		sm_fab_due = '$area->sm_fab_due'
+		where area_id = '$area->area_id'";
+	$area_res=@mysql_query($area_update_query);
+	if (!($area_res)) die("query failed: <hr>$area_update_query<hr>");
+	$last_area=$area;
+	}
+
+//////////////////////////////////////////////////////
+//	OK, total the sheets and update jobinfo
+//////////////////////////////////////////////////////
+//tabledump("select sum(sm_sheets) as sm_total,sum(plumb_sheets) as plumb_total from front_desk_bim_areas where jobinfo_id = '$jobinfo->jobinfo_id'");die();
+$sheets=getoneb("select sum(sm_sheets) as sm_total,sum(plumb_sheets) as plumb_total from front_desk_bim_areas where jobinfo_id = '$jobinfo->jobinfo_id'");
+@mysql_query("update jobinfo set bim_estimated_pipe_sheets = '$sheets->plumb_total', bim_estimated_sheet_sheets = '$sheets->sm_total' where jobinfo_id = '$jobinfo->jobinfo_id'");
+
+//////////////////////////////////////////////////////
+//	OK, now lets make sure all of our "areas" are in
+//	issue tracker if they need to be.
+//////////////////////////////////////////////////////
+
+
+forward("bim_setup&jobinfo_id=$jobinfo->jobinfo_id");
+exit;
+
+//$app_info=getoneb("select * from front_desk_applications where app_name = 'issue_resolution'");
+//$app_on=getoneb("select * from front_desk_job_applications where jobinfo_id = '$jobinfo->jobinfo_id' and fd_app_id = '$app_info->fd_app_id' and current = 'Y'");
+/*
+if ($jobinfo) {
+	if ($app_on) {
+		$mep_app=getoneb("select * from issue_res_application where jobinfo_id = '$jobinfo->jobinfo_id' and issue_res_application_name = 'MEP Coordination' limit 1");
+		if (!($mep_app)) {
+			mysql_query("insert into issue_res_application set jobinfo_id = '$jobinfo->jobinfo_id', issue_res_application_name = 'MEP Coordination', issue_res_application_description = 'Automatically created by BIM control panel', issue_res_application_active = 'Y'");
+			//echo "<hr>insert into issue_res_application set jobinfo_id = '$jobinfo->jobinfo_id', issue_res_application_name = 'MEP Coordination', issue_res_application_description = 'Automatically created by BIM control panel', issue_re_application_active = 'Y'<hr>";
+			$mep_app=getoneb("select * from issue_res_application where jobinfo_id = '$jobinfo->jobinfo_id' and issue_res_application_name = 'MEP Coordination' limit 1");
+			}
+		if (!($mep_app)) die("Application error: Couldn't creat MEP Coordination folder in issue tracker");
+		}
+	$area_list_res=@mysql_query("select * from front_desk_bim_areas where jobinfo_id = '$jobinfo->jobinfo_id' order by sort_priority");
+	while ($area=@mysql_fetch_object($area_list_res)) {
+		$category=getoneb("select * from issue_res_category where issue_res_application_id = '$mep_app->issue_res_application_id' and category_name = '$area->name' limit 1");
+		if (!($category)) {
+			@mysql_query("insert into issue_res_category set issue_res_application_id = '$mep_app->issue_res_application_id', category_name = '$area->name'");
+			$category=getoneb("select * from issue_res_category where issue_res_application_id = '$mep_app->issue_res_application_id' and category_name = '$area->name' limit 1");
+			}
+		if (!($category)) {
+			echo "<hr>Error creating category '$area->name' in issue tracker.. Please look into it";
+			sleep(10);
+			}
+		
+		
+		}
+	
+	
+	}
+
+*/
+
+
+?>

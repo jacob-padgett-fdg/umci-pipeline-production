@@ -1,0 +1,41 @@
+<?
+require('global_connect_rw.phtml');
+require('querylib.inc');
+
+
+$url=$REQUEST_URI;
+
+$url_end=ereg_replace("^.*/","",$url);
+$login_name=ereg_replace("\..*$","",$url_end);
+
+//echo "<hr>$login_name<hr>";
+$contact_info=getoneb("select * from contacts where login_name = '$login_name'");
+
+if (!($contact_info)) die("Use error. Either login name not set or login name is duplicated somewhere.");
+
+
+$file_info=getoneb("select * from webfile_files where file_group_id = '$contact_info->photo_file_group_id'");
+
+$link=webfile_image_icon($file_info->files_id,array('height'=>'154'));
+$loadlink="https://pipeline.umci.com" . $link;
+//echo $loadlink;
+
+header("Content-type: image/png");
+readfile($loadlink);
+//$UNC="/global/webfile/index.html/files/$file_info->file_name?mode=webfile_download&files_id=$file_info->files_id"; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

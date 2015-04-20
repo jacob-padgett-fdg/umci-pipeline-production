@@ -1,0 +1,193 @@
+<?
+require_once('querylib.inc');
+if ($issue_id=="") {
+	echo "ERROR: Missing or invalid issue_id. Please contact your system administrator.<p>";
+	exit;
+	}
+
+$issue_id=addslashes($issue_id);
+$issue_information=getone("select * from mis_issue_index where issue_id = '$issue_id'");
+
+$issue_information->issue_create_date=invali_date($issue_information->issue_create_date);
+if ($issue_information->status=="current") $current_project="checked"; else $current_project="";
+$issue_information->requested_completion=invali_date($issue_information->requested_completion);
+$issue_creator=getone("select * from contacts where contacts_id = '$issue_information->creator'");
+
+if ($issue_information->status=="initialized") {
+	include("initialize_issue_wizard.phtml");
+	exit;
+	}
+
+if (($issue_information->status=="complete")||($issue_information->status=="approved")) {
+	include("issue_edit_completed.phtml");
+	exit;
+	}
+
+//$current_history_info=getone("select * from mis_issue_history where issue_id = '$issue_id' and status = 'current'");
+$current_history_info=get_current_fixed($issue_id);
+
+
+if ($current_history_info->us_or_them=="us") $us_selected="selected";
+if ($current_history_info->us_or_them=="them") $them_selected="selected";
+$issue_information->expected_completion=invali_date($issue_information->expected_completion);
+$current_history_info->expected_completion_date=invali_date($current_history_info->expected_completion_date);
+$plus_day=weekday_advance($issue_information->expected_completion,1);
+$plus_week=weekday_advance($issue_information->expected_completion,5);
+$plus_2_weeks=weekday_advance($issue_information->expected_completion,10);
+
+echo "<html><head><title>Viewing issue $issue_information->issue_id - $issue_information->name</title></head><body bgcolor=#ffffff>
+
+<a href=$pagename?mode=$mis_issue_last_main_action><font color=blue>Return to $mis_issue_last_action_name</font></a><br>
+<a href=$pagename?mode=category_show&it_category_id=$issue_information->it_category_id><font color=blue>This issue's category</font></a><br>
+
+<form name=issue_edit method=post action=$pagename>
+<input type=hidden name=mode value=issue_edit_submit>
+<input type=hidden name=issue_id value=$issue_information->issue_id>
+<input type=hidden name=issue_history_id value=\"$current_history_info->issue_history_id\">
+<input type=hidden name=issue_completed value='N'>
+
+<table border=0 cellpadding=7 cellspacing=0>
+<tr bgcolor=#dddddd><td colspan=3 align=center>
+	<font size=+1>Created by <a target=contact_view_win href=https://pipeline.umci.com/global/contacts/contactview.phtml?contacts_id=$issue_creator->contacts_id><font color=blue>$issue_creator->first_name $issue_creator->last_name</font></a> on $issue_information->issue_create_date</font>
+</td></tr>
+<tr bgcolor=#dddddd><td>
+	<b><a href=javascript:supersede_item($issue_information->issue_id);><font color=blue>Issue #</b> $issue_information->issue_id</font></a>
+</td><td>
+	<b><a href=javascript:namechange()>Subject</a></b> $issue_information->name
+	<input type=hidden name=name value=\"$issue_information->name\">
+	<script>
+	function nuke_the_record() {
+		if (confirm('Nuke the record.. Are you sure?')) document.location='$pagename?mode=nuke_record&issue_id=$issue_information->issue_id';
+		}
+	function supersede_item (issue_id) {
+		if(confirm(\"You can't change this, but can point this item to another existing issue. Continue?\")) {
+			open('$pagename?mode=supersede_selection&issue_id=' + issue_id,'supersede_select_win','width=500,height=400,scrollbars=yes');
+			}
+		}
+	function namechange() {
+		open('$pagename?mode=namechange','namechange','width=400,height=400');
+		}
+	</script>
+</td><td align=left>
+	<a href=javascript:change_category();><font color=blue><b>Change Category</b></font></a>
+	<script>
+	function change_category() {
+		//alert($issue_id);
+		if(confirm('Are you sure you want to move this to another category?')) {
+			open('$pagename?mode=issue_change_category&issue_id=$issue_id','issue_tracker_change_category','width=500,height=400,scrollbars=yes');
+			}
+		
+		
+		}
+	</script>
+</td></tr>
+
+<tr><td>
+	<b>Initial Description</b>
+</td><td colspan=4>
+	$issue_information->description
+</td></tr>
+
+<tr><td>
+	<b>This is a current project</b>
+</td><td>
+	<input type=checkbox name=current_project $current_project>
+</td</tr>
+
+<tr><td>
+	<b>Priority</b>
+</td><td>
+	";dropbox("select priority,priority_text from mis_issue_priorities order by priority",$issue_information->priority);echo"
+</td></tr>
+
+<tr><td>
+	<b>Expected Completion Date</b><br>
+	";datebox("$issue_information->expected_completion","issue_edit.expected_completion");echo"
+</td><td>
+	<b>Requested Completion Date</b><br>
+	$issue_information->requested_completion
+</td></tr>
+
+<tr><td>
+	<b>IT Days Required (integer)</b>
+</td><td>
+	<input type=text size=3 name=it_days_required value=\"$issue_information->it_days_required\">
+</td</tr>
+
+<tr><td valign=top colspan=1>
+	<b>Notes/Action</b><br>
+	<textarea name=next_action rows=5 cols=25></textarea>
+</td><td valign=top colspan=1>
+	<b>IT Notes</b><br>
+	<textarea name=it_notes rows=5 cols=25></textarea>
+</td></tr>
+
+<tr><td valign=top colspan=1>
+	<b>Next Action Date</b><br>";
+	datebox($current_history_info->expected_completion_date,'issue_edit.next_action_date');echo "<input type=button onclick=\"document.issue_edit.next_action_date.value=document.issue_edit.expected_completion.value;\" value=\"Completion\"><p>
+</td><td>
+	<b>Next Action Responsibility</b><br>
+	<select name=us_or_them size=2 onchange=\"document.initialize.us_or_them_touched.value='Y'\";>
+	<option value=us $us_selected>IT
+	<option value=them $them_selected>User(s)
+	</select>
+</td></tr>
+
+<tr><td rowspan=2>
+	<b>IT Responisibility</b><br>
+	";
+	$uslistres=@mysql_query("select * from contacts,mis_issue_uslist where contacts.contacts_id = mis_issue_uslist.contacts_id order by last_name,first_name");
+	$size=@mysql_num_rows($uslistres);
+	echo "<select name=us_ids[] size=$size multiple>";
+	while($usrow=@mysql_fetch_object($uslistres)) {
+		if(getoneb("select * from mis_issue_concerned_parties where issue_history_id = '$current_history_info->issue_history_id' and contacts_id = '$usrow->contacts_id' and us_or_them = 'us'"))
+			echo "<option value=\"$usrow->contacts_id\" selected>$usrow->last_name, $usrow->first_name ($usrow->login_name)";
+		else
+			echo "<option value=\"$usrow->contacts_id\">$usrow->last_name, $usrow->first_name ($usrow->login_name)";
+		}
+	echo"
+	</select>
+</td><td valign=top>
+	<a href=javascript:add_or_remove_users($issue_information->issue_id)><font size=+2 color=blue>Change Users</font></a>
+</td></tr>
+<tr><td valign=bottom>
+	<b>Silent Update:</b>&nbsp;<input type=checkbox name=update_quiet>
+</td></tr>
+	
+<tr><td colspan=1>
+	<input type=submit value=Submit>
+	<input type=button value='Mark Completed' onclick=mark_completed()>
+</td><td colspan=2 align=right>
+	<input type=button value='Got /dev/null?' onclick=nuke_the_record();>
+</td></tr>
+
+</table>
+</form>
+<script>
+function mark_completed() {
+	if (confirm('Mark the issue as complete?')) {
+		document.issue_edit.issue_completed.value='Y';
+		document.issue_edit.submit();
+		}
+	}
+
+function add_or_remove_users(issue_id) {
+	open(\"$pagename?mode=issue_edit_userchange&issue_id=\" + issue_id,\"mis_issue_add_users\",\"width=500,height=400,scrollbars=yes\");
+	}
+</script>
+";
+
+
+$history_query="select * from mis_issue_history where issue_id = '$issue_id' order by issue_history_id desc";
+$res=@mysql_query($history_query);
+
+echo "<table border=0 cellspacing=0 cellpadding=10>
+<tr bgcolor=#dddddd><td>Next Action</td><td>Notes</td><td>IT Notes</td><td>Status</td><td>Next Action Date</td><td>Completed</td><td>Responsibility</td><td>Users</td><td>IT</td></tr>";
+while($row=@mysql_fetch_object($res)) issue_history_print($row);
+echo "</table>";
+
+
+
+
+
+?>

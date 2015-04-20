@@ -1,0 +1,20 @@
+<?
+require('header.phtml');
+require_once('querylib.inc');
+
+
+$query="select * from hr_openings where active = 'Y' order by deadline";
+
+echo "
+<a href=$pagename?mode=eeoc_review_search><font color=blue>Review EEOC Submissions</font></a><p>
+
+<a href=$pagename?mode=opening_edit><font color=blue>Add a listing</font></a>
+<p><font size=+2><b>Current Listings</b></font><hr>";
+list_openings($query);
+
+
+$query="select * from hr_openings where active != 'Y' order by deadline desc";
+echo "
+<p><font size=+2><b>Old Listings</b></font><hr>";
+list_openings($query);
+?>

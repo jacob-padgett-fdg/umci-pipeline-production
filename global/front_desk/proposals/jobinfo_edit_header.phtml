@@ -1,0 +1,36 @@
+<?
+
+///////////////////////////////////////////////////////////////////////////
+	
+echo"
+<script>
+function open_utils() {
+	open('$pagename?mode=jobinfo_edit_utils&jobinfo_id=$jobinfo->jobinfo_id','jobinfo_util_win','height=500,width=600');
+	}
+</script>";
+////////////////////////////////////////////////////////////////////////
+
+require("sidemenu_jobinfo.phtml");
+
+$id_text="Job&nbsp;Number::&nbsp;$jobinfo->contract_num";
+
+echo "
+<div class=\"navigation\">
+
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+<tr><td width=100%>
+		<b>$id_text</b>&nbsp;
+</td><td>
+	&nbsp;<a href=javascript:open_utils()><font color=blue>UTILITIES</font></a>
+</td><td>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a href=javascript:apply_changes();><font color=blue>Apply</font></a>&nbsp;&nbsp;&nbsp;
+</td><td>
+	<a href=javascript:document.jobinfo_edit.submit();><font color=blue>Finish</font></a>&nbsp;&nbsp;&nbsp;
+</td><td>
+	<a href=$pagename?mode=main><font color=blue>Cancel</font></a>
+</td></tr>
+</table>
+</div>
+";
+
+?>

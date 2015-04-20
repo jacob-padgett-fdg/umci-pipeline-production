@@ -1,0 +1,14 @@
+<?
+if (!($adminuser)) die_security();
+
+$section_id=addslashes($section_id);
+$section_info=getoneb("select * from ${application_name}_sections where section_id = '$section_id'");
+
+if (!($section_info)) die("Section error! (Application error) <p> Please contact your system administrator!");
+
+@mysql_query("update ${application_name}_sections set default_section = 'N' where jobinfo_id = '$section_info->jobinfo_id'");
+@mysql_query("update ${application_name}_sections set default_section = 'Y' where section_id = '$section_info->section_id'");
+forward('manage_sections');
+
+
+?>

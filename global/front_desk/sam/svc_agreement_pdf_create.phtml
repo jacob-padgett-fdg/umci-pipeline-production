@@ -1,0 +1,46 @@
+<?
+
+
+set_time_limit("900");
+if ($agreement_id=="") die ("ERROR: Fatal application error. Agreement_id is missing. Pleast contact your system administrator");
+$show_exec_summary=0;
+
+$agreement_id=escapeshellcmd($agreement_id);
+if (!($agreement_info)) $agreement_info=load_agreement_info($agreement_id);
+
+require_once("pdf_lib2.inc");
+$pdf =& new Cezpdf('letter','portrait');
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+$pdf=pdf_title_page($agreement_id,$pdf);
+$pdf=pdf_sig_page($agreement_id,$pdf);
+//echo "Hello";exit;
+$pdf->ezStartPageNumbers($pdf->ez['pageWidth'] - $pdf->ez['rightMargin'],$pdf->ez['bottomMargin'] - 52,9,"left","Page {PAGENUM} of {TOTALPAGENUM}");
+$pdf=pdf_tac_pages($pdf);
+$pdf=pdf_scope_of_service($agreement_info->agreement_type_id,$pdf);
+$pdf=pdf_equipment_list($agreement_info->agreement_id,$pdf,$show_exec_summary);
+// Task lists
+	$tl_query=agreement_tasks_query($agreement_id);
+	$tl_res=@mysql_query($tl_query);
+	while ($tl_row=@mysql_fetch_object($tl_res)) {
+		$pdf=pdf_task_list($tl_row->task_id,$pdf);
+		//echo "<hr>$tl_row->task_id";
+		}
+//echo "$tl_query";exit;
+
+
+if ($force_stream=='Y') {
+	$pdf->ezStream();
+	exit;
+	}
+
+$file_contents=$pdf->ezOutput();
+
+/////////////////////////////////////////////////////
+// This should be changed to non-devel once working..
+/////////////////////////////////////////////////////
+include ("../webfile$devel/local.inc");
+$file_group_info=create_file_group($agreement_info->agreement_name);
+$file_id=add_file_from_var_contents($file_group_info->file_group_id,$file_contents,"service_agreement_$agreement_info->agreement_id$agreement_info->current_doc_revision.pdf");
+apply_default_permissions($file_id,"sam");
+@mysql_query("insert into svc_agreement_documents set agreement_id = '$agreement_info->agreement_id', file_group_id = '$file_group_info->file_group_id', create_date = now()");
+?>

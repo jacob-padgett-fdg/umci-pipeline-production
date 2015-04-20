@@ -1,0 +1,43 @@
+<?
+require('header.phtml');
+
+$query="select * from svc_agreement_materials where sched_index_id = '$sched_index_id' order by name";
+$res=@mysql_query($query);
+
+echo "<h2>Materials List</h2><hr>
+<a href=\"javascript:opener.document.location.reload();self.close();\"><font color=blue>Done</font></a><p>
+<a href=$pagename?mode=svc_agreement_material_edit&sched_index_id=$sched_index_id><font color=blue><i>Add</i></font></a>
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td>
+	<b>Name</b>
+</td><td>
+	<b>Unit</b>
+</td><td>
+	<b>Qty</b>
+</td><td>
+	<b>Unit Cost</b>
+</td><td>
+	<b>Total</b>
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$info=materials_item_info($row->materials_id);
+	echo "<tr><td>
+			<a href=$pagename?mode=svc_agreement_material_edit&materials_id=$info->materials_id><font color=blue>$info->name</font></a>
+		</td><td>
+			$info->qty_name
+		</td><td>
+			$info->qty
+		</td><td>
+			$info->cost
+		</td><td>
+			$info->total_cost
+		</td></tr>";
+	}
+
+echo "</table>";
+
+
+
+?>

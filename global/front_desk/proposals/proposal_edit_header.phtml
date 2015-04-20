@@ -1,0 +1,52 @@
+<?
+
+///////////////////////////////////////////////////////////////////////////
+	
+echo"
+<script>
+function open_utils() {
+	open('$pagename?mode=proposal_edit_utils&bidlist_id=$bid_info->bidlist_id','proposal_edit_win','height=500,width=600');
+	}
+</script>";
+////////////////////////////////////////////////////////////////////////
+
+require("sidemenu.phtml");
+
+$id_text="Proposal/Bid:&nbsp;$bid_info->proposal_num";
+$lead_mode=false;
+if ($mode=="lead_edit") {
+	$id_text="Lead:&nbsp;$bid_info->bidlist_id";
+	$lead_mode=true;
+	}
+
+echo "
+<div class=\"navigation\">
+
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+<tr><td width=100%>
+		<b>$id_text</b>&nbsp;<i>($bid_info->status)</i>
+</td><td>
+	&nbsp;<a href=javascript:open_utils()><font color=blue>UTILITIES</font></a>
+</td><td>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a href=javascript:apply_changes();><font color=blue>Apply</font></a>&nbsp;&nbsp;&nbsp;
+</td><td>
+	<a href=javascript:document.bidlist_edit.submit();><font color=blue>Finish</font></a>&nbsp;&nbsp;&nbsp;
+</td><td>
+	<a href=$pagename?mode=main><font color=blue>Cancel</font></a>
+</td></tr>
+</table>
+</div>
+";
+
+if (($bid_info->project=="")&&($bid_info->status!="Lead")&&($bid_info->status!="Dead Lead")) {
+echo "
+<div class=\"bidlistpu\" id=\"bidlist_question\">
+	<p>
+	<center><b>Would you like this item on the bidlist?</b><p>
+	<a href=javascript:set_bidlist_yes();><font color=blue>Yes</font></a> or <a href=javascript:set_bidlist_no();><font color=blue>No</font></a><p>
+	</center>
+</div>
+";
+}
+
+?>

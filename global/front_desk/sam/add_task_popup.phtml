@@ -1,0 +1,20 @@
+<?
+//require("header.phtml");
+if ($el_id!="") $el_id=addslashes($el_id);
+else die("el_id: invalid (blank)");
+
+if ($task_id!="") $task_id=addslashes($task_id);
+else die("task_id: invalid (blank)");
+
+schedule_equip_index_set($el_id,$task_id);
+
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+exit;
+
+
+?>

@@ -1,0 +1,59 @@
+<?
+if ($jobinfo_id=="") die("Job Error: You must specify a job for this interface context.");
+$jobinfo_id=addslashes($jobinfo_id);
+$fd_manager=fd_manager($jobinfo_id,$global_user_id);
+if (!(($adminuser)||($fd_manager))) die_security();
+//tabledump("select * from contacts_groups where jobinfo_id = '$jobinfo_id' order by description");
+$i_am_the_pm=pm_for_this_job();
+
+
+if ($remove_group!="") {
+	$remove_group=addslashes($remove_group);
+	$memberes=@mysql_query("select * from contacts_groups_members where group_id = '$remove_group'");
+	$membercount=@mysql_num_rows($memberes);
+	if ($membercount!=0) {
+		echo "<b>ERROR:</b> Only remove empty groups!";
+		} else {
+		@mysql_query("delete from contacts_groups where group_id = '$remove_group'");
+		}
+	}
+
+if ($group_add!="") {
+	$group_add=addslashes($group_add);
+	@mysql_query("insert into contacts_groups set jobinfo_id = '$jobinfo_id', description = '$group_add', login_required = 'Y'");
+	}
+
+echo "
+<table border=0 cellspacing=0 cellpadding=3 id=project_teams>
+";
+$res=@mysql_query("select * from contacts_groups where jobinfo_id = '$jobinfo_id' order by description");
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+				<a oncontextmenu=\"javascript:my_context_menu($row->group_id);\" href=javascript:show_group($row->group_id)><font color=blue>$row->description</font></a>
+			</td><td>
+				";
+				$memberes=@mysql_query("select * from contacts_groups_members where group_id = '$row->group_id'");
+				$membercount=@mysql_num_rows($memberes);
+				if ($membercount < 1) {
+					echo "<a href=javascript:remove_group($row->group_id);><font color=blue><i>Remove</i></font></a>";
+					} else {
+					echo "$membercount&nbsp;Members";
+					}
+				if ($i_am_the_pm) echo"&nbsp;&nbsp;&nbsp;&nbsp;<a href=javascript:set_group_permissions($row->group_id);><font color=blue><i>Permissions</i></font></a>";
+				echo"
+			</td></tr>";
+	}
+
+echo "
+
+<tr><td>
+	<form onsubmit=\"return false;\"  style=\"display: inline;\" name=group_add method=post action=$pagename>
+	<input onchange=\"group_add(document.group_add.description.value);\" type=text size=15 name=description>
+	</form>
+</td><td>
+	<a href=javascript:group_add(document.group_add.description.value);><font color=blue>ADD</font></a>
+</td></tr>
+
+
+</table>";
+?>

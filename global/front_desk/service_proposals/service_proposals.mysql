@@ -1,0 +1,34 @@
+drop table if exists svc_proposals;
+create table svc_proposals (
+	svc_proposals_id int not null auto_increment,
+	sales_person int not null,
+	proposal_date date,	
+	proposal_daily_count int not null,
+	customer char(50),
+	description char(254),
+	type char(30),
+	proposal_amount decimal (8,2) default '0.00',
+	projected_bill_date date,
+	probability int default '0',
+	estimated_hours decimal (8,2) default '0.00',
+	status char (30),
+	workorder_num char(40),
+	beaten_by char(100),
+	last_modified timestamp,
+	primary key (svc_proposals_id)
+	);
+
+drop table if exists svc_proposals_status;
+create table svc_proposals_status (
+	svc_proposals_status_id int not null auto_increment,
+	status char (50),
+	primary key (svc_proposals_status_id)
+	);
+
+
+drop table if exists svc_proposals_type;
+create table svc_proposals_type (
+	svc_proposals_type_id int not null auto_increment,
+	type char (50),
+	primary key (svc_proposals_type_id)
+	);

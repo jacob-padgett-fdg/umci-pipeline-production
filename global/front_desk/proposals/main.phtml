@@ -1,0 +1,11 @@
+<?
+if ($traxx_main_menu_tab=="") {
+	session_register('traxx_main_menu_tab');
+	$traxx_main_menu_tab='main_bids';
+	}
+
+$mode=$traxx_main_menu_tab;
+include("$traxx_main_menu_tab" . ".phtml");
+
+
+?>

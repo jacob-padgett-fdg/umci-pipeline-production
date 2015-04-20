@@ -1,0 +1,103 @@
+<?
+require("querylib.inc");
+require("customer.inc");
+
+function you_are_screwed () {
+	echo "Error: There is an error in the information that you have entered!<p>
+		You may have neglected to fill in all of the required information on
+		the previous form, or some of the information you may have entered
+		is invalid. Please go back and check all of the entries with a \"*\"
+		next to them to verify that your information is complete and accurate.<p>
+		<center>
+		<form name=foo><input type=button value=\"<-- Back --\" onclick=history.go(-1);></form>
+		</center>";
+	exit;
+	}
+
+if ( $dbnames_id < 1 ) you_are_screwed();
+if (!(custcheck($customer))) you_are_screwed();
+$customer=custgetid($customer);
+
+	$create_date=vali_date($create_date);
+	$create_date=escapeshellcmd($create_date);
+	$description=escapeshellcmd($description);
+	$department=escapeshellcmd($department);
+	$customer=escapeshellcmd($customer);
+	$project=escapeshellcmd($project);
+	$date_begin=vali_date($date_begin);
+	$date_begin=escapeshellcmd($date_begin);
+	$date_end=vali_date($date_end);
+	$date_end=escapeshellcmd($date_end);
+	$creator=escapeshellcmd($creator);
+	$copies=escapeshellcmd($copies);
+	$new=0;
+
+if ("$cdinfo_id" != "") {
+	$cdinfo_id=escapeshellcmd($cdinfo_id);
+$query="update $cdinfo set  
+	create_date = '$create_date', 
+	description = '$description', 
+	department = '$department', 
+	customer = '$customer', 
+	creator = '$creator', 
+	project = '$project', 
+	date_begin = '$date_begin', 
+	date_end = '$date_end', 
+	copies = '$copies' 
+	where cdinfo_id = '$cdinfo_id'
+	and
+	dbnames_id = '$dbnames_id'
+	and 
+	serial_num = '$serial_num'
+";
+} else {
+$query="insert into $cdinfo ( 
+	dbnames_id,
+	create_date,
+	description,
+	department,
+	customer,
+	project,
+	date_begin,
+	date_end,
+	creator,
+	copies
+	) values ( 
+	'$dbnames_id',
+	'$create_date',
+	'$description',
+	'$department',
+	'$customer',
+	'$project',
+	'$date_begin',
+	'$date_end',
+	'$creator',
+	'$copies'
+	)";
+	$new=1;
+}
+
+//echo "$query";exit;
+
+$result=mysql_query($query);
+if (!($result)) {
+	include("cdinfo_submit_error.phtml");	
+	exit;
+	} else {	
+	if ( $new == 1 ) {
+		$dbtmp=getone("select * from $databases where dbnames_id = '$dbnames_id'");
+		$dbtmp2=ereg_replace(")[^]]*$","",$dbtmp->dbname);
+		$sernum_prefix=ereg_replace("^.*\(","",$dbtmp2);
+		$yearstamp=date("y");
+		//$cdinfo_id=mysql_insert_id(1);
+		$cdinfo_result=mysql_query("select max(cdinfo_id) as serialnum from $cdinfo limit 1");
+		$cdinfo_data=mysql_fetch_object($cdinfo_result);
+		$cdinfo_id=$cdinfo_data->serialnum;
+		mysql_query("update $cdinfo set serial_num = '$sernum_prefix-$yearstamp-$cdinfo_id' where cdinfo_id = '$cdinfo_id'");
+		echo "<script>alert(\"Please label new CD '$sernum_prefix-$yearstamp-$cdinfo_id'\");</script>";
+		}
+	include("cdinfo_edit.phtml");
+	exit;
+	}
+?>
+

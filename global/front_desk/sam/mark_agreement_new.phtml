@@ -1,0 +1,20 @@
+<?
+
+//if (!(is_admin())) die_security();
+
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+
+
+if (!(is_admin())) {
+	if ($agreement_info->creator!=$global_user_id) die_security("Not the owner of an agreement, not an admin, but trying to change the agreement to status of 'New' again.");
+	}
+
+
+
+$query="update svc_agreement_index set status = 'New' where agreement_id = '$agreement_info->agreement_id'";
+//echo "$query";exit;
+@mysql_query($query);
+forward("svc_agreement_edit&agreement_id=$agreement_info->agreement_id");
+
+?>

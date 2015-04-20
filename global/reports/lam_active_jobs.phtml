@@ -1,0 +1,35 @@
+<?
+if ($shepherd_lam) {
+echo "
+<div class='noprint' style=\"width: 100;\">
+<form name=nothing method=post action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=report_name value=$report_name>
+<input type=hidden name=lamchops_id value=\"$lamchop_info->lamchops_id\">
+";
+dropbox("select jobinfo_id as default_jobinfo_id, contract_num, ' - ', job_name from jobinfo where active = 'Y' order by length(contract_num),contract_num + 1", $default_jobinfo_id , "",'submit()','2');
+echo "</form></div>
+";
+//echo "<pre>";print_r($lamchop_info);echo "</pre>";
+$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$shepherd_lam->lamchops_id'");
+$wedate=invali_date($lamchop_info->week_ending,'/');
+
+echo "<h3>Add to jobs from active jobs list:<br>
+Week Ending: $wedate</h3><p>";
+
+$pretty_date=invali_date($lamchop_info->week_ending,'/');
+if ($adminuser) {
+	$notes_read_only="N";
+	} else {
+	$notes_read_only="Y";
+	} 
+
+	print_job_header($shepherd_lam->lam_id,3798);
+	$aj_list_query="select * from jobinfo where active = 'Y' order by contract_num";
+	$aj_res=@mysql_query($aj_list_query);
+	while ($aj_row=@mysql_fetch_object($aj_res)) {
+		print_job_header($shepherd_lam->lam_id,$aj_row->jobinfo_id);
+		}
+	
+	}
+?>

@@ -1,0 +1,23 @@
+<?
+if ($oiclog_id=="") die('Application error. OIClog id was missing. Nothing to do!');
+$oiclog_id=addslashes($oiclog_id);
+$search_text=addslashes($search_text);
+
+$query="select display_name from contacts where 
+login_name like '%$search_text%' or
+display_name like '%$search_text%' or
+alphasort like '%$search_text%' limit 100";
+
+//$oiclog_info=@mysql_query($query);
+tabledump($query);
+
+
+
+
+
+
+
+
+
+
+?>

@@ -1,0 +1,138 @@
+<?
+if ($permissions_id!="") {
+	$permissions_id=addslashes($permissions_id);
+	$permission_info=getone("select * from access_jupiter_permissions where permissions_id = '$permissions_id'");
+	} else {
+	if ($sharelist_id!="") $permission_info->sharelist_id=addslashes($sharelist_id);
+	else die("oops, no sharelist_id, and no permissions_id!");
+	$permission_info->for_who="everyone in";
+	$permission_info->active='Y';
+	}
+
+$permission_info->active=checkbreak($permission_info->active);
+$permission_info->this_dir_only=checkbreak($permission_info->this_dir_only);
+$permission_info->access_action=addslashes($permission_info->access_action);
+$permission_info->access_type=addslashes($permission_info->access_type);
+$permission_info->user_or_group=addslashes($permission_info->user_or_group);
+
+$share_info=getone("select * from access_jupiter_sharelist where sharelist_id = '$permission_info->sharelist_id'");
+$server_info=getone("select * from access_servers where name = 'jupiter'");
+
+//echo "$server_info->server_id";
+
+
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=access_jupiter_share_show&sharelist_id=$permission_info->sharelist_id><font color=blue>Cancel</font></a><p>
+
+<b><font color=#aa3333>*ALL* fields must be filled in!</font></b>
+<form name=permissions method=post action=$pagename>
+<input type=hidden name=mode value=access_jupiter_permission_submit>
+<input type=hidden name=sharelist_id value=\"$permission_info->sharelist_id\">
+<input type=hidden name=permissions_id value=\"$permission_info->permissions_id\">
+
+<table border=1 cellspacing=0 cellpadding=4>
+
+<tr><td colspan=2 align=center bgcolor=#dddddd>
+	<b>Permission for $share_info->share_path</b>
+</td></tr>
+
+<tr><td>
+	<b>Active:</b>
+</td><td>
+	<input type=checkbox name=active $permission_info->active>
+</td></tr>
+
+<tr><td>
+	<b>Action:</b>
+</td><td>
+	<select name=access_action>
+	<option>$permission_info->access_action</option>
+	<option>grant</option>
+	<option>deny</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>Access Type:</b>
+</td><td>
+	<select name=access_type>
+	<option>$permission_info->access_type</option>
+	<option>read</option>
+	<option>write</option>
+	<option>read+write</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>Entry Type:</b>
+</td><td>
+	<select name=user_or_group onchange=check_whats_showing();>
+	<option>$permission_info->user_or_group</option>
+	<option>user</option>
+	<option>group</option>
+	</select>
+</td></tr>	
+
+<tr><td>
+	<b>For Who:</b>
+</td><td>
+	<select name=for_who>
+	<option>$permission_info->for_who</option>
+	<option>everyone in</option>
+	<option>everyone but</option>
+	</select>
+</td></tr>
+
+<tr id=\"user_row\" style=\"display: none;\"><td>
+	<b>User:</b>
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'",$permission_info->uid,"uid");echo"
+</td></tr>
+
+<tr id=\"group_row\" style=\"display: none;\"><td>
+	<b>Group:</b>
+</td><td>
+	";
+	dropbox("select group_name,group_name from access_servers_groups where server_id = '$server_info->server_id' order by group_name",$permission_info->group_name,"","",1);
+	//<input type=text name=group_name value=\"$permission_info->group_name\">
+	echo "
+</td></tr>
+
+<tr><td>
+	<b>Directory:</b>
+</td><td>
+	<input type=text name=path value=\"$permission_info->path\">
+</td></tr>
+
+<tr><td>
+	<b>Only this Dir:</>
+</td><td>
+	<input type=checkbox name=this_dir_only $permission_info->this_dir_only>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+</td></tr>
+
+</table>
+</form>
+<script>
+function check_whats_showing() {
+	value=document.permissions.user_or_group.options[document.permissions.user_or_group.selectedIndex].value;
+	
+	if (value=='user') document.getElementById('user_row').style.display='table-row';
+	else document.getElementById('user_row').style.display='none';
+	
+	if (value=='group') document.getElementById('group_row').style.display='table-row';
+	else document.getElementById('group_row').style.display='none';
+	}
+check_whats_showing();
+</script>
+
+";
+
+
+
+?>

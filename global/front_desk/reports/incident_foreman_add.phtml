@@ -1,0 +1,23 @@
+<?
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+if ($main_incident_id=="") die ("A horrible death! (incident_id)");
+$main_incident_id=addslashes($main_incident_id);
+$incident_info=getoneb("select * from front_desk_reports_safety_incidents where incident_id = '$main_incident_id'");	
+if (!($incident_info)) die ("Application error! (incident_info)");
+if ($new_foreman=="") die ("Application error! (foreman)");
+$new_foreman=addslashes($new_foreman);
+$foreman_info=getoneb("select * from contacts where contacts_id = '$new_foreman'");
+if (!($foreman_info)) die ("Application error! (foreman_info)");
+@mysql_query("insert into front_desk_reports_safety_incidents set
+	employee_id = '$incident_info->employee_id',
+	foreman_id = '$foreman_info->contacts_id',
+	incident_type = '$incident_info->incident_type',
+	work_day = '$incident_info->work_day',
+	week_ending = '$incident_info->week_ending',
+	description = '" . addslashes($incident_info->description) . "'
+	");
+forward("$mode&report_name=incident_edit&incident_id=$incident_info->incident_id");
+?>

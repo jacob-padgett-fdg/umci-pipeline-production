@@ -1,0 +1,72 @@
+<?
+if ($application_id!="") {
+	$application_id=addslashes($application_id);
+	$query_start="update ";
+	$query_end=" where application_id = '$application_id' ";
+	} else {
+	$query_start="insert into ";
+	$query_end="";
+	}
+
+if ($hr_openings_id!="") $hr_openings_id=addslashes($hr_openings_id);
+
+$last_name=addslashes($last_name); 
+$first_name=addslashes($first_name);
+$middle_name=addslashes($middle_name); 
+$address=addslashes($address);
+$address_city=addslashes($address_city);
+$address_state=addslashes($address_state);
+$address_zip=addslashes($address_zip);
+$home_phone=addslashes($home_phone);
+$home_phone=ereg_replace("[^0-9]*","",$home_phone);
+$day_phone=addslashes($day_phone);
+$email=addslashes($email);
+$applicant_pin=addslashes($applicant_pin);
+$hours_available=addslashes($hours_available);
+$date_available=addslashes($date_available);
+$expected_salary=addslashes($expected_salary);
+$expected_salary_period=addslashes($expected_salary_period);
+
+$query_middle="
+hr_applications set
+
+last_name = '$last_name',
+first_name = '$first_name',
+middle_name = '$middle_name',
+address = '$address',
+address_city = '$address_city',
+address_state = '$address_state',
+address_zip = '$address_zip',
+home_phone = '$home_phone',
+day_phone = '$day_phone',
+email = '$email',
+applicant_pin = '$applicant_pin',
+hours_available = '$hours_available',
+date_available = '$date_available',
+expected_salary = '$expected_salary',
+expected_salary_period = '$expected_salary_period'
+
+";
+
+$query_full=$query_start . $query_middle . $query_end;
+$res=@mysql_query($query_full);
+if (!($res)) die("Web Site Error:<p>We're sorry, there appears to be a programming error on this web page. Please contact the <a href=mailto:webadmin@umci.com>webmaster via email</a> or call 206-364-9900 to report this problem with the web page.<p>Thank you<p>Debug information: database: openings, mode: application_edit_vitals_submit, problem: database insert/update failed.");
+
+if ($application_id=="") $application_id=@mysql_insert_id();
+
+session_register('application_id_session');
+$application_id_session=$application_id;
+
+
+if ($application_id<1) die("Web Site Error:<p>We're sorry, there appears to be a programming error on this web page. Please contact the <a href=mailto:webadmin@umci.com>webmaster via email</a> or call 206-364-9900 to report this problem with the web page.<p>Thank you<p>Debug information: database: openings, mode: application_edit_vitals_submit, problem: resulting application_id is less than 1.");
+
+if ($hr_openings_id!="") {
+	$app_info=getone("select * from hr_applications where application_id = '$application_id'");
+	if ($app_info->status!="Complete") $last_app_mode='employment_history';
+	else $last_app_mode='openings';
+	forward("opening_apply&hr_openings_id=$hr_openings_id&application_id=$application_id");
+	exit;
+	}
+
+include("app_forward_mode.phtml");
+?>

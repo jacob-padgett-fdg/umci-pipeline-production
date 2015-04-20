@@ -1,0 +1,13 @@
+<?
+$lam_id=addslashes($lam_id);
+$lam_info=getoneb("select * from lam where lam_id = '$lam_id'");
+if (!($lam_info)) die("Application error. Please contact your system administrator...");
+
+$value=addslashes($value);
+
+@mysql_query("update lam set lam_note = '$value' where lam_id = '$lam_info->lam_id'");
+echo "Note: $value";
+
+
+
+?>

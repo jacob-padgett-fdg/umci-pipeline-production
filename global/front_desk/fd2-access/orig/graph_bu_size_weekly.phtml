@@ -1,0 +1,61 @@
+<?php
+include ("graph1/jpgraph.php");
+include ("graph1/jpgraph_line.php");
+
+$ydata=array();
+$ydata2=array();
+$textx=array();
+$max=0;
+
+$start_date=date('Y-m-d',strtotime('1 year ago'));
+//$query="select * from access_servers_backup_media_logs where media_tag != 'Mo' and media_tag != 'Tu' and media_tag != 'We' and media_tag != 'Th' and media_tag != 'Fr' order by backup_date";
+$query="select * from access_servers_backup_media_logs where backup_date > '$start_date' and ( media_tag = 'Mo' or media_tag = 'Tu' or media_tag = 'We' or media_tag = 'Th' or media_tag = 'Fr' ) order by backup_date";
+//die($query);
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->du_megs > $max) $max=$row->du_megs;
+	if ($row->du_megs < 100) continue;
+	if (($row->du_megs + $row->df_megs) > $max) $max=$row->df_megs + $row->du_megs;
+	array_push($ydata,$row->du_megs);
+	array_push($ydata2,$row->df_megs);
+	$bu_date=invali_date($row->backup_date);
+	$bu_date=ereg_replace("200","0",$bu_date);
+	array_push($textx,$bu_date);
+	}
+
+$graph = new Graph(600,400,"auto");	
+//$graph->SetScale("intlin",350000,($max * 1.1),0,sizeof($ydata));
+$graph->SetScale("intlin",0,3000000,0,sizeof($ydata));
+$graph->SetMarginColor("$umc_standard_blue");
+
+// Create the linear plots
+$lineplot=new LinePlot($ydata);
+$lineplot->SetColor("darkgreen");
+$lineplot->SetWeight(3);
+$lineplot2=new LinePlot($ydata2);
+$lineplot2->SetColor("red");
+$lineplot2->SetWeight(3);
+
+$lineplot->SetLegend("Space Used");
+$lineplot2->SetLegend("Media Size");
+$graph->legend->Pos(0.05,0.7,"right","center");
+
+//$graph->xaxis->SetFont(FF_ARIAL,FS_NORMAL,11);
+$graph->xaxis->SetTickLabels($textx);
+$graph->xaxis->SetLabelAngle(90);
+$graph->xaxis->scale->ticks->Set(7,1);
+
+// Add the plot to the graph
+$graph->Add($lineplot);
+$graph->Add($lineplot2);
+
+$graph->img->SetMargin(80,65,30,65);
+$graph->title->Set("Backup Media Usage (Weekly Drives)");
+//$graph->xaxis->title->Set("Time");
+$graph->xaxis->SetPos("min");
+$graph->yaxis->title->Set("Megabytes");
+$graph->yaxis->SetTitleMargin(60);
+
+// Display the graph
+$graph->Stroke();
+?>

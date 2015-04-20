@@ -1,0 +1,109 @@
+<?
+require('header.phtml');
+if ($agreement_id!="") $agreement_id=escapeshellcmd($agreement_id);
+else die("ERROR: Applicaton error, agreement_id is empty or null! Please contact your system administrator!");
+
+$agreement_info=load_agreement_info($agreement_id);
+
+if ($agreement_id!="") $agreement_id=escapeshellcmd($agreement_id);
+else die("ERROR: Application error! Please contact your system administrator! No agreement_id specified!");
+$ag_type_info=getone("select * from svc_agreement_types where agreement_type_id = '$agreement_info->agreement_type_id'");
+
+if ($markup_percent!="") {
+	$markup_percent=escapeshellcmd($markup_percent);
+	$markup_percent=clean_float($markup_percent);
+	if ($markup_percent < $ag_type_info->min_markup_percent) $markup_percent=$ag_type_info->min_markup_percent;
+	@mysql_query("update svc_agreement_index set markup_percent = '$markup_percent' where agreement_id = '$agreement_info->agreement_id'");
+	$agreement_info->markup_percent=$markup_percent;
+	}
+
+echo "
+<a href=$pagename?mode=main>
+<font color=blue>Cancel</font>
+</a>
+
+<table border=1 cellspacing=0 cellpadding=3 align=right><tr><td bgcolor=blue>
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td bgcolor=#ffffaa><b>Status Changes</b></td></tr>
+<tr><td bgcolor=#ffffff><a href=$pagename?mode=svc_agreement_transfer&agreement_id=$agreement_info->agreement_id><font color=blue>Change Owner</font></a></td></tr>
+<tr><td bgcolor=#aaffaa><a href=$pagename?mode=svc_agreement_copy&agreement_id=$agreement_info->agreement_id><font color=blue>Copy Agreement</font></a></td></tr>
+
+<tr><td bgcolor=#ffffff>
+<a href=$pagename?mode=mark_agreement_dead&agreement_id=$agreement_info->agreement_id><font color=blue>Mark Status Dead</font></a><br>
+</td></tr>
+
+<tr><td bgcolor=#ffffff>
+<a href=$pagename?mode=mark_agreement_won&agreement_id=$agreement_info->agreement_id><font color=blue>Mark Status Won</font></a><br>
+</td></tr>
+
+<tr><td bgcolor=#ffffff>
+<a href=$pagename?mode=mark_agreement_new&agreement_id=$agreement_info->agreement_id><font color=blue>Mark Status New (again)</font></a><br>
+</td></tr>
+
+</table>
+</td></tr></table>
+
+
+<form name=saefinal method=post action=$pagename>";
+agreement_summary_box($agreement_id,1);
+echo "
+</form>
+<h2>Final Agreement Data</h2>
+<hr>
+<table border=0>
+
+<tr><td>
+	Markup Multiplier
+</td><td>
+	$agreement_info->markup_percent
+</td></tr>
+
+<tr><td>
+	UMC Equip Cost
+</td><td>
+	$agreement_info->total_equipment_cost
+</td></tr>
+
+<tr><td>
+	Equip Charges
+</td><td>
+	$agreement_info->total_equipment_value
+</td></tr>
+
+<tr><td>
+	UMC Options Cost
+</td><td>
+	$agreement_info->total_options_cost
+</td></tr>
+
+<tr><td>
+	Total Options Charges
+</td><td>
+	$agreement_info->total_options_value
+</td></tr>
+
+<tr bgcolor=#eeeeee><td colspan=2 align=center><b>The bottom line</b></td></tr>
+
+<tr><td>
+	UMC Total Cost
+</td><td>
+	$agreement_info->total_cost
+</td></tr>
+
+<tr><td>
+	Total Charges
+</td><td>
+	$agreement_info->total_value
+</td></tr>
+
+</table>
+<hr>
+</form>
+";
+
+if (is_admin()) {
+	echo "<a href=$pagename?mode=svc_agreement_executive_summary&agreement_id=$agreement_info->agreement_id><font color=blue>Download Executive Summary</font></a><br>";
+	echo "<a target=_pdf_agreement_win href=$pagename?mode=show_inspection_summary_pdf&show_turnover_info=1&agreement_id=$agreement_info->agreement_id&blah=blah/inspection_summary-$agreement_id.pdf><font color=blue>Download Turnover Document</font></a><br>";
+	}
+include("svc_agreement_edit_doclist.phtml");
+?>

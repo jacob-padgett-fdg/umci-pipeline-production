@@ -1,0 +1,23 @@
+<?
+require('queeg_settings.cfg');
+require('global-auth.inc');
+
+//require('querylib.inc');
+$decrease=addslashes($decrease);
+
+
+//$conn=@mysql_connect($dbserver,$smb_guest_user,$smb_guest_pass);
+//@mysql_select_db($dbname);
+
+$vp_info=getone("select * from misc_data where data_type = 'firewall_hole_viewpoint'");
+
+if ($decrease=="yes") {
+	if ($vp_info->data > 0) {
+		$vp_info->data=$vp_info->data - 1;
+		$query="update misc_data set data = '$vp_info->data' where data_type = 'firewall_hole_viewpoint'";
+		@mysql_query($query);
+		}
+	}
+echo "$vp_info->data";
+exit;
+?>

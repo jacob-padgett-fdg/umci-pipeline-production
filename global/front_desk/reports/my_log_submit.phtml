@@ -1,0 +1,54 @@
+<?
+if ($log_entry=="") {
+	forward("my_home");
+	die();
+	}
+$log_entry=addslashes($log_entry);
+
+if ($my_log_id!="") {
+	$my_log_id=addslashes($my_log_id);
+	$query_start="update front_desk_my_log set ";
+	$query_end=" where my_log_id = '$my_log_id'";
+	if ($start_date!="") $start_date=vali_date($start_date);
+	if ($start_time!="") $start_time=addslashes($start_time);
+
+	} else {
+	
+	$query_start="insert into front_desk_my_log set ";
+	$query_end=",log_timestamp_create = now()";
+	
+	if ($start_date!="") $start_date=vali_date($start_date);
+	else $start_date=date('Y-m-d');
+	
+	if ($start_time!="") $start_time=addslashes($start_time);
+	else $start_time=date('G:i:s');
+	
+	
+	
+	}
+
+$notes=addslashes($notes);
+$query_middle="
+contacts_id = '$global_user_id'
+,log_entry = '$log_entry'
+,log_timestamp = now()
+,notes = '$notes'
+";
+
+if ($start_date!="") $query_middle=$query_middle . ",start_date = '" . vali_date($start_date) . "'";
+if ($start_time!="") $query_middle=$query_middle . ",start_time = '" . addslashes($start_time) . "'";
+if ($duration!="") $query_middle=$query_middle . ",duration = '" . addslashes($duration) . "'";
+
+
+
+$query_full=$query_start . $query_middle . $query_end;
+
+$res=@mysql_query($query_full);
+
+if (!($res)) die("Application error. Submit query failed. Failed query:<hr>$query_full");
+
+if ($my_log_id!="") forward("report_show&report_name=my_log");
+else forward("my_home");
+
+
+?>

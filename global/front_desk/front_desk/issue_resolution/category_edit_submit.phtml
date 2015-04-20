@@ -1,0 +1,34 @@
+<?
+
+if (!($issue_res_admin))
+	die("Error: you don't be here, so go away now!!!!!");
+
+$category_name=escapeshellcmd($category_name);
+$category_status=escapeshellcmd($category_status);
+$category_template_id=escapeshellcmd($category_template_id);
+$strict_parents=checkfix($strict_parents);
+
+//die("$strict_parents");
+
+if ($issue_res_edit_category_id=="") {
+	$query="insert into issue_res_category 
+		( issue_res_application_id, category_name,category_status,category_template_id,strict_parents )
+		values
+		( '$issue_res_application_id', '$category_name','$category_status','$category_template_id','$strict_parents')";
+	$new=1;
+	} else {
+	$issue_res_edit_category_id=escapeshellcmd($issue_res_edit_category_id);
+	//echo "Update not set yet.";exit;
+	$query="update issue_res_category set category_name = '$category_name', category_status = '$category_status', category_template_id = '$category_template_id', strict_parents = '$strict_parents'  where issue_res_category_id = '$issue_res_edit_category_id'";
+	$new=0;
+	}
+
+
+$res=@mysql_query($query);
+
+if (!($res))
+	die ("Error: Query failed. Please contact your system administrator if you have any questions.<p>Failed query:<hr>$query");
+
+forward('category_edit_list');
+
+?>

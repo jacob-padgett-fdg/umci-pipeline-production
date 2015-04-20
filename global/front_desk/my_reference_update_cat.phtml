@@ -1,0 +1,54 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+$category_id=addslashes($category_id);
+$category_info=getoneb("select * from front_desk_reference_categories where category_id = '$category_id'");
+//tabledump("select * from front_desk_reference_catetories where category_id = '$category_id'");
+if (!($category_info)) die("Application error! Category failure!");
+
+
+
+$writable=FALSE;
+$admin_writable=FALSE;
+//echo "<hr>$adminuser<hr>$global_user->display_name";
+if ($adminuser) $writable=TRUE;
+if ($category_info->owner==$global_user_id) $writable=TRUE;
+$admin_writable=$writable;
+if ($category_info->others_get_write=="Y") $writable=TRUE;
+
+
+
+if (($admin_writable)||($global_user_id==$row->owner)){
+	$empty=TRUE;
+	//if (getoneb("select * from front_desk_reference_categories where parent_id = '$category_info->category_id' limit 1")) $empty=FALSE;
+	//if (getoneb("select * from front_desk_references where category_id = '$category_info->category_id' limit 1")) $empty=FALSE;
+	//if ($empty) {
+		//@mysql_query("delete from front_desk_reference_categories where category_id = '$category_info->category_id'");
+		//echo "remove";
+		//$remove_link="&nbsp;<i><font color=blue>remove</font></i>";
+		$category_name=addslashes($rename_category);
+		$owner=addslashes($category_owner);
+		$others_get_write=checkfix($others_get_write);
+		@mysql_query("update front_desk_reference_categories set
+			category_name = '$category_name',
+			owner = '$owner',
+			others_get_write = '$others_get_write'
+			where category_id = '$category_info->category_id'");
+		//die("update front_desk_reference_categories set
+		//	category_name = '$category_name',
+		//	owner = '$owner',
+		//	others_get_write = '$others_get_write'
+		//	where category_id = '$category_info->category_id'");
+	//	}
+	}
+forward("my_reference_center_manage&category_id=$category_info->category_id");
+
+
+
+
+
+
+
+
+?>

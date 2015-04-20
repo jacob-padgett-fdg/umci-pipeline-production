@@ -1,0 +1,26 @@
+<?
+
+if (!(is_admin())) die_security();
+
+if ($task_id=="") die("ERROR: No task_id to paste to. Please contact your system administrator");
+if ($task_list_copy_task_id=="") die("ERROR: No task_id task list to copy from! Please contact your system administrator!");
+
+$task_id_target=addslashes($task_id);
+$task_id_source=addslashes($task_list_copy_task_id);
+
+//echo "$task_id_target";
+//delete_task_list($task_id_target);
+
+copy_task_list($task_id_source,$task_id_target);
+echo "<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+
+
+
+
+
+?>

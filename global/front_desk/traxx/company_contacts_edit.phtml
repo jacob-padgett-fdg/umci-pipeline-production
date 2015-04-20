@@ -1,0 +1,84 @@
+<?
+if ($company_id=="") die("Fatal Error: No Company ID. Please contact your system administrator!");
+$company_id=escapeshellcmd($company_id);
+$company_info=getone("select * from contacts where contacts_id = '$company_id'");
+
+
+$editmode="New";
+if ($contacts_id!="") {
+	$contacts_id=escapeshellcmd($contacts_id);
+	$contact_info=getone("select * from contacts where contacts_id = '$contacts_id'");
+	$editmode="Modify";
+	$contact_info->current=checkbreak($contact_info->current);
+	$contact_info->consultant=checkbreak($contact_info->consultant);
+	} else {
+	$contact_info->current=" checked";
+	}
+
+require('header.phtml');
+echo "
+<b>$editmode contact for $company_info->display_name</b><hr>
+<form name=company_contact_edit method=get action=\"$pagename\">
+<input type=hidden name=mode value=company_contacts_submit>
+<input type=hidden name=contacts_id value=\"$contact_info->contacts_id\">
+<input type=hidden name=company_id value=\"$company_info->contacts_id\">
+
+<table border=0>
+<tr><td>
+	First Name
+</td><td>
+	<input type=text name=first_name value=\"$contact_info->first_name\">
+</td></tr>
+
+<tr><td>
+	Last Name
+</td><td>
+	<input type=text name=last_name value=\"$contact_info->last_name\">
+</td></tr>
+
+<tr><td>
+	Phone
+</td><td>
+	<input type=text name=phone value=\"$contact_info->phone\">
+</td></tr>
+
+<tr><td>
+	Fax
+</td><td>
+	<input type=text name=phone_fax value=\"$contact_info->phone_fax\">
+</td></tr>
+
+<tr><td>
+	Email
+</td><td>
+	<input type=text name=email value=\"$contact_info->email\">
+</td></tr>
+
+<tr><td>
+	Consultant
+</td><td>
+	<input type=checkbox name=consultant $contact_info->consultant>
+</td></tr>
+
+<tr><td>
+	Current
+</td><td>
+	<input type=checkbox name=current $contact_info->current>
+</td></tr>
+
+<tr><td>
+	<input type=submit value=Save>
+</td><td>
+	&nbsp;
+</td></tr>
+</form>
+
+</table>
+
+";
+
+
+
+
+
+?>

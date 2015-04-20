@@ -1,0 +1,12 @@
+<?
+$dailylog_id=addslashes($dailylog_id);
+$dailylog_info=getone("select * from dailylog where dailylog_id = '$dailylog_id'");
+require_once('pdf_lib2.inc');
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+
+require('dailylog_render_pdf.phtml');
+
+$pdf->ezStream();
+//$pdf->ezStream(array('compress'=>'0'));
+exit;
+?>

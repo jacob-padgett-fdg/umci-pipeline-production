@@ -1,0 +1,25 @@
+<?
+//$lam_id=ereg_replace("^.*_","",$object_id);
+//$lam_id=ereg_replace("[^0-9]","",$lam_id);
+include("lam_lib.inc");
+$lamchops_id=addslashes($lamchops_id);
+$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$lamchops_id'");
+//tabledump("select * from lamchops where lamchops_id = '$lamchops_id'");
+//echo "<pre>";print_r($lamchop_info);echo "</pre>";die();
+echo "<i>Lost Sheep</i><hr>";
+$res=@mysql_query("select * from contacts where umc_emp = 'Y' and current = 'Y' and employee_num > 0 and employee_group = '$employee_group' order by alphasort");
+//tabledump("select * from contacts where umc_emp = 'Y' and current  = 'Y' and employee_num > 0 and employee_group = '$employee_group' order by alphasort");
+
+while ($row=@mysql_fetch_object($res)) {
+	$hislam=getoneb("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and employee_id = '$row->contacts_id' limit 1");
+	
+	if (!($hislam)) {
+		echo "$row->display_name<br>";
+		}
+	}
+
+
+//$lam_info=getoneb("select * from lam where lam_id = '$lam_id'");
+//$note=htmlspecialchars($lam_info->lam_note);
+//echo "<input style=\"height: 20px;\" value=\"$note\" type=text size=30 onchange=\"notes_save('$lam_info->lam_id',this.value)\" onblur=\"notes_save('$lam_info->lam_id',this.value)\" onmouseover=\"focus()\">";
+?>

@@ -1,0 +1,5 @@
+<?
+require('header.phtml');
+ms_tabledump("select * from bPRPH where Employee = '$global_user->employee_num' order by PREndDate");
+//ms_tabledump("select left(Earnings,2) from bPRPH where Employee = '$global_user->employee_num' and PREndDate >= 'Jan 01 2003 12:00 am' and PREndDate <= 'Dec 31 2003 12:00 am' order by PREndDate");
+?>

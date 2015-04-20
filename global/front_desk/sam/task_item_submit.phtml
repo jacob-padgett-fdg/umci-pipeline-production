@@ -1,0 +1,45 @@
+<?
+
+$equip_type_id=escapeshellcmd($equip_type_id);
+$agreement_type_id=escapeshellcmd($agreement_type_id);
+$maint_type_id=escapeshellcmd($maint_type_id);
+$recommended_times_a_year=clean_float($recommended_times_a_year);
+$required_times_a_year=clean_float($required_times_a_year);
+$approval_required_age=clean_int($approval_required_age);
+$subs_required=checkfix($subs_required);
+$predictive_svc_avail=checkfix($predictive_svc_avail);
+$export_psp_to_esp=checkfix($export_psp_to_esp);
+$export_psp_to_esp_force=checkfix($export_psp_to_esp_force);
+$misc_fees=clean_float($misc_fees);
+if ($export_psp_to_esp_force=='Y') $export_psp_to_esp='Y';
+
+if ($task_id!="") {
+	$task_id=escapeshellcmd($task_id);
+	$query_command="update ";
+	$query_where=" where task_id = '$task_id'";
+	$new=0;
+	} else {
+	$query_command="insert into ";
+	$query_where="";
+	$new=1;
+	}
+
+$query_body="svc_task_items set equip_type_id = '$equip_type_id', agreement_type_id = '$agreement_type_id',
+maint_type_id = '$maint_type_id', recommended_times_a_year = '$recommended_times_a_year',
+required_times_a_year = '$required_times_a_year', approval_required_age = '$approval_required_age', 
+subs_required = '$subs_required', 
+predictive_svc_avail = '$predictive_svc_avail',
+export_psp_to_esp = '$export_psp_to_esp',
+export_psp_to_esp_force = '$export_psp_to_esp_force',
+misc_fees = '$misc_fees'
+";
+
+$query_full=$query_command . $query_body . $query_where;
+@mysql_query($query_full);
+
+
+if ($task_id=="") $task_id=@mysql_insert_id();
+forward("task_item_edit&task_id=$task_id");
+
+
+?>

@@ -1,0 +1,116 @@
+<?
+
+
+if ($h_new != "checked")
+	$query="$query and completed != '0000-00-00' and approved != '0000-00-00'";
+
+if ($h_complete != "checked")
+	$query="$query and ((completed != '0000-00-00' and  approved != '') or ( completed = '0000-00-00'))";
+
+if ($h_approved != "checked")
+	$query="$query and approved = ''";
+
+$additional=" and ";
+
+if ( $conflict_id_filter != "" ) {
+	$query=$query . $additional . "conflict_id like '%$conflict_id_filter%'";
+	$b_conflict_id="<font color=$tableheadtexthighlight>";
+	$nb_conflict_id="</font>";
+	$additional=" and ";
+	}
+	
+if ( $bld_floor_filter != "" ) {
+	$query=$query . $additional . "bld_floor like '%$bld_floor_filter%'";
+	$b_bld_floor="<font color=$tableheadtexthighlight>";
+	$nb_bld_floor="</font>";
+	$additional=" and ";
+	}
+
+if ( $grid_filter != "" ) {
+	$query=$query . $additional . "grid like '%$grid_filter%'";
+	$b_grid="<font color=$tableheadtexthighlight>";
+	$nb_grid="</font>";
+	$additional=" and ";
+	}
+
+if ( $summary_filter != "" ) {
+	$query=$query . $additional . "summary like '%$summary_filter%'";
+	$b_summary="<font color=$tableheadtexthighlight>";
+	$nb_summary="</font>";
+	$additional=" and ";
+	}
+	
+if ( $solution_filter != "" ) {
+	$query=$query . $additional . "solution like '%$solution_filter%'";
+	$b_solution="<font color=$tableheadtexthighlight>";
+	$nb_solution="</font>";
+	$additional=" and ";
+	}
+	
+if ( $actual_solution_filter != "" ) {
+	$query=$query . $additional . "actual_solution like '%$actual_solution_filter%'";
+	$b_actual_solution="<font color=$tableheadtexthighlight>";
+	$nb_actual_solution="</font>";
+	$additional=" and ";
+	}
+	
+if ( $responsibility_filter != "" ) {
+	$query=$query . $additional . "responsibility like '%$responsibility_filter%'";
+	$b_responsibility="<font color=$tableheadtexthighlight>";
+	$nb_responsibility="</font>";
+	$additional=" and ";
+	}
+	
+if ( $completed_by_filter != "" ) {
+	$query=$query . $additional . "completed_by like '%$completed_by_filter%'";
+	$b_completed_by="<font color=$tableheadtexthighlight>";
+	$nb_completed_by="</font>";
+	$additional=" and ";
+	}
+	
+if ( $due_date_filter != "" ) {
+	$due_date_filter2=vali_date($due_date_filter);
+	$query=$query . $additional . "due_date = '$due_date_filter2'";
+	$b_due_date="<font color=$tableheadtexthighlight>";
+	$nb_due_date="</font>";
+	$additional=" and ";
+	}
+	
+if ( $last_action_filter != "" ) {
+	$last_action_filter2=vali_date($last_action_filter);
+	$query=$query . $additional . "last_action = '$last_action_filter2'";
+	$b_last_action="<font color=$tableheadtexthighlight>";
+	$nb_last_action="</font>";
+	$additional=" and ";
+		
+	}
+	
+if ( $completed_filter != "" ) {
+	$completed_filter2=vali_date($completed_filter);
+	$query=$query . $additional . "completed = '$completed_filter2'";
+	$b_completed="<font color=$tableheadtexthighlight>";
+	$nb_completed="</font>";
+	$additional=" and ";
+	}
+	
+if ( $approved_filter != "" ) {
+	$query=$query . $additional . "approved = '$approved_filter'";
+	$b_approved="<font color=$tableheadtexthighlight>";
+	$nb_approved="</font>";
+	$additional=" and ";
+	}
+	
+if ( $login_name_filter != "" ) {
+	$query=$query . $additional . "login_name like '%$login_name_filter%'";
+	$b_approved="<font color=$tableheadtexthighlight>";
+	$nb_approved="</font>";
+	$additional=" and ";
+	}
+	
+if ( $sort_order_filter != "" ) {
+	$query=$query . " order by $sort_order_filter ";
+	} else { 
+	$query=$query . " order by conflict_id ";
+	}
+	
+?>

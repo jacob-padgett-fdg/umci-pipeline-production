@@ -1,0 +1,18 @@
+<?
+//$company_id=addslashes($company_id);
+
+
+
+
+
+if ($site_id!="") $site_id=addslashes($site_id);
+
+
+if ($company_id=="") $company_id=addslashes($site_id);
+if ($company_id . $site_id != "") 
+	contactsbox("select * from contacts where (contact_type = 'site' or contact_type = 'company') and (company_id = '$company_id' or contacts_id = '$company_id')",$site_id,'site_id','',32);
+
+
+
+//else $company_id=addslashes($company_id);
+?>

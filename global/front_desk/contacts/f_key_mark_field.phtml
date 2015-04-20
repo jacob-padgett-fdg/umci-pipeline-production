@@ -1,0 +1,29 @@
+<?
+//require('querylib.inc');
+if(!(is_admin())) {
+	die_security();
+	}
+
+if ($fk_list_id!="") {
+	$fk_list_id=addslashes($fk_list_id);
+	} else {
+	die ("Application error: no fk_list_id!");
+	}
+if ($is_contact!="") {
+	$is_contact=addslashes($is_contact);
+	} else {
+	die ("Application error: not is_contact variable!");
+	}
+
+$query="update contacts_fk_list set is_contact = '$is_contact', fk_description = 'Manually set by contact ($global_user_id)' where fk_list_id = '$fk_list_id'";
+
+//echo "<hr>$query<hr>";
+@mysql_query($query);
+echo "<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+
+?>

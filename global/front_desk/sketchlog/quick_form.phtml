@@ -1,0 +1,35 @@
+<?
+if ($global_user->umc_emp!='Y') die("ERROR");
+if ($sketchlog_id=="") die("ERROR");
+else $sketchlog_id=addslashes($sketchlog_id);
+$dwg_info=getoneb("select * from sketchlog where sketchlog_id = '$sketchlog_id'");
+$data="";
+
+
+if ($field=='sort_priority') $data=$dwg_info->sort_priority;
+if ($field=='dwg_title') $data=$dwg_info->dwg_title;
+if ($field=='cust_1') $data=addslashes($dwg_info->cust_1);
+if ($field=='cust_2') $data=addslashes($dwg_info->cust_2);
+if ($field=='cust_3') $data=addslashes($dwg_info->cust_3);
+if ($field=='cust_4') $data=addslashes($dwg_info->cust_4);
+if ($field=='cust_5') $data=addslashes($dwg_info->cust_5);
+
+echo "<form name=form_foo onsubmit='return(false)' style=\"display: inline\">";
+switch ($field) {
+	case "sort_priority":
+	case "cust_1":
+	case "cust_2":
+	case "cust_3":
+	case "cust_4":
+	case "cust_5":
+		echo "<input autocomplete=off type=text size=15 id=ajax_form_data_field value=\"$data\" onblur=\"save_data('$sketchlog_id','$field',this)\" onchange=\"blur();\">";
+		break;;
+	case "dwg_title":
+		echo "<input autocomplete=off type=text size=45 id=ajax_form_data_field value=\"$data\" onblur=\"save_data('$sketchlog_id','$field',this)\" onchange=\"blur();\">";
+		break;;
+	default: die("Field Error ($field)");
+		break;;
+	}
+
+echo "</form>";
+?>

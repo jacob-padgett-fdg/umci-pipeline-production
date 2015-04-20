@@ -1,0 +1,55 @@
+<?
+//require('querylib.inc');
+require('header.phtml');
+
+
+echo "
+Options:<hr>
+<a href=$pagename?mode=contacts_edit><font color=blue>Add A Contact</font><a><br>
+<a href=$pagename_up><font color=blue>Exit</a><br>
+";
+
+
+$query="select * from contacts order by last_name limit 100";
+$result=mysql_query($query);
+
+echo "
+<hr>
+<table border=1>
+	<tr bgcolor=#eeeeee><td>
+	<center>Name</center>
+	</td><td>
+	<center>Company</center>
+	</td><td>
+	<center>Phone</center>
+	</td><td>
+	<center>E-Mail</center>	
+	</td><td>
+	UMC Employee
+	</td></tr>
+";
+
+while($contact=@mysql_fetch_object($result)) {
+	echo "
+	<tr><td>
+	<a href=$pagename?mode=contacts_edit&contacts_id=$contact->contacts_id>
+		<font color=blue>$contact->last_name, $contact->first_name</font>
+	</td><td>
+		$contact->company
+	</td><td>
+		$contact->phone
+	</td><td>
+		<mailto:$contact->email>$contact->email</mailto>
+	</td><td>
+		<center>$contact->umc_emp</center>
+	</td></tr>
+	";
+	}
+
+echo "</td></tr></table>";
+
+//tabledump($query);
+
+
+require('footer.phtml');
+?>

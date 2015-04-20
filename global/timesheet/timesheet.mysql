@@ -1,0 +1,36 @@
+drop table if exists timesheet;
+
+drop table if exists timesheet_index;
+create table timesheet_index (
+	timesheet_id int not null auto_increment,
+	creator int not null,
+	employee_id int not null,
+	employee_num int not null,
+	week_ending date not null,
+	status char(20),
+	locked datetime,
+	tainted timestamp,
+	primary key (timesheet_id),
+	unique (employee_id,employee_num,week_ending)
+	);
+
+drop table if exists timesheet_time;
+create table timesheet_time (
+	timesheet_time_id int not null auto_increment,
+	creator int not null,
+	employee_id int not null,
+	employee_num int not null,
+	jobinfo_id int not null,
+	job_num int not null,
+	phase char(16),
+	workday date not null,
+	earnings_code int not null,
+	shift int not null,
+	hours decimal (8,2),
+	dollars decimal (8,2),
+	posted char(5) default 'N',
+	primary key (timesheet_time_id),
+	key (posted)
+	);
+
+

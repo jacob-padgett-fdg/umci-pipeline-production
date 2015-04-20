@@ -1,0 +1,25 @@
+<?
+require_once('querylib.inc');
+$it_category_id=addslashes($it_category_id);
+
+
+session_register('mis_issue_last_main_action');
+session_register('mis_issue_last_action_name');
+$mis_issue_last_main_action="category_show&it_category_id=$it_category_id";
+$mis_issue_last_action_name="Category";
+
+echo "<html><head><title>MIS Issue - Category view - $category_info->category_name</title></head>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+<a href=$pagename?mode=category_search&it_category_id=$it_category_id><font color=blue>Search</font></a>
+";
+
+echo "<body bgcolor=#ffffff>";
+$query="select * from mis_issue_index where it_category_id = '$it_category_id' and status != 'approved' order by expected_completion";
+
+category_show($query);
+echo "</center>";
+
+
+
+
+?>

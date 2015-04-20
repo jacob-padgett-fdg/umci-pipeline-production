@@ -1,0 +1,11 @@
+<?
+if (!($adminuser)) die_security();
+
+//if ($option_id=="") die("Application error. Please contact your system administrator!");
+//$option_id=addslashes($option_id);
+//$option_info=getoneb("select * from costore_products_options where option_id = '$option_id'");
+if ($product_id=="") die("Application error. Please contact your system adminiatrator!");
+$product_id=addslashes($product_id);
+@mysql_query("insert into costore_products_options set option_text = '$option_text', product_id = '$product_id'");
+forward("product_edit&product_id=$product_id");
+?>

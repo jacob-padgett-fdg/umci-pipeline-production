@@ -1,0 +1,24 @@
+<?
+require_once("timesheet_include.inc");
+
+if ($timesheet_info->status!="new") die("error: timesheet status already not 'new'. Contact your system administrator for help");
+
+$week_start_mysql=vali_date($week_start);
+$week_end_mysql=vali_date($week_end);
+
+$query_ts_index="update timesheet_index set status = 'complete' where timesheet_id = '$timesheet_info->timesheet_id'";
+$query_ts_time="update timesheet_time set timesheet_status = 'complete' where employee_id = '$current_user->contacts_id' and employee_num = '$current_user->employee_num' and workday >= '$week_start_mysql' and workday <= '$week_end_mysql'";
+
+$res=@mysql_query($query_ts_index);
+if (!($res)) die("Fatal Error: Error committing update! Please contact your system administrator!");
+$res=@mysql_query($query_ts_time);
+if (!($res)) die("Fatal Error: Error committing update! Please contact your system administrator!");
+
+
+$supervisor_info=find_supervisor($timesheet_info->employee_num);
+if ($supervisor_info->pref_timesheet_svemail == 'Y') completed_timesheet_email($supervisor_info,$current_user);
+
+
+if ($timesheet_escape_sheet!="") forward("reset_user_id");
+else forward("main");
+?>

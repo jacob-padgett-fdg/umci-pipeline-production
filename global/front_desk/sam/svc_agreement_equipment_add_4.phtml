@@ -1,0 +1,68 @@
+<?
+$agreement_id=escapeshellcmd($agreement_id);
+$age=escapeshellcmd($age);
+$agreement_info=load_agreement_info($agreement_id);
+$category_id=escapeshellcmd($category_id);
+$equip_type_id=escapeshellcmd($equip_type_id);
+
+require('header.phtml');
+
+
+echo "
+
+<form name=equipment_add method=get action=$pagename>
+<input type=hidden name=mode value=svc_agreement_equipment_add_5>
+<input type=hidden name=agreement_id value=\"$agreement_id\">
+<input type=hidden name=age value=\"$age\">
+<input type=hidden name=category_id value=\"$category_id\">
+<input type=hidden name=equip_type_id value=\"$equip_type_id\">
+
+<h2>Add Equipment</h2><hr>
+
+<table border=1>
+
+<tr><td>
+	Manufacturer
+</td><td>
+	";contactsbox("select * from contacts where manufacturer = 'Y'","","mfg","",2);echo"
+</td></tr>
+
+<tr><td>
+	Model Number
+</td><td>
+	<input type=text name=model_number size=50>
+</td></tr>
+
+<tr><td>
+	Serial Number
+</td><td>
+	<input type=text name=serial_num size=50>
+</td></tr>
+
+<tr><td>
+	Tag Number
+</td><td>
+	<input type=text size=50 name=tag_num>
+</td></tr>
+
+<tr><td>
+	Location
+</td><td>
+	<input type=text name=location size=50>
+</td></tr>
+
+<tr><td>
+	Age
+</td><td>
+	<input type=text name=age value=\"$age\" size=3>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=\"--Create-->\">
+</td></tr>
+
+</table>
+</form>
+";
+
+?>

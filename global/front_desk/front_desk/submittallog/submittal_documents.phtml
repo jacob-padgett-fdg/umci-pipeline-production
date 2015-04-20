@@ -1,0 +1,155 @@
+<?
+if (!($write)) die_security('Inside submittal history without write permissions! Probably trying some cheating BS here by reverse engineering the system. Go disable the account and ask questions later!');
+
+if ($submittallog_id!="")$submittallog_id=addslashes($submittallog_id);
+$submittallog_info=getoneb("select * from submittallog where submittallog_id = '$submittallog_id'");
+$doc_id=fd_get_doc_id($submittallog_id);
+$history_id=addslashes($history_id);
+$history_info=getoneb("select * from submittallog_history where history_id = '$history_id'");
+if (!($submittallog_info)) die("Hit <input type=submit name=action value=Apply> before adding submittals");
+
+if ($history_id_delete>0) {
+	$history_id_delete=addslashes($history_id_delete);
+	if (!($adminuser)) die("Application error!");
+	include("../webfile/storage_settings.cfg");
+	include("../webfile/local.inc");
+	$delete_history_info=getoneb("select * from submittallog_history where history_id = '$history_id_delete'");
+	delete_webfile_group($delete_history_info->webfile_group_id);
+	@mysql_query("delete from submittallog_history where history_id = '$delete_history_info->history_id'");
+	$current_hist=getoneb("select * from submittallog_history where submittallog_id = '$submittallog_info->submittallog_id' order by create_time desc,last_changed desc limit 1");
+	@mysql_query("update submittallog set status = '$current_hist->status', document_file_group_id = '$current_hist->webfile_group_id' where submittallog_id = '$submittallog_info->submittallog_id'");
+	$webfile_group_id="";
+	}
+
+if ($webfile_group_id>0) {
+	if ($history_info) {
+		if (!($adminuser)) die("Application error!");
+		$query_start="update submittallog_history set";
+		$query_end="where history_id = '$history_info->history_id'";
+		} else {
+		$query_start="insert into submittallog_history set create_time = now(),";
+		$query_end="";
+		}
+	
+	$document_date=vali_date($document_date);
+	$webfile_group_id=addslashes($webfile_group_id);
+	$direction=addslashes($direction);
+	$status=addslashes($status);
+	$query_middle="
+	submittallog_id = '$submittallog_info->submittallog_id',
+	creator = '$global_user_id',
+	webfile_group_id = '$webfile_group_id',
+	direction = '$direction',
+	document_date = '$document_date',
+	status = '$status'";
+	$query=$query_start . $query_middle . $query_end;
+	@mysql_query($query);
+	//echo "<hr>$query<hr>";
+	
+	$current_hist=getoneb("select * from submittallog_history where submittallog_id = '$submittallog_info->submittallog_id' 
+	order by document_date desc, create_time desc,last_changed desc limit 1");
+	@mysql_query("update submittallog set status = '$current_hist->status', document_file_group_id = '$current_hist->webfile_group_id' where submittallog_id = '$submittallog_info->submittallog_id'");
+
+	$history_info=FALSE;
+	$history_id="";
+	}
+
+
+$save_action="save_subdoc_change()";
+$cancel_action="cancel_subdoc_change()";
+$delete_action="subdoc_delete()";
+$in_display="none";
+$out_display="none";
+$wf_display="none";
+if (!($history_info)) {
+	$wf_onchange=$save_action;
+	}
+
+if ($history_info->direction=="Incoming") {
+	$in_display="inline";
+	$in_status=$history_info->status;
+	}
+if ($history_info->direction=="Outgoing") {
+	$out_display="inline";
+	$out_status=$history_info->status;
+	}
+
+if ($history_info->webfile_group_id>0) {
+	$wf_display="inline";
+	}
+
+echo "
+<table style=\"font-size: 70%;\" border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_1><td>
+	<b>In/Out</b>
+</td><td>
+	<b>Status</b>
+</td><td>
+	<b>Date</b>
+</td><td>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+if ($adminuser) {
+	echo "</td><td><b>Action</b>";
+	}
+echo "
+</td></tr>
+	
+<tr><td>
+	<input type=hidden name=history_id id=\"history_id\" value=\"$history_info->history_id\">";
+	dropbox_array(array('','Incoming','Outgoing'),"direction_optionsx",$history_info->direction,"style=\"\" id=\"direction_options\" onchange=\"sd_show_parts()\"");
+echo "</td><td style=\"width: 205px;\">";
+	dropbox_array(array('','Original Submittal','Resubmittal','Contractual Notice'),"outgoing_optionsx",$out_status,"style=\"width: 200px; display: $out_display;\" id=\"outgoing_options\" onchange=\"sd_show_parts()\"");
+	dropbox_array(array('','Approved','Approved as noted','No Exceptions Taken','Make Corrections Noted','Note Markings; Confirm in Writing','Rejected Resubmit, Comments Attached','For Information Only','Confirm in Writing','Rejected Resubmit','Revise/Resubmit','Under Review','N/A'),"incoming_optionsx",$in_status,"style=\"display: none; width: 200px; display: $in_display;\" id=\"incoming_options\" onchange=\"sd_show_parts()\"");echo "&nbsp;
+</td><td title=\"Created: $history_info->create_time / Last modified: $history_info->last_changed\">
+	<div id=\"document_date_container\" style=\"padding: 0px; display: $wf_display;\"";
+	if ($history_info->document_date=="") {
+		$show_document_date=date('Y-m-d');
+		} else {
+		$show_document_date=$history_info->document_date;
+		}
+		
+	datebox($show_document_date,'submittal_edit.document_date');
+echo "</div>
+</td><td align=center style=\"height: 35px;\">
+	<div id=\"webfilebox_container\" style=\"padding: 0px; display: $wf_display;\">";
+	webfilebox2($history_info->webfile_group_id,'new_submittal_document',$wf_onchange,array('no_box'=>'Y'));
+	echo "</div>&nbsp;
+</td><td>
+	&nbsp;
+</td></tr>";
+
+if ($history_info) {
+	echo "<tr><td style=\"background: $fd_color_3;\" colspan=5 align=center>
+			<input type=button onclick=\"$delete_action\" value=\"Delete\">&nbsp;&nbsp;
+			<input type=button onclick=\"$cancel_action\" value=\"Cancel\">&nbsp;&nbsp;
+			<input type=button onclick=\"$save_action\" value=\"Save\">&nbsp;&nbsp;
+		</td></tr>";
+	}
+
+if (!($history_info)) {
+
+	$res=@mysql_query("select * from submittallog_history where submittallog_id = '$submittallog_info->submittallog_id' order by document_date desc,create_time desc,last_changed desc");
+	$count=@mysql_num_rows($res);
+	
+	if ($count>0) {
+		$bgcolor="#ffffff";
+		while ($row=@mysql_fetch_object($res)) {
+			$link=webfile_paperclip_view($row->webfile_group_id,"?");
+			echo "<tr bgcolor=\"$bgcolor\"><td>
+					$row->direction
+				</td><td>
+					$row->status
+				</td><td title=\"created: $row->create_time / last modified: $row->last_changed\">
+					" . invali_date($row->document_date,'/') . "
+				</td><td align=center>
+					$link";
+				if ($adminuser) {
+					echo "</td><td align=center><font size=-1 onclick=\"submittal_history_edit($row->history_id,$row->submittallog_id)\" style=\"font-style: italic; cursor: pointer; cursor: hand; color: blue;\">edit</font>";
+					}
+			echo "	</td></tr>";
+			$bgcolor=$fd_color_1;
+			}
+		}
+	echo "</table>";
+	}
+?>

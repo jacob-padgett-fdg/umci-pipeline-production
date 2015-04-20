@@ -1,0 +1,12 @@
+<?
+$subcontracts_info=getoneb("select * from subcontracts where subcontracts_id = '" . addslashes($subcontracts_id) . "'");
+if (!($subcontracts_info)) die("Application error. Please contact your system administrator.");
+
+if (!(member_of_global_group_named("Contract Admin"))) die_security();
+
+@mysql_query("delete from subcontracts where subcontracts_id = '$subcontracts_info->subcontracts_id'");
+@mysql_query("delete from subcontractor_scope_selections where subcontracts_id = '$subcontracts_info->subcontracts_id'");
+forward("main&global_jobinfo_id_set=$subcontracts_info->jobinfo_id");
+
+
+?>

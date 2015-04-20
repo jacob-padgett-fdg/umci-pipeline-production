@@ -1,0 +1,28 @@
+<?
+
+//@mkdir("/tmp/front_desk");
+//@mkdir("/tmp/front_desk/cook_a_batch");
+//@mkdir("/tmp/front_desk/cook_a_batch/$global_user->login_name");
+//@mkdir("/tmp/front_desk/cook_a_batch/$global_user->login_name/$job->contract_num");
+$job=getoneb("select * from jobinfo where jobinfo_id = '$global_jobinfo_id'");
+$directory="/tmp/front_desk/cook_a_batch/$global_user->login_name/$job->contract_num";
+@chdir($directory);
+$actual=getcwd();
+if ($actual!=$directory) die("Application Error!($actual****$directory)");
+@unlink("output.pdf");
+@unlink("output.zip");
+$command_output=array();
+//echo "hi";
+exec("zip output.zip *");
+//print_r($command_output);
+//passthru("pwd");
+
+header("Content-disposition: attachment; filename=\"output.zip\";");
+header("Content-type: application/zip");
+header("Content-Transfer-Encoding: binary");
+header("Expires: 0");
+header("Cache-Control: private");
+header("Pragma: cache");
+
+readfile("output.zip");
+?>

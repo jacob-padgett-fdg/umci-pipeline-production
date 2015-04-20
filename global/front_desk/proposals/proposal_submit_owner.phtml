@@ -1,0 +1,26 @@
+<?
+
+$owner=addslashes($owner);
+$owner_contact_id=addslashes($owner_contact_id);
+$architect=addslashes($architect);
+$mech_eng=addslashes($mech_eng);
+$struct_eng=addslashes($struct_eng);
+$site_address=addslashes($site_address);
+
+$query_data=$query_data . "$data_seperator
+owner = '$owner',
+owner_contact_id = '$owner_contact_id',
+architect = '$architect',
+mech_eng = '$mech_eng',
+struct_eng = '$struct_eng',
+site_address = '$site_address'";
+
+$data_seperator=",";
+
+
+if ($general_to_add!="") {
+	$general_to_add=addslashes($general_to_add);
+	@mysql_query("insert into bidlist_bidding_to set bidlist_id = '$bidlist_id', general_id = '$general_to_add', low_bid = 'N'");
+	}
+
+?>

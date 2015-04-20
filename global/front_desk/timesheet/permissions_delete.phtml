@@ -1,0 +1,6 @@
+<?
+$timesheet_guest=escapeshellcmd($timesheet_guest);
+$query="delete from timesheet_permissions where timesheet_owner = '$global_user->contacts_id' and timesheet_guest = '$timesheet_guest'";
+@mysql_query($query);
+forward('permissions_selection');
+?>

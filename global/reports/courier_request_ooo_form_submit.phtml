@@ -1,0 +1,7 @@
+<?
+$status=addslashes($status);
+$message=addslashes($message);
+
+@mysql_query("update courier_request_status set status = '$status', message = '$message'");
+forward("$mode&report_name=courier_request");
+?>

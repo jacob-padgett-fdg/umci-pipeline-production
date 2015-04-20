@@ -1,0 +1,54 @@
+<?
+require("header.phtml");
+require("mh_lib.inc");
+mh_navs_header();
+
+if ($log_entry_count=="") $log_entry_count="100";
+else $log_entry_count=addslashes($log_entry_count);
+
+$res=@mysql_query("select * from front_desk_my_log where contacts_id = '$global_user_id' and deleted = 'N' order by start_date desc, start_time desc, log_timestamp_create desc limit $log_entry_count");
+echo "<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=6 align=center bgcolor=$fd_color_4>
+	<font size=+1><b>Last $log_entry_count Log Entries</b></font>
+</td></tr>
+
+<tr><td>
+	<b>Start Date</b>
+</td><td>
+	<b>Start Time</b>
+</td><td>
+	<b>Log Entry</b>
+</td><td>
+	<b>Duration</b>
+</td><td>
+	<b>Notes</b>
+</td></tr>
+";
+while ($row=@mysql_fetch_object($res)) {
+	$create_time_nice=date('m/d/y G:i',strtotime($row->log_timestamp_create));
+	$row->log_entry=ereg_replace('^ *','',$row->log_entry);
+	if ($row->start_date!=$start_date_last) {
+		$start_date_last=$row->start_date;
+		if ($bg=="") $bg="#aaaaaa";
+		else $bg="";
+		}
+	
+	if ($row->log_entry=="") $row->log_entry="??????";
+	echo "
+	<tr bgcolor=\"$bg\"><td title=\"$row->log_timestamp_create\">
+		" . invali_date($row->start_date,'/') . "&nbsp;
+	</td><td>
+		$row->start_time&nbsp;
+	</td><td>
+		<a href=$pagename?mode=$mode&report_name=${report_name}_edit&my_log_id=$row->my_log_id><font color=blue>" . htmlspecialchars($row->log_entry) . "</font></a>  
+	</td><td>
+		$row->duration&nbsp;
+	</td><td>
+		$row->notes&nbsp;
+	</td></tr>";
+	}
+echo "</table>";
+
+mh_navs_footer();
+
+?>

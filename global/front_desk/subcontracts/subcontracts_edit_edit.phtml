@@ -1,0 +1,250 @@
+<?
+$headbgcolor=$fd_color_4;
+$head_text="Subcontract Request";
+$tm_warn_display="none";
+if ($subcontracts_info->is_t_and_m=='Y') {
+	$headbgcolor="#ff7777";
+	$head_text="T&M Subcontract Request";
+	$tm_warn_display="block";
+	}
+$doc_id=fd_get_doc_id($subcontracts_info->subcontracts_id);
+
+if ($subcontracts_info->status!="complete") {
+	if (member_of_global_group_named("Contract Admin")) {
+		echo "<div style=\"padding: 2px; border: 1px solid black; background: white; position: relative; right: 30px; float: right; cursor: pointer; cursor: hand;\" onclick=\"try_to_delete()\"><font color=blue><i>delete</i></font></div>";
+		}
+	}
+
+	
+echo "
+
+<script>
+function submit_request() {
+	if(confirm('Are you sure everything that can be filled out has been?')) {
+		//alert ('OK... submitting');
+		document.subcontract_edit.special_action.value='submit_request';
+		document.subcontract_edit.submit();
+		}
+	}
+
+function try_to_delete() {
+	if (confirm('Are you sure you want to delete this record?'))
+	if (confirm('Are you really sure you want to delete it?'))
+	if (confirm('There is no undo button. Still sure?'))
+	if (confirm('No, really.. Think about it, don\\'t just click OK. Continue?'))
+	if (confirm('All the scope details, the written scope.. It is all gone then.. Really continue?')) 
+	if (confirm('Did you really even give it a chance???')) document.location='$pagename?mode=subcontracts_delete&subcontracts_id=$subcontracts_info->subcontracts_id';
+	}
+
+function view_data() {
+	//alert ('OK... submitting');
+	document.subcontract_edit.special_action.value='save_and_view_data';
+	document.subcontract_edit.submit();
+	}
+
+function return_to_user() {
+	document.subcontract_edit.special_action.value='return_to_user';
+	document.subcontract_edit.submit();
+	}
+
+function mark_complete() {
+	document.subcontract_edit.special_action.value='mark_complete';
+	document.subcontract_edit.submit();
+	}
+
+function check_retainage() {
+	retval=document.subcontract_edit.retainage.value;
+	contractamt=document.subcontract_edit.contract_amount.value;
+	//alert(retval);
+	if (retval<1) return 0;
+	if (contractamt<1) return 0;
+	if (contractamt<2000) alert('Contract less than \$2,000. Are you sure you want retainage?');
+	}
+
+function check_t_and_m() {
+	if (document.subcontract_edit.is_t_and_m.value == 'Y') {
+		document.getElementById('tm_warn_display').style.display='block';
+		} else {
+		document.getElementById('tm_warn_display').style.display='none';
+		}
+	return 0;
+	}
+</script>
+
+<form name=subcontract_edit method=post action=$pagename>
+<input type=hidden name=special_action value=''>
+<input type=hidden name=mode value=subcontracts_submit>
+<input type=hidden name=subcontracts_id value=\"$subcontracts_info->subcontracts_id\">
+<table border=1 cellspacing=0 cellpadding=5>
+
+<tr><td colspan=2 bgcolor=$headbgcolor align=center>
+	<b>$head_text</b>
+</td>";
+if ($subcontracts_info->subcontractor_type_id>0) {
+	$s_type_info=getoneb("select * from subcontractor_types where subcontractor_type_id = '$subcontracts_info->subcontractor_type_id'");
+	echo "<td bgcolor=$fd_color_4 align=center><b>$s_type_info->sub_type Scope Options</td>";
+	}
+echo "
+</tr>
+
+<tr><td>
+	<b>Request #</b>
+</td><td>
+	$subcontracts_info->request_number
+</td>";
+
+//if ($subcontracts_info->subcontracts_id) {
+if ($subcontracts_info->subcontractor_type_id>0) {
+	echo "
+		<td rowspan=15 valign=top align=center>
+			<div id=scope_selections_output>
+				";include("scope_selections.phtml");echo"
+			</div>
+	<a href=$pagename?mode=scope_selections_pdf&subcontracts_id=$subcontracts_info->subcontracts_id><font color=blue>Download PDF</font></a>
+		</td>";
+	}
+
+echo "</tr>
+		
+
+<tr><td>
+	<b>Subcontractor Type</b>
+</td><td>
+	";dropbox("select * from subcontractor_types order by sub_type",$subcontracts_info->subcontractor_type_id,1,"submit()");
+	if ($subcontracts_info->subcontractor_type_id==12) { echo "<input style=\"background: #ffff88;\" type=text size=15 name=other_subcontractor_type value=\"$subcontracts_info->other_subcontractor_type\">"; }
+	echo"
+</td></tr>
+
+<tr><td>
+	<b>T&M?</b>
+</td><td>
+	<select name=is_t_and_m onchange=\"check_t_and_m()\">
+	<option>$subcontracts_info->is_t_and_m</option>
+	<option>N</option>
+	<option>Y</option>
+	</select>
+	<div bgcolor=#ffff88 id=tm_warn_display style=\"display: $tm_warn_display;\"><font color=red><b>Warning: Subcontract won't process until<br>rates are provided to your contract admin!</font></div>
+</td></tr>
+
+<tr><td>
+	<b>Subcontractor</b>
+</td><td>
+	";contactsbox("select * from contacts where contact_type = 'company'",$subcontracts_info->subcontractor_id,"subcontractor_id");echo "
+</td></tr>
+
+<tr><td>
+	<b>Contact</b>
+</td><td>
+	";contactsbox("select * from contacts where contact_type = 'contact'",$subcontracts_info->subcontractor_contact,"subcontractor_contact");echo "
+</td></tr>
+
+<tr><td>
+	<b>Contract Amount</b>
+</td><td>
+	<input type=text size=15 name=contract_amount value=\"$subcontracts_info->contract_amount\">
+</td></tr>
+
+<tr><td>
+	<b>Retainage %</b>
+</td><td>";
+	if ($global_jobinfo->fed_pub=="Pub") {
+		echo "<select name=retainage onchange=\"check_retainage()\">
+		<option>$subcontracts_info->retainage</option>
+		<option>0</option>
+		<option>5</option>
+		</select>
+		<font color=red><b>Limited for public job</b></font>";
+		} else {
+		echo "<select name=retainage onchange=\"check_retainage()\">
+		<option>$subcontracts_info->retainage</option>
+		<option>0</option>
+		<option>5</option>
+		<option>10</option>
+		</select>";
+		}
+	echo "
+</td></tr>
+
+<tr><td>
+	<b>Prime Contractor</b>
+</td><td>
+	";contactsbox("select * from contacts where contact_type = 'company'",$subcontracts_info->prime_contractor,"prime_contractor");echo "
+</td></tr>
+
+<tr><td>
+	<b>Phase</b>
+</td><td>
+	";
+	$phase_qry="SELECT JCPM.Phase as Phase, JCPM.Description as Description FROM JCPM with (NOLOCK)
+				INNER JOIN JCPC with (NOLOCK) ON ( JCPM.PhaseGroup = JCPC.PhaseGroup and JCPM.Phase = JCPC.Phase)
+				WHERE JCPM.PhaseGroup = 1 and JCPC.CostType = 3 and JCPM.ud2003phase = 'Y'";
+	$phaseres=@mssql_query($phase_qry);
+	echo "<select name=phase_code>
+	<option value=\"$subcontracts_info->phase_code\">$subcontracts_info->phase_code</option>
+	";
+	$contract_num=$global_jobinfo->contract_num;
+	while ($prow=@mssql_fetch_object($phaseres)) {
+		$nicephase=ereg_replace("[- _]*$","",$prow->Phase);
+		if ($nicephase=="55420") continue;
+		if ($nicephase=="YYYYY") continue;
+		if (($nicephase>="55801")&&($nicephase<="55810")) {
+			$realphase=ms_getoneb("select * from JCJP with (NOLOCK) where JCCo = 1 and Job = '0${contract_num}-' and Phase like '$nicephase%'");
+			if ($realphase) {
+				echo "<option value=\"$nicephase\">$nicephase - $realphase->Description</option>";
+				}
+			continue;
+			}
+		
+		echo "<option value=\"$nicephase\">$nicephase - $prow->Description</option>";
+		}
+	echo "</select>
+</td></tr>
+
+<tr><td>
+	<b>Owner</b>
+</td><td>
+	";contactsbox("select * from contacts where contact_type = 'company'",$subcontracts_info->owner,"owner");echo "
+</td></tr>
+
+
+";
+if ($ca) {
+	echo "
+	<tr><td>
+		<b>Scope List Exhibit Name</b>
+	</td><td>
+		<input type=text size=20 name=exhibit_name value=\"$subcontracts_info->exhibit_name\">
+	</td></tr>
+	";
+	} else {
+	echo "<input type=hidden size=20 name=exhibit_name value=\"$subcontracts_info->exhibit_name\">";
+	}
+
+echo "
+<tr><td valign=top>
+	<b>Scope</b>
+</td><td>
+	<textarea name=scope rows=10 cols=40>$subcontracts_info->scope</textarea>
+</td></tr>
+
+
+<tr><td colspan=2 align=center>";
+	//if ($subcontracts_info->status!="new") 
+	if ($subcontracts_info->subcontracts_id>0) 
+	echo "<div style=\"float: right;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input style=\"\" type=button value=\"View Data\" onclick=\"view_data()\"></div>";
+	if ($subcontracts_info->status=="new") {
+	echo "<div style=\"float: right;\"><input style=\"background: yellow;\" type=button value=\"Submit Request\" onclick=\"submit_request()\"></div>";
+	}
+	if (($ca)&&($subcontracts_info->status=="processing")) {
+	echo "<div style=\"float: right;\"><input style=\"background: yellow;\" type=button value=\"Mark Complete\" onclick=\"mark_complete()\"></div>";
+	echo "<div style=\"float: right;\"><input style=\"background: yellow;\" type=button value=\"Return to PM\" onclick=\"return_to_user()\"></div>";
+	//echo "<div style=\"float: right;\"><input style=\"background: #ff7777;\" type=button value=\"Return to User\" onclick=\"return_to_user()\"></div>";
+	}
+	echo"
+	<input type=submit value=Save>
+</td></tr>
+</table>
+</form>
+";
+//fd_navs_footer();
+?>

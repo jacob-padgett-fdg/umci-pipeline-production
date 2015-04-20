@@ -1,0 +1,138 @@
+<?
+
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+
+function is_recovery_job($job_num){
+	//echo "<hr>$job_num";
+	$phases_locked=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_num' and LockPhases = 'Y'");
+	if ($phases_locked) {
+		//echo "<hr>locked $job_num";
+		$query="select * from JCJP with (NOLOCK)  INNER JOIN JCCH with (NOLOCK) on JCJP.JCCo = JCCH.JCCo and JCJP.Job = JCCH.Job and JCJP.Phase = JCCH.Phase where JCJP.Job = '$job_num' and JCJP.Phase LIKE '25110%' and JCJP.JCCo = 1 and JCJP.ActiveYN = 'Y'";
+		//ms_tabledump($query);
+		$phase_ret=ms_getoneb($query);
+		//if ($phase_ret) {echo "<tr><td>recovery job: $job_num</td><td>"; ms_tabledump($query); echo "</td></tr>";}
+		} else {
+		$query="select * from JCPC with (NOLOCK),JCPM with (NOLOCK) where JCPC.Phase = JCPM.Phase and JCPC.PhaseGroup = 1 and JCPM.PhaseGroup = 1 and JCPC.Phase LIKE '25110%'";
+		$phase_ret=ms_getoneb($query);
+		}
+	return($phase_ret);
+}
+
+@mysql_connect(localhost,"globalread","qazxsw");
+@mysql_select_db("global");
+
+session_register('print_size');
+if ($print_size=="") $print_size="8";
+if ($print_size_set!="") $print_size=addslashes($print_size_set);
+$print_size_big=$print_size + 2;
+
+$query="select contract_num, job_name, project_manager_id, job_cost, contract_type,contract_admin,safetyrep,confidential from jobinfo where active = 'Y' and fed_pub = 'Fed' order by contract_num";
+$query="select jobinfo_id,contract_num, job_name, project_manager_id, job_cost, contract_type,contract_admin,safetyrep,confidential from jobinfo where active = 'Y' order by contract_num";
+
+$result=@mysql_query($query);
+
+echo "
+<style type=\"text/css\" media=\"print\">
+th {
+	font-size: $print_size_big
+	}
+td {
+	font-size: $print_size
+	}
+div#printsize {
+	display: none;
+	}
+</style>
+
+<div id=\"printsize\">
+<form name=printsize method=post action=$pagename>
+<table border=1 cellspacing=0 cellpadding=3><tr><td bgcolor=#dddddd>Print Size: <input size=2 type=text name=print_size_set value=\"$print_size\" onchange=submit()></td></tr></table>
+</form>
+</div>
+
+<center>
+<h2>Work Recovery Projects</h2>
+<table border=1 cellspacing=0 cellpadding=3>
+<thead>
+	<tr bgcolor=#dddddd><th colspan=8>
+	<b>*** Confidential Projects: No information is to be advertised or given out regarding these projects without prior approval.<br>
+	Check with Contract Administration for details.<br></b>
+	</th></tr>
+
+	<tr bgcolor=#dddddd><th>
+	Job Number
+	</th><th>
+	Name
+	</th><th>
+	Project Manager
+	</th><th>
+	Contract Type
+	</th><th>
+	Contract Admin
+	</th><th>
+	Confidential
+	</th></tr>
+</thead>
+";
+
+while($row=@mysql_fetch_object($result)) {
+	$contract_num_vp=get_vp_contract_num($row->jobinfo_id);
+	$recovery=is_recovery_job($contract_num_vp);
+	if (!($recovery)) continue;
+	//if ($recovery_job) continue;
+	$con_ad=getoneb("select * from contacts where contacts_id = '$row->contract_admin'");
+	if ($con_ad) {
+		$contract_admin="$con_ad->last_name, $con_ad->first_name";
+		} else {
+		$contract_admin="";
+		}
+	$mgr=getoneb("select * from contacts where contacts_id = '$row->project_manager_id'");
+	if ($mgr) {
+		$manager="$mgr->last_name, $mgr->first_name";
+		} else {
+		$manager="";
+		}
+	if ($row->confidential=='Y') {
+		$conf_image="<img src=\"/images/check_mark.png\" border=0>";
+		$rowbg="#ff9999";
+		} else {
+		$conf_image="&nbsp;";
+		$rowbg="#ffffff";
+		}
+	echo "<tr bgcolor=\"$rowbg\"><td>
+			$row->contract_num
+		</td><td>
+			$row->job_name
+		</td><td>
+			$manager&nbsp;
+		</td><td>
+			$row->contract_type&nbsp;
+		</td><td>
+			$contract_admin&nbsp;
+		</td><td align=center>
+			$conf_image
+		</td></tr>
+		";
+		
+		}
+
+echo "</table></center>";
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

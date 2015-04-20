@@ -1,0 +1,20 @@
+<?
+$fixcontact_id=addslashes($fixcontact_id);
+$contact_info=getoneb("select * from contacts where contacts_id = '$fixcontact_id'");
+$viewpoint_user_info=ms_getoneb("select udusername,PREmp from HRRM with (NOLOCK) where HRCo = 1 and PREmp = '$contact_info->employee_num'");
+
+if (!($viewpoint_user_info)) {
+	die("Application Error: Could not find viewpoint user info for Employee $contact_info->employee_num");
+	}
+$viewpoint_group_info=ms_getoneb("select PRGroup from PREH with (NOLOCK) where PRCo = 1 and Employee = $viewpoint_user_info->PREmp");
+if (!($viewpoint_group_info)&&($contractor_warned!="yes"))
+	echo "Error getting employee group (1/3) from viewpoint! No matched login name for \"$current_user->login_name\"???";
+
+if ($contact_info) {
+	$update_red_query="update contacts set employee_num = '$viewpoint_user_info->PREmp',employee_group = '$viewpoint_group_info->PRGroup' where contacts_id = '$contact_info->contacts_id'";
+	@mysql_query($update_red_query);
+	} else {
+	die("Application Error: Couldn't verify user's employee number / payroll group. Unknown application error. Please contact your system administrator! (error with employee_num $employee_num");
+	}
+forward('payroll_manage_sequences');
+?>

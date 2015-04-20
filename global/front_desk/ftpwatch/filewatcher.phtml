@@ -1,0 +1,258 @@
+#!/usr/local/bin/php
+<?
+set_time_limit("1080");
+// GPH MARK - absolute path
+require_once('/data/web/pipeline/global/ftpwatch/settings.cfg');
+require_once('/data/web/pipeline/global/ftpwatch/settings_filewatcher.cfg');
+require_once('global-auth.inc');
+
+/*
+$res=@mysql_query("select * from filewatch_notify where directory like '/data%'");
+while ($row=@mysql_fetch_object($res)) {
+	$newdir=ereg_replace("/data/","/misc/",$row->directory);
+	mysql_query("update filewatch_notify set directory = '" . addslashes($newdir) . "' where notify_id = '$row->notify_id'");
+	}
+exit;
+*/
+function update_dirlist($directory,$parent_dir) {
+	$directory=addslashes($directory);
+	$parent_dir=addslashes($parent_dir);
+	if (getoneb("select * from filewatch_dirs where dirname = '$directory'")) {
+		return 0;
+		} else {
+		@mysql_query("delete from filewatch_dirs where dirname = '$directory'");
+		@mysql_query("insert into filewatch_dirs set parentname = '$parent_dir',dirname = '$directory'");
+		return 0;
+		}
+	}
+
+function process_dir($directory,$parent_dir) {
+	//echo "directory: $directory\r\n";
+	$basename=basename($directory);
+	if (($basename=="..")||($basename==".")) return TRUE;
+	if (!(is_dir($directory))) return FALSE;
+	$start_directory=getcwd();
+	chdir($directory);
+	$directory=getcwd();
+	update_dirlist($directory,$parent_dir);
+	$entries=scandir($directory);
+	while ($entry=array_pop($entries)) {
+		if (is_dir($entry)) process_dir($entry,$directory);
+		if (is_file($entry)) {
+			check_file_history($directory . "/" . $entry);
+			}
+		}
+	chdir($start_directory);
+	return 0;
+	}
+
+function silent_update($filewatch_id,$name,$mtime,$bytes) {
+	$old_info=getone("select * from filewatch where filewatch_id = '$filewatch_id'");
+	$new_md5=md5_file($name);
+	
+	if ($new_md5!=$old_info->md5_sum) die("\r\n\r\nERROR: Trying to silent update with MD5's do not match!!!!!!!!\r\n\r\n");
+	//echo "silent update for file: FWID: $filewatch_id, $name, $mtime, $bytest\r\n";
+	$ud_query="update filewatch set name = '" . addslashes($name) . "', file_mtime = '$mtime', file_bytes = '$bytes' where filewatch_id = '$filewatch_id'";
+	$udres=@mysql_query($ud_query);
+	if (!($udres)) die("update error: failed query:\r\n$ud_query\r\n");
+	return 0;
+	}
+
+function fix_name($name) {
+	$file_dir=ereg_replace("/[^/]*$","/",$name);
+	$file_dir_lower=strtolower($file_dir);
+	//if ($file_dir!=$file_dir_lower) {
+	//	if (!(file_exists($file_dir_lower))) {
+	//		$file_dir_shorter=ereg_replace("/*$","",$file_dir);
+	//		$file_dir_lower_shorter=ereg_replace("/*$","",$file_dir_lower);
+	//		//echo "WARNING: Renaming directory: $file_dir_shorter!\r\n...to $file_dir_lower_shorter\r\n";
+	//		}
+	//	return ($name);
+	//	}
+	$filename=ereg_replace("^.*/","",$name);
+	
+	//$lowname=strtolower($name);
+	$lowname=$file_dir . strtolower($filename);
+	
+	if ($lowname==$name) {
+		//echo "ERROR:  Can't find problem with name of file: ($name)\r\n";
+		return ($name);
+		}
+	
+	if (is_file($lowname)) {
+		/////////////////////////////////
+		// Looks like a name conflict!!!
+		/////////////////////////////////
+
+		/////////////////////////////////
+		// Delete uppercase if same file
+		/////////////////////////////////
+		$md5_low=md5_file($lowname);
+		$md5_name=md5_file($name);
+		if ($md5_low==$md5_name) {
+			unlink($name);
+			return($lowname);
+			}
+		
+		$file_mtime=filemtime($name);
+		$low_mtime=filemtime($lowname);
+		if ($file_mtime>$low_mtime) {
+			unlink($lowname);
+			rename($name,$lowname);
+			return($lowname);
+			} else {
+			unlink($name);
+			return ($lowname);
+			}
+		} else {
+		/////////////////////////////////
+		// No conflict, just rename
+		/////////////////////////////////
+		rename ($name,$lowname);
+		return ($lowname);
+		}
+	
+	
+	die("\r\n\r\nERROR!!!!!!!!!!!!\r\n\r\nI SHOULD NOT HAVE GOTTEN HERE!!!!\r\n\r\nFIX_NAME FUNCTION CHOSE NOT TO DO ANYTHING (SHOULD BE IMPOSSIBLE)!!!!\r\n\r\n");
+	}
+
+function check_file_history($name) {
+	//$name=$file;
+	//$lowname=strtolower($name);
+	//if ($lowname!=$name) $name=fix_name($name);
+
+
+
+//	$extension=ereg_replace('^.*[.]','.',$name);
+	//echo "history:   $name($extension)\r\n";
+
+
+
+
+	$mtime=filemtime($name);
+	$file_bytes=filesize($name);
+	$sqlname=addslashes($name);
+	///////////////////////////////////////////////////////////
+	// Easy match.. We should hit this and return almost always!
+	///////////////////////////////////////////////////////////
+	//die("select * from filewatch where name = '$sqlname' and file_mtime = '$mtime' and file_bytes = '$file_bytes' and newest_version = 'Y'\r\n");
+	$match_query="select * from filewatch where name = '$sqlname' and file_mtime = '$mtime' and file_bytes = '$file_bytes' and newest_version = 'Y'";
+	//$matched=getoneb("select * from filewatch where name = '$sqlname' and file_mtime = '$mtime' and file_bytes = '$file_bytes' and newest_version = 'Y'");
+	$matched=getoneb($match_query);
+	if ($matched) return TRUE;
+	
+	$matched=getoneb($match_query . " limit 1");
+	
+	if ($matched) {
+		$fix_query="delete from filewatch where name = '$sqlname' and file_mtime = '$mtime' and file_bytes = '$file_bytes' and newest_version = 'Y' limit 1";
+		@mysql_query($fix_query);
+		//if (getoneb($match_query)) return TRUE;
+		return TRUE;
+		}
+	
+	
+	
+	//echo "match that failed:\r\n$match_query\r\n";
+	//echo "		no exact match: checking history with md5!\r\n";
+	$md5_sum=md5_file($name);
+	///////////////////////////////////////////////////////////
+	// Check for a bumped mtime or "bytes" (should never hit 
+	// with bytes since the md5 should be different every time)
+	///////////////////////////////////////////////////////////
+	$matched=getoneb("select * from filewatch where md5_sum = '$md5_sum' and name = '$sqlname' and newest_version = 'Y' limit 1");
+	if ($matched) {
+		//echo "		silent update (old file name and md5 match)\r\n";
+		silent_update($matched->filewatch_id,$name,$mtime,$file_bytes);
+		return TRUE;
+		}
+
+	///////////////////////////////////////////////////////////
+	// Check for a changed filename
+	///////////////////////////////////////////////////////////
+	/*$file_dir=ereg_replace("/[^/]*$","/",$name);
+	//die($file_dir . "\r\n");
+	$matched=getoneb("select * from filewatch where md5_sum = '$md5_sum' and name like '$file_dir%' and newest_version = 'Y' limit 1");
+	if ($matched) {
+		$name_string=ereg_replace("[^A-Za-z0-9]","",$name);
+		$matched_string=ereg_replace("[^A-Za-z0-9]","",$matched->name);
+		//die("\r\n$name_string/$matched_string\r\n");
+		
+		if ($name_string==$matched_string) {
+			echo "		silent update (md5 match, looks like a rename - this is probably the problem we're hitting...)\r\n";
+			silent_update($matched->filewatch_id,$name,$mtime,$file_bytes);
+			return TRUE;
+			}
+		}
+	*/
+	///////////////////////////////////////////////////////////
+	// If we made it this far, it's time to record a new entry
+	// and mark it to send out e-mails....
+	///////////////////////////////////////////////////////////
+	// Mark the old version as a done deal.. 
+	//$extension=ereg_replace('^[^.]*','',$name);
+	$extension=ereg_replace('^.*[.]','.',$name);
+	$update_query="update filewatch set newest_version = 'N' where name = '$sqlname'";
+	@mysql_query($update_query);
+	$insert_query="insert into filewatch set
+		name = '" . $sqlname . "',
+		file_mtime = '$mtime',
+		file_bytes = '$file_bytes',
+		newest_version = 'Y',
+		new_entry = 'Y',
+		upload_day = now(),
+		md5_sum = '$md5_sum',
+		extension = '" . addslashes($extension) . "'";
+	//echo "$insert_query\r\n";
+	$isres=mysql_query($insert_query);
+	if (!($isres)) die("failed insert query:\r\n" . $insert_query . "\r\n");
+	return TRUE;
+	}
+
+function process_notify_list() {
+	$res=@mysql_query("select * from filewatch_notify left join contacts using (contacts_id) where active = 'Y' and contacts.contacts_id > 0 order by alphasort");
+	global $ftp_site_root;
+	while ($row=@mysql_fetch_object($res)) {
+	//if (ereg('/home',$row->directory)) {
+	//	$new_directory=ereg_replace("/home","/data",$row->directory);
+	//	@mysql_query("update filewatch_notify set directory = '$new_directory' where notify_id = '$row->notify_id'");
+	//	//echo "update filewatch_notify set directory = '$new_directory' where notify_id = '$row->notify_id'<hr>";
+	//	}
+	$filter_query="";
+		if ($row->filter_folder!="") {
+			$filter_query=" and name not like '$row->filter_folder%' ";
+			}
+		$umc_filter_query="";
+		if ($row->filter_umc_folder=='Y') {
+			$umc_filter_query=" and name not like '%/umc/%' and name not like '%/UMC/%' and name not like '%/Umc/%' ";
+			}
+		$query="select * from filewatch where newest_version = 'Y' and new_entry = 'Y' and name like '$row->directory%' $filter_query $umc_filter_query and name not like '%/ftppost.txt'";
+		//$query="select * from filewatch where newest_version = 'Y' and name like '$row->directory%' $filter_query $umc_filter_query and name not like '%/ftppost.txt'";
+		//tabledump($query);
+		$filesres=mysql_query($query);
+		$filecount=mysql_num_rows($filesres);
+		//echo "$filecount: $query\r\n";
+		if ($filecount<1) continue;
+		$file_list="";
+		while($file_info=@mysql_fetch_object($filesres)) {
+			$short_file=ereg_replace("^$ftp_site_root","",$file_info->name);
+			$file_list=$file_list . "<br>" . $short_file;
+			}
+		$message="The file(s) listed below were recently updated or added to the University Mechanical FTP site.<br>
+		<hr>
+		" . $file_list;
+		queue_email($row->contacts_id,"Updated files on UMC's FTP Site",$message,'Y');
+		//queue_email(2,"Updated files on UMC's FTP Site",$message,'Y');
+		}
+	}
+
+function clear_file_list() {
+	@mysql_query("update filewatch set new_entry = 'N'");
+	}
+
+$ftp_site_root=ereg_replace("/*$","",$ftp_site_root);
+$ftp_site_parent=ereg_replace("/[^/]*$","",$ftp_site_root);
+
+process_dir($ftp_site_root,$ftp_site_parent);
+process_notify_list();
+clear_file_list();
+?>

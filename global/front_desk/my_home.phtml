@@ -1,0 +1,126 @@
+<?
+//echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">";
+//echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";
+//echo "<!DOCTYPE HTML>";
+echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">";
+
+require("header.phtml");
+require('mh_lib.inc');
+if ($application_name=="front_desk") mh_navs_header();
+else include('global_connect_rw.phtml');
+
+$mode="my_home";
+//if ($global_browser=="IE") warn_chrome_plugin();
+echo "
+<center>
+<script>
+function show_add_news_form() {
+	document.getElementById('add_news_form').style.display='block';
+	}
+
+function open_webmail() {
+	open('https://webmail.umci.com/owa/','_blank','');
+	}
+
+function toggle_news_text(news_id) {
+	obj=document.getElementById('news_text_' + news_id);
+	if (obj.style.display=='none') obj.style.display='block';
+	else obj.style.display='none';
+	}
+</script>
+
+	<div style=\"float: left; width: 20px;\">&nbsp;</div>
+
+<div style=\"float: left; z-index: 1; background: #ffffff;\">
+";
+if ($global_user->umc_emp=='Y') {
+echo "
+	<table border=1 cellspacing=0 cellpadding=0>
+	<tr><td width=200px valign=top style=\"text-align: left;\">
+		<div style=\"width: 100%; background: $fd_color_4\"><font size=-1><b>&nbsp;UMC&nbsp;Links</b></font></div>
+
+		<font size=-1>
+		&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=http://www.umci.com/><font color=blue>Main&nbsp;Web&nbsp;Site</font></a><br>
+		&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=http://www.umccf.org/><font color=blue>Charitable&nbsp;Foundation</font></a><br>
+		&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=https://umc.saleslogixcloud.com/><font color=blue>SalesLogix</font></a><br>
+		&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=$pagename?mode=my_reference_center><font color=blue>Reference Center</font></a><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=\"/global/front_desk/index.html?mode=my_reference_center&category_id=14\"><font color=blue>Benefits</font></a><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=\"/global/front_desk/index.html?mode=my_reference_center&category_id=16\"><font color=blue>Forms</font></a><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=\"/global/front_desk/index.html?mode=my_reference_center&category_id=17\"><font color=blue>Company Info</font></a><br>
+		
+		&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=/global/timesheet/><font color=blue>Timesheet</font></a><br>
+		&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=\"/global/front_desk/?mode=my_reference_center_lookup&reference_id=26\"><font color=blue>Securing IT Help</font></a><br>
+		&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=\"/global/costore/\"><font color=blue>Company Store</font></a><p>
+
+		&nbsp;<img src=/images/phone1.jpg>&nbsp;<a style=\"vertical-align: 15%; text-decoration: none;\" href=/global/contacts$devel/><font color=blue>Contacts</font></a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a style=\"vertical-align: 15%; text-decoration: none;\" href=$pagename?mode=extension_phone_list><font color=blue>Extensions</font></a><b style=\"vertical-align: 15%\">&nbsp;|&nbsp;</b><a style=\"vertical-align: 15%; text-decoration: none;\" href=$pagename?mode=cell_phone_list><font color=blue>Cells</font></a><b style=\"vertical-align: 15%\">&nbsp;|&nbsp;</b><a style=\"vertical-align: 15%; text-decoration: none;\" href=$pagename?mode=sites_phone_list><font color=blue>Sites</font></a></font>
+</td><td rowspan=3 width=200px style=\"text-align: left;\" valign=top>
+	<div style=\"background: $fd_color_4;\">&nbsp;<font size=-1><b>My Tools/Reports</b></font></div>";
+		//&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=$pagename?mode=extension_phone_list><font color=blue>Phone List - Extensions</font></a><br>
+		//&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=$pagename?mode=cell_phone_list><font color=blue>Phone List - Cells</font></a><br>
+		//&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=$pagename?mode=sites_phone_list><font color=blue>Phone List - Sites</font></a>
+		
+		//&nbsp;<img src=/images/phone1.jpg>&nbsp;<a style=\"vertical-align: 15%; text-decoration: none;\" href=$pagename?mode=extension_phone_list><font color=blue>Extensions</font></a><b style=\"vertical-align: 15%\">||</b><a style=\"vertical-align: 15%; text-decoration: none;\" href=$pagename?mode=cell_phone_list><font color=blue>Cells</font></a><b style=\"vertical-align: 15%\">||</b><a style=\"vertical-align: 15%; text-decoration: none;\" href=$pagename?mode=sites_phone_list><font color=blue>Sites</font></a></font>
+
+
+
+
+	$rep_list_query="select * from front_desk_reports left join front_desk_reports_permissions 
+		on (front_desk_reports_permissions.report_id = front_desk_reports.report_id )
+		where ( contacts_id = '$global_user_id' or open_to_everyone = 'Y' ) and report_type = 'global' and can_embed != 'Y' group by front_desk_reports.report_id order by sort_priority,report_display_name";
+	$rep_list=@mysql_query($rep_list_query);
+	//echo "$rep_list_query";
+	//tabledump($rep_list_query);
+	while ($rep_row=@mysql_fetch_object($rep_list)) {
+		if ($rep_row->can_embed=='G') {
+			$rpt_name=$rep_row->report_name;
+			include("reports/${rpt_name}_embed.phtml");
+			echo "<br>";
+			} else {
+			echo "&nbsp;&nbsp;<a style=\"text-decoration: none;\" href=$pagename?mode=report_show&report_name=$rep_row->report_name><font size=-1 color=blue>$rep_row->report_display_name</font></a><br>";
+			}
+		}
+	if ($new_session_started=='true') echo "<p><hr><a href=$pagename><font color=blue>Continue to front desk...</font></a>";
+	
+	echo "
+	</td></tr>
+	
+	<tr><td id=\"my_bookmarks\" style=\"text-align: left;\" valign=top>
+		My Bookmarks
+	</td></tr>
+</table>
+	"; } echo "
+</div>
+
+	<div style=\"float: left; width: 20px;\">&nbsp;</div>
+
+<div id=\"my_notifications\" style=\"padding-left: 10em; float: left; padding: 0px; width: 500px; text-align: center; border: 1px solid black;\">My Notifications</div>
+
+<script>
+function notify_expand(type) {
+	//n_obj=document.getElementById('my_notifications');
+	//n_obj.innerHTML=n_obj.innerHTML + '<p><div width=100% style=\"background: yellow; border: 2px solid black;\">Updating... Please wait...</div>';
+	ajaxManager('load_page','$pagename?mode=my_notifications&expand_' + type + '=1','my_notifications');
+	}
+ajaxManager('load_page','$pagename?mode=my_bookmarks','my_bookmarks');
+ajaxManager('load_page','$pagename?mode=my_notifications','my_notifications');
+</script>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+";
+eom_scripts();
+if ($application_name=="front_desk") mh_navs_footer();
+
+?>

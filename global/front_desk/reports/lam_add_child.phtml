@@ -1,0 +1,46 @@
+<?
+include("lam_lib.inc");
+$prent_lam=addslashes($parent_lam);
+$child_lam=addslashes($child_lam);
+
+if (ereg('^jobid-',$parent_lam)) {
+	$job_id=ereg_replace("^jobid-","",$parent_lam);
+	$default_jobinfo_id=ereg_replace("-.*$","",$job_id);
+	$lamchop=ereg_replace("^.*-","",$parent_lam);
+	$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$lamchop'");
+	$parent_info=getoneb("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and employee_id = '$labor_manager' and parent_lam_id = 0 and jobinfo_id = 999999");
+	$noprint="Y";
+} else {
+	$parent_info=getoneb("select * from lam where lam_id = '$parent_lam'");
+	$noprint="N";
+}
+
+$child_info=getoneb("select * from lam where lam_id = '$child_lam'");
+if (($default_jobinfo_id>0)&&($parent_info->jobinfo_id==999999)) { $parent_info->jobinfo_id=addslashes($default_jobinfo_id); }
+if (verify_lam_sanity($parent_info->lam_id,$child_info->employee_id)) {
+	if ($child_info->parent_lam_id==0) {
+		// Copying from side bar.. 
+		@mysql_query("insert into lam set parent_lam_id = '$parent_info->lam_id', jobinfo_id = '$parent_info->jobinfo_id', employee_id = '$child_info->employee_id',lamchops_id = '$parent_info->lamchops_id'");
+		$inserted_id=@mysql_insert_id();
+		if ($pay_it_forward=='Y') lam_copy_forward($inserted_id);
+		} else {
+		// Just moving inside the tree..
+		@mysql_query("update lam set parent_lam_id = '$parent_info->lam_id', jobinfo_id = '$parent_info->jobinfo_id', employee_id = '$child_info->employee_id',lamchops_id = '$parent_info->lamchops_id' where lam_id = '$child_info->lam_id'");
+		// On a move, we might need to reset what job we're on..
+		$res=recursively_set_job($child_info->lam_id,$parent_info->jobinfo_id);
+		}
+	} else {
+		//	Move or copy is insane.. abort!
+		echo "<font color=red><b>Invalid action aborted</b></font>";
+	}
+
+if ($forward_to_job_only=='Y') {
+	//forward("report_show&report_name=lam&lamchops_id=$parent_info->lamchops_id&default_jobinfo_id=$default_jobinfo_id");
+	echo "<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"$seconds; URL=/global/front_desk$devel/?mode=report_show&report_name=lam&lamchops_id=$parent_info->lamchops_id&default_jobinfo_id=$default_jobinfo_id\">";
+	}
+if (($parent_info->jobinfo_id==0) || ($parent_info->jobinfo_id==999999)) $redraw='';
+if ($noprint!="Y") {
+	print_lam_div($parent_info->lam_id,$options=array('jobinfo_id'=>$default_jobinfo_id, 'redraw_hint'=>$redraw));
+	}
+//}
+?>

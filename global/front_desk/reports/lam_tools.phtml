@@ -1,0 +1,292 @@
+<?
+require('mh_lib.inc');
+require('report_lib.inc');
+include('viewpoint_connect_ro.phtml');
+include('viewpoint_libs.inc');
+include('lam_lib.inc');
+
+if (
+	($global_user_id<3) ||
+	($global_user_id==$labor_manager) ||
+	($global_user_id=="1018")
+	
+	) $private=TRUE;
+
+echo "<style>
+.empevents { border-bottom: 1px solid black; }
+</style>
+";
+$lam_id=addslashes($lam_id);
+$lam_info=getoneb("select * from lam where lam_id = '$lam_id'");
+$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$lam_info->lamchops_id'");
+if (!($lam_info)) die ("Application error. Invalid lam object!");
+$lam_job_info=getoneb("select * from jobinfo where jobinfo_id = '$lam_info->jobinfo_id'");
+$employee_info=getoneb("select * from contacts where contacts_id = '$lam_info->employee_id'");
+
+$parent_lam_info=getoneb("select * from lam where lam_id = '$lam_info->parent_lam_id'");
+if ($parent_lam_info) {
+	$supervisor_info=getoneb("select * from contacts where contacts_id = '$parent_lam_info->employee_id'");
+	$supervisor_job_info=getoneb("select * from jobinfo where jobinfo_id = '$parent_lam_info->jobinfo_id'");
+	}
+
+$vp_employee_info=ms_getoneb("select * from HRRM with (NOLOCK) where HRCo = 1 and PREmp = '$employee_info->employee_num'");
+
+function clean_vp_date($date) {
+	$today_unixtime=strtotime("today");
+	$date_unixtime=strtotime($date);
+	$diff=$today_unixtime - $date_unixtime;
+	$years=floor(((($diff/3600)/24)/365));
+	$remainder_seconds=($diff - ($years * 365 * 24 * 3600));
+	$remainder_days=floor(($remainder_seconds / 3600) / 24);
+	$date=ereg_replace("12:00AM$",'',$date );
+	$date=$date . " (${years}yrs,${remainder_days}days)";
+	return ($date);
+	}
+
+$vp_employee_info->BirthDate=clean_vp_date($vp_employee_info->BirthDate);
+$vp_employee_info->HireDate=clean_vp_date($vp_employee_info->HireDate);
+
+$emp_addr="$vp_employee_info->Address\r\n$vp_employee_info->City, $vp_employee_info->State $vp_employee_info->Zip";
+$emp_addr_formatted=ereg_replace('  ',' ',ereg_replace("\n",'<br>',$emp_addr));
+$emp_addr_escaped=urlencode(ereg_replace("\r",' ',ereg_replace("  "," ",ereg_replace("\n",' ',$emp_addr))));
+$emp_addr_big_kahuna="$emp_addr_formatted<br><a href=\"http://www.google.com/maps?hl=en&iwloc=addr&q=$emp_addr_escaped\" target=site_map_window><font color=blue>MAP</font></a>";
+
+//$site_formatted=ereg_replace('  ',' ',ereg_replace("\n",'<br>',$global_jobinfo->job_site_address));
+	
+$job_site_escaped=urlencode(ereg_replace("\r",' ',ereg_replace("  "," ",ereg_replace("\r",' ',$lam_job_info->job_site_address))));
+
+
+if ($lam_job_info) 
+$directions="<a target=driving_directions_window href=\"http://www.google.com/maps?hl=en&saddr=$emp_addr_escaped&daddr=$job_site_escaped\">Directions to $lam_job_info->contract_num</a>";
+
+$truck_info=ms_getoneb("select top 1 * from EMEM with (NOLOCK) where Status = 'A' and EMCo = 1 and Operator = '$vp_employee_info->PREmp'");
+
+if ($private) echo "<font color=red><b>Warning, dates are correct, but year + day estimates might be off a little (read the date to make sure)</font>";
+
+$foreman_hours_info=getoneb("select * from front_desk_reports_responsibility_accumulation_cache where week_ending = '$lamchop_info->week_ending' and foreman = '$employee_info->contacts_id'");
+if ($foreman_hours_info) {
+	echo "<br>Foreman hours direct: $foreman_hours_info->direct_accumulation<br>
+	Foreman hours indirect: $foreman_hours_info->indirect_accumulation<br>";
+	}
+
+echo "
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=2 bgcolor=$fd_color_4 align=center><b>Employee #: $employee_info->employee_num</b></td></tr>
+
+<tr><td>
+	<b>Name</b>
+</td><td>
+	";contact_view($employee_info->display_name,$employee_info->contacts_id);echo"
+</td></tr>
+
+<tr><td>
+	<b>Trade/Class</b>
+</td><td>
+	$employee_info->employee_trade/$employee_info->employee_class
+</td></tr>
+
+<tr><td>
+	<b>Active</b>
+</td><td>
+	$vp_employee_info->ActiveYN
+</td></tr>";
+
+if ($truck_info) {
+	echo "<tr><td>
+		<b>Truck</b>
+		</td><td>
+			Truck: $truck_info->Equipment<br>$truck_info->Description";
+			echo"
+		</td></tr>";
+	}
+
+if ($private==TRUE) {
+echo "
+<tr><td>
+	<b>Birthday</b>
+</td><td>
+	$vp_employee_info->BirthDate
+</td></tr>
+
+<tr><td>
+	<b>Hiredate</b>
+</td><td>
+	$vp_employee_info->HireDate
+</td></tr>
+
+";
+
+if ($vp_employee_info->TermDate!="") {
+	echo "<tr><td>
+		<b>TermDate</b>
+	</td><td>
+		$vp_employee_info->TermDate
+	</td></tr>
+	";
+	}
+	
+echo "
+<tr><td>
+	<b>Married/Single</b>
+</td><td>
+	$vp_employee_info->MaritalStatus &nbsp;
+</td></tr>
+";
+
+if (($vp_employee_info->ActiveYN=='Y') && ($vp_employee_info->SpouseName!="")) {
+	echo "<tr><td>
+		<b>Spouse</b>
+		</td><td>
+			$vp_employee_info->SpouseName
+		</td</tr>";
+	}
+
+echo "
+<tr><td>
+	<b>Phone</b>
+</td><td>
+	$vp_employee_info->Phone
+</td></tr>
+
+<tr><td>
+	<b>Address</b>
+</td><td>
+	$emp_addr_big_kahuna&nbsp;&nbsp;&nbsp;&nbsp;$directions
+</td></tr>
+";
+
+if ($truck_info) {
+	echo "<tr><td>
+		<b>Truck</b>
+		</td><td>
+			Truck: $truck_info->Equipment<br>$truck_info->Description";
+			echo"
+		</td></tr>";
+	}
+
+
+if ($add_employee_event=='Y') {
+	$employee_id=addslashes($employee_id);
+	$description=addslashes($description);
+	$event_date=vali_date($event_date);
+	$removed_from_labor_pool=checkfix($gone);
+	$removed_from_labor_pool_reason=addslashes($removed_from_labor_pool_reason);
+	@mysql_query("insert into lam_contacts_events set contacts_id = '$employee_id', description = '$description', event_date = '$event_date', removed_from_labor_pool = '$removed_from_labor_pool', removed_from_labor_pool_reason = '$removed_from_labor_pool_reason'");
+	}
+if ($event_to_remove!="") {
+	$event_to_remove=addslashes($event_to_remove);
+	@mysql_query("delete from lam_contacts_events where events_id = '$event_to_remove'");
+	}
+
+if ($save_notes=='Y') {
+	$comment_update=addslashes($comment_update);
+	@mysql_query("update contacts set lam_notes = '$comment_update' where contacts_id = '$employee_info->contacts_id'");
+	$employee_info->lam_notes=$comment_update;
+	}
+echo "
+<tr><td bgcolor=$fd_color_4 colspan=2 align=center>
+	<b>Employee Events</b>
+</td></tr>
+
+<tr><td colspan=2>
+	<table border=0 cellspacing=0 cellpadding=3><form name=employee_event_add action=$pagename method=post>
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=lam_id value=\"$lam_info->lam_id\">
+	<input type=hidden name=report_name value=\"$report_name\">
+	<input type=hidden name=employee_id value=\"$employee_info->contacts_id\">
+	<input type=hidden name=add_employee_event value='Y'>
+	<tr><td><b>Date</b></td><td><b>Description</b></td><td><b>Gone</b></td><td><b>Reason</b></td><td><b>Action</b></td></tr>
+
+	<tr><td class=empevents>";
+		datebox2("","employee_event_add.event_date");echo"
+	</td><td class=empevents>
+		<input type=text size=30 name=description>
+	</td><td class=empevents align=center>
+		<input type=checkbox name=gone>
+	</td><td class=empevents>
+		<select name=removed_from_labor_pool_reason>
+		<option></option>
+		<option>Vacation</option>
+		<option>Retirement</option>
+		<option>Furlow</option>
+		<option>Fired/cause (failed test)</option>
+		<option>Fired/cause (attendance)</option>
+		</select>
+	</td><td class=empevents>
+		<input type=button value=Add onclick=submit()>
+	</td></tr>
+	</form>";
+	
+	$event_list=@mysql_query("select * from lam_contacts_events where contacts_id = '$employee_info->contacts_id' order by event_date");
+	while ($event=@mysql_fetch_object($event_list)) {
+		$date=invali_date($event->event_date,'/');
+		echo "<tr><td>
+			$date
+		</td><td>
+			$event->description
+		</td><td>
+			$event->removed_from_labor_pool
+		</td><td>
+			$event->removed_from_labor_pool_reason
+		</td><td>
+			<a href=$pagename?mode=$mode&report_name=$report_name&lam_id=$lam_info->lam_id&event_to_remove=$event->events_id><i>remove</i></a>
+		</td></tr>";
+		}
+	echo"
+	</table>
+	<table width=100%>
+	<tr><td bgcolor=$fd_color_4 width=100% align=center><b>Notes</b></td></tr>
+	<tr>
+	
+	<form name=update_notes method=post action=$pagename>
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=$report_name>
+	<input type=hidden name=lam_id value=$lam_info->lam_id>
+	<input type=hidden name=save_notes value='Y'>
+	<td align=center>
+	<textarea name=comment_update cols=72 rows=5>$employee_info->lam_notes</textarea>
+	</td></tr>
+	<tr><td align=center><input type=button value=\"Save notes\" onclick=submit()></td></tr>
+	</table>
+</td></tr>
+</table>
+";
+
+}
+$week_info=date_info($lamchop_info->week_ending);
+$hours_qry="select PostDate,Job,Phase,sum(Hours) as Hours,PREndDate from PRTH with (NOLOCK) where PRCo = 1 and Employee = '$employee_info->employee_num' and PostDate > '$week_info->week_start' and PostDate < '$week_info->week_end' and Hours != 0 group by PostDate,Job,Phase,PREndDate order by PostDate,Hours,Job";
+$ms_res=@mssql_query($hours_qry);
+echo "<table border=1 cellspacing=0 cellpadding=3>
+<tr><td bgcolor=$fd_color_4 colspan=6 align=center><b>Raw VP Time </b></td></tr>
+<tr bgcolor=$fd_color_4><td>
+	<b>Date</b>
+</td><td>
+	<b>Payroll Date</b>
+</td><td>
+	<b>Job</b>
+</td><td>
+	<b>Phase</b>
+</td><td>
+	<b>Hours</b>
+</td></tr>";
+while ($ms_row=@mssql_fetch_object($ms_res)) {
+	$workdate=date('m/d/Y',strtotime($ms_row->PostDate));
+	$payroll_date=date('m/d/Y',strtotime($ms_row->PREndDate));
+	$phase=ereg_replace('[- ]*$','',$ms_row->Phase);
+	echo "
+		<tr><td>
+			$workdate
+		</td><td>
+			$payroll_date
+		</td><td>
+			$ms_row->Job
+		</td><td>
+			$phase
+		</td><td>
+			$ms_row->Hours
+		</td></tr>";
+	
+	}
+echo "</table>";
+
+?>

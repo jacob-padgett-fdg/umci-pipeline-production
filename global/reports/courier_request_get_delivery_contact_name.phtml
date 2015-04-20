@@ -1,0 +1,9 @@
+<?
+require('mh_lib.inc');
+require('report_lib.inc');
+if ($contacts_id!="") $contacts_id=addslashes($contacts_id);
+else die();
+
+$contact_info=getoneb("select * from contacts where contacts_id = '$contacts_id'");
+echo "$contact_info->first_name $contact_info->last_name";
+?>

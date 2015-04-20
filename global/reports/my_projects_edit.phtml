@@ -1,0 +1,132 @@
+<?
+//$query="select * from front_desk_my_projects where owner_id = '2' and complete = 'N' order by sort_priority";
+//excel_dump($query);exit;
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+$report_name="my_projects";
+check_report_permissions();
+mh_navs_header();
+/*
+if ($my_projects_user_id=="") $my_projects_user_id=$global_user_id;
+if ($my_projects_user_id_set!="") {
+	session_register('my_projects_user_id');
+	$my_projects_user_id=addslashes($my_projects_user_id_set);
+	$mpui_info=getoneb("select * from contacts where contacts_id = '$my_projects_user_id'");
+	if (!($mpui_info)) $my_projects_user_id=$global_user_id;
+	}
+
+*/
+
+if ($project_edit_id!="") {
+	$project_edit_id=addslashes($project_edit_id);
+	$project_info=getoneb("select * from front_desk_my_projects where project_id = '$project_edit_id'");
+	}
+
+echo "
+<table border=1 cellspacing=0 cellpadding=5>
+<form name=my_projects_edit method=post action=$pagename>
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=report_name value=\"${report_name}_submit\">
+	<input type=hidden name=new_project value=1>
+	<input type=hidden name=project_edit_id value=\"$project_edit_id\">
+	
+
+<tr valign=top><form name=new_project method=post action=\"$pagename\"><td>
+	Project Name
+</td><td>
+	<input type=text size=20 name=project_name value=\"" . htmlspecialchars($project_info->project_name) . "\">
+</td></tr>
+
+<tr><td>
+	Requested By:
+</td><td>";
+	contact("select * from contacts where umc_emp = 'Y' and current = 'Y'",$project_info->requested_by,'requested_by');echo "
+</td></tr>
+
+<tr><td>
+	Details
+</td><td>
+	<textarea rows=5 cols=40 name=project_details>" . htmlspecialchars($project_info->project_details) . "</textarea>
+</td></tr>
+
+<tr><td>
+	Request Type
+</td><td>
+	";dropbox_array(array("Bug","Enhancement","Software Development",""),"request_type",$project_info->request_type);echo"
+</td></tr>
+
+<tr><td>
+	Requested Priority
+</td><td>
+	";dropbox_array(array("Low","Medium","High",""),"requested_priority",$project_info->requested_priority);echo"
+</td></tr>
+
+<tr><td>
+	Application
+</td><td>
+	";dropbox("select application_name as application,application_name as an from access_applications where application_active = 'Y' order by application_name",$project_info->application);echo "
+</td></tr>
+
+<tr><td>
+	Report
+</td><td>
+	";dropbox("select report_name as report,report_name as rn from front_desk_reports order by report_name",$project_info->report);echo "
+</td></tr>
+
+<tr><td>
+	Expected Complete
+</td><td>
+	";datebox2($project_info->expected_completion_date,"new_project.expected_completion_date");echo "
+</td></tr>
+
+<tr><td>
+	New List Position
+</td><td>
+	<input type=text size=3 name=new_list_position>&nbsp;<i><font size=-1>(optional - leave blank for current)</font></i>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	";
+	if ($project_info) {
+		echo "<input type=submit value=\"Submit\">";
+		} else {
+		echo "	<input type=submit name=type_of_create value=\"Add to top\">
+				<input type=submit name=type_of_create value=\"Add to end\">";
+		}
+echo "</td></form></tr>";
+
+
+if ($project_info) {
+	$res=@mysql_query("select * from front_desk_my_projects_notes where project_id = '$project_info->project_id' order by entry_added");
+	echo "<table border=1 cellspacing=0 cellpadding=5><tr><td bgcolor=$fd_color_4 align=center><b>Project Notes</b></td></tr>";
+	while ($row=@mysql_fetch_object($res)) {
+		$poster=getoneb("select * from contacts where contacts_id = '$row->creator'");
+		echo "<tr bgcolor=$fd_color_3><td>
+					<div style=\"float: right;\"><i>at: $row->entry_added</i></div>
+					<div style=\"float: left;\"><i>Added by: $poster->display_name</i></div>
+				</td></tr>
+				
+				<tr><td><pre>$row->note_text</pre></td></tr>";
+		}	
+	
+	echo "
+	<tr><td align=center><form name=post_a_note method=post action=$pagename>
+		<input type=hidden name=mode value=$mode>
+		<input type=hidden name=report_name value=my_projects_add_note>
+		<input type=hidden name=project_id value=\"$project_info->project_id\">
+		<textarea name=note_text rows=6 cols=60></textarea><br>
+		<input type=submit value=Add>
+		</form>
+	</td></tr>
+	
+	</table>";
+	}
+
+
+
+
+
+mh_navs_footer();
+?>

@@ -1,0 +1,134 @@
+<?
+if (!(i_have_underlings($global_user->employee_num))) {
+	die("ERROR: Security violation. The authorities have been notified!");
+	}
+$res=query_underlings($global_user->employee_num);
+$resb=query_underlingsb($global_user_id);
+
+echo "
+<html><body bgcolor=white>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+
+<script>
+function tl(timesheet_id) {
+    document.location='$pagename?mode=supervisor_timesheet_load&come_back_to=$mode&ts_id=' + timesheet_id;
+    }
+function mark_as_new(timesheet_id) {
+	if (confirm('Return timesheet to user?'))
+    document.location='$pagename?mode=supervisor_mark_as_new&ts_id=' + timesheet_id;
+    }
+function supervisor_timesheet_approve(timesheet_id) {
+	document.location='$pagename?mode=supervisor_timesheet_approve&ts_id=' + timesheet_id;
+	}
+</script>
+
+<table border=0 cellpadding=5 width=100%>
+<tr><td align=center bgcolor=#dddddd><h2>Timesheheets awaiting approval</h2></td></tr>
+</table>
+
+
+<table border=0 cellpadding=3>
+<tr><td></td><td>Name</td><td>ST</td><td>OT</td><td>DT</td><td>V</td><td>S</td><td>H</td><td>Total</td><td>Status</td><td>Week&nbsp;Ending</td></tr>
+";
+
+
+function show_underling_row ($employee_num) {
+	//echo "<hr>select * from contacts where employee_num = $employee_num<hr>";
+	$underling_info=getoneb("select * from contacts where employee_num = $employee_num");
+	
+	if ($underling_info) {
+	//echo "found underling";
+	$query_complete="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and employee_id = '$underling_info->contacts_id' and reviewed = 'N' and ( status = 'complete' or status = 'processing' or status = 'new' ) order by week_ending desc";
+	
+	$res_ts=@mysql_query($query_complete);
+	while($row=@mysql_fetch_object($res_ts)) {
+		
+		$ts_info=timesheet_summary_info($row->timesheet_id);
+		
+	    $week_end=invali_date($row->week_ending);
+
+		if ($row->status=="new") {
+			$fontwarn="<font color=red>";
+			$fontwarned="</font>";
+		} else {
+			$fontwarn="";  
+			$fontwarned="";
+		}
+
+		$warn_text_vac="";
+		$warn_text_sick="";
+		if ($ts_info->v > $ts_info->avail_vacation) {
+			$vac_fg_color1="<font color=#11ffff>";
+			$vac_fg_color2="</font>";
+			$vac_bg_color=" bgcolor=#ff1111";
+			$warn_text_vac="<br>Warning! Vacation hours exceed current available balance";
+			} else {
+			$vac_fg_color1="";
+			$vac_fg_color2="";
+			$vac_bg_color="";
+			}
+
+		if ($ts_info->s > $ts_info->avail_sick) {
+			$sick_fg_color1="<font color=#11ffff>";
+			$sick_fg_color2="</font>";
+			$sick_bg_color=" bgcolor=#ff1111";
+			$warn_text_sick="<br>Warning! Sick hours exceed current available balance";
+			} else {
+			$sick_fg_color1="";
+			$sick_fg_color2="";
+			$sick_bg_color="";
+			}
+
+
+
+		echo "<tr><td>
+			$ts_info->shift_tag
+		</td><td>
+			<a href=javascript:tl($row->timesheet_id);>$fontwarn$row->last_name, $row->first_name$fontwarned</a>
+		</td><td>
+			$ts_info->st
+		</td><td>
+			$ts_info->ot
+		</td><td>
+			$ts_info->dt
+		</td><td$vac_bg_color>   
+			$vac_fg_color1$ts_info->v$vac_fg_color2
+		</td><td$sick_bg_color>   
+			$sick_fg_color1$ts_info->s$sick_fg_color2
+		</td><td>   
+			$ts_info->h
+		</td><td>
+			$ts_info->hours
+		</td><td>
+			$fontwarn$row->status$fontwarned
+		</td><td>
+			$week_end
+		</td><td>
+			<a href=javascript:supervisor_timesheet_approve('$row->timesheet_id');><font color=green>$fontwarn Approve $fontwarned</font></a>
+		";if ($row->status == 'complete') {
+		echo "</td><td><a href=javascript:mark_as_new('$row->timesheet_id');><font color=red>Return to user</font></a>";
+		}
+		echo "
+		$warn_text_vac$warn_text_sick</td></tr>";
+		
+		
+		}
+		
+	}	
+
+	}
+
+
+while($row=@mssql_fetch_object($res)) {
+	show_underling_row($row->PREmp);
+	}
+
+while($row=@mysql_fetch_object($resb)) {
+	show_underling_row($row->employee_num);
+	}
+
+
+
+echo "</table>";
+
+?>

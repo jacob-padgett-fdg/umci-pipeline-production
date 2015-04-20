@@ -1,0 +1,7 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+$newgroup=escapeshellcmd($newgroup);
+
+$current_employee_group=$newgroup;
+forward('main');
+?>

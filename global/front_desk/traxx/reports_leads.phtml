@@ -1,0 +1,44 @@
+<?
+
+function rep_button($rep_id,$text,$override_url="") {
+	$text=str_pad($text,32," ",STR_PAD_BOTH);
+	echo "
+	<form name=rp1 method=post action=\"$override_url\">
+	<input type=hidden name=mode value=\"reports_output_$rep_id\">
+	<input type=submit value=\"$text\" style=\"font: 900 11px 'Courier New'\">
+	</form>";
+	}
+
+require("header.phtml");
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a>
+<h2>Reports</h2><hr>
+
+";
+//rep_button(3,"Restaurant Jobs");
+echo"
+
+";rep_button(4,"Active Leads");echo"
+
+";rep_button(5,"Active Leads (pdf)","$pagename?mode=reports_output_5&blah=blah/more/stuff/like/this/active_leads.pdf");echo"
+
+";rep_button(8,"Active Leads (pdf with Proj Types)","$pagename?mode=reports_output_5&blah=blah/more/stuff/like/this/active_leads.pdf");echo"
+
+";
+//rep_button(6,"Followup Report");
+echo"
+
+";
+//rep_button(7,"New Active Leads pdf (in progress)","$pagename?mode=reports_output_7&blah=blah/more/stuff/like/this/active_leads.pdf");
+echo"
+
+
+
+
+
+
+
+</body></html>
+";
+
+?>

@@ -1,0 +1,77 @@
+<?
+$forweek=escapeshellcmd($forweek);
+$current_day=date_info();
+$forweek=date_info($forweek);
+
+if ($group_id!="") $group_id=escapeshellcmd($group_id);
+else die("ERROR: No group_id specified. Please contact your system administrator or try again (start over).");
+$group_info=getone("select * from timesheet_foreman_groups where group_id = '$group_id'");
+
+$createdate=$forweek->week_end;
+	$nextdate=date_info($createdate);
+	$nextdate=date_info($nextdate->next);
+$nextdate=$nextdate->week_end;
+	$lastdate=date_info($forweek->week_start);
+$lastdate=$lastdate->prev;
+
+echo "
+<body bgcolor=#ffffff>
+<center><h2>Create New Timesheets</h2></center><hr>";
+
+if ($current_day->week_end!=$createdate)
+	echo "<font color=red><h2><bold>WARNING: Not the current week!</bold></h2></font>";
+
+echo "
+<h3>Please select your \"week ending\" date.</h3><p>
+
+<table border=0 cellspacing=0 cellpadding=10 width=20%>
+<tr bgcolor=#dddddd><td>
+	<form name=lastweek action=$pagename method=get>
+	<input type=hidden name=mode value=\"foreman_timesheet_new_by_group\">
+	<input type=hidden name=group_id value=\"$group_info->group_id\">
+	<input type=hidden name=forweek value=\"$lastdate\">
+	<input type=submit value=\"<--\">
+	</form>
+</td><td>
+	<font color=black>
+	<center>$createdate</center></font>
+</td><td>
+	<form name=nextweek action=$pagename method=get>
+	<input type=hidden name=mode value=\"foreman_timesheet_new_by_group\">
+	<input type=hidden name=group_id value=\"$group_info->group_id\">
+	<input type=hidden name=forweek value=\"$nextdate\">
+	<input type=submit value=\"-->\">
+	</form>
+</td></tr>
+
+<tr><td colspan=3>
+	Group Name: $group_info->group_name
+</td></tr>
+
+<tr><td colspan=3>
+	Creator: $global_user->login_name
+</td></tr>
+
+<tr bgcolor=#dddddd><td colspan=3>
+	<table border=0>
+	<tr><td>
+		<form name=cancel method=get action=$pagename>
+		<input type=hidden name=mode value=foreman_group_edit>
+		<input type=hidden name=group_id value=\"$group_info->group_id\">
+		<input type=submit value=Cancel>
+		</form>
+	</td><td width=100% align=right>
+		<form name=timesheet_create action=$pagename method=get>
+		<input type=hidden name=mode value=foreman_group_edit>
+		<input type=hidden name=group_id value=\"$group_info->group_id\">
+		<input type=hidden name=show_week_ending value=\"$createdate\">
+		<input type=hidden name=ts_week_ending value=\"$createdate\">
+		<input type=submit value=Create>
+		</form>
+	</td></tr>
+	</table>
+</td></tr>
+</table>
+";
+
+?>

@@ -1,0 +1,28 @@
+<?
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=admin_settings><font color=blue>Back to admin settings</font></a><br>
+
+<center><h3>Equipment Categories</h3></center><hr>
+<form name=svc_equip_cat method=post action=\"$pagename\">
+<input type=hidden name=mode value=lists_equip_categories_add>
+<b>Add:&nbsp;</b><input type=text size=25 name=category><input type=submit value=Submit>
+</form>
+";
+
+
+$query="select * from svc_equip_categories order by category";
+
+$res=@mysql_query($query);
+echo "<table border=1 cellspacing=0 cellpadding=5>";
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>$row->category</td><td><a href=$pagename?mode=lists_equip_category_modify&category_id=$row->category_id><font color=blue><i>Edit</i></font></a></td></tr>";
+	}
+echo "</table>";
+
+
+
+
+
+?>

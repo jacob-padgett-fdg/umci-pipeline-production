@@ -1,0 +1,31 @@
+<?
+if ($el_id=="") die("Missing EL_ID! How could I possibly continue? Please contact your system administrator, cause this shouldn't happen!!!!");
+else $el_id=addslashes($el_id);
+$el_info=getone("select * from svc_agreement_equip_list where el_id = '$el_id'");
+
+if ($serial_num!="") {
+	echo "Go here to submit the changes";
+	$serial_num=addslashes($serial_num);
+	$query="update svc_agreement_equip_list set serial_num = '$serial_num' where el_id = '$el_info->el_id'";
+	@mysql_query($query);
+	echo "
+	<script>
+	opener.serial_set($el_id,'$serial_num');
+	self.close();
+	</script>
+	";
+	exit;
+	}
+require('header.phtml');
+
+echo "<form name=sn_popup method=post action=$pagename>
+<input type=hidden name=mode value=equip_serial_num_popup>
+<input type=hidden name=el_id value=\"$el_info->el_id\">
+<input type=text size=40 name=serial_num value=\"$el_info->serial_num\" onchange=submit();>
+</form>
+<script>
+document.sn_popup.serial_num.focus();
+</script>
+";
+
+?>

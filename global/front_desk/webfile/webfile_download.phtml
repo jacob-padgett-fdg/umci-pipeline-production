@@ -1,0 +1,18 @@
+<?
+if ($files_id=="") die("Application Error!!");
+if (!(($readable)||($adminuser))) die("Permission Denied: The authorities have been notified!");
+
+$files_id=addslashes($files_id);
+$file=getone("select * from webfile_files where files_id = '$files_id'");
+$source_file="$storage_root$file->file_path";
+
+//if ($global_user_id==2) echo "hello";
+header("Content-disposition: attachment; filename=\"$file->file_name\"");
+header("Content-type: application/octet-stream");
+header("Content-Transfer-Encoding: binary");
+header("Content-Length: $file->file_size");
+header("Expires: 0");
+header("Cache-Control: private");
+header("Pragma: cache");
+readfile($source_file);
+?>

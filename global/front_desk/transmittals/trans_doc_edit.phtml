@@ -1,0 +1,40 @@
+<?
+require('header.phtml');
+fd_navs_header();
+if ($trans_doc_id!="") $trans_doc_id=addslashes($trans_doc_id);
+
+$trans_doc_info=getone("select * from transmittal_documents where trans_doc_id = '$trans_doc_id'");
+
+echo "
+<form name=trans_doc_edit method=post action=$pagename>
+<input type=hidden name=mode value=trans_doc_submit>
+<input type=hidden name=trans_doc_id value=\"$trans_doc_info->trans_doc_id\">
+<table border=0 cellspacing=0 cellpadding=5>
+<tr><td>
+	Qty:
+</td><td>
+	<input type=text siz=4 name=quantity value=\"$trans_doc_info->quantity\">
+</td></tr>
+
+<tr><td>
+	Description
+</td><td>
+	<input type=text size=40 name=description value=\"$trans_doc_info->description\">
+</td></tr>
+
+<tr><td>
+	Date:
+</td><td>
+	";datebox($trans_doc_info->doc_date,'trans_doc_edit.doc_date');
+echo "
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Submit>
+</td></tr>
+
+</form>
+";
+
+fd_navs_footer();
+?>

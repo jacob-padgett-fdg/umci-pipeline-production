@@ -1,0 +1,94 @@
+<?
+if ($files_id=="") die("no file id.. nothing to do");
+else $files_id=addslashes($files_id);
+$file_info=getone("select * from webfile_files where files_id = '$files_id'");
+require('return_to_handler.phtml');
+
+function flip_bool ($bool) {
+	if ($bool=='Y') return 'N';
+	else return 'Y';
+	}
+
+function slave_bool_down ($bool,$slave_bool) {
+	if ($bool=='N') $slave_bool='N';
+	return $slave_bool;
+	}
+
+function slave_bool_up ($bool,$slave_bool) {
+	if ($bool=='Y') $slave_bool='Y';
+	return $slave_bool;
+	}
+
+if (!(($file_info->owner=$global_user_id)||($adminuser))) die_security();
+
+if ($permission!="") {
+	$permission=addslashes($permission);
+	switch ($permission)	{
+	
+	case "access_public":		
+		$file_info->access_public=flip_bool($file_info->access_public);
+		$file_info->write_public=slave_bool_down($file_info->access_public,$file_info->write_public);
+		break;;
+	case "write_public":		
+		$file_info->write_public=flip_bool($file_info->write_public);
+		$file_info->access_public=slave_bool_up($file_info->write_public,$file_info->access_public);
+		break;;
+			
+	
+	case "access_intranet":		
+		$file_info->access_intranet=flip_bool($file_info->access_intranet);
+		$file_info->write_intranet=slave_bool_down($file_info->access_intranet,$file_info->write_intranet);
+		break;;
+	case "write_intranet":		
+		$file_info->write_intranet=flip_bool($file_info->write_intranet);
+		$file_info->access_intranet=slave_bool_up($file_info->write_intranet,$file_info->access_intranet);
+		break;;
+			
+	
+	case "access_any_user":		
+		$file_info->access_any_user=flip_bool($file_info->access_any_user);
+		$file_info->write_any_user=slave_bool_down($file_info->access_any_user,$file_info->write_any_user);
+		break;;
+	case "write_any_user":		
+		$file_info->write_any_user=flip_bool($file_info->write_any_user);
+		$file_info->access_any_user=slave_bool_up($file_info->write_any_user,$file_info->access_any_user);
+		break;;
+			
+	
+	case "access_employees":		
+		$file_info->access_employees=flip_bool($file_info->access_employees);
+		$file_info->write_employees=slave_bool_down($file_info->access_employees,$file_info->write_employees);
+		break;;
+	case "write_employees":		
+		$file_info->write_employees=flip_bool($file_info->write_employees);
+		$file_info->access_employees=slave_bool_up($file_info->write_employees,$file_info->access_employees);
+		break;;
+	
+	}
+
+$query="
+update webfile_files set 
+access_public = '$file_info->access_public',
+write_public = '$file_info->write_public',
+
+access_intranet = '$file_info->access_intranet',
+write_intranet = '$file_info->write_intranet',
+
+access_any_user = '$file_info->access_any_user',
+write_any_user = '$file_info->write_any_user',
+
+access_employees = '$file_info->access_employees',
+write_employees = '$file_info->write_employees'
+
+where files_id = '$file_info->files_id'
+";
+
+//echo "<hr>$query<hr>";
+@mysql_query($query);
+
+}
+
+echo "<script>
+document.location='$return_to_decode'
+</script>";
+?>

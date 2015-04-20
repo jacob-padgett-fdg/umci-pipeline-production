@@ -1,0 +1,136 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+if ($category_id=="") {
+	$category_id=0; 
+	$category_info->parent_id=0;
+	$category_info->category_name="Reference Center";
+	} else {
+	$category_info=getoneb("select * from front_desk_reference_categories where category_id = '$category_id'");
+	}
+if (!($category_info)) die("invalid category");
+
+$idiot=getoneb("select * from front_desk_reference_proven_idiots where idiot_id = '$global_user_id' limit 1");
+$tree="";
+$spaces="";
+$tsep_start="<div style=\"width: 200px; padding: 0xp; padding-left: 30px;\">";
+$tsep_end="</div>";
+//$tsep_start="<span style=\"width: 200px; padding: 0xp; padding-left: 30px;\">";
+//$tsep_end="</span>";
+$tsep_start="<span style=\"padding: 0xp; padding-left: 30px;\">";
+$tsep_end="</span>";
+$category_cursor=$category_info;
+while ($category_cursor->parent_id != $category_cursor->category_id) {
+	$tree="$tsep_start<a href=$pagename?mode=$mode&category_id=$category_cursor->category_id><font color=blue>$category_cursor->category_name</font></a>" . "$tree$tsep_end";
+	$category_cursor=getone("select * from front_desk_reference_categories where category_id = '$category_cursor->parent_id'");
+	}
+$tree="$tsep_start<a href=$pagename?mode=$mode&category_id=$category_cursor->category_id><font color=blue>$category_cursor->category_name</font></a>" . "$tree$tsep_end";
+
+///////////////////////////////////////////////////////////////////
+echo "<div style=\"text-align: center; float: right; height: 300px; padding-top: 10px; padding-right: 50px;\">
+<div style=\"border: 1px solid black; background: $fd_color_3; padding: 10px; padding-top: 5px;\">
+<b>Ref Center Tools</b><hr>
+";
+if (!($idiot)) echo "<a href=$pagename?mode=my_reference_center_manage&category_id=$category_id><font color=blue>Edit/Settings</font></a><hr>";
+echo "
+Search<br>
+<form name=ref_center_search method=post action=\"$pagename\">
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=category_id value=\"$category_id\">
+<input type=text name=ref_center_search value=\"$ref_center_search\" onchange=\"submit()\">
+</form>
+";
+if ($ref_center_search!="") {
+	echo "<hr><i>Search Results</i><p>";
+	$ref_center_search=addslashes($ref_center_search);
+	
+	$rcsc_res=@mysql_query("select * from front_desk_reference_categories where category_name like '%$ref_center_search%'");
+	$rcsc_count=@mysql_num_rows($rcsc_res);
+	if ($rcsc_count>0) {
+		echo "<i>Categories</i><br>";
+		while ($rcsc_row=@mysql_fetch_object($rcsc_res)) {
+			echo "<a href=\"$pagename?mode=$mode&category_id=$rcsc_row->category_id&ref_center_search=$ref_center_search\"><font color=blue>$rcsc_row->category_name</font></a><br>";
+			}
+		} else {
+		echo "No matching categories<br>";
+		}
+	
+	$rcs_res=@mysql_query("select * from front_desk_references where name like '%$ref_center_search%' or notes like '%$ref_center_search%'");
+	$rcs_count=@mysql_num_rows($rcs_res);
+	if ($rcs_count>0) {
+		echo "<i>Documents</i><br>";
+		while ($rcs_row=@mysql_fetch_object($rcs_res)) {
+			echo "<a title=\"$rcs_row->notes\" href=$pagename?mode=$mode&category_id=$rcs_row->category_id&show_document_id=$rcs_row->reference_id&ref_center_search=$ref_center_search><font color=blue>$rcs_row->name</font></a><br>";
+			}
+		} else {
+		echo "No documents found";
+		}
+	
+	
+	}
+
+echo "</div>
+</div>";
+///////////////////////////////////////////////////////////////////
+
+
+
+echo "
+<div style=\"padding-bottom: 0px; padding-top: 10px;\">
+<table border=1 cellspacing=0 cellpadding=4><tr><td bgcolor=$fd_color_4><b>Location:</b>$tree</td></tr></table>
+</div>
+";
+
+$query="select * from front_desk_reference_categories where parent_id = '$category_id' and category_id != '$category_id' order by sort_priority,category_name";
+$res=@mysql_query($query);
+echo "
+<div style=\"float: left;\">
+<table border=1 cellspacing=0 cellpadding=8>
+<tr><td bgcolor=$fd_color_2><font size=+1>Categories</font></td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	$writable=FALSE;
+	$added_link="";
+	if ($row->category_name=="") $row->category_name="?????";
+	echo "<tr><td bgcolor=$fd_color_1><a href=$pagename?mode=$mode&category_id=$row->category_id><font color=blue size=+1>$row->category_name</font></a></td></tr>";
+	}
+echo "</table></div>
+<center>
+
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr><td align=center><h2>Contents of $category_info->category_name</h2></td></tr>
+<tr><td><p></td></tr>";
+$res=@mysql_query("select * from front_desk_references where category_id = '$category_info->category_id' order by name");
+$count=@mysql_num_rows($res);
+if ($count>0) {
+	while ($row=@mysql_fetch_object($res)) {
+		$hilite="";
+		if ($row->doc_or_url=="") $row->doc_or_url="doc";
+		if ($row->name=="") $row->name="?????";
+		if ($row->reference_id==$show_document_id) $hilite="style=\"background: $fd_color_3;\"";
+		if ($row->doc_or_url=="doc") {
+			$link=webfile_possible_view_link($row->file_group_id);
+			echo "<tr><td><a href=$link target=\"_blank\"><font $hilite color=blue>$row->name</font></a></td></tr>";
+			}
+		if ($row->doc_or_url=="url") {
+			echo "<tr><td><a href=\"$row->url\"><font $hilite color=blue>$row->name</font></a></td></tr>";
+			}
+		if ($row->doc_or_url=="url in new window") {
+			$rand=rand();
+			echo "<tr><td><a href=\"$row->url\" target=\"${rand}_ref_center\"><font $hilite color=blue>$row->name</font></a></td></tr>";
+			}
+		if ($row->doc_or_url=="flash video") {
+			echo "<tr><td><a href=$pagename?mode=my_reference_center_play_movie&movie_id=$row->file_group_id&category_id=$category_info->category_id><font $hilite color=blue>$row->name</font></a></td></tr>";
+			}
+		
+		
+		}
+	} else {
+	echo "<tr><td><b>There are currently no documents filed in this category.</b></td></tr>";
+	}
+echo "</table>";
+echo "</center>";
+mh_navs_footer();
+
+?>

@@ -1,0 +1,46 @@
+<?
+if ($company_id=="") die("Fatal Error: No company ID. Please contact your system administrator");
+$company_id=escapeshellcmd($company_id);
+
+$query_start="insert into contacts ";
+$query_end="";
+$creator=" record_creator = '$global_user_id',
+";
+
+
+if ($contacts_id!="") {
+	$contacts_id=escapeshellcmd($contacts_id);
+	$query_start="update contacts ";
+	$query_end="where contacts_id = '$contacts_id'";
+	$creator="";
+	}
+
+$first_name=escapeshellcmd($first_name);
+$last_name=escapeshellcmd($last_name);
+$phone=escapeshellcmd($phone);
+$phone_fax=escapeshellcmd($phone_fax);
+$email=escapeshellcmd($email);
+$current=checkfix($current);
+$consultant=checkfix($consultant);
+
+$query_middle=" set
+$creator
+company_id = '$company_id',
+first_name = '$first_name',
+last_name = '$last_name',
+phone = '$phone',
+phone_fax = '$phone_fax',
+email = '$email',
+consultant = '$consultant',
+current = '$current'
+
+";
+
+
+$query=$query_start . $query_middle . $query_end;
+//echo "$query";exit;
+$res=@mysql_query($query);
+include('contact_maint.phtml');
+forward("company_contacts&company_id=$company_id");
+
+?>

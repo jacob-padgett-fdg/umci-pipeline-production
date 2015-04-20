@@ -1,0 +1,56 @@
+<?
+require('querylib.inc');
+$access_contacts_id=escapeshellcmd($access_contacts_id);
+$access_user_info=getone("select * from contacts where contacts_id = '$access_contacts_id'");
+
+echo "
+<html><body bgcolor=white>
+<center><h2>Access Settings for $access_user_info->last_name, $access_user_info->first_name ($access_user_info->login_name)</h2></center><hr>
+
+<a href=$pagename?mode=main><font color=blue>Main&nbsp;Menu</font></a>&nbsp;&nbsp;&nbsp;
+<a href=$pagename?mode=access_edit&access_contacts_id=$access_contacts_id><font color=green>ADD ACCESS ENTRY</font></a><p>";
+
+$query="select * from access where contacts_id = '$access_contacts_id' order by application_name";
+
+$result=@mysql_query($query);
+if (!($result)) {
+	echo "Error in lookup query: <hr>$query";
+	exit;
+	}
+
+echo "<table border=1 cellpadding=7>
+	<tr bgcolor=#eeeeee><td>
+		<font color=black>
+		Applicaiton Name
+		</font>
+	</td><td>
+		<font color=black>
+		Access Type
+		</font>
+	</td><td>
+		<font color=black>
+		Access Mode
+		</font>
+	</td></tr>";
+
+while ($row=@mysql_fetch_object($result))
+	echo "
+	<tr><td>
+		<a href=$pagename?mode=access_edit&access_id=$row->access_id><font color=blue>
+		$row->application_name
+		</font></a>
+	</td><td>
+		$row->type
+	</td><td>
+		$row->rightsmode
+	</td></tr>";
+	
+echo "</table>";
+
+
+
+
+
+
+require('footer.phtml');
+?>

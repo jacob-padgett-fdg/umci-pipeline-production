@@ -1,0 +1,103 @@
+<?
+require('header.phtml');
+
+if ($current=="") $current='Y';
+else $current=addslashes($current);
+
+$current_search=$current;
+if ($current=="all") $current_search="";
+
+
+
+$query_start="select * from jobinfo ";
+$query_middle="where contract_num not like 'DD%' and contract_num != 'CC890' ";
+$query_end=" order by contract_num,jobinfo_id";
+
+if ($display_name!="") {
+	$display_name=addslashes($display_name);
+	$query_middle=$query_middle . " and (display_name like '%$display_name%' or job_name like '%$display_name%') ";
+	}
+
+if ($current_search!="") {
+	$current_search=addslashes($current_search);
+	$query_middle=$query_middle . " and active = '$current_search' ";
+	}
+
+if ($project_manager_id!="") {
+	$project_manager_id=addslashes($project_manager_id);
+	$query_middle=$query_middle . " and project_manager_id = '$project_manager_id' ";
+	}
+
+if ($contract_num!="") {
+	$contract_num=addslashes($contract_num);
+	$query_middle=$query_middle . " and contract_num like '%$contract_num%' ";
+	}
+
+
+$query_full=$query_start . $query_middle . $query_end;
+
+//echo "<hr>$query_full<hr>";
+echo "
+
+<script>
+function load_job(jobinfo_id) {
+	";
+	if ($embeded!="Y") {
+		echo "opener.document.location='$pagename?mode=main&global_jobinfo_id_set=' + jobinfo_id;
+		self.close();";
+	} else {
+		echo "document.location='$pagename?mode=main&global_jobinfo_id_set=' + jobinfo_id;
+		";
+	}
+echo "
+}
+</script>
+<center><font size=+1><b>Search Jobs</font></b></center>
+<form name=job_search_form method=post action=$pagename>
+<input type=hidden name=mode value=job_search>
+<input type=hidden name=embeded value=\"$embeded\">
+<table style=\"background: $fd_color_3; border: 1px solid black;\" border=0 cellspacing=0 cellpadding=2>
+
+<tr><td>
+	<b>Description</b>
+</td><td>
+	<input type=text name=display_name value=\"$display_name\"><input type=submit value=Search>
+</td></tr>
+
+<tr><td>
+	<b>Job #</b>
+</td><td>
+	<input type=text name=contract_num size=10 value=\"$contract_num\">&nbsp;&nbsp;<b>Active</b>&nbsp;<select name=current><option>$current</option><option>Y</option><option>N</option><option>all</option></select>
+</td></tr>
+
+<tr><td>
+	<b>PM</b>
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'",$project_manager_id,'project_manager_id');echo"
+</td></tr>
+</table>
+</form>
+
+<table border=0 cellspacing=0 cellpadding=2>
+";
+
+$res=@mysql_query($query_full);
+
+if ($bgcolor!="#ffffff") $bgcolor="#ffffff";
+else $bgcolor=$fd_color_1;
+
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->display_name=="") $row->display_name=$row->job_name;
+	echo "<tr><td>
+				<a href=javascript:load_job($row->jobinfo_id)><font color=blue>$row->contract_num</font></a>
+			</td><td title=\"$row->job_name\">
+				$row->display_name
+			</td></tr>
+			";
+	}
+echo "</table>
+<script>
+document.job_search_form.display_name.focus();
+</script>
+";
+?>

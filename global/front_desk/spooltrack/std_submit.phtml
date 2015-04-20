@@ -1,0 +1,51 @@
+<?
+$dynamic_1_name=addslashes($dynamic_1_name);
+$dynamic_2_name=addslashes($dynamic_2_name);
+$dynamic_3_name=addslashes($dynamic_3_name);
+$dynamic_4_name=addslashes($dynamic_4_name);
+$dynamic_5_name=addslashes($dynamic_5_name);
+$dynamic_6_name=addslashes($dynamic_6_name);
+
+$dynamic_1_active=checkfix($dynamic_1_active);
+$dynamic_2_active=checkfix($dynamic_2_active);
+$dynamic_3_active=checkfix($dynamic_3_active);
+$dynamic_4_active=checkfix($dynamic_4_active);
+$dynamic_5_active=checkfix($dynamic_5_active);
+$dynamic_6_active=checkfix($dynamic_6_active);
+
+if ($tag_def_id!="") {
+	$tag_def_id=addslashes($tag_def_id);
+	$query_start="update spool_fab_tag_defs set ";
+	$query_end=" where tag_def_id = '$tag_def_id'";
+	} else {
+	$query_start="insert into spool_fab_tag_defs set jobinfo_id = '$global_jobinfo_id', ";
+	$query_end="";
+	}
+
+$query_middle="
+dynamic_1_active = '$dynamic_1_active',
+dynamic_1_name = '$dynamic_1_name',
+
+dynamic_2_active = '$dynamic_2_active',
+dynamic_2_name = '$dynamic_2_name',
+
+dynamic_3_active = '$dynamic_3_active',
+dynamic_3_name = '$dynamic_3_name',
+
+dynamic_4_active = '$dynamic_4_active',
+dynamic_4_name = '$dynamic_4_name',
+
+dynamic_5_active = '$dynamic_5_active',
+dynamic_5_name = '$dynamic_5_name',
+
+dynamic_6_active = '$dynamic_6_active',
+dynamic_6_name = '$dynamic_6_name'
+
+";
+$query=$query_start . $query_middle . $query_end;
+//echo "<hr>$query<hr>";die();
+@mysql_query($query);
+forward('main');
+
+
+?>

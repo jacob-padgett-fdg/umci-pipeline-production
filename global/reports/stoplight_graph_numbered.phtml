@@ -1,0 +1,125 @@
+<?php
+include ("graph1/jpgraph.php");
+include ("graph1/jpgraph_line.php");
+$report_name="stoplight";
+check_report_permissions();
+
+$ydata=array();
+$ydata2=array();
+$ydata3=array();
+$textx=array();
+$max=0;
+
+$total_days=365;
+if ($window_set!="") $total_days=addslashes($window_set);
+//$total_days=round($total_days * 1.7);
+$prediction_step=2.3;
+$back_days=round($total_days/2);
+$forward_days=$back_days;
+
+
+
+
+//$start_date=date('Y-m-d',strtotime('1 year ago'));
+$start_date=date('Y-m-d',strtotime("$back_days days ago"));
+$query="select * from access_servers_backup_media_logs where backup_date > '$start_date' and du_megs > 10000 and media_tag != 'Mo' and media_tag != 'Tu' and media_tag != 'We' and media_tag != 'Th' and media_tag != 'Fr' order by backup_date";
+$res=@mysql_query($query);
+
+$FIRST=FALSE;
+
+
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->du_megs > $max) $max=$row->du_megs;
+	if ($row->du_megs < 1000) continue;
+	if (($row->du_megs + $row->df_megs) > $max) $max=$row->df_megs + $row->du_megs;
+	if ($row->df_megs < 1000) continue;
+	if (!($FIRST)) {
+		$first_du_number=$row->du_megs;
+		//$first_df_number=$row->df_megs;
+		$FIRST=TRUE;
+		}
+	$last_du_number=$row->du_megs;
+	$last_df_number=$row->df_megs;
+	array_push($ydata,$row->du_megs);
+	array_push($ydata2,$row->df_megs);
+	array_push($ydata3,"");
+	$bu_date=date('m/d/y',strtotime($row->backup_date));
+	//$bu_date=invali_date($row->backup_date,'/');
+	//$bu_date=$row->backup_date;
+	//$bu_date=7;
+	//$bu_date=date
+	//$bu_date=ereg_replace("^20","",$bu_date);
+	array_push($textx,$bu_date);
+	}
+
+$end_date_numeric=date('Ymd',strtotime("+$forward_days days"));
+//die($end_date_numeric);
+
+//$graph_day=date('Y-m-d');
+$graph_day_du=$last_du_number;
+$actual_rise=$last_du_number - $first_du_number;
+$daily_rise=$actual_rise/$back_days;
+$graph_day_diff=0;
+$graph_day_numeric=0;
+//$limit=200;
+//$current_count=0;
+$today=date('m/d/Y');
+
+array_pop($ydata3);
+
+while ($graph_day_numeric<$end_date_numeric) {
+	//$ydata3=array_pop($ydata3);
+	$date_string="$today + " . (integer)round($graph_day_diff) . " days";
+	$graph_day_numeric=date('Ymd',strtotime("$date_string"));
+	$graph_day=date('m/d/y',strtotime("$date_string"));
+	//$current_count++;
+	
+	$graph_day_du=$graph_day_du + ($daily_rise * $prediction_step);
+	$graph_day_diff=$graph_day_diff + $prediction_step;
+	array_push($ydata,"");
+	array_push($ydata2,$last_df_number);
+	array_push($ydata3,$graph_day_du);
+	array_push($textx,$graph_day);
+	}
+
+$graph = new Graph(600,400,"auto");	
+$graph->SetScale("intlin",0,3000000,0,sizeof($ydata));
+$graph->SetMarginColor("$fd_color_3");
+
+// Create the linear plots
+$lineplot=new LinePlot($ydata);
+$lineplot->SetColor("darkgreen");
+$lineplot->SetWeight(1);
+$lineplot2=new LinePlot($ydata2);
+$lineplot2->SetColor("red");
+$lineplot2->SetWeight(2);
+
+$lineplot3=new LinePlot($ydata3);
+$lineplot3->SetColor("blue");
+$lineplot3->SetWeight(2);
+
+$lineplot->SetLegend("Space Used");
+$lineplot2->SetLegend("Media Size");
+$lineplot3->SetLegend("Predicted");
+$graph->legend->Pos(0.05,0.7,"right","center");
+
+//$graph->xaxis->SetFont(FF_ARIAL,FS_NORMAL,11);
+$graph->xaxis->SetTickLabels($textx);
+$graph->xaxis->SetLabelAngle(90);
+$graph->xaxis->scale->ticks->Set(7,1);
+
+// Add the plot to the graph
+$graph->Add($lineplot);
+$graph->Add($lineplot2);
+$graph->Add($lineplot3);
+
+$graph->img->SetMargin(80,65,30,65);
+$graph->title->Set("Backup Media Projection (Numbered Drives)");
+//$graph->xaxis->title->Set("Time");
+$graph->xaxis->SetPos("min");
+$graph->yaxis->title->Set("Megabytes");
+$graph->yaxis->SetTitleMargin(60);
+
+// Display the graph
+$graph->Stroke();
+?>

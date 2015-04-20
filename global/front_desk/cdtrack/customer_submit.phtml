@@ -1,0 +1,18 @@
+<?
+//$customer=htmlspecialchars($customer);
+//$customer=escapeshellcmd($customer);
+
+$query="insert into $customers (customer_name) values ('$customer')";
+//echo "$query";exit;
+
+$result=mysql_query($query);
+
+if (!($result)) {
+	echo "Crap! This script screwed up somehow adding a customer!!!";
+	exit;
+	} else {
+	echo "<script>
+	opener.document.cdinfo.submit();
+	close();
+	</script>";
+	}

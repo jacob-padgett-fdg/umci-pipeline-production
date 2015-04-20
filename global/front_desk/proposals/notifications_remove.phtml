@@ -1,0 +1,7 @@
+<?
+require_once('querylib.inc');
+$notify_id=escapeshellcmd($notify_id);
+$query="delete from bidlist_notifications where notify_id = '$notify_id'";
+@mysql_query($query);
+forward('notifications');
+?>

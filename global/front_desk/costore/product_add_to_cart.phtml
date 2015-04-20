@@ -1,0 +1,61 @@
+<?
+if ($product_id=="") die("Application error. Please contact your system administrator.");
+$product_id=addslashes($product_id);
+$product_info=getone("select * from costore_products where product_id = '$product_id'");
+if ($cart_id!="") {
+	$cart_id=addslashes($cart_id);
+	$query_start="update";
+	$query_end=" where cart_id = '$cart_id'";
+	} else {
+	$query_start="insert into ";
+	$query_end="";
+	}
+
+//if ($product_info->is_clothing!='Y') {
+//	$product_options="";
+//	} else {
+//	$product_options=addslashes($product_options);
+//	if ($product_options=='XXL') $price=$product_info->xxl_price;
+//		else $price=$product_info->price;
+//	}
+
+
+// Make sure the discount direction is actually toward the employee...
+if ($product_info->non_emp_price<$product_info->price) $product_info->non_emp_price=round($product_info->price * 1.5,2);
+
+$product_options=addslashes($product_options);
+if ($charge_jobinfo_id!="") {
+	$charge_jobinfo_id=addslashes($charge_jobinfo_id);
+	$charge_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$charge_jobinfo_id'");
+	}
+
+if ($charge_jobinfo) {
+	$price=$product_info->non_emp_price;
+	} else {
+	$price=$product_info->price;
+	}
+
+$quantity=addslashes($quantity);
+$dollars=$quantity * $price;
+$query_middle="
+costore_cart set
+contacts_id = '$global_user_id',
+product_id = '$product_info->product_id',
+product_options = '$product_options',
+job_num = '$charge_jobinfo->contract_num',
+jobinfo_id = '$charge_jobinfo->jobinfo_id',
+quantity = '$quantity',
+status = 'new',
+total_dollars = '$dollars'
+
+";
+
+$query_full=$query_start . $query_middle . $query_end;
+//die("<hr>$query_full<hr>");
+$res=@mysql_query($query_full);
+if (!($res)) die("query failed:<hr>$query_full");
+forward('shopping_cart');
+//echo "<hr>$query_full<hr>";
+
+
+?>

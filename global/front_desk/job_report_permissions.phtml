@@ -1,0 +1,139 @@
+<?
+if ($jobinfo_id=="") die("ERROR: Unable to load job information!");
+$jobinfo_id=addslashes($jobinfo_id);
+
+if ($del_an_entry=='TRUE') {
+	$permission_id=addslashes($permission_id);
+	$permission_info=getoneb("select * from front_desk_reports_permissions where permission_id = '$permission_id'");
+	if ($permission_info->only_for_job>0) {
+		$only_for_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$permission_info->only_for_job'");
+		if (($global_user_id==$only_for_jobinfo->project_manager_id)||(member_of_global_group_named("IT"))) {
+			@mysql_query("delete from front_desk_reports_permissions where permission_id = '$permission_info->permission_id'");
+			$report_info=getoneb("select * from front_desk_reports where report_id = '$permission_info->report_id'");
+			security_log_email(
+				$permission_info->contacts_id,
+				0,
+				$permission_info->only_for_job,
+				"removed report permissions: admin=$permission_info->admin_user",
+				$report_info->report_display_name);
+			}
+		}
+	}
+
+
+if ($add_an_entry=='TRUE') {
+	$only_for_job=addslashes($only_for_job);
+	$granted_by=addslashes($global_user_id);
+	$report_id=addslashes($report_id);
+	$admin_user=addslashes($admin_user);
+	$add_contacts_id=addslashes($add_contacts_id);
+	
+	$report_info=getoneb("select * from front_desk_reports where report_id = '$report_id'");
+	@mysql_query("insert into front_desk_reports_permissions set 
+		report_id = '$report_id',
+		contacts_id = '$add_contacts_id',
+		only_for_job = '$only_for_job',
+		admin_user = '$admin_user',
+		granted_by = '$granted_by'");
+	security_log_email(
+		$add_contacts_id,
+		0,
+		$only_for_job,
+		"added report permissions: admin=$admin_user",
+		$report_info->report_display_name);
+	
+	}
+
+
+/*
+if ($action!="") {
+	if ($action=="add") {
+		@mysql_query("insert into front_desk_job_admins set jobinfo_id = '$jobinfo_id',contacts_id = '$contacts_id'");
+		}
+	if ($action=="remove") {
+		@mysql_query("delete from front_desk_job_admins where jobinfo_id = '$jobinfo_id' and contacts_id = '$contacts_id'");
+		}
+	}
+*/
+echo "<form name=report_permission_add_form><table border=0 cellspacing=0 cellpadding=4><tr valign=top><tr><td>";
+dropbox("select report_id as report_permission_add_report_id,report_display_name from front_desk_reports where report_type = 'job' and open_to_everyone = 'N' order by report_display_name","",1,"\" id=\"report_permission_add_report_id");echo "</td><td>";
+contactsbox("select * from contacts where current = 'Y' and contact_type = 'contact' and umc_emp = 'Y'","","report_permission_add_contact");
+echo "
+</td><td>
+<select id=\"report_permission_add_admin\" name=report_permission_add_admin>
+<option>N</option>
+<option>Y</option>
+</select>
+</td><td>
+<input type=button onclick=\"report_permission_add()\" value=\"Add\"></td></tr></table></form>";
+
+
+
+//tabledump("select * from front_desk_reports_permissions where only_for_job = '$global_jobinfo->jobinfo_id'");
+$res=@mysql_query("select * from front_desk_reports_permissions right join contacts on (contacts.contacts_id = front_desk_reports_permissions.contacts_id) where only_for_job = '$global_jobinfo->jobinfo_id' order by alphasort,employee_num");
+//tabledump("select * from front_desk_reports_permissions right join contacts on (contacts.contacts_id = front_desk_reports_permissions.contacts_id) where only_for_job = '$global_jobinfo->jobinfo_id' order by alphasort,employee_num");
+echo "<table border=0 cellspacing=0 cellpadding=5>";
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->admin_user=="Y") $admin_text=" has admin access to ";
+	else $admin_text=" has normal access to ";
+	$rep_info=getoneb("select * from front_desk_reports where report_id = '$row->report_id'");
+	
+	echo "<tr><td>
+			$row->first_name&nbsp;$row->last_name
+		</td><td>
+			$admin_text
+		</td><td>
+			$rep_info->report_display_name
+		</td><td>
+			<a href=\"javascript:delete_report_access($row->permission_id)\"><font color=blue><i>delete</i></font></a>
+		</td></tr>
+		";
+			
+	}
+echo "</table>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exit;
+
+
+echo "
+<table border=0 cellspacing=0 cellpadding=1>
+";
+$admin_qry="select * from front_desk_job_admins where jobinfo_id = '$jobinfo_id'";
+$admin_res=@mysql_query($admin_qry);
+while($row=@mysql_fetch_object($admin_res)) {
+	echo "<tr><td>
+			<form name=admin$row->admin_id style=\"display: inline;\">";
+			contactsbox("select * from contacts where 1 = 1",$row->contacts_id,'contacts_id','',"1");
+			echo"</form>
+		</td><td>
+			<a href=javascript:remove_admin($jobinfo_id,$row->contacts_id);><font color=blue><i>Remove</i></font></a>
+		</td></tr>
+		";
+	}
+echo "
+<tr><td>
+	<form style=\"display: inline;\" name=add_admin method=post action=$pagename>";
+	contactsbox("select * from contacts where umc_emp = 'Y' and login_name != ''","",'contacts_id');echo"
+	</form>
+</td><td>
+	&nbsp;&nbsp;<a href=javascript:add_admin($jobinfo_id);><font color=blue><b>ADD</b></font></a>
+</td></tr>
+</table>
+";
+?>
+
+

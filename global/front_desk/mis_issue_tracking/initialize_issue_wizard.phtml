@@ -1,0 +1,158 @@
+<?
+
+$today=date("m-d-Y");
+$next_week=date("m-d-Y",strtotime("+7 days"));
+$two_weeks=date("m-d-Y",strtotime("+14 days"));
+//echo "---$issue_information->requested_completion---";exit;
+//$requested=invali_date("$issue_information->requested_completion");
+
+
+echo "<html><head><title>Initializing issue from $issue_creator->first_name $issue_creator->last_name</title></head><body bgcolor=#ffffff>
+<h3>New issue from $issue_creator->first_name $issue_creator->last_name:</h3>
+<b><i>Please enter an initial IT response</i></b><hr>
+
+<form name=initialize method=post action=$pagename>
+<input type=hidden name=mode value=initialize_issue_wizard_submit>
+<input type=hidden name=issue_id value=$issue_information->issue_id>
+<input type=hidden name=us_or_them_touched value=''>
+<input type=hidden name=us_ids_touched value=''>
+
+
+<table border=0 cellpadding=7 cellspacing=0>
+<tr><td>
+	<b>Issue #</b>
+</td><td>
+	$issue_information->issue_id
+</td></tr>
+
+<tr><td>
+	<b>Name</b>
+</td><td>
+	$issue_information->name
+</td></tr>
+
+<tr><td>
+	<b>Description</b>
+</td><td>
+	$issue_information->description
+</td></tr>
+
+<tr><td>
+	<b>Priority</b>
+</td><td>
+	";dropbox("select priority,priority_text from mis_issue_priorities order by priority",$issue_information->priority);echo"
+</td></tr>
+
+<tr><td>
+	<b>Requested Completion Date</b>
+</td><td>
+	$issue_information->requested_completion
+</td><td>
+
+<tr><td>
+	<b>Expected Completion Date</b>
+</td><td>
+	";
+	datebox("","initialize.expected_completion_date","","\"\" onblur=\"document.initialize.is_focused.value=0;\" onfocus=\"document.initialize.is_focused.value=1;\"");
+
+	echo"
+	<input type=hidden name=is_focused value=0>
+	<input type=button title='Requested Date' onclick=expected_completion_requested() value=R>
+	<input type=button title='Next Week' onclick=expected_completion_plus_week() value=+W>
+	<input type=button title='In Two Weeks' onclick=expected_completion_plus_2_weeks() value=+2W>
+</td></tr>
+
+<tr><td valign=top>
+	<b>IT Notes</b>
+</td><td>
+	<textarea name=it_notes rows=5 cols=40></textarea>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Notes</b>
+</td><td>
+	<textarea name=notes rows=5 cols=40></textarea>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Next Action</b>
+</td><td>
+	<textarea name=next_action rows=5 cols=40></textarea>
+</td></tr>
+
+<tr><td>
+	<b>Next Action Date</b>
+</td><td>
+	<table border=0 cellspacing=0 cellpadding=0><tr><td>
+	";
+	//<input type=text size=12 name=next_action_date>
+	datebox('','initialize.next_action_date');
+	echo"</td><td><input type=button onclick=\"next_action_date.value=expected_completion_date.value\" value=C></td></tr></table>
+</td></tr>
+
+<tr><td>
+	<b>Next Action Responsibility</b>
+</td><td>
+	<select name=us_or_them size=2 onchange=\"document.initialize.us_or_them_touched.value='Y'\";>
+	<option value=us>IT
+	<option value=them>User(s)
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>IT Responisibility</b>
+</td><td>
+	";dropbox("select contacts.contacts_id as 'us_ids[]',last_name,', ',first_name,' (',login_name,')'  from contacts,mis_issue_uslist where mis_issue_uslist.contacts_id = contacts.contacts_id order by last_name,first_name","",10,"document.initialize.us_ids_touched.value='Y';","","multiple");echo"		
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=button onclick=verify_data() value=Submit>
+</td></tr>
+	
+
+</table>
+</form>
+	
+<script>
+
+function verify_data() {
+	required='ok';
+	if (document.initialize.expected_completion_date.value=='') required='Expected Completion';
+	if (document.initialize.next_action_date.value=='') required='Next Action Date';
+	if (document.initialize.us_or_them_touched.value=='') required='Next Action Responsibility';
+	if (document.initialize.us_ids_touched.value=='') required='IT Responsibility';
+	
+	
+	if (required!='ok') alert('You need to fill in the ' + required + ' field.');
+	else
+	document.initialize.submit();
+	
+	}
+
+
+function expected_completion_plus_week() {
+	document.initialize.expected_completion_date.value='$next_week';
+	}
+
+function expected_completion_plus_2_weeks() {
+	document.initialize.expected_completion_date.value='$two_weeks';
+	}
+
+function expected_completion_requested() {
+	document.initialize.expected_completion_date.value='$issue_information->requested_completion';
+	}
+
+function watch_the_dates () {
+	if (document.initialize.next_action_date.value==\"\") {
+		if ( (document.initialize.is_focused.value!=1) && (document.initialize.expected_completion_date.value!=\"\") ) {
+			document.initialize.next_action_date.value=document.initialize.expected_completion_date.value;
+			}
+		setTimeout(\"watch_the_dates();\",1000);
+		}
+	}
+
+watch_the_dates();
+</script>
+";
+
+?>

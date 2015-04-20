@@ -1,0 +1,127 @@
+
+----------------------------------------------------------------------------
+Thu Jul 28 15:27:44 PDT 2005
+ftpwatch-1.2
+----------------------------------------------------------------------------
+entirely new ftpwatch program..
+written entirely in php, and much faster and more robust than
+the earlier version.
+Also prevents false notifications in almost all reasonable 
+circumstances..
+
+
+----------------------------------------------------------------------------
+Tue Oct 25 17:24:03 PDT 2005
+ftpwatch-1.3
+----------------------------------------------------------------------------
+ok.. directory trees are run from database instead of filesystem now...
+
+
+----------------------------------------------------------------------------
+Wed Nov 16 11:25:55 PST 2005
+ftpwatch-1.4
+----------------------------------------------------------------------------
+If there is no contact configured, then don't process that entry...
+This prevents a bunch of error messages that were getting mailed to us.
+
+
+----------------------------------------------------------------------------
+Fri Nov 18 16:25:27 PST 2005
+ftpwatch-1.5
+----------------------------------------------------------------------------
+remove debugging information that was added to help diagnose the freaky mysql problems.. (database locks not getting released)..
+
+
+----------------------------------------------------------------------------
+Fri Nov 18 16:26:04 PST 2005
+ftpwatch-1.6
+----------------------------------------------------------------------------
+oops, more debug code..
+
+
+----------------------------------------------------------------------------
+Mon Dec 31 15:54:21 PST 2007
+ftpwatch-1.7
+----------------------------------------------------------------------------
+security check
+
+
+----------------------------------------------------------------------------
+Thu Jan  3 14:39:00 PST 2008
+ftpwatch-1.8
+----------------------------------------------------------------------------
+updated some paths
+
+
+----------------------------------------------------------------------------
+Wed Jan  9 15:40:19 PST 2008
+ftpwatch-1.9
+----------------------------------------------------------------------------
+fixed paths in the database.. messed with the code some.. 
+... it might be exactly the same, but I'm not sure, so there is an
+update just to make sure.. 
+
+-Jeff
+
+
+----------------------------------------------------------------------------
+Fri Sep 18 09:45:36 PDT 2009
+ftpwatch-1.10
+----------------------------------------------------------------------------
+hard wired UMC filter to OFF.
+Fixed page title sections by including standard header.phtml
+
+
+----------------------------------------------------------------------------
+Mon Oct  5 11:33:45 PDT 2009
+ftpwatch-1.11
+----------------------------------------------------------------------------
+hopefully this fixes the multiple notifications caused
+by paths with uppercase characters in them..
+
+
+----------------------------------------------------------------------------
+Wed Dec 16 15:49:29 PST 2009
+ftpwatch-1.12
+----------------------------------------------------------------------------
+disabled the case mangling so that it will be more compatible with 
+the new windows boxes...
+
+
+----------------------------------------------------------------------------
+Fri Jan  8 13:03:54 PST 2010
+ftpwatch-1.13
+----------------------------------------------------------------------------
+fixed the notification script in a number of ways..
+
+
+----------------------------------------------------------------------------
+Sat Jan  9 11:34:50 PST 2010
+ftpwatch-1.14
+----------------------------------------------------------------------------
+turned back on the clearing of the new entry flag..
+
+Mails were going out again and again..
+
+
+
+----------------------------------------------------------------------------
+Sat Jan  9 14:55:57 PST 2010
+ftpwatch-1.15
+----------------------------------------------------------------------------
+turned off echos
+
+
+----------------------------------------------------------------------------
+Thu Jan 21 10:35:27 PST 2010
+ftpwatch-1.16
+----------------------------------------------------------------------------
+added mailing review capability to ftp-notification interface
+
+
+----------------------------------------------------------------------------
+Thu Mar  8 15:34:47 PST 2012
+ftpwatch-1.17
+----------------------------------------------------------------------------
+add email to the list
+

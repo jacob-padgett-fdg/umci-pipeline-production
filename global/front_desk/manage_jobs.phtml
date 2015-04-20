@@ -1,0 +1,527 @@
+<?
+require('header.phtml');
+fd_navs_header();
+if ($jobinfo_id!="") {
+	$jobinfo_id=addslashes($jobinfo_id);
+	$global_jobinfo_id=$jobinfo_id;
+	$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+	$jobinfo->bim_budget_log=checkbreak($jobinfo->bim_budget_log);
+	} else {
+	die('Job information error!');
+	}
+
+$fd_manager=fd_manager($jobinfo_id,$global_user_id);
+if (!(($adminuser)||($fd_manager))) die_security();
+
+//$i_am_a_pm=getoneb("select * from jobinfo where project_manager_id = '$global_user_id' limit 1");
+//if ($global_user_id==$global_jobinfo->project_manager_id) $i_am_the_pm=TRUE;
+$i_am_the_pm=pm_for_this_job();
+
+include("main_tabs.phtml");
+
+echo "
+<style>
+table.nutzo {
+	font-size: 12px;
+	}
+td.nutzo {
+	font-size: 12px;
+	}
+tr.nutzo {
+	font-size: 12px;
+	}
+</style>
+
+&nbsp;
+<script src=\"/javascript/urlencode.js\"></script>
+
+<script>
+var on_top_of_group='';
+
+function add_pm_to_job(foo) {
+	pm=document.pm_add_form.pm_to_add.value;
+	//alert(pm);
+	if ((pm==0) || (pm=='')) {
+		alert('Please select a PM to add');
+		}
+	ajaxManager('load_page','$pagename?mode=manage_add_pm&global_jobinfo_id_set=$global_jobinfo_id&pm=' + pm,'pm_add_form_target');
+	ajaxManager('load_page','$pagename?mode=admin_list&jobinfo_id=$jobinfo_id&delay=1','admins');
+	}
+
+function pm_remove(pm_guest,jobinfo_id) {
+	ajaxManager('load_page','$pagename?mode=manage_del_pm&global_jobinfo_id_set=' + jobinfo_id + '&pm=' + pm_guest,'pm_add_form_target');
+	}
+
+
+function delete_address(id) {
+	if(confirm('Delete this address?'))
+		ajaxManager('load_page','$pagename?mode=other_addresses_del&show_jobinfo_id=$jobinfo->jobinfo_id' + '&address_id=' + id,'other_addresses');
+	}
+
+function move_address_up(id) {
+	ajaxManager('load_page','$pagename?mode=other_addresses_up&show_jobinfo_id=$jobinfo->jobinfo_id' + '&address_id=' + id,'other_addresses');
+	}
+
+function toggle_ups(id) {
+	ajaxManager('load_page','$pagename?mode=other_addresses_ups_toggle&show_jobinfo_id=$jobinfo->jobinfo_id' + '&address_id=' + id,'other_addresses');
+	}
+function toggle_job_ups(jobinfo_id) {
+	ajaxManager('load_page','$pagename?mode=other_addresses_ups_toggle_job&show_jobinfo_id=$jobinfo->jobinfo_id','other_addresses');
+	}
+
+function delete_report_access(permission_id) {
+	//alert('hello');
+	ajaxManager('load_page','$pagename?mode=job_report_permissions&permission_id=' + permission_id + '&jobinfo_id=$global_jobinfo->jobinfo_id&del_an_entry=TRUE','job_report_permissions');
+	}
+
+function report_permission_add() {
+	rep_box=document.getElementById('report_permission_add_report_id');
+	con_box=document.report_permission_add_form.report_permission_add_contact;
+	admin_box=document.getElementById('report_permission_add_admin');
+	
+	
+	if (con_box.value<1) {
+		alert('you must select a contact to give permissions to');
+		return 0;
+		}
+	if (rep_box.value<1) {
+		alert('you must select a report to add');
+		return 0;
+		}
+	
+	report_id=urlencode(rep_box.value);
+	contacts_id=urlencode(con_box.value);
+	admin_user=urlencode(admin_box.value);
+	only_for_job='$global_jobinfo->jobinfo_id';
+	
+	ajaxManager('load_page','$pagename?mode=job_report_permissions&report_id=' + report_id +
+	'&add_contacts_id=' + contacts_id +
+	'&only_for_job=' + only_for_job +
+	'&jobinfo_id=' + only_for_job +
+	'&admin_user=' + admin_user +
+	'&add_an_entry=TRUE'
+	,'job_report_permissions');
+	}
+
+function add_address() {
+	address_name=document.getElementById('new_address_name');
+	address=document.getElementById('new_address');
+	notes=document.getElementById('new_notes');
+	is_ups=document.getElementById('new_is_ups');
+	is_job_office=document.getElementById('new_is_job_office');
+	
+	if (is_ups.checked) {
+		ups='Y';
+		} else {
+		ups='N';
+		}
+	
+	if (is_job_office.checked) {
+		job_office='Y';
+		} else {
+		job_office='N';
+		}
+	
+	name_encoded=urlencode(address_name.value);
+	address_encoded=urlencode(address.value);
+	notes_encoded=urlencode(notes.value);
+	
+	ajaxManager('load_page','$pagename?mode=other_addresses_add&show_jobinfo_id=$jobinfo->jobinfo_id' +
+	'&description=' + name_encoded +
+	'&address=' + address_encoded +
+	'&is_ups=' + ups +
+	'&is_job_office=' + job_office 
+	,'other_addresses');
+	
+	
+	//ajaxManager('load_page','$pagename?mode=other_addresses&show_jobinfo_id=$jobinfo->jobinfo_id','other_addresses');
+	}
+
+
+function phone_number_edit(id) {
+	ajaxManager('load_page','$pagename?mode=site_phone_numbers&jobinfo_id=$jobinfo_id&edit_phone_number_id=' + id,'site_phone_numbers');
+	}
+
+function phone_number_delete(id) {
+	ajaxManager('load_page','$pagename?mode=site_phone_numbers&jobinfo_id=$jobinfo_id&delete_phone_number_id=' + id,'site_phone_numbers');
+	}
+
+function add_phone_number() {
+	phone_number_id=urlencode(document.getElementById('phone_number_id').value);
+	description=urlencode(document.getElementById('description').value);
+	phone_number=urlencode(document.getElementById('phone_number').value);
+	extension=urlencode(document.getElementById('extension').value);
+	sort_priority=urlencode(document.getElementById('sort_priority').value);
+	ajaxManager('load_page','$pagename?mode=site_phone_numbers&add_number=1&jobinfo_id=$jobinfo_id&description=' + description + '&phone_number=' + phone_number + '&extension=' + extension + '&sort_priority=' + sort_priority + '&phone_number_id=' + phone_number_id,'site_phone_numbers');
+	}
+
+function upload_new_file() {
+	doc_id=document.fd_jobinfo_form.file_to_add.value;
+	alert(doc_id);
+	}
+
+function save_job_link(link_id) {
+	if(link_id==undefined) link_id='';
+	obj_link_text=document.getElementById('link_text' + link_id);
+	obj_link_url=document.getElementById('link_url' + link_id);
+	link_text=urlencode(obj_link_text.value);
+	link_url=urlencode(obj_link_url.value);
+	ajaxManager('load_page','$pagename?mode=links_and_files&save_link=true&link_url=' + link_url + '&link_text=' + link_text + '&jobinfo_id=$jobinfo->jobinfo_id&link_id=' + link_id,'links_and_files');
+	}
+
+function foreman_toggle_all() {
+	if(document.foreman_add.general.checked==true) {
+		document.foreman_add.plumb.checked=true;
+		document.foreman_add.pipe.checked=true;
+		document.foreman_add.sheet.checked=true;
+		document.foreman_add.industrial.checked=true;
+		} else {
+		document.foreman_add.plumb.checked=false;
+		document.foreman_add.pipe.checked=false;
+		document.foreman_add.sheet.checked=false;
+		document.foreman_add.industrial.checked=false;
+		}
+	}
+
+function record_set_add(record_id) {
+	if(confirm('Are you sure? You may never delete extra record sets!'))
+		ajaxManager('load_page','$pagename?mode=define_record_sets&jobinfo_id=$jobinfo->jobinfo_id&record_set_name_update=' + document.rs_update.record_set_name.value + '&record_set_description_update=' + document.rs_update.record_set_description_update.value + '&record_set_id=' + record_id,'record_sets');
+	}
+
+function update_record_set(record_set_id) {
+	name_id='record_set_name_' + record_set_id;
+	desc_id='record_set_description_' + record_set_id;
+	sort_id='record_set_sort_priority_' + record_set_id;
+	name_obj=document.getElementById(name_id);
+	desc_obj=document.getElementById(desc_id);
+	sort_obj=document.getElementById(sort_id);
+	name_obj.style.background='yellow';
+	desc_obj.style.background='yellow';
+	sort_obj.style.background='yellow';
+
+	ajaxManager('load_page','$pagename?mode=define_record_sets&jobinfo_id=$jobinfo->jobinfo_id&record_set_name_update=' + name_obj.value + '&record_set_description_update=' + desc_obj.value + '&record_set_id=' + record_set_id + '&sort_priority=' + sort_obj.value,'record_sets');
+	}
+
+function add_a_foreman(add_foreman) {
+	if (add_foreman=='') {
+		alert('error: you must specify a person to add!');
+		return FALSE;
+		}
+	general='';plumb='';pipe='';sheet='';industrial='';
+	
+	if(document.foreman_add.general.checked==true) general='on';
+	if (document.foreman_add.plumb.checked==true) plumb='on';
+	if (document.foreman_add.pipe.checked==true) pipe='on';
+	if (document.foreman_add.sheet.checked==true) sheet='on';
+	if (document.foreman_add.industrial.checked==true) industrial='on';
+	
+	all=general + plumb + pipe + sheet + industrial;
+	if (all=='') {
+		alert('You must specify a role for this foreman.');
+		return FALSE;
+		}
+	
+	
+	checkboxes='';
+	checkboxes=checkboxes + '&general=' + general;
+	checkboxes=checkboxes + '&plumb=' + plumb;
+	checkboxes=checkboxes + '&pipe=' + pipe;
+	checkboxes=checkboxes + '&sheet=' + sheet;
+	checkboxes=checkboxes + '&industrial=' + industrial;
+	ajaxManager('load_page','$pagename?mode=foreman_list&jobinfo_id=$jobinfo_id&add_foreman=' + add_foreman + checkboxes,'foreman_list');
+	}
+
+function remove_a_foreman(del_foreman) {
+	ajaxManager('load_page','$pagename?mode=foreman_list&jobinfo_id=$jobinfo_id&del_foreman=' + del_foreman,'foreman_list');
+	}
+
+function i_am_over(group_id) {
+	document.on_top_of_group=group_id;
+	}
+
+function i_am_gone() {
+	document.on_top_of_group='';
+	}
+
+function my_context_menu(id) {
+	//if (document.on_top_of_group=='') return FALSE;
+	if (confirm('rename this group?' + id))
+		document.location='http://www.umci.com/';
+	}
+
+function jc(formname,fieldname,query,onchange,settings) {
+	var default_id;
+	field=formname + '.' + fieldname;
+	eval('default_id=document.' + field + '.value');
+	field=urlencode(field);
+	query=urlencode(query);
+	onchange=urlencode(onchange);
+	open(\"/global/contacts/contact_selection.phtml?query=\" + query + \"&field=\" + field + \"&contacts_id=\" + default_id + \"&onchange=\" + onchange + \"&settings=\" + settings,\"$target_win_name\",\"width=550,height=550,scrollbars=yes\");
+	}
+
+function showglobalbox(cellobj) {
+	document.getElementById('groupsrow').style.display='none';
+	document.getElementById('globalgroupsrow').style.display='table-row';
+	document.getElementById('globalcell').style.background='$fd_color_3';
+	document.getElementById('projectcell').style.background='$fd_color_2';
+	}
+
+function showprojectbox(cellobj) {
+	document.getElementById('groupsrow').style.display='table-row';
+	document.getElementById('globalgroupsrow').style.display='none';
+	document.getElementById('projectcell').style.background='$fd_color_3';
+	document.getElementById('globalcell').style.background='$fd_color_2';
+	}
+
+function jcro(formname,fieldname) {
+	var default_id;
+	field=formname + '.' + fieldname;
+	eval('default_id=document.' + field + '.value');
+	open('/global/contacts/contactview.phtml?read_only_warning=yes&contacts_id=' + default_id,'${target_win_name}_info_win' + default_id,'width=550,height=550,scrollbars=yes,resizable=yes');
+	}
+
+function add_admin(jobinfo_id) {
+	contacts_id=document.add_admin.contacts_id.value;
+	if (contacts_id=='') alert('Error: You must select a contact first.');
+	else ajaxManager('load_page','$pagename?mode=admin_list&action=add&jobinfo_id=' + jobinfo_id + '&contacts_id=' + contacts_id,'admins');
+	}
+
+function add_member(group_id) {
+	contacts_id=document.add_member.contacts_id.value;
+	if (contacts_id=='') alert('Error: You must select a contact first.');
+	else ajaxManager('load_page','$pagename?mode=members_list&add_member=' + contacts_id + '&group_id=' + group_id,'members');
+	}
+
+function add_global_member(global_group_id) {
+	contacts_id=document.add_global_member.contacts_id.value;
+	if (contacts_id=='') alert('Error: You must select a contact first.');
+	else ajaxManager('load_page','$pagename?mode=global_members_list&add_global_member=' + contacts_id + '&global_group_id=' + global_group_id,'global_members');
+	}
+
+function rem_member(group_id,membership_id) {
+	ajaxManager('load_page','$pagename?mode=members_list&rem_member=' + membership_id + '&group_id=' + group_id,'members');
+	}
+
+function rem_global_member(global_group_id,membership_id) {
+	ajaxManager('load_page','$pagename?mode=global_members_list&rem_global_member=' + membership_id + '&global_group_id=' + global_group_id,'global_members');
+	}
+
+function remove_admin(jobinfo_id,contacts_id) {
+	ajaxManager('load_page','$pagename?mode=admin_list&action=remove&jobinfo_id=' + jobinfo_id + '&contacts_id=' + contacts_id,'admins');
+	}
+
+function show_group(group_id) {
+	ajaxManager('load_page','$pagename?mode=members_list&group_id=' + group_id,'members');
+	}
+
+function show_global_group(global_group_id) {
+	ajaxManager('load_page','$pagename?mode=global_members_list&global_group_id=' + global_group_id,'global_members');
+	}
+
+function set_group_permissions (group_id){
+   open('$pagename?mode=manage_job_group_permissions&group_id=' + group_id,'mjgp' + group_id,'width=800,height=600,scrollbars=1')
+   }
+
+function remove_group(group_id) {
+	ajaxManager('load_page','$pagename?mode=groups_list&jobinfo_id=$jobinfo_id&remove_group=' + group_id,'groups');
+	}
+
+function remove_global_group(group_id) {
+	ajaxManager('load_page','$pagename?mode=global_groups_list&jobinfo_id=$jobinfo_id&remove_global_group=' + group_id,'global_groups');
+	}
+
+function group_add(description) {
+	ajaxManager('load_page','$pagename?mode=groups_list&jobinfo_id=$jobinfo_id&group_add=' + description,'groups');
+	}
+
+function global_group_add(description) {
+	ajaxManager('load_page','$pagename?mode=global_groups_list&jobinfo_id=$jobinfo_id&global_group_add=' + description,'global_groups');
+	}
+
+function enable_application(fd_app_id) {
+	ajaxManager('load_page','$pagename?mode=manage_job_applications&jobinfo_id=$jobinfo->jobinfo_id&add_fd_app_id=' + fd_app_id,'job_applications');
+	}
+
+function reenable_application(job_app_id) {
+	ajaxManager('load_page','$pagename?mode=manage_job_applications&jobinfo_id=$jobinfo->jobinfo_id&reenable_job_app_id=' + job_app_id,'job_applications');
+	}
+
+function disable_application(job_app_id) {
+	ajaxManager('load_page','$pagename?mode=manage_job_applications&jobinfo_id=$jobinfo->jobinfo_id&disable_job_app_id=' + job_app_id,'job_applications');
+	}
+
+</script>
+";
+
+//ajax_load();
+$jobinfo->show_in_phone_list=checkbreak($jobinfo->show_in_phone_list);
+
+/*if ($jobinfo->display_name=="") {
+	@mysql_query("update jobinfo set display_name = '" . addslashes($jobinfo->job_name) . "' where jobinfo_id = '$jobinfo->jobinfo_id'");
+	$jobinfo->display_name=$jobinfo->job_name;
+	}
+*/
+echo "
+<table class=nutzo bgcolor='$fd_color_3' border=1 style=\"-moz-border-radius: 15px 15px 0px 0px; border-width: 0px 1px 1px 1px;\" cellspacing=0 cellpadding=3>
+	<tr bgcolor=#ffffff><td bgcolor='$fd_color_3' style='cursor: pointer; -moz-border-radius: 15px 15px 0px 0px; border-bottom: 0px; width: 300px;' id=\"projectcell\" align=center onclick=showprojectbox(this)>
+		<b><u>Project&nbsp;Groups</u></b>
+	</td><td style='cursor: pointer; -moz-border-radius: 15px 15px 0px 0px; border-bottom: 0px solid; width: 300px;' bgcolor=\"$fd_color_2\" align=center id=globalcell onclick=showglobalbox(this)>
+		<b><u>Global Groups</u></b>
+	</td></tr>
+	
+	<tr><td style=\"border-left: 1px outset; border-right: 1px inset; border-top: 0px; border-bottom: 0px;\" colspan=2><font size=-3>&nbsp;</font></td></tr>	
+
+	<tr id=globalgroupsrow style=\"display: none;\"><td id=global_groups valign=top style=\"border-top: 1px;\">
+		<b>Global Groups</b>
+	</td><td id=global_members valign=top style=\"border-top: 0px;\">
+		<b>Members</b>
+	</td></tr>
+	<tr id=groupsrow><td id=groups valign=top style=\"border-top: 0px;\">
+		<b>Project Groups</b>
+	</td><td id=members valign=top style=\"border-top: 1px;\">
+		<b>Members</b>
+	</td></tr>
+</table>
+	
+<p>
+<table class=nutzo border=1 cellspacing=0 cellpadding=3>
+	<tr><td colspan=4 align=center bgcolor=$fd_color_4>
+	<b>Project Setup</b>
+</td></tr>
+
+<tr><td>
+	<b>Contract Number:</b>
+</td><td>
+	$jobinfo->contract_num
+</td><td valign=top>
+	<b>PM:</b>
+</td><td id=pm_add_form_target>";
+	include("manage_jobs_show_pm.phtml");echo "
+</td></tr>
+
+<tr><td>
+	<b>Viewpoint Job Name:</b>
+</td><td>
+	$jobinfo->job_name
+</td><td valign=top rowspan=2>
+	<b>FD Admins:</b>
+</td><td id=admins rowspan=2 valign=top>
+	Loading...
+</td></tr>
+
+<tr><td valign=top>
+	<b>Foreman List:</b>
+</td><td id=foreman_list>
+	Loading...
+</td></tr>
+	<form name=fd_jobinfo_form method=post action=$pagename>
+</td></tr>";
+
+if (($global_user_id==$global_jobinfo->project_manager_id)||($global_user_id<3)) { 
+	echo "
+	<tr valign=top><td>
+		<b>Report Permissions</b>
+	</td><td colspan=3 id=\"job_report_permissions\">
+		report permissions loading....
+	</td></tr>";
+	}
+
+echo"
+
+<tr bgcolor=$fd_color_1><td colspan=2 align=center>
+	<b>Job Application Setup</b>
+</td><td colspan=2 align=center>
+	<b>Record Sets</b>
+</td></tr>
+
+<tr><td colspan=2 id=\"job_applications\" valign=top>
+</td><td id=\"record_sets\" colspan=2 valign=top>
+</td></tr>
+
+
+
+
+
+<tr bgcolor=$fd_color_4><td colspan=4 align=center>
+	<div style=\"float: right;\"><input type=submit value=Save></div>
+	<b>Job Data</b>
+</td></tr>
+	<tr><td valign=top>
+	<b>Actual Job Name:</b>
+</td><td valign=top>
+	<input type=text size=20 name=fd_forced_job_name value=\"$jobinfo->fd_forced_job_name\">
+</td><td colspan=2 bgcolor=$fd_color_1 valign=top align=center>
+	<b>Addresses</b>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Links:</b>
+</td><td valign=top id=\"links_and_files\"></td>
+<td colspan=2 id=\"other_addresses\" valign=top></tr>
+
+
+<tr><td valign=top>
+	<b>Correspondence Addr</b><br><i>(address on letterhead)</i>
+</td><td valign=top>
+	";contactsbox("select * from contacts where ( company_id = 968 or contacts_id = 968 ) and contact_type != 'contact' and current = 'Y'","$jobinfo->job_letterhead_address_site",'job_letterhead_address_site');echo"
+</td><td bgcolor=$fd_color_1 valign=top colspan=2 align=center>
+	<b>UMC Site Phones:</b><br>
+	<b>Show in site list </b><input type=checkbox name=show_in_phone_list $jobinfo->show_in_phone_list>&nbsp;
+	<a href=$pagename?mode=sites_phone_list target=sites_phone_list><font color=blue>View current</font></a>
+</td></tr>
+
+<input type=hidden name=mode value=fd_jobinfo_submit>
+<input type=hidden name=jobinfo_id value=$jobinfo->jobinfo_id>
+<tr><td>
+	<b>Default GC Recipient:</b>
+</td><td>";
+	contactsbox("select * from contacts where company_id = '$jobinfo->general_id' and current = 'Y'",$jobinfo->default_gc_recipient,'default_gc_recipient');echo"
+</td><td rowspan=2 colspan=2 id=\"site_phone_numbers\">
+</td></tr>
+
+<tr><td>
+	<b>Project&nbsp;Photo:
+</td><td>
+	";webfilebox($jobinfo->fd_site_picture,'fd_site_picture','',1);echo"
+</td></tr>
+
+<tr><td>
+	<b>Weather Station Code</b>
+</td><td>
+	<input type=text size=6 name=weather_station_code value=\"$jobinfo->weather_station_code\">&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"http://www.weather.gov/data/current_obs/\" target=weather_station_lookup><font color=blue><i>Look up 4 character code</i></font></b></a>
+</td><td colspan=2>
+	&nbsp;
+</td></tr>
+";
+
+
+$jobinfo->fd_dwg_cust_1_used=checkbreak($jobinfo->fd_dwg_cust_1_used);
+$jobinfo->fd_dwg_cust_2_used=checkbreak($jobinfo->fd_dwg_cust_2_used);
+$jobinfo->fd_dwg_cust_3_used=checkbreak($jobinfo->fd_dwg_cust_3_used);
+$jobinfo->fd_dwg_cust_4_used=checkbreak($jobinfo->fd_dwg_cust_4_used);
+$jobinfo->fd_dwg_cust_5_used=checkbreak($jobinfo->fd_dwg_cust_5_used);
+
+echo"
+	
+
+</table>
+</form>
+<script>
+
+ajaxManager('load_page','$pagename?mode=manage_job_applications&jobinfo_id=$jobinfo->jobinfo_id','job_applications');
+ajaxManager('load_page','$pagename?mode=site_phone_numbers&jobinfo_id=$jobinfo->jobinfo_id','site_phone_numbers');
+ajaxManager('load_page','$pagename?mode=define_record_sets&jobinfo_id=$jobinfo->jobinfo_id','record_sets');
+ajaxManager('load_page','$pagename?mode=admin_list&jobinfo_id=$jobinfo_id','admins');
+ajaxManager('load_page','$pagename?mode=foreman_list&jobinfo_id=$jobinfo_id','foreman_list');
+ajaxManager('load_page','$pagename?mode=groups_list&jobinfo_id=$jobinfo_id','groups');
+ajaxManager('load_page','$pagename?mode=global_groups_list','global_groups');
+ajaxManager('load_page','$pagename?mode=other_addresses&show_jobinfo_id=$jobinfo->jobinfo_id','other_addresses');
+ajaxManager('load_page','$pagename?mode=links_and_files&jobinfo_id=$jobinfo->jobinfo_id','links_and_files');
+ajaxManager('load_page','$pagename?mode=job_report_permissions&jobinfo_id=$jobinfo->jobinfo_id','job_report_permissions');
+
+</script>
+
+";
+fd_navs_footer();
+
+?>

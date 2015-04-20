@@ -1,0 +1,33 @@
+<?
+if ($file_group_id=="") die("no file?");
+else $file_group_id=addslashes($file_group_id);
+
+$jobinfo_id=$global_jobinfo->jobinfo_id;
+if ($jobinfo_id=="") die("no job?");
+else $jobinfo_id=addslashes($jobinfo_id);
+
+if ($link_text=="") $link_text='?????';
+else $link_text=addslashes($link_text);
+
+if ($file_entry_id!="") {
+	$file_entry_id=addslashes($file_entry_id);
+	$query="update front_desk_files set
+	jobinfo_id = '$jobinfo_id',
+	file_group_id = '$file_group_id',
+	sort_priority = '1',
+	link_text = '$link_text'
+	where file_entry_id = '$file_entry_id'
+	";
+	} else {
+	$query="insert into front_desk_files set
+	jobinfo_id = '$jobinfo_id',
+	file_group_id = '$file_group_id',
+	sort_priority = '1',
+	link_text = '$link_text',
+	creator_id = '$global_user_id'";
+	}
+
+//exit;
+@mysql_query($query);
+forward('main');
+?>

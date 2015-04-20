@@ -1,0 +1,30 @@
+<?
+require_once('querylib.inc');
+
+if ($access_applications_id!="") {
+	$access_applications_id=escapeshellcmd($access_applications_id);
+	$command="update";
+	$where="where access_applications_id = '$access_applications_id'";
+	} else {
+	$command="insert into";
+	$where="";
+	}
+
+$application_name_form=escapeshellcmd($application_name_form);
+$application_description=escapeshellcmd($application_description);
+$application_active=checkfix($application_active);
+$front_door_open=checkfix($front_door_open);
+
+
+$query=$command . " access_applications set 
+application_name = '$application_name_form',
+application_description = '$application_description',
+application_active = '$application_active',
+front_door_open = '$front_door_open' " . $where;
+
+$res=@mysql_query($query);
+
+if (!($res)) die ("ERROR: Query Failed:<p>Failed Query:<hr>$query");
+
+forward('application_list');
+?>

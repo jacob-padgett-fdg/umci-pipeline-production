@@ -1,0 +1,25 @@
+<?
+require('viewpoint_connect_ro.phtml');
+require('viewpoint_libs.inc');
+
+if ($output=="") die("Application error! No output specified!!!");
+
+//$output=addslashes($output);
+$output=ereg_replace("[^a-zA-Z0-9_]","",$output);
+//echo "$output<hr>";
+$trans_array=array();
+$account_list_res=@mysql_query("select * from positivepay_accounts where account_output_plugin = '$output' and active = 'Y' order by account_name,account_number");
+while ($account=@mysql_fetch_object($account_list_res)) {
+	$temp_array=get_account_checks($account->account_number);
+	$trans_array=array_merge($trans_array,$temp_array);
+	}
+$new_trans_array=chop_list($trans_array);
+$new_check_count=sizeof($new_trans_array);
+
+if ($new_check_count<1) {
+	die("I'm sorry, but there seem to be no new checks to upload for that bank.");
+	}
+$batch_number=get_new_batch_number();
+register_batch($new_trans_array,$batch_number);
+include("output_$output.phtml");
+?>

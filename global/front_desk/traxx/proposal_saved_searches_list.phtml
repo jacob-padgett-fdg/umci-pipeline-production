@@ -1,0 +1,31 @@
+<?
+$slquery="select * from bidlist_saved_queries where contacts_id = '$global_user_id' order by sort_num,query_name";
+
+$sl_res=@mysql_query($slquery);
+$sl_count=@mysql_num_rows($sl_res);
+if ($sl_count > 0) {
+	echo "<table border=1 cellspacing=0 cellpadding=0><tr><td>
+	<table border=1 cellpadding=3 cellspacing=0>";
+	echo "<tr><td colspan=3 bgcolor=#eeeeee><b><font size=+1>Saved Searches</font></b></td></tr>";
+	while($sl_row=@mysql_fetch_object($sl_res)) {
+		$sl_row->query_name=ereg_replace(" ","&nbsp;",$sl_row->query_name);
+		echo "<tr><td>
+				<a href=$pagename?mode=proposal_saved_search_show&query_id=$sl_row->query_id><font color=blue>$sl_row->query_name</font></a>
+			</td><td>
+				<a href=$pagename?mode=proposal_save_search&query_id=$sl_row->query_id><font color=blue><i>Edit</i></font></a>
+			</td><td>
+				<a href=$pagename?mode=proposal_save_search_delete&query_id=$sl_row->query_id><font color=blue><i>Delete</i></font></a>
+			</td></tr>";
+		}
+	echo "</table></td></tr></table>";
+	}
+
+
+
+
+
+
+
+
+
+?>

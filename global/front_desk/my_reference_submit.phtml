@@ -1,0 +1,68 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+if ($reference_id!="") {
+	$reference_id=addslashes($reference_id);
+	$reference_info=getoneb("select * from front_desk_references where reference_id = '$reference_id'");
+	$category_id=$reference_info->category_id;
+	$new=FALSE;
+	$query_start="update ";
+	$query_end=" where reference_id = '$reference_info->reference_id'";
+	$creator=$reference_info->creator;
+	} else {
+	$reference_info->others_get_write="N";
+	$reference_info->owner=$global_user_id;
+	$query_start="insert into ";
+	$query_end="";
+	$new=TRUE;
+	$creator=$global_user_id;
+	}
+	
+	
+$category_id=addslashes($category_id);
+$category_info=getoneb("select * from front_desk_reference_categories where category_id = '$category_id'");
+
+if (!($category_info)) {
+	die("Application error! Category info failure!");
+	}
+$write=FALSE;
+if ($adminuser) $write=TRUE;
+if ($category_info->owner==$global_user_id) $write=TRUE;
+if ($reference_info->others_get_write=="Y") $write=TRUE;
+if ($reference_info->owner==$global_user_id) $write=TRUE;
+
+if (!($write)) die_security();
+
+$owner=addslashes($owner);
+$creator=addslashes($creator);
+$others_get_write=addslashes($others_get_write);
+$file_group_id=addslashes($file_group_id);
+$name=addslashes($save_name);
+$notes=addslashes($notes);
+if ($doc_or_url=="") $doc_or_url="doc";
+else $doc_or_url=addslashes($doc_or_url);
+$url=addslashes($url);
+
+
+
+$query_middle="
+front_desk_references set 
+category_id = '$category_info->category_id',
+owner = '$owner',
+creator = '$creator',
+others_get_write = '$others_get_write',
+file_group_id = '$file_group_id',
+url = '$url',
+name = '$name',
+doc_or_url = '$doc_or_url',
+notes = '$notes' ";
+
+
+$query_full=$query_start . $query_middle . $query_end;
+$res=@mysql_query($query_full);
+if (!($res)) die("Failed query: <hr>$query_full");
+//echo "Submit change<hr>$query_full";
+forward("my_reference_center_manage&category_id=$category_info->category_id");
+mh_navs_footer();
+?>

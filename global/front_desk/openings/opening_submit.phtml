@@ -1,0 +1,60 @@
+<?
+require_once('querylib.inc');
+
+
+$active=checkfix($active);
+$job_title=addslashes($job_title);
+$position_type=addslashes($position_type);
+$hr_job_categories_id=clean_int($hr_job_categories_id);
+$site_id=clean_int($site_id);
+$job_description_text=addslashes($job_description_text);
+$salary_doe=checkfix($salary_doe);
+$salary=clean_int($salary);
+$deadline=vali_date($deadline);
+$section_1_on=checkfix($section_1_on);
+$section_2_on=checkfix($section_2_on);
+$section_3_on=checkfix($section_3_on);
+$section_4_on=checkfix($section_4_on);
+$section_5_on=checkfix($section_5_on);
+
+if ($hr_openings_id!="") {
+	$hr_openings_id=addslashes($hr_openings_id);
+	$new=FALSE;
+	$query_start="update ";
+	$query_where=" where hr_openings_id = '$hr_openings_id' ";
+	//echo "This was not new.";
+	} else {
+	$new=TRUE;
+	$query_start="insert into ";
+	$query_where="";
+	//echo "This was new.";
+	}
+
+$query_base=" hr_openings set
+active = '$active',
+job_title = '$job_title',
+position_type = '$position_type',
+hr_job_categories_id = '$hr_job_categories_id',
+site_id = '$site_id',
+job_description_text = '$job_description_text',
+salary_doe = '$salary_doe',
+salary = '$salary',
+deadline = '$deadline',
+section_1_on = '$section_1_on',
+section_2_on = '$section_2_on',
+section_3_on = '$section_3_on',
+section_4_on = '$section_4_on',
+section_5_on = '$section_5_on'
+";
+$query = $query_start . $query_base . $query_where;
+
+$res=@mysql_query($query);
+
+if (!($res)) die("ERROR: The query failed. Please contact your system administrator, or try again.<p>Failing query:<hr>$query");
+
+if ($new==TRUE) $hr_openings_id=mysql_insert_id();
+
+if ($savemode=="Save") forward('main');
+if ($savemode=="Apply") forward("opening_edit&hr_openings_id=$hr_openings_id");
+
+?>

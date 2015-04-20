@@ -1,0 +1,45 @@
+#!/usr/local/bin/php
+<?
+
+$auth_object->check_web_pw='N';
+$auth_object->check_smb_pw='N';
+$auth_object->check_webfile_exceptions='N';
+$auth_object->check_access_permission='N';
+
+$auth_object->require_login='N';
+$auth_object->require_access_permissions='N';
+$auth_object->require_employee='N';
+$auth_object->require_local_networks='N';
+$auth_object->require_local_or_logged_in='N';
+
+$auth_object->include_local_auth='N';
+$auth_object->always_attach_db='Y';
+
+require_once("global-auth.inc");
+
+$msg_list_res=@mysql_query("select * from rfilog_notifications left join rfilog on (rfilog_notifications.rfi_id = rfilog.rfi_id) where notification_sent = 'N' and rfilog.reply != ''"); 
+while ($msg=@mysql_fetch_object($msg_list_res)) {
+	$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$msg->jobinfo_id'");
+	queue_email($msg->contacts_id,"RFI RESPONSE ENTERED: $jobinfo->contract_num - $msg->rfi_num","An RFI that you asked me to watch has gotten a response filled in. <a href=https://pipeline.umci.com/global/rfilog/?global_jobinfo_id_set=$msg->jobinfo_id&mode=rfi_edit&rfi_id=$msg->rfi_id><font color=blue>Click here</font></a> to view it.",'Y');
+	@mysql_query("update rfilog_notifications set notification_sent = 'Y' where rfi_id = '$msg->rfi_id'");
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//exec("/usr/local/sbin/webfile_run_queues",$blah,$blah2);
+
+?>

@@ -1,0 +1,44 @@
+<?
+require('header.phtml');
+$query=("select * from access_service_types order by name");
+$res=@mysql_query($query);
+echo "
+<a href=$pagename?mode=server_list><font color=blue>Return to server list</font></a><p>
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=2 bgcolor=\"$umc_standard_blue\" align=center>
+	<b>Network Service Types</b><i>(<a href=$pagename?mode=service_type_edit><font color=blue>Add</font></a>)</i>
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td valign=top>
+		<a href=$pagename?mode=service_type_edit&service_type_id=$row->service_type_id><font color=blue>$row->name</font></a>
+		</td><td>
+			$row->description
+		</td></tr>
+		";
+	}
+echo "</table>";
+
+$query="select * from access_servers_oslist order by name";
+$res=@mysql_query($query);
+echo "<p>
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=3 bgcolor=\"$umc_standard_blue\" align=center>
+	<b>Server&nbsp;Operating&nbsp;Systems</b><i>&nbsp;(<a href=$pagename?mode=access_servers_oslist_edit><font color=blue>Add</font></a>)</i>
+</td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			$row->name
+		</td><td>
+			$row->active
+		</td><td>
+			<i><a href=$pagename?mode=access_servers_oslist_edit&os_id=$row->os_id><font color=blue>Edit</font></a></i>
+		</td></tr>
+		";
+	}
+echo "</table>";
+//tabledump($query);
+
+
+?>

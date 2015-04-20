@@ -1,0 +1,28 @@
+<?
+$basequery="select * from jobinfo where 1 = 1 ";
+$basequery_group_by="";
+$basequery_order_by="";
+
+$variables=array(
+	"active",
+	"contract_num",
+	"job_name",
+	"general_id",
+	"owner_id",
+	"fed_pub",
+	"architect_id",
+	"start_date",
+	"complete_date",
+	"contract_amount_orig",
+	"contract_amount_final",
+	"job_site_address"
+	);
+require('generic_search.phtml');
+
+if ($export_to_excel=="on") {
+	excel_dump($basequery);
+	} else {
+	echo "<a href=$pagename?mode=search_form><font color=blue>New Search</font></a><br>";
+	listjobs($basequery,1,$showtraxx);
+	}
+?>

@@ -1,0 +1,14 @@
+<?
+if (!($adminuser)) {
+	die_security();
+	}
+require("../webfile/storage_settings.cfg");
+require("../webfile/local.inc");
+$sketch_rev_id=addslashes($sketch_rev_id);
+$rev_info=getoneb("select * from sketchlog_revs where sketch_rev_id = '$sketch_rev_id'");
+delete_webfile_group($rev_info->attached_file_group_id);
+$query="delete from sketchlog_revs where sketch_rev_id = '$sketch_rev_id'";
+@mysql_query($query);
+update_rev($rev_info->sketchlog_id);
+forward("sketchlog_edit&sketchlog_id=$rev_info->sketchlog_id");
+?>

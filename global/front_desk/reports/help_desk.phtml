@@ -1,0 +1,42 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+$ticket_root_id="1"; // This is the root id for "IT Tickets".. Others may follow.
+
+if ($report_mode=="") $report_mode="main";
+
+
+echo "
+<style type=\"text/css\">
+table.ticklist {
+	border: 0px solid black;
+	background: #eeeeee;
+	}
+table.ticklist tr td {
+	border-left: 		0px solid black;
+	border-right: 		0px solid black;
+	padding-left: 15px;
+	padding-right: 15px;
+	}
+table.myheader tr td {
+	border-top: 5px solid orange;
+	color: yellow;
+	}
+</style>
+";
+
+
+if ($report_mode=="main") {
+	include("help_desk_${report_mode}.phtml");
+	}
+
+if ($report_mode=="ticket_edit") {
+	include("help_desk_${report_mode}.phtml");
+	}
+
+mh_navs_footer();
+?>

@@ -1,0 +1,93 @@
+<?
+//require("querylib.inc");
+echo "
+<form name=fooberry action=$pagename method=post>
+<input type=hidden name=mode value=cd_jobinfo_submit>
+<input type=hidden name=cdinfo_id value=$cdinfo->cdinfo_id>
+<table border=1 cellspacing=0 cellpadding=0>
+<tr><td>
+	Job Number
+</td><td>
+	Job Name
+</td><td>
+	Customer/GC
+</td><td>
+	Project Manager
+</td><td>
+	Year<br>Completed
+</td><td>
+	Type of Data
+</td></tr>
+
+<tr><td>
+	<input type=text size=6 name=job_num>
+</td><td>
+	<input type=text name=job_name size=12>
+</td><td>
+	<input type=text name=customer size=10>
+</td><td>
+	<input type=text name=manager size=10>
+</td><td>
+	<input type=text name=year_ended size=5>
+</td><td>
+
+	<table border=1 cellspacing=0 cellpadding=0>
+    <tr><td>
+    <table border=0 cellspacing=0 cellpadding=0>
+        <tr><td>
+            <font size=-1><input type=checkbox name=b_dwg></font>
+        </td><td>
+            <font size=-1>DWG</font>  
+        </td><td>
+            <font size=-1><input type=checkbox name=b_tif></font>
+        </td><td>
+            <font size=-1>TIF</font>  
+        </td><td>
+            <font size=-1><input type=checkbox name=b_jpg></font>
+        </td><td>
+            <font size=-1>JPG</font>  
+        </td></tr>
+        
+        <tr><td>
+            <font size=-1><input type=checkbox name=b_txt></font>
+        </td><td>
+            <font size=-1>TXT</font>  
+        </td><td>
+            <font size=-1><input type=checkbox name=b_bmp></font>
+        </td><td>
+            <font size=-1>BMP</font>  
+        </td><td>
+            <font size=-1><input type=checkbox name=b_oth></font>
+        </td><td>
+            <font size=-1>Other</font>
+        </td></tr>
+    </table>
+    </td></tr>
+    </table>
+</td></tr>
+</table>
+<font size=-1><input type=button value=ADD onclick=checkcust2();></font>
+</form>";
+
+
+
+tabledump2("select 
+		jobinfo_id as job_info_id,
+		job_num as 'Job #', 
+		job_name as 'Job Name',
+		customer_name as 'Customer',
+		manager as 'Manager',
+		year_ended as 'Year Completed',
+		b_dwg as DWG,
+		b_tif as TIF,
+		b_jpg as JPG,
+		b_txt as TXT,
+		b_bmp as BMP,
+		b_oth as Other
+		from $jobinfo,$customers where cdinfo_id = '$cdinfo_id' and customer_id = customer");
+echo "<form><input type=button onclick=history.go(-1) value=\"<--Back--\"></form>";
+
+?>
+
+
+

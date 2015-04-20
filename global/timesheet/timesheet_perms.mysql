@@ -1,0 +1,9 @@
+drop table if exists timesheet_permissions;
+create table timesheet_permissions (
+	timesheet_permissions_id int not null auto_increment,
+	timesheet_owner int not null,
+	timesheet_guest int not null,
+	primary key (timesheet_permissions_id),
+	key (timesheet_owner),
+	key (timesheet_guest)
+);

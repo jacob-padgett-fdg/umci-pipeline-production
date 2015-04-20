@@ -1,0 +1,11 @@
+<?
+if (!($adminuser)) die ("ERROR: Access violation. The authorities have been notified!");
+require_once('querylib.inc');
+
+$type=escapeshellcmd($type);
+$contacts_id=escapeshellcmd($contacts_id);
+
+$query="insert into misc_data set data_type = 'firewall_access_$type',data = '$contacts_id',contacts_id='$global_user->contacts_id'";
+$res=@mysql_query($query);
+forward('userperms');
+?>

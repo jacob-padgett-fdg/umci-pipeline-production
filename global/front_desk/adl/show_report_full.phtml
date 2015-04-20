@@ -1,0 +1,159 @@
+<?
+require('header_table_print.phtml');
+
+
+if ($today=="") {
+	$today=date('m/d/Y');
+	} else {
+	$today=addslashes($today);
+	$today=ereg_replace("-","/",$today);
+	}
+
+if (($prgroup!=1)&&($prgroup!=3)) {
+	forward('main');
+	exit;
+	}
+if ($prgroup==1) $grouptext="Field";
+if ($prgroup==3) $grouptext="Admin";
+
+$query="select LastName,FirstName,Suffix,PREmp,HireDate,udNondriver from Viewpoint.dbo.HRRM with (NOLOCK) 
+where HRCo = 1 and PRGroup = $prgroup and ActiveYN = 'Y' order by LastName,FirstName,PREmp";
+//echo "<hr>$query<hr>";
+
+//csvdump($query);die();
+
+//$query="select * from Viewpoint.dbo.HRRM 
+//where HRCo = 1 and PRGroup = $prgroup and ActiveYN = 'Y' order by LastName,FirstName,PREmp";
+//ms_tabledump($query);
+//exit;
+$res=@mssql_query($query);
+echo "
+<center>
+<font size=+3>Approved&nbsp;Driver&nbsp;List&nbsp;($grouptext)</font><br><font size=+1>&nbsp;($today)</font><br>
+";
+
+echo"
+<table border=0 cellspacing=0 cellpadding=4>
+<thead>
+<tr bgcolor=#ffffff valign=bottom><td>
+	<b>Name</b>
+</td><td>
+	";vertical_text("Emp #");echo"
+</td><td>
+	";vertical_text("Trk #");echo"
+</td><td>
+	";vertical_text("Drv Class");echo"
+</td><td>
+	";vertical_text("Abstract");echo"
+</td><td>
+	";vertical_text("Drug Test");echo"
+</td><td>
+	";vertical_text("Approved");echo"
+</td><td>
+	";vertical_text("Handbook");vertical_text("Signed");vertical_text("Date");echo"
+</td><td>
+	";vertical_text("Driving");vertical_text("Policy");vertical_text("Signed");echo"
+</td><td>
+	";vertical_text("Extended");vertical_text("Until");echo"
+</td><td>
+	";vertical_text("Extended");vertical_text("Reason");echo"
+</td><td>
+	";vertical_text("Craft");echo"
+</td><td>
+	";vertical_text("Classs");echo"
+</td><td>
+	";vertical_text("Local");echo"
+</td></tr>
+</thead>
+<tbody>
+";
+ 
+ 
+ 
+while ($row=@mssql_fetch_object($res)) {
+	//$row->PREmp , $today
+	$apinfo=get_approval_data($row->PREmp,$today);
+	$apinfo->extension_end_date=invali_date($apinfo->extension_end_date,'/');
+	$contact_info=getoneb("select * from contacts where employee_num = '$row->PREmp'");
+	if (($umc_vehicle_required=="on")&&($apinfo->truck_number=="")) continue;
+	echo "
+	<tr bgcolor=\"$apinfo->color\" valign=top><td>
+		$row->LastName, $row->FirstName $row->Suffix
+	</td><td>
+		$row->PREmp
+	</td><td>
+		$apinfo->truck_number&nbsp;
+	</td><td align=center>
+		$apinfo->driver_safety_status
+	";
+	if ($apinfo->driver_abstract_as=='U'||$apinfo->driver_abstract_as=="P") echo "</td><td bgcolor=$fd_color_3 align=center>$apinfo->driver_abstract_as";
+	else echo "</td><td align=center>$apinfo->driver_abstract_status";
+	
+	echo "
+		
+	</td><td align=center>
+		$apinfo->drug_screen_status
+	</td><td align=center>
+		$apinfo->approval_status&nbsp;
+	</td><td>
+		$apinfo->uddatehandbooksigned
+	</td><td>
+		$apinfo->uddatedrivingpolicysigned
+	</td><td>
+		";
+		if ($apinfo->extension_ok=='Y') echo "$apinfo->extension_end_date";
+		echo "&nbsp;
+	</td><td>
+		";
+		$vsep="";
+		if ($apinfo->driver_safety_status!="Y") { 
+			if ($apinfo->driver_safety_extension_description!="") 
+				echo "${vsep}Class: $apinfo->driver_safety_extension_description";
+				else 
+				echo "${vsep}Class: NO EXTENSION";
+				$vsep="<br>";
+			}
+		if ($apinfo->driver_abstract_status!="Y") { 
+			if ($apinfo->driver_abstract_extension_description!="") 
+				echo "${vsep}Abstract: $apinfo->driver_abstract_extension_description";
+				else 
+				echo "${vsep}Abstract: NO EXTENSION";
+				$vsep="<br>";
+			}
+		if ($apinfo->drug_screen_status!="Y") { 
+			if ($apinfo->drug_screen_extension_description!="") 
+				echo "${vsep}Drug Screen: $apinfo->drug_screen_extension_description";
+				else 
+				echo "${vsep}Drug Screen: NO EXTENSION";
+				$vsep="<br>";
+			}
+		if ($apinfo->handbook_sig!="Y") { 
+				echo "${vsep}Handbook&nbspSig: N";
+				$vsep="<br>";
+			}
+		if ($apinfo->driving_policy_sig!="Y") { 
+				echo "${vsep}Driving&nbsp;Policy&nbsp;Sig: N";
+				$vsep="<br>";
+			}
+		echo "&nbsp;
+	</td><td>
+		$contact_info->employee_trade
+	</td><td>
+		$contact_info->employee_class
+	</td><td>
+		$contact_info->employee_union_local
+	</td></tr>
+	";
+	
+	$today=ereg_replace("-","/",$today);
+	//get_approval_data($row->PREmp,$today);
+	
+	//$hire_date_test ($hire_date_cutoff / $row->HireDate)
+	}
+
+echo "</tbody></table></center>";
+
+
+
+
+?>

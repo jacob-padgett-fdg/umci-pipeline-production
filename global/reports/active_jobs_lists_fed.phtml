@@ -1,0 +1,113 @@
+<?
+@mysql_connect(localhost,"globalread","qazxsw");
+@mysql_select_db("global");
+
+session_register('print_size');
+if ($print_size=="") $print_size="8";
+if ($print_size_set!="") $print_size=addslashes($print_size_set);
+$print_size_big=$print_size + 2;
+
+$query="select contract_num, job_name, project_manager_id, job_cost, contract_type,contract_admin,safetyrep,confidential from jobinfo where active = 'Y' and fed_pub = 'Fed' order by contract_num";
+
+$result=@mysql_query($query);
+
+echo "
+<style type=\"text/css\" media=\"print\">
+th {
+	font-size: $print_size_big
+	}
+td {
+	font-size: $print_size
+	}
+div#printsize {
+	display: none;
+	}
+</style>
+
+<div id=\"printsize\">
+<form name=printsize method=post action=$pagename>
+<table border=1 cellspacing=0 cellpadding=3><tr><td bgcolor=#dddddd>Print Size: <input size=2 type=text name=print_size_set value=\"$print_size\" onchange=submit()></td></tr></table>
+</form>
+</div>
+
+<center>
+<h2>Active Federal Projects</h2>
+<table border=1 cellspacing=0 cellpadding=3>
+<thead>
+	<tr bgcolor=#dddddd><th colspan=8>
+	<b>*** Confidential Projects: No information is to be advertised or given out regarding these projects without prior approval.<br>
+	Check with Contract Administration for details.<br></b>
+	</th></tr>
+
+	<tr bgcolor=#dddddd><th>
+	Job Number
+	</th><th>
+	Name
+	</th><th>
+	Project Manager
+	</th><th>
+	Contract Type
+	</th><th>
+	Contract Admin
+	</th><th>
+	Confidential
+	</th></tr>
+</thead>
+";
+
+while($row=@mysql_fetch_object($result)) {
+	$con_ad=getoneb("select * from contacts where contacts_id = '$row->contract_admin'");
+	if ($con_ad) {
+		$contract_admin="$con_ad->last_name, $con_ad->first_name";
+		} else {
+		$contract_admin="";
+		}
+	$mgr=getoneb("select * from contacts where contacts_id = '$row->project_manager_id'");
+	if ($mgr) {
+		$manager="$mgr->last_name, $mgr->first_name";
+		} else {
+		$manager="";
+		}
+	if ($row->confidential=='Y') {
+		$conf_image="<img src=\"/images/check_mark.png\" border=0>";
+		$rowbg="#ff9999";
+		} else {
+		$conf_image="&nbsp;";
+		$rowbg="#ffffff";
+		}
+	echo "<tr bgcolor=\"$rowbg\"><td>
+			$row->contract_num
+		</td><td>
+			$row->job_name
+		</td><td>
+			$manager&nbsp;
+		</td><td>
+			$row->contract_type&nbsp;
+		</td><td>
+			$contract_admin&nbsp;
+		</td><td align=center>
+			$conf_image
+		</td></tr>
+		";
+		
+		}
+
+echo "</table></center>";
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

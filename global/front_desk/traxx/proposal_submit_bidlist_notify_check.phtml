@@ -1,0 +1,16 @@
+<?
+$notify_update='N';
+if ($bid_info->bid_date_mysql!=$old_bid_date_mysql) $notify_update='Y';
+if ("$bid_info->bid_time"!="$bid_time_orig") $notify_update='Y';
+
+if ($notify_update=='Y') {
+	$query_data=$query_data . "$data_seperator
+	notified = 'N'";
+	}
+
+$data_seperator=",";
+//echo "$bid_info->bid_time/$bid_time/$bid_time_orig<hr>$notify_update<hr>$query_data";exit;
+
+
+
+?>

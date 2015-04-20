@@ -1,0 +1,43 @@
+<?
+if (!($adminuser)) {
+	echo "ERROR: Security Violation Attempt! The authorities have been notified. 
+	Go away now. If you believe this is in error, then contact your system administrator.";
+	exit;                    
+	}
+
+//require_once('querylib.inc');
+
+if ($svc_proposals_type_id!="") {
+	$svc_proposals_type_id=escapeshellcmd($svc_proposals_type_id);
+	$type_info=getone("select * from svc_proposals_type where svc_proposals_type_id = '$svc_proposals_type_id'");
+	}
+
+
+echo "
+
+<html><head><title>Proposal Type Edit</title></head><body bgcolor=white>
+
+<center><h2>Proposal Type Edit</h2></center>
+
+<form name=proposals_type_edit action=$pagename method=post>
+<input type=hidden name=mode value=proposals_type_submit>
+<input type=hidden name=svc_proposals_type_id value=\"$type_info->svc_proposals_type_id\">
+Description: <br>
+<input type=text name=type value=\"$type_info->type\"><br>
+<input type=submit value=Save>
+<input type=button onclick=document.location=\"$pagename?mode=proposals_type_maint\" value=Cancel>
+</form>
+
+
+
+";
+
+
+
+
+
+
+
+
+
+?>

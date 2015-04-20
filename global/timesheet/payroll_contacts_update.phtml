@@ -1,0 +1,9 @@
+<?
+chdir("../contacts/");
+require("settings.cfg");
+set_time_limit('900');
+require("contact_maint_support_connect.phtml");
+require("contact_maint_support_employees.phtml");
+require("contact_maint_support_specified.phtml");
+forward('main');
+?>

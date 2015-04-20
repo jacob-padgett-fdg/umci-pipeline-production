@@ -1,0 +1,6 @@
+<?
+require('header.phtml');
+if ($target_tab=="") $target_tab="1";
+$target_tab=ereg_replace("[^a-zA-Z0-9.\-_]","",$target_tab);
+include("jobinfo_edit_tab_${target_tab}.phtml");
+?>

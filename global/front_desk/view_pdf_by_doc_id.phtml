@@ -1,0 +1,20 @@
+<?
+//echo "hello: $doc_id<br>";
+$doc_id=addslashes($doc_id);
+$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+//$rfi_info=getoneb("select * from rfilog where rfi_id = '$doc_info->app_record_id'");
+if ($doc_info) {
+	switch ($doc_info->doc_type) {
+		case "gcrfi":   $application="gcrfilog" . $devel;break;;;
+		case "rfi":   $application="rfilog" . $devel;break;;;
+		case "transmittal":   $application="transmittals" . $devel;break;;;
+		default:	$application=$doc_info->doc_type . $devel;
+		}
+
+	$info=getoneb("select * from documents where doc_id = '$row->doc_id'");
+	$description=$info->doc_type . " " . $info->app_reference . " - " . $info->description;
+	$dir=getcwd();
+	chdir("../${application}/");
+	include("./pdf_view_file.phtml");
+	}
+?>

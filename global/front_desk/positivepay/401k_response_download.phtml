@@ -1,0 +1,48 @@
+#!/usr/bin/php
+<?
+// GPH MARK - absolute path
+chdir("/data/web/pipeline/global/positivepay/");
+require('settings.cfg');
+require('settings-auto.cfg');
+require('global-auth.inc');
+chdir("/data/web/pipeline/global/positivepay-common/files/401k_recieved/");
+
+$last_line=exec("ncftpget -R -u $ml_ftp_user -p $ml_ftp_password $ml_ftp_server ./ /outgoing 2>&1 | grep -v necessary | grep -v ncftpget | grep -v 'ftp.b2b.ml.com' | grep -v 'Unexpected response'",$output,$return);
+//$last_line=exec("ncftpget -R -u $ml_ftp_user -p $ml_ftp_password $ml_ftp_server ./ /outgoing 2>&1 ",$output,$return);
+
+//print_r ($output);
+//print_r ($last_line);
+
+while ($row=array_shift($output)) {
+	$text_output=$row . "\r\n";
+	}
+
+if ($text_output!="") {
+	$text_output=ereg_replace('^outgoing/','',$text_output);
+	$text_output=ereg_replace(': .*','',$text_output);
+	
+	$subject="401k Response File From ML";
+	$message="The system has received new status files from Merrill Lynch.<br>
+	The following files have been received recently:<p>
+	$text_output<p>
+	<hr>
+	
+	This/these file(s) are probably just confirmation that an upload succeeded correctly. If any of the filenames contain the word 'error' then there is cause for concern, and this should be investigated.
+	";
+	
+	//echo "$message";
+	
+	// Chris doesn't need these any more..
+	//queue_email(1,$subject,$message,'Y');		// Chris
+	queue_email(2,$subject,$message,'Y');		// Jeff
+	queue_email(22,$subject,$message,'Y');		// Doug
+	queue_email(352,$subject,$message,'Y');		// Rick
+	queue_email(353,$subject,$message,'Y');		// Clarice
+	queue_email(2834,$subject,$message,'Y');	// Sonja
+	queue_email(2995,$subject,$message,'Y');	// Rich
+	
+	}
+
+exit;
+
+?>

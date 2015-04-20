@@ -1,0 +1,159 @@
+<?
+if ($it_category_id!="") $it_category_id=addslashes($it_category_id);
+
+echo "
+<html><head><title>MIS Issue Tracking - Category Search Form</title></head>
+<body bgcolor=#ffffff>
+<h2>Enter your search criteria</h2><hr>
+
+<table border=0>
+<form name=category_search method=post action=$pagename>
+<input type=hidden name=mode value=category_search_submit>
+";
+
+echo "<tr><td><b>Category</b></td><td>";
+dropbox ("select it_category_id as 'mis_issue_index__it_category_id[]',category_name from mis_issue_categories",$it_category_id,"3","",1,"multiple");
+echo "</td></tr>";
+
+echo "
+<tr><td>
+	<b>Subject</b>
+</td><td>
+	<input type=text name=name>
+</td></tr>
+	
+<tr><td>
+	<b>Description</b>
+</td><td>
+	<input type=text name=description>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Status</b>
+</td><td>
+	<select name=mis_issue_index__status[] size=6 multiple>
+	<option value=initialized>Initialized (New)
+	<option value=active>Active
+	<option value=current>Current
+	<option value=complete>Complete
+	<option value=approved>Approved
+	<option value=superceded>Superceded
+	<option value=deleted>Deleted
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>Requested Completion</b>
+</td><td>
+	<input type=text name=requested_completion>
+	<input type=hidden name=requested_completion_is_date value=1>
+</td><td>
+	<input type=radio name=requested_completion_radio value='>'>&gt;
+	<input type=radio name=requested_completion_radio value='=' checked>=
+	<input type=radio name=requested_completion_radio value='>'>&lt;
+</td></tr>
+
+<tr><td>
+	<b>Expected Completion</b>
+</td><td>
+	<input type=text name=expected_completion>
+	<input type=hidden name=expected_completion_is_date value=1>
+</td><td>
+	<input type=radio name=expected_completion_radio value='>'>&gt;
+	<input type=radio name=expected_completion_radio value='=' checked>=
+	<input type=radio name=expected_completion_radio value='<'>&lt;
+</td></tr>
+
+<tr><td>
+	<b>Next Action Date</b>
+</td><td>
+	<input type=text name=expected_completion_date>
+	<input type=hidden name=expected_completion_date_is_date value=1>
+</td><td>
+	<input type=radio name=expected_completion_date_radio value='>'>&gt;
+	<input type=radio name=expected_completion_date_radio value='=' checked>=
+	<input type=radio name=expected_completion_date_radio value='<'>&lt;
+</td></tr>
+
+<tr><td valign=top>
+	<b>Priority</b>
+</td><td valign=top>
+	<input type=text size=4 name=priority> <i>(integer)</i>
+</td><td valign=top>
+	<input type=radio name=priority_radio value='>'>&gt;
+	<input type=radio name=priority_radio value='=' checked>=
+	<input type=radio name=priority_radio value='<'>&lt;
+</td><td>
+	";tabledump("select priority as 'Priority',priority_text as 'Name' from mis_issue_priorities order by priority");echo"
+</td></tr>
+
+<tr><td>
+	<b>IT Notes</b>
+</td><td>
+	<input type=text name=it_notes>
+</td></tr>
+
+<tr><td>
+	<b>Notes</b>
+</td><td>
+	<input type=text name=notes>
+</td></tr>
+
+<tr><td>
+	<b>Next Action</b>
+</td><td>
+	<input type=text name=action_required>
+</td></tr>
+
+<tr><td>
+	<b>Next Action Responsibility</b>
+</td><td>
+	<select name=mis_issue_history__us_or_them size=2>
+	<option value=us>IT
+	<option value=them>User(s)
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>Involved Parties</b>
+</td><td>
+	";dropbox("select contacts.contacts_id as 'mis_issue_concerned_parties__contacts_id[]',last_name,', ',first_name,' (',login_name,')' from contacts,mis_issue_concerned_parties where mis_issue_concerned_parties.contacts_id = contacts.contacts_id group by mis_issue_concerned_parties.contacts_id order by last_name,first_name","","7","","","multiple");echo"
+</td></tr>
+
+<tr><td></td><td>
+	<input type=radio name=mis_issue_concerned_parties__us_or_them value='us'>IT
+	<input type=radio name=mis_issue_concerned_parties__us_or_them value='' checked>BOTH
+	<input type=radio name=mis_issue_concerned_parties__us_or_them value='them'>Users
+</td><td>
+
+<tr><td>Order by: 	<select name=query_order_by_1>
+					<option value=''> </option>
+					<option value='expected_completion_date'>Next Action Date</option>
+					<option value='expected_completion'>Expected Completion Date</option>
+					<option value='requested_completion'>Requested Completion</option>
+					<option value='mis_issue_index__status'>Status</option>
+					<option value='mis_issue_history__us_or_them'>Us/Them</option>
+					</select>
+					A<input type=radio name=query_order_by_1_direction value='' checked> D<input type=radio name=query_order_by_1_direction value='desc'>
+</td><td>Then by: 	<select name=query_order_by_2>
+					<option value=''> </option>
+					<option value='expected_completion_date'>Next Action Date</option>
+					<option value='expected_completion'>Expected Completion Date</option>
+					<option value='requested_completion'>Requested Completion</option>
+					<option value='mis_issue_index__status'>Status</option>
+					<option value='mis_issue_history__us_or_them'>Us/Them</option>
+					</select>
+					A<input type=radio name=query_order_by_2_direction value='' checked> D<input type=radio name=query_order_by_2_direction value='desc'>
+</td></tr>
+
+<tr><td align=right colspan=3><input type=submit value=Search></td></tr>
+
+
+
+
+</form>
+</table>
+</body>
+</html>
+";
+?>

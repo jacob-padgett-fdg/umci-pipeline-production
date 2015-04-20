@@ -1,0 +1,271 @@
+<?
+$max_file_count_limit=100;
+$new_files_imported=FALSE;
+
+if ($onchange!="") $onchange_decode=base64_decode($onchange);
+
+if ($file_group_id!="") {
+	require('return_to_handler.phtml');
+	$file_group_info=load_file_group_info($file_group_id);
+	if (($description != "")&& ($description != $file_group_info->description)) {
+		$description=addslashes($description);
+		@mysql_query("update webfile_groups set description = '$description' where file_group_id = '$file_group_info->file_group_id'");
+		$file_group_info=load_file_group_info($file_group_id);
+		$done_link="<a href=\"javascript:self.close()\"><font color=blue>Done</font></a>";
+		}
+	} else {
+	if ($description!="") {
+		$file_group_info=create_file_group($description,$launching_application_name);
+		}
+	$done_link="<a href=\"javascript:self.close()\"><font color=blue>Done</font></a>";
+	}
+
+//////////////////////////////////////////////////////////
+// We need this because the normal return_to handler 
+// doesn't understand the blank record we might have
+// just come from.
+//////////////////////////////////////////////////////////
+//$done_link="<a href=\"javascript:self.close()\"><font color=blue>Done</font></a>";
+
+$opener_form=ereg_replace('\..*$','',$field);
+$field=addslashes($field);
+$settings=addslashes($settings);
+if ($launching_application_name!="") {
+	$launching_application_name=addslashes($launching_application_name);
+	$appname_javascript="\"$launching_application_name\"";
+	} else {
+	$appname_javascript="opener.document.${field}_webfile_application_name.value";
+	if ($no_name_detect!=1) {
+		echo "<script>
+			document.location=document.location + '&launching_application_name=' + $appname_javascript + '&no_name_detect=1';
+			</script>
+			";
+		} else {
+			$launching_application_name='null';
+		}
+	}
+
+/////////////////////////////////////////////////////////////////////////
+// Typemask is an integer between 0 & 255 in a form similar to a chmod
+// mask, with the bits meaning:
+// bit#  Value        Result
+//  0     (1)       = Limit box to only 1 file (+revisions)
+//  1     (2)       = readonly record (only view contact info) no changing selecti
+//  2     (4)       = invisible (make it completely hidden in the form
+//  3     (8)       = small box (hide image, shrink textbox)
+//  4     (16)      = undefined
+//  5     (32)      = undefined
+//  6     (64)      = undefined
+//  // maybe obsolete..7      (128)     = fancy icon (tiny preview/thumbnail)
+//
+// Simply add all of the values (in parenthesis) for the options
+// that you'd like, and pass that number as the parameter.
+$onefilelimit=bit_info($settings,0);
+$readonly=bit_info($settings,1);
+$invisible=bit_info($settings,2);
+$small_box=bit_info($settings,3);
+//$fancy_icon=bit_info($settings,7); // This is alway on for now..
+/////////////////////////////////////////////////////////////////////////
+if ($_FILES) {
+	if (!($file_group_info)) $file_group_info=create_file_group($description,$launching_application_name);
+	
+	if ($file_group_info->file_group_id=="2855") {
+		die("Oh no, a horrible and unforseen error must have occurred. I have no idea what happened, but surely if you try that again, the entire server might explode.");
+		}
+	
+	$count=1;
+	while (($_FILES["upload_file_$count"]['name']!="")&&($count<=$max_file_count_limit)) {
+		$file_info=new_file_info();
+		prep_for_new_files($file_info);
+
+		if (!(is_uploaded_file($_FILES["upload_file_$count"]['tmp_name']))) {
+			$ul_filename=$_FILES['upload_file_$count']['tmp_name'];
+			echo "<pre><hr>";
+			print_r($_FILES);
+			echo "</pre><hr>";
+			die("The system is claiming that the file \"$ul_filename\" has not been uploaded! ");
+			}
+		if (!(move_uploaded_file($_FILES["upload_file_$count"]['tmp_name'],$file_info->file_path_orig))) {
+			move_uploaded_file($_FILES["upload_file_$count"]['tmp_name'],"/tmp/php_move_uploaded_error_file_2");
+			die("APPLICATION ERROR: Error importing file. Please contact your system administrator (move failed).");
+			}
+
+		$mime_type=$_FILES["upload_file_$count"]['type'];
+		$file_name=$_FILES["upload_file_$count"]['name'];
+		$file_size=$_FILES["upload_file_$count"]['size'];
+		
+		if ($mime_type=="application/force-download") $mime_type=mime_type_from_filename($file_name);
+		if ($mime_type=="application/x-pdf") $mime_type=mime_type_from_filename($file_name);
+		if ($mime_type=="application/x-download") $mime_type=mime_type_from_filename($file_name);
+		if ($mime_type=="application/download") $mime_type=mime_type_from_filename($file_name);
+		if ($mime_type=="application/unknown") $mime_type=mime_type_from_filename($file_name);
+		if ($mime_type=="application/binary") $mime_type=mime_type_from_filename($file_name);
+		if ($mime_type=="binary/octet-stream") $mime_type=mime_type_from_filename($file_name);
+		// FRON-36 NOTE: This FIXES the case where the MIME type is octet-binary.
+		// However, it does not explain said MIME type's origination, which I've been unable to replicate.
+		if ($mime_type=="application/octet-binary") $mime_type=mime_type_from_filename($file_name);
+		
+		$query="insert into webfile_files set
+		file_group_id = '$file_group_info->file_group_id',
+		mime_type = '$mime_type',
+		owner = '$global_user_id',
+		upload_date = now(),
+		file_path_orig = '$file_info->file_path_orig',
+		file_path = '$file_info->file_path',
+		info_path = '$file_info->info_path',
+		file_directory = '$file_info->file_directory',
+		file_name = '" . mysql_real_escape_string($file_name) . "',
+		file_size = '$file_size',
+		sequence_num = '$file_info->sequence_num'";
+		@mysql_query($query);
+		$count++;
+		$new_files_imported=TRUE;
+		$last_inserted_file=@mysql_insert_id();
+		apply_default_permissions($last_inserted_file,$launching_application_name);
+		}
+	}
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+// Now that we've handled any uploading necessary, Lets figure out what
+// to display in the opener's form, and make sure it knows about a file
+// group id if we've actually got one.. 
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+// opener.document.${field}_webfile_app_name
+if ($file_group_info) {
+	$file_group_info=load_file_group_info($file_group_info->file_group_id);
+		if ($file_group_info->file_count < 1) { $file_icon="/images/webfile_icon.png"; }
+		if ($file_group_info->file_count > 1) { $file_icon="/images/webfile_icon_full.png"; }
+		if ($file_group_info->file_count==1) {
+			$icon_file_info=getone("select * from webfile_files where file_group_id = '$file_group_info->file_group_id'");
+			$file_icon=webfile_tiny_image_icon($icon_file_info->files_id);
+			}
+		echo "<script>
+		opener.document.${field}_disp.value='$file_group_info->file_group_text';
+		if (opener.document.$field.value!='$file_group_info->file_group_id'){
+			opener.document.$field.value='$file_group_info->file_group_id';
+			opener.document.${field}_button.style.backgroundImage=\"url($file_icon)\";
+			";
+			if ($onchange_decode!="") {	
+				echo "$onchange_decode";
+			echo "
+			";
+			} else {
+				echo"type=typeof(opener.apply_changes);
+					if (type=='function') opener.apply_changes();";
+				}
+			echo "}
+		</script>
+		";
+		
+	}
+
+if ($from_a_post=="true") {
+	$return_to_this_page=base64_encode($GLOBALS['REQUEST_URI'] . "?mode=webfile_popup_real&field=$field&file_group_id=$file_group_info->file_group_id&settings=$settings&launching_application_name=$launching_application_name");
+	}
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+// OK, The parent is updated, lets go back to where we started if we
+// can, so that we don't get a horrible ugly nested page going...
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+$return_here_link="$pagename?mode=webfile_popup&field=$field&settings=$settings&file_group_id=$file_group_info->file_group_id&launching_application_name=$launching_application_name";
+$return_here_encoded=base64_encode($return_here_link);
+
+
+//////////////////////////////////
+// Block commented on 3/25/08
+// the thought here is that it's
+// redundant.
+//////////////////////////////////
+/*
+if (($new_files_imported)&&($file_group_info->file_group_id!="")) {
+	//$forward_link="$pagename?mode=webfile_file_tools&files_id=$last_inserted_file&launching_application_name=$launching_application_name&onchange=$onchange&return_to=$return_to_this_page";
+	//$forward_link="$pagename?mode=webfile_popup&launching_application_name=$launching_application_name&onchange=$onchange&return_to=$return_to_this_page";
+	//$forward_link="$pagename?mode=webfile_popup&";
+	$forward_link=base64_decode($return_to_this_page);
+	//$forward_link=$return_to_this_page;
+	echo "
+	
+	<script>
+	$onchange_decode ; 
+	document.location=\"$forward_link\";
+	</script>
+	";
+	exit;
+	}
+*/
+
+
+echo "
+<html>
+<head>
+<title>File Information</title>
+</head>
+<body bgcolor=\"white\">
+<p align=right>$done_link</p>
+<script>
+self.focus();
+</script>
+<form enctype=\"multipart/form-data\" name=webfile_file method=post action=$pagename>
+<input type=hidden name=mode value=webfile_popup>
+<input type=hidden name=launching_application_name value=$appname_javascript>
+<input type=hidden name=field value=\"$field\">
+<input type=hidden name=onchange value=\"$onchange\">
+<input type=hidden name=settings value=\"$settings\">
+<input type=hidden name=launching_application_name value=\"$launching_application_name\">
+<input type=hidden name=file_group_id value=\"$file_group_info->file_group_id\">
+<input type=hidden name=\"from_a_post\" value=\"true\">
+<input type=hidden name=return_to value=\"$return_to_this_page\">
+
+<center><font size=+2><b>Description</b></font><br><input onchange=submit() type=text size=40 name=description value=\"$file_group_info->description\"></center><br>";
+
+// This was supposed to be a hint to the browser. It does not
+// work, and it causes the upload to fail (php fails it)!!!!!!!!!!!!!!!!!!
+//<input type=hidden name=\"MAX_FILE_SIZE\" value=\"400000000\">
+
+if (($onefilelimit!="on")||($file_group_info->file_count<1))
+	echo "<b>Add:</b>&nbsp;<input type=\"file\" name=\"upload_file_1\" value=\"Select\" multiple=\"multiple\" onchange=submit();>";
+
+
+if ($file_group_info->file_count>0) {
+	echo "<table border=0 width=100% cellspacing=0 cellpadding=4>
+	<tr><td>
+		<b>Filename</b>
+	</td><td>
+		<b>Date</b>
+	</td><td>
+		<b>Bytes</b>
+	</td></tr>";
+	$list_files_query="select * from webfile_files where file_group_id = '$file_group_info->file_group_id' order by file_name,upload_date";
+	$files=@mysql_query($list_files_query);
+	$bstyle="groove";
+	while($frow=@mysql_fetch_object($files)) {
+		$image_url=webfile_small_image_icon($frow->files_id);
+		$tools_link="$pagename?mode=webfile_file_tools&files_id=$frow->files_id&launching_application_name=$launching_application_name&onchange=$onchange&return_to=$return_to_this_page";
+		$nicedate=invali_date($frow->upload_date,"/");
+		echo "<tr bgcolor=\"$umc_standard_blue\"><td style=\"border-style:$bstyle none $bstyle $bstyle\" width=100%>
+				";
+				
+				if (strlen($frow->file_name)<20) echo "<i>$frow->file_name</i>";
+				else {
+					$shortname=substr($frow->file_name,0,20);
+					echo "<i><font title=\"$frow->file_name\">$shortname</i>";
+					} 
+				
+				echo"
+			</td><td style=\"border-style:$bstyle none $bstyle none\">
+				<i>$nicedate</i>
+			</td><td style=\"border-style:$bstyle none $bstyle none\">
+				<i>$frow->file_size</i>
+			</td><td style=\"border-style:$bstyle $bstyle $bstyle none\">
+				<table style=\"border:1px outset black;\"cellspacing=0 cellpadding=0><tr><td><a href=\"$tools_link\"><img src=$image_url border=3></a></td></tr></table>
+			</td></tr>";
+		}
+	echo "</form></table>";
+	}
+?>

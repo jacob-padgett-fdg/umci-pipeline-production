@@ -1,0 +1,38 @@
+<?
+$query="select * from mis_issue_query_history where contacts_id = '$global_user_id' order by ts desc";
+$res=@mysql_query($query);
+
+echo "<html><head><title>MIS Issue Tracker - Query History</title></head><body bgcolor=#ffffff>
+
+<a href=$pagename?mode=$mis_issue_last_main_action><font color=blue>Return to $mis_issue_last_action_name</font></a><p>
+
+<center><h3>Recent Queries</h3></center>
+<table border=0 cellspacing=0 cellpadding=7>
+<tr bgcolor=#dddddd><td>&nbsp;</td><td>&nbsp;</td><td>Query ID</td><td align=center>Actual Query</td><td align=center>Timestamp</td></tr>
+";
+
+
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<a href=$pagename?mode=save_query&query_id=$row->query_id><font color=blue>Save Query</font></a>
+		</td><td>
+			<a href=$pagename?mode=run_query&query_id=$row->query_id><font color=blue>Run Query</font></a>
+		</td><td align=center>
+			$row->query_id
+		</td><td>
+			<font size=-3>$row->query</font>
+		</td><td>
+			$row->ts
+		</td></tr>";	
+	}
+echo "</table>
+
+<a href=javascript:history.go(-1)>Go Back</a>
+";
+
+
+
+
+
+
+?>

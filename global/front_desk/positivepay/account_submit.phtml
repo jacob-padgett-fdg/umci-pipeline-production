@@ -1,0 +1,47 @@
+<?
+$query_start="insert into positivepay_accounts set";
+$query_end="";
+
+if ($account_id!="") {
+	$account_id=addslashes($account_id);
+	$query_start="update positivepay_accounts set";
+	$query_end="where account_id = '$account_id'";
+	}
+
+$account_number=addslashes($account_number);
+$account_name=addslashes($account_name);
+if ($account_output_plugin=="") {
+	die("ERROR: You need to specify an output plugin to continue!");
+	}
+$account_output_plugin=addslashes($account_output_plugin);
+$account_notes=addslashes($account_notes);
+$active=checkfix($active);
+$option_1=addslashes($option_1);
+$option_2=addslashes($option_2);
+
+$query_middle="
+account_number = '$account_number',
+account_name = '$account_name',
+account_output_plugin = '$account_output_plugin',
+account_notes = '$account_notes',
+active = '$active',
+option_1 = '$option_1',
+option_2 = '$option_2'
+";
+
+
+$query_full=$query_start . $query_middle . $query_end;
+
+$res=@mysql_query($query_full);
+if (!($res)) die("<b>ERROR: Update failed. Please contact a system administrator!</b><hr>" . $query_full . "<hr>");
+
+forward('account_list');
+
+
+
+
+
+
+
+
+?>

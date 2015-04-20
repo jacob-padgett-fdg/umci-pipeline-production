@@ -1,0 +1,44 @@
+<?
+require_once('querylib.inc');
+echo "<html><head><title>MIS Issues - Category Maintenance</title></head>
+<body bgcolor=#ffffff>
+
+<a href=$pagename?mode=maintenance><font color=blue>Return to maintenance menus</font></a><p>
+
+<center><h2>MIS Issues - Category Maintenance</h2></center>
+<hr>
+
+<a href=$pagename?mode=category_edit><font color=blue>New Category</font></a><br>
+";
+
+$query="select * from mis_issue_categories order by category_name";
+$res=@mysql_query($query);
+//tabledump($query);
+
+echo "<table border=0 cellpadding=10>
+<tr><td bgcolor=#dddddd colspan=2 align=center><h3>Current Categories</h3></td></tr>
+<tr><td>
+	<b>Name</b>
+</td><td>
+	<b>Description</b>
+</td></tr>
+";
+
+while($row=@mysql_fetch_object($res)) {
+	echo "
+		<tr><td>
+			<a href=$pagename?mode=category_edit&it_category_id=$row->it_category_id><font color=blue>
+			$row->category_name</a>
+		</td><td>
+			$row->category_description
+		</td></tr>
+		";
+	
+	}
+
+
+
+
+
+
+?>

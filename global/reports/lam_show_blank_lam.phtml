@@ -1,0 +1,26 @@
+<?
+require_once("lam_lib.inc");
+if ($employee_id=="") $employee_id="5304";
+
+
+
+echo "
+<center>
+<b><i><font valign=top>Find:</font><br>";contactsbox("select * from contacts where umc_emp = 'Y' and employee_group = '1' and current = 'Y'",'',"required_user_id","opener.load_user_here()");
+echo "</i></b></center>";
+if ($employee_id!="") {
+	$employee_id=addslashes($employee_id);
+	$lam_info=getoneb("select * from lam where jobinfo_id = 0 and lamchops_id = 0 and employee_id = '$employee_id'");
+	if (!($lam_info)) {
+		@mysql_query("insert into lam set lamchops_id = 0, parent_lam_id = 0, jobinfo_id = 0, employee_id = '$employee_id'");
+		//echo ("insert into lam set lamchops_id = 0, perent_lam_id = 0, jobinfo_id = 0, employee_id = '$employee_id'");
+		$lam_info=getoneb("select * from lam where lamchops_id = 0 and jobinfo_id = 0 and employee_id = '$employee_id'");
+		}
+	if ($lam_info) print_lam_div($lam_info->lam_id,array('copy'=>'Y','depth'=>'0','hide_notes'=>'Y'));
+	}
+echo "<br>";
+
+
+
+
+?>

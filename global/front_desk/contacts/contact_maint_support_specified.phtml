@@ -1,0 +1,80 @@
+<?
+session_write_close();
+//////////////////////////////////////////////////////////////////////
+//	Update alphasort and display names for all contacts (or just
+//	some if $reconcile_query is set.
+//////////////////////////////////////////////////////////////////////
+
+echo "running contact_main_support_specified<br>\r\nreconcile query:<br>\r\n$reconcile_query<hr>\r\n";
+
+
+if ($reconcile_query=="") $reconcile_query="select * from contacts";
+$res=@mysql_query($reconcile_query);
+//tabledump($reconcile_query);
+if (!($res)) {
+	echo "ERROR: Could not reconcile contact(s) specified by query:<hr>$reconcile_query";
+	}
+
+while($row=@mysql_fetch_object($res)) {
+	//echo ".";
+	switch ($row->contact_type) {
+		case "company":
+					$display_name=addslashes($row->company);
+					if ($display_name=="") $display_name="none";
+					mysql_query("update contacts set is_company = 'Y', display_name = '$display_name', alphasort = '$row->company' where contacts_id = '$row->contacts_id'");
+					break;;
+		
+		case "site":
+					$c_info=getone("select * from contacts where contacts_id = '$row->company_id'");
+					$display_name=addslashes($c_info->company . " - " . $row->company);
+					if ($display_name==" - ") $display_name="none";
+					$alphasort=addslashes($c_info->company . $row->company);
+					mysql_query("update contacts set is_company = 'Y', display_name = '$display_name', alphasort = '$alphasort' where contacts_id = '$row->contacts_id'");
+					break;;
+		
+		case "contact":
+					$c_info=getoneb("select * from contacts where contacts_id = '$row->company_id'");
+					$display_name=addslashes($row->last_name . ", " . $row->first_name);
+					if ($display_name==", ") $display_name="none";
+					$alphasort=addslashes($row->last_name . $row->first_name);
+					mysql_query("update contacts set is_company = 'N', display_name = '$display_name', alphasort = '$alphasort', company = '$c_info->company' where contacts_id = '$row->contacts_id'");
+					break;;
+		
+		default:
+					$type="";
+					$email_message="There was a contact database error for contacts_id $row->contacts_id! I am trying to correct this problem, but please check out the contact database, and maybe re-run the maintenance script to verify that everything is ok! This section of code should never actually run, and an error is indicated by the fact that it has!<hr>
+					OK, clearly I can't find what causes this, so I'm going to put more debugging info into this message, and I'm not actually going to repair the record for now.<p>
+					The contact type that caused the error: ($row->contact_type)<p>
+					";
+					queue_email(2,"CONTACT DB ERROR FOR CONTACT_ID $row->contacts_id",$email_message); 
+					queue_email(1,"CONTACT DB ERROR FOR CONTACT_ID $row->contacts_id",$email_message); 
+					break;;
+					if (($row->first_name != "") || ($row->last_name !="")) {
+						$is_company='N';
+						$type="contact";
+						$c_info=getoneb("select * from contacts where contacts_id = '$row->company_id'");
+						$display_name="$row->last_name, $row->first_name";
+						$alphasort="$row->last_name$row->first_name";
+						$company=$row->company;
+						}
+					if (($row->first_name == "") && ($row->last_name =="")) {
+						$c_info="";
+						$is_company='Y';
+						if ($row->company_id>0) $c_info=getoneb("select * from contacts where contacts_id = '$row->company_id'");
+						if ($c_info->is_company=='Y') {
+							$type="site";
+							$display_name="$c_info->company - $row->company";
+							$alphasort="$c_info->company$row->company";
+							$company=$row->company;
+							} else {
+							$type="company";
+							$display_name="$row->company";
+							$alphasort="$row->company";
+							$company="$row->company";
+							}
+						}
+					mysql_query("update contacts set company = '$row->company', display_name = '$display_name', alphasort = '$alphasort', contact_type = '$type' where contacts_id = '$row->contacts_id'");
+					break;;
+		}
+	}
+?>

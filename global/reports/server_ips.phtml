@@ -1,0 +1,41 @@
+<?
+check_report_permissions();
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+
+
+$two_months_ago=date('Y/m/d',strtotime("2 weeks ago"));
+@mysql_query("delete from front_desk_host_guest_book where last_updated < '$two_months_ago'");
+//echo "$monthago";
+
+$query="select * from front_desk_host_guest_book order by hostname";
+$res=@mysql_query($query);
+echo "
+<a href=$pagename?mode=my_home><font color=blue>Done</font></a>
+<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=$fd_color_4><td>
+	<b>Host Name</b>
+</td><td>
+	<b>IP Addr</b>
+</td><td>
+	<b>Last Check In</b>
+</td></tr>
+";
+while ($row=@mysql_fetch_object($res)) {
+	echo "
+	<tr><td>
+		$row->hostname
+	</td><td>
+		$row->host_ip
+	</td><td>
+		$row->last_updated
+	</td></tr>";
+	
+	}
+echo "</table>";
+
+
+
+mh_navs_footer();
+?>

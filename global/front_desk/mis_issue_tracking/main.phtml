@@ -1,0 +1,66 @@
+<?
+echo "
+<html><head><title>MIS Issue Tracking Main Page</title></head>
+<body bgcolor=#ffffff>
+
+<center><h2>MIS Issues</h2></center>
+<a href=$pagename?mode=maintenance><font color=blue>Maintenance</font></a><br>
+<a href=$pagename_up><font color=blue>EXIT</font></a><br>
+<hr>
+
+
+<table border=0 width=40%>";
+
+
+$def_res=@mysql_query("select * from mis_issue_saved_queries where contacts_id = '$global_user_id' and default_query = 'Y' order by priority");
+
+while ($default_query=@mysql_fetch_object($def_res)) {
+	$default_count_res=mysql_query($default_query->query);
+	$default_count=mysql_num_rows($default_count_res);
+	
+	echo "
+	<tr><td width=10% valign=top>
+		($default_count)
+	</td><td valign=top>
+		<a href=$pagename?mode=show_saved_query&query_id=$default_query->query_id><font color=blue>
+		$default_query->query_name</font></a>
+	</td><td width=60%>
+		<i> ----- Saved Search ----- </i><br>&nbsp;
+	</td></tr>
+	";
+	}
+
+if (getoneb("select * from mis_issue_saved_queries where contacts_id = '$global_user_id' limit 1")) {
+	echo "
+	<tr><td width=10% valign=top>
+		&nbsp;
+	</td><td valign=top>
+		<a href=$pagename?mode=saved_queries><font color=blue>Saved Searches</font></a>
+	</td><td width=60%>
+		<i> -- View your saved searches -- </i><br>&nbsp;
+	</td></tr>";
+	}
+
+
+$query="select * from mis_issue_categories";
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$initialized=getone("select count(1) as count from mis_issue_index where status = 'initialized' and it_category_id = '$row->it_category_id'");
+	$active=getone("select count(1) as count from mis_issue_index where (status = 'current' or status = 'active') and it_category_id = '$row->it_category_id'");
+	
+	echo"<tr><td width=10% valign=top>
+		($initialized->count/$active->count)
+		</td><td valign=top>
+		<a href=\"$pagename?mode=category_show&it_category_id=$row->it_category_id\"><font color=blue>$row->category_name</font></a>
+		</td><td width=60%>
+		<i>$row->category_description</i>
+		</td></tr>";
+	}
+echo "</table>";
+
+
+
+
+
+
+?>

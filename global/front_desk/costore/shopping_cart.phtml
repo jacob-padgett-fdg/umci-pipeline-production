@@ -1,0 +1,166 @@
+<?
+include("header.phtml");
+//$res=@mysql_query("select * from costore_cart left join costore_products on (costore_cart.product_id = costore_products.product_id) where contacts_id = '$global_user_id' and status = 'new'");
+$res=@mysql_query("select * from costore_cart where contacts_id = '$global_user_id' and status = 'new'");
+$count=@mysql_num_rows($res);
+
+if ($count<1) { 
+echo "<center><h2>No items in cart....</h2></center>";
+} else {
+	
+echo "<table border=0 cellspacing=0 cellpadding=4 style=\"width: $page_width;\">
+<tr bgcolor=#003399><td width=100%>
+	<font color=white>Name</font>
+</td><td>
+	<font color=white>Opt</font>
+</td><td>
+	<font color=white>Job</font>
+</td><td>
+	<font color=white>Price</font>
+</td><td>
+	<font color=white>Qty</font>
+</td><td>
+	<font color=white>Sub&nbsp;Total</font>
+</td><td>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>";
+
+while ($row=@mysql_fetch_object($res)) {
+	//if ($row->product_options=='XXL') $row->price=$row->xxl_price;
+	//$subtotal=$row->price * $row->quantity;
+	//$subtotal=;
+	$product_info=getoneb("select * from costore_products where product_id = '$row->product_id'");
+	$row->product_options=ereg_replace(" ","&nbsp;",$row->product_options);
+	$unit_price=round($row->total_dollars / $row->quantity,2);
+	echo "<tr><td>
+			$product_info->product_name</font>
+		</td><td>
+			$row->product_options&nbsp;
+		</td><td>
+			$row->job_num
+		</td><td>
+			$unit_price
+		</td><td align=right>
+			$row->quantity
+		</td><td align=right>
+			$row->total_dollars
+		</td><td>
+			<i><a href=$pagename?mode=delete_cart_item&cart_id=$row->cart_id>Delete</a></i>
+		</td></tr>
+		";
+	}
+
+$cart=getoneb("select sum(total_dollars) as total_dollars, sum(quantity) as total_count from costore_cart where contacts_id = '$global_user_id' and status = 'new'");
+
+echo "<tr bgcolor=#dddddd><td>
+		<b>Total:</b>
+	</td><td>
+	</td><td>
+	</td><td>
+	</td><td align=right>
+		$cart->total_count
+	</td><td align=right>
+		$cart->total_dollars
+	</td><td>
+	</td></tr>
+</table>
+<form name=submit_order_form method=post action=$pagename>
+Bill to job: ";
+
+
+$my_jobs_query="select 
+	jobinfo.jobinfo_id as billing_jobinfo_id,contract_num
+	from jobinfo 
+	left join contacts_groups on (jobinfo.jobinfo_id = contacts_groups.jobinfo_id) 
+	left join contacts_groups_members on (contacts_groups.group_id = contacts_groups_members.group_id) 
+	left join front_desk_job_admins on (jobinfo.jobinfo_id = front_desk_job_admins.jobinfo_id) 
+	left join front_desk_job_foreman on (jobinfo.jobinfo_id = front_desk_job_foreman.jobinfo_id)
+	where jobinfo.active = 'Y' and
+	( contacts_groups_members.contacts_id = '$global_user_id' or
+	jobinfo.project_manager_id = '$global_user_id' or
+	jobinfo.detailing_lead_id = '$global_user_id' or
+	front_desk_job_admins.contacts_id = '$global_user_id' or 
+	front_desk_job_foreman.foreman_id = '$global_user_id' or
+	jobinfo.contract_admin = '$global_user_id'
+	
+	) 
+	group by billing_jobinfo_id
+	order by contract_num
+	";
+
+//tabledump($my_jobs_query);
+
+
+
+//dropbox("select contract_num from jobinfo where active = 'Y' order by contract_num");
+//dropbox($my_jobs_query);
+
+
+
+
+echo "
+<input type=hidden name=mode value=shopping_cart_submit>
+<input type=submit value=\"Submit Order\">
+</form>
+* PM Approval required when billing to a job
+";	
+}
+
+echo "<center><a href=$pagename?mode=main><h2>Continue Shopping</h2></a>";
+
+//tabledump("select * from costore_cart_invoice where contacts_id = '$global_user_id'  order by invoice_date desc, invoice_id desc limit 10");
+$res=@mysql_query("select * from costore_cart_invoice where contacts_id = '$global_user_id'  order by invoice_date desc, invoice_id desc limit 10");
+$count=@mysql_num_rows($res);
+if ($count > 0) {
+echo "<table border=0 cellspacing=0 cellpadding=4 style=\"border: 1px solid black;\">
+<tr bgcolor=$umc_standard_blue><td colspan=7 align=center>
+	<b>Last 10 invoices</b>
+</td></tr>
+
+<tr><td>
+	<b>Invoice ID</b>
+</td><td>
+	<b>Status</b>
+</td><td>
+	<b>Qty</b>
+</td><td>
+	<b>Total</b>
+</td><td>
+	<b>Invoice&nbsp;Date</b>
+</td><td align=center>
+	<b>Action</b>
+</td></tr>
+";
+while ($row=@mysql_fetch_object($res)) {
+	$date=invali_date($row->invoice_date,'/');
+	if ($row->billing_jobinfo_id>0) {
+		$billing_info=getoneb("select * from jobinfo where jobinfo_id = '$row->billing_jobinfo_id'");
+		} else {
+		$billing_info="";
+		}
+	echo "
+	<tr><td>
+		$row->invoice_id
+	</td><td>
+		$row->cart_status
+	</td><td>
+		$row->cart_count
+	</td><td>
+		\$$row->cart_total
+	</td><td>
+		$date
+	</td><td>";
+		if ($row->cart_status=='processing'||$row->cart_status=="PM Approval") echo "<a href=$pagename?mode=uninvoice&invoice_id=$row->invoice_id>Return to cart</a>";
+		else echo "N/A";
+	echo "	
+	</td></tr>";
+	}
+echo "</table></center>";
+
+
+
+}
+
+include("footer.phtml");
+
+?>

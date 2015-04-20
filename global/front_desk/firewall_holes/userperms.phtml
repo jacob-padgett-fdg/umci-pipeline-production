@@ -1,0 +1,67 @@
+<?
+if (!($adminuser)) die ("ERROR: Access violation. The authorities have been notified!");
+require_once('querylib.inc');
+
+
+
+echo "<p><hr>Viewpoint Permissions";
+$fw_userlist_vp="select * from misc_data,contacts where data_type = 'firewall_access_vp' and data = contacts.contacts_id";
+echo "<table border=0>";
+$res=@mysql_query($fw_userlist_vp);
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		$row->first_name $row->last_name
+	</td><td>
+		<a href=$pagename?mode=userperm_del&misc_data_id=$row->misc_data_id><font color=blue><i>Delete</i></font></a>
+	</td></tr>";
+	}
+echo "</table>
+
+";
+
+
+
+
+echo "<p><hr>Fieldcentrix Permissions";
+$fw_userlist_fx="select * from misc_data,contacts where data_type = 'firewall_access_fx' and data = contacts.contacts_id";
+echo "<table border=0>";
+$res=@mysql_query($fw_userlist_fx);
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		$row->first_name $row->last_name
+	</td><td>
+		<a href=$pagename?mode=userperm_del&misc_data_id=$row->misc_data_id><font color=blue><i>Delete</i></font></a>
+	</td></tr>";
+	}
+echo "</table>";
+
+
+echo "<p><hr>Available Users";
+$fw_userlist="select * from access,contacts where application_name = '$application_name' and access.contacts_id = contacts.contacts_id and type != 'admin' and rightsmode = 'grant'"; 
+//tabledump ($fw_userlist);
+echo "<table border=0>";
+$res=@mysql_query($fw_userlist);
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			$row->first_name $row->last_name
+		</td><td>
+			<a href=$pagename?mode=add_perms&type=vp&contacts_id=$row->contacts_id><font color=blue>ADD VP</font></a>
+		</td><td>
+			<a href=$pagename?mode=add_perms&type=fx&contacts_id=$row->contacts_id><font color=blue>ADD FX</font></a>
+		</td></tr>
+		";
+	}
+
+echo "
+</table>
+<hr>
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a>
+";
+
+
+
+
+
+
+
+?>

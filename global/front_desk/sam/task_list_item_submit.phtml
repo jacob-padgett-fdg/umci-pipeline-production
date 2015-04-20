@@ -1,0 +1,11 @@
+<?
+if (!(is_admin())) die_security();
+if ($task_list_id=="") die("ERROR: not task_list_id.");
+else $task_list_id=addslashes($task_list_id);
+if ($task_text=="") die("ERROR: not task_text.");
+else $task_text=addslashes($task_text);
+$tinfo=getone("select * from svc_task_lists where task_list_id = '$task_list_id'");
+$query="update svc_task_lists set task_text = '$task_text' where task_list_id = '$task_list_id'";
+@mysql_query($query);
+forward("task_item_edit&task_id=$tinfo->task_id");
+?>

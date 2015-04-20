@@ -1,0 +1,40 @@
+<?
+$paging_limits="";
+$page_size="50";
+$search_url_append=search_url_append();
+$search_form_insert=search_form_insert();
+
+if ($fd_pager_print_entire_log!="TRUE") {
+	if ($page_num!="") $page_num=addslashes($page_num);
+	$current_query_len=@mysql_num_rows($res);
+	if ($current_query_len>$page_size) {
+		if ($page_num=="") $page_num=1;
+		$current_start=$page_size * ($page_num - 1);
+		if (($current_start>$current_query_len)||($current_start < 1)) {
+			$page_num=1;
+			$current_start=$page_size * ( $page_num - 1);
+			}
+		$paging_limits=" limit $current_start,$page_size ";
+		$query=$query . $paging_limits;
+		$page_next=$page_num + 1;
+		$page_prev=$page_num - 1;
+		$last_page=ceil($current_query_len / $page_size);
+		if ($page_num==1) $page_prev=$last_page;
+		
+		$res=@mysql_query($query);
+		$current_end=$current_start + $page_size - 1;
+		$current_start_human=$current_start + 1;
+		$current_end_human=$current_end + 1;
+		if ($current_end_human>$current_query_len) $current_end_human=$current_query_len;
+		$showing="$current_start_human-$current_end_human";
+		$page_arrow_style="padding-left: 10px; padding-right: 10px; height: 14px; color: blue; text-decoration: none; background: $fd_color_4; border: 1px solid black;";
+		$page_link_prev="<a href=\"$pagename?mode=$mode&page_num=$page_prev&filter_mode=$filter_mode&gc_search=$gc_search$search_url_append\" style=\"$page_arrow_style\">&lt;-prev-</a>";
+		$page_link_next="<a href=\"$pagename?mode=$mode&page_num=$page_next&filter_mode=$filter_mode&gc_search=$gc_search$search_url_append\" style=\"$page_arrow_style\">-next-&gt;</a>";
+		$page_page_insert="$page_link_prev<font style=\"padding-left: 15px; padding-right: 15px; background: $fd_color_3; border: 1px solid black;\" title=\"Results $current_start_human to $current_end_human\">Page $page_num of $last_page <font style=\"cursor: pointer; cursor: hand;\" color=blue onclick=\"document.location='$pagename?mode=$mode&filter_mode=$filter_mode&fd_pager_print_entire_log=TRUE$search_url_append'\"><b>Print all</b></font></font>$page_link_next";
+		} else {
+		$showing=@mysql_num_rows($res);
+		$page_page_insert="<font style=\"padding-left: 15px; padding-right: 15px; background: $fd_color_3; border: 1px solid black; cursor: pointer; cursor: hand;\" color=blue onclick=\"print()\"><b>Print</b></font>";
+		}
+	} else {
+	}
+?>

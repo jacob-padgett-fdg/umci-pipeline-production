@@ -1,0 +1,56 @@
+<?
+if ($el_id=="") die("Application error: Missing el_id. Aborting!");
+else $el_id=addslashes($el_id);
+$equip_info=load_equip_info($el_id);
+$frequency_in_months=addslashes($frequency_in_months);
+$agreement_id=$equip_info->agreement_id;
+$material_list_id=addslashes($material_list_id);
+$qty=addslashes($qty);
+$material_info=getone("select * from svc_materials_list where material_list_id = '$material_list_id'");
+$material_info->name=addslashes($material_info->name);
+//$cost=addslashes($cost);
+$cost=clean_float($cost);
+$show_in_summary=checkfix($show_in_summary);
+$suppliment_maint_type_count=checkfix($suppliment_maint_type_count);
+//$is_a_filter=checkfix($is_a_filter);
+//$is_a_belt=checkfix($is_a_belt);
+$dates=agreement_event_dates_by_month($agreement_id,vali_date($event_date),$frequency_in_months);
+if (is_filter($material_list_id)) $is_a_filter='Y';
+else $is_a_filter='N';
+if (is_belt($material_list_id)) $is_a_belt='Y';
+else $is_a_belt='N';
+
+
+
+$count=0;
+$endcount=sizeof($dates);
+while ($dates[$count]!="") {
+	if ($qty > 1) $description="$material_info->name (Qty $qty)";
+	else $description="$material_info->name";
+	
+	$query="insert into svc_agreement_equipment_events set
+	el_id = '$equip_info->el_id',
+	event_type = 'materials',
+	material_list_id = '$material_list_id',
+	qty = '$qty',
+	event_date = '" . $dates[$count] . "',
+	cost = '$cost',
+	inflation = 'Y',
+	description = '$description',
+	show_in_summary = '$show_in_summary',
+	suppliment_maint_type_count = '$suppliment_maint_type_count',
+	is_a_filter = '$is_a_filter',
+	is_a_belt = '$is_a_belt'
+	";
+
+	$res=@mysql_query($query);
+	if (!($res)) die("query failed:<hr>$query");
+	$count++;
+	}
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+?>

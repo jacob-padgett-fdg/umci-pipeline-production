@@ -1,0 +1,43 @@
+<?
+require("header.phtml");
+check_report_permissions();
+require("mh_lib.inc");
+require("report_lib.inc");
+require("trade_licenses_lib.inc");
+mh_navs_header();
+
+$sep="";
+if ($contact_filter!="") {
+	$contact_filter=addslashes($contact_filter);
+	$filter=$filter . " $sep employee_id = '$contact_filter' ";
+	$sep="and";
+	}
+
+//die($filter);
+check_for_missing_licenses($filter);
+
+echo "
+<b>Filter</b>
+<form name=tlm_filter_set method=post action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=report_name value=$report_name>
+";contact("select * from contacts where umc_emp = 'Y' and current = 'Y'","$contact_filter","contact_filter","submit()");echo"
+</form>
+
+
+<a href=$pagename?mode=$mode&report_name=trade_license_edit><font color=blue>Add a new License</font></a><p>
+
+<a target=_blank href=https://fortress.wa.gov/lni/bbip/Search.aspx><font color=blue>Look Up A License</font></a>
+";
+
+
+show_next_20($filter);
+
+
+
+
+
+
+
+mh_navs_footer();
+?>

@@ -1,0 +1,79 @@
+<?
+//require_once("querylib.inc");
+require_once("header.phtml");
+
+
+echo "<script>
+function reconcile_popup (table,field,id) {
+	open('$pagename?mode=f_key_reconcile_popup&table=' + table + '&field=' + field + '&contacts_id=' + id,'fk_reconcile_popup','width=750,height=650');
+	}
+</script>";
+
+
+function check_contact($contact_id,$table,$field) {
+	$query="select sum(1) as total from $table where $field = '$contact_id'";
+	$res=@mysql_query($query);
+	//if (!($res)) echo "Warning: Lookup failed for path: \"$path\"! Query failed!";
+	$total=@mysql_fetch_object($res);
+	if ($total->total=="") $total->total=0;
+	return $total->total;
+	}
+
+function check_contact_pretty ($contact_id,$table,$field) {
+	$count=check_contact($contact_id,$table,$field);
+	if ($count==0) return $count;
+	else {
+		echo "<b>$table&nbsp;->&nbsp;$field</b><br>Count:&nbsp;$count&nbsp;<a href=javascript:reconcile_popup('$table','$field','$contact_id');>Show/Edit</a><hr>";
+		}
+	return $count;
+	}
+
+function contact_fk_search_pretty ($contact_id) {
+	$junk_count=0;
+	$total=0;
+	$res=@mysql_query("select * from contacts_fk_list where is_contact = 'Y' order by db_table,table_field");
+	while($row=@mysql_fetch_object($res)) {
+		$count=check_contact_pretty($contact_id,$row->db_table,$row->table_field);
+		$total="$total" + "$count";
+		}
+	echo "<b>Total: $total</b><p>";
+	}
+
+echo "
+
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>";
+if ($contacts_id=="") {
+	echo "
+	<form name=contact_list method=get action=$pagename>
+	<input type=hidden name=mode value=\"$mode\">
+	";
+	
+	contactsbox("select * from contacts where 1 = 1","","contacts_id");
+	contactsbox("select * from contacts where 1 = 1","","contacts_id_2");
+
+	echo "
+	<br><input type=submit value=Search>
+	</form>
+	";
+	exit;
+	}
+
+echo "<table border=1 cellspacing=0 cellpadding=4>
+<tr><td>";    
+	contact_view("",$contacts_id); echo "<br>
+	($contacts_id)
+</td><td>";
+	contact_view("",$contacts_id_2);echo "<br>
+	($contacts_id_2)
+</td></tr>
+
+<tr><td valign=top>
+	";contact_fk_search_pretty($contacts_id);echo "
+</td><td valign=top>
+	";
+	if ($contacts_id_2>0) contact_fk_search_pretty($contacts_id_2);
+	";
+</td></tr>
+</table>";
+
+?>

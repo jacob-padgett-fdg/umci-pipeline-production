@@ -1,0 +1,92 @@
+<?
+if (!(is_admin())) die_security();
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+else die("ERROR: Missing agreement_id. Fatal error. Please contact your system adminstrator!");
+$agreement_info=load_agreement_info($agreement_id);
+
+
+$query="select * from svc_agreement_equip_list
+left join (svc_equip_types, svc_equip_categories)
+on 	(svc_agreement_equip_list.equip_type_id = svc_equip_types.equip_type_id and
+	svc_agreement_equip_list.category_id = svc_equip_categories.category_id)
+where
+agreement_id = '$agreement_id'
+order by svc_equip_categories.category,svc_equip_types.type,svc_agreement_equip_list.tag_num";
+
+//tabledump($query);exit;
+require('header.phtml');
+$res=@mysql_query($query);
+echo "
+<a href=$pagename?mode=svc_agreement_edit&agreement_id=$agreement_id><font color=blue>Cancel</font></a><br>
+";agreement_summary_box($agreement_id);echo"
+<h3>Equipment</h3>
+<table border=1 cellspacing=0 cellpadding=3>";
+while ($row=@mysql_fetch_object($res)) {
+	$cost=equip_list_item_total_cost($row->el_id);
+	echo "<tr><td>
+			$row->category
+		</td><td>
+			$row->type
+		</td><td>
+			<a target=_equip_exec_summary_view href=\"$pagename?mode=svc_agreement_executive_equipment_summary&el_id=$row->el_id\"><font color=blue>$cost</font></a>
+		</td></tr>";
+	}
+echo "</table>";
+
+$cost=agreement_cost($agreement_info->agreement_id,1);
+$marked_up=(round(100*($cost * $agreement_info->markup_percent)))/100;
+
+echo "
+Markup: $agreement_info->markup_percent<br>
+After Markup: $marked_up<br>
+
+<h3>Options</h3>";
+$res=@mysql_query("select * from svc_agreement_additional_options where agreement_id = '$agreement_info->agreement_id'");
+$count=@mysql_num_rows($res);
+if ($res<1) {
+	echo "<b>No Records Found...<font color=red><br>THIS IS PROBABLY AN ERROR!!!! (TRUCK CHARGES AT LEAST!?!?!)</font>";
+	} else {
+	echo "<table border=1 cellpadding=4 cellspacing=0>
+	<tr bgcolor=#eeeeee><td>
+		Type
+	</td><td>
+		Description
+	</td><td>
+		Calc Notes
+	</td><td>
+		Markup Y/N
+	</td><td>
+		UMC Cost
+	</td><td>
+		Sell
+	</td></tr>";
+	}
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		$row->option_type
+	</td><td>
+		$row->option_description
+	</td><td>
+		$row->calculation_notes
+	</td><td>
+		$row->markup
+	</td><td>
+		$row->cost
+	</td><td>
+		$row->value
+	</td></tr>";
+	
+	}
+if (!($res<1)) {
+	echo "</table>";
+	}
+echo "
+<table border=1 cellspacing=0 cellpadding=3>
+<tr><td>
+	Final Sell Cost (stored):
+</td><td>
+	$agreement_info->total_value
+</td></tr>
+</table>
+";
+?>

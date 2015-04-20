@@ -1,0 +1,407 @@
+<?
+require("header.phtml");
+fd_navs_header();
+if ($dailylog_id=="") die("Invalid log selection error!");
+$dailylog_id=addslashes($dailylog_id);
+$dailylog_info=getone("select * from dailylog where dailylog_id = '$dailylog_id'");
+$creator_info=getone("select * from contacts where contacts_id = '$dailylog_info->creator_id'");
+
+$doc_id=fd_get_doc_id($dailylog_info->dailylog_id);
+
+/*
+
+########################################################################
+# Temporary code to add to database.. Delete me soon.. (If you don't
+# remember doing this, then delete me now.)
+#
+########################################################################
+
+$res=@mysql_query("describe dailylog");
+while ($row=@mysql_fetch_object($res)) {
+	//print_r($row);
+	$compare=substr($row->Field,-6);
+	//echo "$compare<br>";
+	$is_count="";
+	if (!(strncmp("_count",$compare,20))) {
+		$new_field=ereg_replace("_count","_hours",$row->Field);
+		@mysql_query("alter table dailylog add $new_field int not null");
+		$is_count=" X";
+		}
+	//echo "<br>$row->Field$is_count";
+	
+	}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+echo "
+<table border=1 cellspacing=0 cellpadding=2>
+<form name=dailylog_edit method=post action=$pagename>
+<input type=hidden name=mode value=dailylog_submit>
+<input type=hidden name=dailylog_id value=\"$dailylog_info->dailylog_id\">
+<tr><td colspan=3 bgcolor=$fd_color_4 align=center>
+	<div style=\"float: right;\"><a href=\"$pagename?mode=dailylog_display_pdf&dailylog_id=$dailylog_info->dailylog_id&blah=blah/pdf_download/dailylog$dailylog_info->dailylog_id.pdf\">Print</a></div><font size=+1><b>Daily Log #$dailylog_info->log_num created by $creator_info->first_name $creator_info->last_name</b></font>
+</td></tr>	
+
+<tr><td>
+	<b>Project</b>
+</td><td>
+	<input type=text name=project value=\"$dailylog_info->project\">
+<td rowspan=11 valign=top>
+	<table border=1 cellspacing=0 cellpadding=1 style=\"border: 1px solid black; font-size: 12px; \">
+	<tr bgcolor=$fd_color_4><td>
+		<b>Our Craft</b>
+	</td><td>
+		<b>Count</b>
+	</td><td>
+		<b>Hours</b>
+	</td></tr>
+	
+	<tr><td>
+		General Foreman
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_general_foreman_count value=\"$dailylog_info->our_general_foreman_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_general_foreman_hours value=\"$dailylog_info->our_general_foreman_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Plumbing Foreman
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_plumbing_foreman_count value=\"$dailylog_info->our_plumbing_foreman_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_plumbing_foreman_hours value=\"$dailylog_info->our_plumbing_foreman_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Plumbing Journeyman
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_plumbing_journeyman_count value=\"$dailylog_info->our_plumbing_journeyman_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_plumbing_journeyman_hours value=\"$dailylog_info->our_plumbing_journeyman_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Plumbing Apprentices
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_plumbing_apprentice_count value=\"$dailylog_info->our_plumbing_apprentice_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_plumbing_apprentice_hours value=\"$dailylog_info->our_plumbing_apprentice_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Steamfitter Foreman
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_steamfitter_foreman_count value=\"$dailylog_info->our_steamfitter_foreman_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_steamfitter_foreman_hours value=\"$dailylog_info->our_steamfitter_foreman_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Steamfitter Journeyman
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_steamfitter_journeyman_count value=\"$dailylog_info->our_steamfitter_journeyman_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_steamfitter_journeyman_hours value=\"$dailylog_info->our_steamfitter_journeyman_hours\">
+	</td></tr>
+
+	<tr><td>
+		Steamfitter Apprentices
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_steamfitter_apprentice_count value=\"$dailylog_info->our_steamfitter_apprentice_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_steamfitter_apprentice_hours value=\"$dailylog_info->our_steamfitter_apprentice_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Laborers
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_laborer_count value=\"$dailylog_info->our_laborer_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_laborer_hours value=\"$dailylog_info->our_laborer_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Truck Driver
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_truck_driver_count value=\"$dailylog_info->our_truck_driver_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_truck_driver_hours value=\"$dailylog_info->our_truck_driver_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Operating Engineer
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_operating_engineer_count value=\"$dailylog_info->our_operating_engineer_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_operating_engineer_hours value=\"$dailylog_info->our_operating_engineer_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Millwright
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_millwright_count value=\"$dailylog_info->our_millwright_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_millwright_hours value=\"$dailylog_info->our_millwright_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Carpenter
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_carpenter_count value=\"$dailylog_info->our_carpenter_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_carpenter_hours value=\"$dailylog_info->our_carpenter_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Sheetmetal
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_sheetmetal_count value=\"$dailylog_info->our_sheetmetal_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_sheetmetal_hours value=\"$dailylog_info->our_sheetmetal_hours\">
+	</td></tr>
+
+	<tr><td>
+		Sheetmetal Foreman
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_sheetmetal_foreman_count value=\"$dailylog_info->our_sheetmetal_foreman_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_sheetmetal_foreman_hours value=\"$dailylog_info->our_sheetmetal_foreman_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Sheetmetal Journeyman
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_sheetmetal_journeyman_count value=\"$dailylog_info->our_sheetmetal_journeyman_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_sheetmetal_journeyman_hours value=\"$dailylog_info->our_sheetmetal_journeyman_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Sheetmetal Apprentices
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_sheetmetal_apprentice_count value=\"$dailylog_info->our_sheetmetal_apprentice_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_sheetmetal_apprentice_hours value=\"$dailylog_info->our_sheetmetal_apprentice_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Helper
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_helper_count value=\"$dailylog_info->our_helper_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_helper_hours value=\"$dailylog_info->our_helper_hours\">
+	</td></tr>
+
+	<tr><td>
+		Refrigeration
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_refrigeration_count value=\"$dailylog_info->our_refrigeration_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=our_refrigeration_hours value=\"$dailylog_info->our_refrigeration_hours\">
+	</td></tr>
+
+	<tr bgcolor=$fd_color_4><td>
+		<b>Subcontractors</b>
+	</td><td>
+		<b>Count</b>
+	</td><td>
+		<b>Hours</b>
+	</td></tr>
+	
+	<tr><td>
+		Temperature Control
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_temperature_control_count value=\"$dailylog_info->sub_temperature_control_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_temperature_control_hours value=\"$dailylog_info->sub_temperature_control_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Insulation
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_insulation_count value=\"$dailylog_info->sub_insulation_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_insulation_hours value=\"$dailylog_info->sub_insulation_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Painters
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_painter_count value=\"$dailylog_info->sub_painter_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_painter_hours value=\"$dailylog_info->sub_painter_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Sewer Men
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_sewer_men_count value=\"$dailylog_info->sub_sewer_men_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_sewer_men_hours value=\"$dailylog_info->sub_sewer_men_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Electrician
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_electrician_count value=\"$dailylog_info->sub_electrician_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_electrician_hours value=\"$dailylog_info->sub_electrician_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Refrigeration
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_refrigeration_count value=\"$dailylog_info->sub_refrigeration_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_refrigeration_hours value=\"$dailylog_info->sub_refrigeration_hours\">
+	</td></tr>
+
+	<tr><td>
+		Air Balance
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_air_balance_count value=\"$dailylog_info->sub_air_balance_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_air_balance_hours value=\"$dailylog_info->sub_air_balance_hours\">
+	</td></tr>
+	
+	<tr><td>
+		Sheet Metal
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_sheet_metal_count value=\"$dailylog_info->sub_sheet_metal_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_sheet_metal_hours value=\"$dailylog_info->sub_sheet_metal_hours\">
+	</td></tr>
+
+	<tr><td>
+		Core Drill
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_core_drill_count value=\"$dailylog_info->sub_core_drill_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_core_drill_hours value=\"$dailylog_info->sub_core_drill_hours\">
+	</td></tr>
+
+	<tr><td>
+		Fire Caulk
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_fire_caulk_count value=\"$dailylog_info->sub_fire_caulk_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_fire_caulk_hours value=\"$dailylog_info->sub_fire_caulk_hours\">
+	</td></tr>
+
+	<tr><td>
+		Fire Protection
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_fire_protection_count value=\"$dailylog_info->sub_fire_protection_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_fire_protection_hours value=\"$dailylog_info->sub_fire_protection_hours\">
+	</td></tr>
+
+	<tr><td>
+		Chemical Treatment
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_chemical_treatment_count value=\"$dailylog_info->sub_chemical_treatment_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_chemical_treatment_hours value=\"$dailylog_info->sub_chemical_treatment_hours\">
+	</td></tr>
+
+	<tr><td>
+		Fuel Tank Install/Piping
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_fuel_tank_install_and_piping_count value=\"$dailylog_info->sub_fuel_tank_install_and_piping_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_fuel_tank_install_and_piping_hours value=\"$dailylog_info->sub_fuel_tank_install_and_piping_hours\">
+	</td></tr>
+
+	<tr><td>
+		Excavation
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_excavation_count value=\"$dailylog_info->sub_excavation_count\">
+	</td><td>
+		<input type=text style=\"text-align: right;\" size=2 name=sub_excavation_hours value=\"$dailylog_info->sub_excavation_hours\">
+	</td></tr>
+	</table>
+</td></tr>
+
+<tr><td>
+	<b>Daily Log #</b>
+</td><td>
+	$dailylog_info->log_num
+</td></tr>
+
+<tr><td>
+	<b>Location</b>
+</td><td>
+	<input type=text size=40 name=location value=\"$dailylog_info->location\">
+</td></tr>
+
+<tr><td>
+	<b>Weather</b>
+</td><td>
+	<input type=text size=40 name=weather value=\"$dailylog_info->weather\">
+</td></tr>
+
+<tr><td>
+	<b>Date</b>
+</td><td>
+	";datebox($dailylog_info->work_date,'dailylog.work_date');echo"
+</td></tr>
+
+<tr><td>
+	<b>Work Progress</b>
+</td><td>
+	<textarea name=work_progress onfocus='this.rows=10' onblur='this.rows=3' cols=50 rows=3>$dailylog_info->work_progress</textarea>
+</td></tr>
+
+
+<tr><td>
+	<b>Materials Received</b>
+</td><td>
+	<textarea name=materials_received onfocus='this.rows=10' onblur='this.rows=3' cols=50 rows=3>$dailylog_info->materials_received</textarea>
+</td></tr>
+
+
+
+<tr><td>
+	<b>New Hires</b>
+</td><td>
+	<textarea name=new_hires onfocus='this.rows=10' onblur='this.rows=1' cols=50 rows=1>$dailylog_info->new_hires</textarea>
+</td></tr>
+
+<tr><td>
+	<b>New Hire Safety Training</b>
+</td><td>
+	<textarea name=new_hire_safety_training onfocus='this.rows=10' onblur='this.rows=1' cols=50 rows=1>$dailylog_info->new_hire_safety_training</textarea>
+</td></tr>
+
+<tr><td>
+	<b>Hindrances</b>
+</td><td>
+	<textarea name=work_hinderances onfocus='this.rows=10' onblur='this.rows=3' cols=50 rows=3>$dailylog_info->work_hinderances</textarea>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Accidents,<br>near misses or<br>safety concerns</b>
+</td><td>
+	<textarea name=accidents onfocus='this.rows=10' onblur='this.rows=3' cols=50 rows=3>$dailylog_info->accidents</textarea>
+</td></tr>
+
+<tr><td align=right colspan=2>
+	<input type=submit value=\"Save\">
+</td></tr>
+
+</form>
+</table>
+
+";
+fd_navs_footer();
+?>

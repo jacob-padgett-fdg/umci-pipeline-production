@@ -1,0 +1,111 @@
+<?
+echo "
+<center>Help Desk</center><hr>";
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+// My tickets
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+$query="select 
+		front_desk_help_desk_tickets.ticket_id as ticket_id,
+		front_desk_help_desk_tickets.ticket_type as ticket_type,
+		front_desk_help_desk_tickets.ticket_root_id as ticket_root_id,
+		front_desk_help_desk_tickets.ticket_type as ticket_type,
+		front_desk_help_desk_tickets.parent_ticket_id as parent_ticket_id,
+		front_desk_help_desk_tickets.owner as owner,
+		front_desk_help_desk_tickets.jobinfo_id as jobinfo_id,
+		front_desk_help_desk_tickets.subject as subject,
+		front_desk_help_desk_tickets.description as description,
+		front_desk_help_desk_tickets.create_time as create_time,
+		front_desk_help_desk_tickets.due_date_requested as due_date_requested,
+		front_desk_help_desk_tickets.due_date as due_date,
+		front_desk_help_desk_tickets.status as status,
+		front_desk_help_desk_tickets.urgent as urgent,
+		front_desk_help_desk_ticket_clan.clan_id as clan_id,
+		front_desk_help_desk_ticket_clan.employee_id as employee_id,
+		front_desk_help_desk_ticket_clan.clan_role as clan_role,
+		front_desk_help_desk_ticket_clan.created as created
+		
+
+
+		 from front_desk_help_desk_tickets 
+		left join front_desk_help_desk_ticket_clan on 
+			(front_desk_help_desk_tickets.ticket_id = front_desk_help_desk_ticket_clan.ticket_id)
+		where 
+			ticket_root_id = '$ticket_root_id' and
+			( front_desk_help_desk_ticket_clan.employee_id = '$global_user_id' or
+			  front_desk_help_desk_tickets.owner = '$global_user_id' ) and 
+			ticket_type = 'ticket' and
+			status != 'done'
+		order by create_time desc";
+
+$res=@mysql_query($query);
+
+echo "
+<a href=$pagename?mode=$mode&report_name=$report_name&report_mode=ticket_edit><font color=blue>New Help Ticket</font></a><br>
+<table class=ticklist border=1 cellspacing=0 cellpadding=0>
+<tr bgcolor=$fd_color_4><td colspan=5 align=center>
+	<b>My Open Tickets</b>
+</td></tr>
+
+<tr bgcolor=$fd_color_1><td>
+	<i>Ticket ID</i>
+</td><td>
+	<i>Subject</i>
+</td><td>
+	<i>Created</i>
+</td><td>
+	<i>Status</i>
+</td></tr>";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr class=myheader><td class=myheader>
+			<a href=\"$pagename?mode=$mode&report_name=$report_name&report_mode=ticket_edit&ticket_id=$row->ticket_id\"><font color=blue>$row->ticket_id</font></a>
+		</td><td>
+			$row->subject
+		</td><td>
+			$row->create_time
+		</td><td>
+			$row->status
+		</td></tr>";
+	}
+echo "</table><p>";
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+// New tickets
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+if ($adminuser) {
+$query="select * from front_desk_help_desk_tickets where status = 'new' order by create_time";
+$res=@mysql_query($query);
+echo "
+<table class=ticklist border=1 cellspacing=0 cellpadding=1>
+<tr bgcolor=$fd_color_4><td colspan=5 align=center>
+	<b>New Tickets</b>
+</td></tr>
+<tr bgcolor=$fd_color_1><td>
+	<i>Ticket ID</i>
+</td><td>
+	<i>Subject</i>
+</td><td>
+	<i>Created</i>
+</td><td>
+	<i>Status</i>
+</td></tr>";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<a href=\"$pagename?mode=$mode&report_name=$report_name&report_mode=ticket_edit&ticket_id=$row->ticket_id\"><font color=blue>$row->ticket_id</font></a>
+		</td><td>
+			$row->subject
+		</td><td>
+			$row->create_time
+		</td><td>
+			$row->status
+		</td></tr>";
+	}
+echo "</table>";
+}
+?>

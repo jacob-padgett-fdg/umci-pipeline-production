@@ -1,0 +1,292 @@
+<?
+require("header.phtml");
+fd_navs_header();
+
+function move_them_down($starting_doc_id, $section_info) {
+	$start_info=getoneb("select * from documents where doc_id = '$starting_doc_id'");
+	$query="select * from documents where doc_type = '$section_info->doc_type' and jobinfo_id = '$section_info->jobinfo_id' and section = '$section_info->section' and sort_rank >= '$start_info->sort_rank' order by sort_rank";
+	$res=@mysql_query($query);
+	while ($row=@mysql_fetch_object($res)) {
+		$new_rank=$row->sort_rank + 1;
+		//echo "<li>Moving document_id $row->doc_id from sort rank $row->sort_rank to $new_rank</li>";
+		//echo "<li>update documents set sort_rank = '$new_rank' where doc_id = '$row->doc_id'</li>";
+		@mysql_query("update documents set sort_rank = '$new_rank' where doc_id = '$row->doc_id'");
+		}
+	}
+function insert_before_doc($document_id,$target_doc_id,$section_info) {
+	$target_doc_info=getoneb("select * from documents where doc_id = '$target_doc_id'");
+	$document_info=getoneb("select * from documents where doc_id = '$document_id'");
+	if ($target_doc_info && $document_info) {
+		//echo "put $document_id before $target_doc_id: Going to move $target_doc_id down<br>";
+		move_them_down($target_doc_id,$section_info);
+		//echo "update documents set sort_rank = '$target_doc_info->sort_rank' where doc_id = '$document_info->doc_id'<hr>";
+		@mysql_query("update documents set sort_rank = '$target_doc_info->sort_rank' where doc_id = '$document_info->doc_id'");
+		} else {
+		echo "ERROR: Unable to move documents correctly ($document_id,$target_id)<hr>";
+		}
+	}
+
+if ($global_jobinfo_id=="") die();
+$global_jobinfo_id=addslashes($global_jobinfo_id);
+
+$job=getoneb("select * from jobinfo where jobinfo_id = '$global_jobinfo_id'");
+$rearrange_available=getoneb("select * from front_desk_doc_queue left join documents on (front_desk_doc_queue.doc_id = documents.doc_id) 
+where contacts_id = '$global_user_id' and 
+front_desk_doc_queue.jobinfo_id = '$global_jobinfo_id' group by doc_type,section");
+
+if (!($rearrange_available)) {
+	die("Application error: Invalid document set for sorting (sections or types mixed)");
+	}
+
+
+
+if ($insert_displacement!="") {
+	if ($insert_displacement=="after") {
+		$insert_after_doc_id=$insert_target_doc_id;
+		} else {
+		$insert_before_doc_id=$insert_target_doc_id;
+		}
+	}
+
+
+
+
+$things_rearranged='';
+$first_insert="";
+if ($insert_after_doc_id!="") {
+	$target_before_first='Y';
+	$insert_before_doc_id=$insert_after_doc_id;
+	$things_rearranged='Y';
+	}
+
+if ($insert_before_doc_id!="") {
+	$insert_before_doc_id=addslashes($insert_before_doc_id);
+	//$doc_info=getoneb("select * from documents where doc_id = '$insert_before_doc_id'");
+	$queue_list_query="select * from front_desk_doc_queue where contacts_id = '$global_user_id' and jobinfo_id = '$global_jobinfo_id' order by sort_priority";
+	//tabledump($queue_list_query);exit;
+	$queue_list_res=@mysql_query($queue_list_query);
+	while ($queue_row=@mysql_fetch_object($queue_list_res)) {
+		if ($target_before_first=='Y') {
+			$first_insert=$queue_row;
+			$target_before_first='';
+			}
+		insert_before_doc($queue_row->doc_id,$insert_before_doc_id,$rearrange_available);
+		@mysql_query("delete from front_desk_doc_queue where queue_id = '$queue_row->queue_id'");
+		}
+	$things_rearranged='Y';
+	}
+
+if ($first_insert) {
+	insert_before_doc($insert_before_doc_id,$first_insert->doc_id,$rearrange_available);
+	$things_rearranged='Y';
+	}
+
+if ($things_rearranged=='Y') {
+	if ($rearrange_available->doc_type=="cnstdwglog") {
+		echo "<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"$seconds; URL=/global/front_desk$devel/cnstdwglog$devel/\"><body bgcolor=white>Operation successful. If this page doesn't go away, click <a href=$SCRIPT_NAME?mode=$mode><font color=blue>here</font></a> to continue.";
+		exit;
+		}
+	}
+	
+
+
+
+
+
+if ($initialize_manual_sort=='Y') {
+	switch ($rearrange_available->doc_type) {
+		case "cnstdwglog":
+						//$order_query="select * from documents where doc_type = '$rearrange_available->doc_type' and jobinfo_id = '$rearrange_available->jobinfo_id' and section = '$rearrange_available->section' order by doc_id,app_reference, description"; 
+						$order_query="select * from documents where doc_type = '$rearrange_available->doc_type' and jobinfo_id = '$rearrange_available->jobinfo_id' and section = '$rearrange_available->section' order by doc_id,app_reference, description"; 
+						//$order_query="select * from documents where doc_type = '$rearrange_available->doc_type' and jobinfo_id = '$rearrange_available->jobinfo_id' and section = '$rearrange_available->section' order by app_reference,doc_id, description"; 
+						//$order_query="select * from documents where doc_type = '$rearrange_available->doc_type' and jobinfo_id = '$rearrange_available->jobinfo_id' and section = '$rearrange_available->section' order by app_reference, description"; 
+						break;;
+		default:
+					$quit=TRUE;
+					echo "I don't know how to organize from a natural sort to a manual sort for this type yet. Please contact Jeff.";
+					break;;
+		}
+	
+	
+	
+	if ($quit) {
+		$hide_the_cookie_sheet='Y';
+		fd_navs_footer();
+		}
+	
+	$resort_res=@mysql_query($order_query);
+	$rank=1;
+	while ($resort_row=@mysql_fetch_object($resort_res)) {
+		//echo "<hr>update documents set sort_rank = '$rank' where doc_id = '$resort_row->doc_id'";
+		@mysql_query("update documents set sort_rank = '$rank' where doc_id = '$resort_row->doc_id'");
+		$rank++;
+		}
+	//tabledump($order_query);
+	}
+
+
+
+//tabledump("select sum(sort_rank) as total from front_desk_doc_queue left join documents on (documents.doc_id = front_desk_doc_queue.doc_id) where contacts_id = '$global_user_id' and documents.jobinfo_id = '$global_jobinfo_id' and section = '$rearrange_available->section' and doc_type = '$rearrange_available->doc_type'");
+$sort_rank_info=getoneb("select sum(sort_rank) as total from front_desk_doc_queue left join documents on (documents.doc_id = front_desk_doc_queue.doc_id) where contacts_id = '$global_user_id' and documents.jobinfo_id = '$global_jobinfo_id' and section = '$rearrange_available->section' and doc_type = '$rearrange_available->doc_type'");
+if ($sort_rank_info->total < 1) {
+	echo "<h2>Warning: This log is currently sorted naturally! If you do this, you'll be changing the default to a manually specified sort!<script>alert('Warning - Log is in natural sort mode');</script>
+	
+	<hr><a href=$pagename?mode=$mode&global_jobinfo_id_set=$global_jobinfo_id&initialize_manual_sort=Y><font color=blue>Switch to a manual sort (for everyone)</font></a>";
+	$hide_the_cookie_sheet='Y';
+	fd_navs_footer();
+	}
+
+
+$res=@mysql_query("select * from front_desk_doc_queue where contacts_id = '$global_user_id' and jobinfo_id = '$global_jobinfo_id' order by sort_priority,queue_id");
+$count=@mysql_num_rows($res);
+if ($count < 1) die("Nothing to rearrange?!?");
+
+echo "
+
+<form name=resort_documents method=get action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=global_jobinfo_id_set value=$global_jobinfo_id_set>
+Insert these documents
+<select name=insert_displacement>
+<option>before</option>
+<option>after</option>
+</select>
+ ";
+//dropbox("select doc_id as insert_before_doc_id, app_reference, ' - ', description from documents where doc_type = '$rearrange_available->doc_type' and jobinfo_id = '$rearrange_available->jobinfo_id' and section = '$rearrange_available->section' order by sort_rank,app_reference"); 
+dropbox("select doc_id as insert_target_doc_id, app_reference, ' - ', description from documents where doc_type = '$rearrange_available->doc_type' and jobinfo_id = '$rearrange_available->jobinfo_id' and section = '$rearrange_available->section' order by sort_rank,app_reference"); 
+echo "
+<input type=submit value=\"Go\">
+</form>
+
+
+<table border=1 cellspacing=0 cellpadding=2 bgcolor=$fd_color_3>
+<tr bgcolor=$fd_color_4><td align=center colspan=2><b>Preparing Your Batch</b></td></tr>";
+
+
+
+while($row=@mysql_fetch_object($res)) {
+	$description="";
+	$doc_info=getoneb("select * from documents where doc_id = '$row->doc_id'");
+	switch ($doc_info->doc_type) {
+		case "gcrfi":   $application="gcrfilog" . $devel;break;;;
+		case "rfi":   $application="rfilog" . $devel;break;;;
+		case "transmittal":   $application="transmittals" . $devel;break;;;
+		default:	$application=$doc_info->doc_type . $devel;
+		}
+	if ($row->doc_id>0) {
+		//$cookie=batch_this_document($row->doc_id);
+		$info=getoneb("select * from documents where doc_id = '$row->doc_id'");
+		$description=$info->app_reference . " - " . $info->description;
+		}
+	echo "<tr><td title=\"$row->description\"><a href=\"$pagename?mode=open_doc&doc_id=$row->doc_id\" style=\"color: black;\" target=_blank>$description</a></td></tr>";
+	//$script=$script . "ajaxManager('load_page','/global/front_desk$devel/$application/?mode=pdf_produce_file&doc_id=$row->doc_id&sequence=$seq','batch_prep_$row->doc_id');";
+	
+	//$script2=$script2 . "check('batch_prep_$row->doc_id');";
+	$seq++;
+	}
+echo "</table>";
+
+
+
+
+
+$hide_the_cookie_sheet='Y';
+fd_navs_footer();
+
+exit;
+
+
+
+
+
+
+$seq=1;
+
+echo "
+
+<tr bgcolor=$fd_color_1><td colspan=2 align=center style=\"display: none;\" id=\"dlpdf\">
+	<a href=$pagename?mode=eat_your_pdf_batch target=_blank><font color=blue>Download a PDF File</font></a>
+</td></tr>
+	
+<tr bgcolor=$fd_color_1><td colspan=2 align=center style=\"display: none;\" id=\"dlzip\">
+	<a href=$pagename?mode=eat_your_zip_batch><font color=blue>Download a ZIP File</font></a>
+</td></tr>
+
+<tr bgcolor=$fd_color_1><td colspan=2 align=center style=\"display: none;\" id=\"stxmit\">
+	<i>Start a transmittal</i>
+</td></tr>
+	
+<tr bgcolor=$fd_color_1><td colspan=2 align=center><a href=$pagename?mode=clear_doc_queue&goto=main><font color=blue>Hurl your cookies</font></a></td></tr>
+</table>
+
+<script>
+$script
+
+document.incomplete='no';
+document.errors='no';
+document.errorcount=0;
+document.complete_failure='yes';
+document.rounds=0;
+
+function check(id) {
+	obj=document.getElementById(id);
+	contents=obj.innerHTML;
+	if (contents=='') {
+		obj.style.background='$fd_color_3';
+		document.incomplete='yes';
+		}
+	if (contents=='OK') {
+		document.complete_failure='no';
+		obj.style.background='#aaddaa';
+		return('');
+		}
+	if (contents!='') {
+		obj.style.background='#bb2222';
+		obj.style.color='#ffffff';
+		}
+	document.errors='yes';
+	document.errorcount=document.errorcount + 1;
+	}
+
+function checkall() {
+	document.rounds=document.rounds + 1;
+	document.incomplete='no';
+	document.errors='no';
+	document.errorcount=0;
+	
+	$script2
+	
+	
+	if (document.incomplete!='no') {
+		setTimeout('checkall()',500);
+		return ('');
+		}
+	
+	if (document.complete_failure!='no') {
+		alert('Your document could not be generated. Please review the output above for more information!');
+		return('');
+		}
+	
+	if (document.errors!='no') {
+		alert('There were ' + document.errorcount + ' errors producing your document. Please review before continuing!');
+		}
+	
+	
+	document.getElementById('dlpdf').style.display='table-cell';
+	document.getElementById('dlzip').style.display='table-cell';
+	//document.getElementById('stxmit').style.display='table-cell';
+	//alert(document.rounds);
+	}
+
+
+
+
+checkall();
+</script>
+
+
+
+";
+
+
+?>

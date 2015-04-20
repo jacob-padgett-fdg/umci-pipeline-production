@@ -1,0 +1,36 @@
+drop table if exists access;
+create table access (
+	access_id int not null auto_increment,
+	application_name char(30) not null,
+	contacts_id int not null,
+	type char(20),
+	rightsmode char(20),
+	primary key (access_id),
+	key (application_name),
+	key (contacts_id)
+	);
+
+
+
+
+
+
+drop table if exists access_applications;
+create table access_applications (
+	access_applications_id int not null auto_increment,
+	application_name char(30),
+	primary key (access_applications_id)
+	);
+insert into access_applications values ('1','reproduction_billing_history');	
+insert into access_applications values ('2','reproduction_billing');	
+insert into access_applications values ('3','reproduction');	
+insert into access_applications values ('4','access');	
+insert into access_applications values ('5','contacts');	
+insert into access_applications values ('6','customers');	
+insert into access_applications values ('7','joblist');	
+insert into access_applications values ('8','spooltrack');	
+insert into access_applications values ('9','timesheet');	
+insert into access_applications values ('10','resource');	
+insert into access_applications values ('11','slider');	
+insert into access_applications values ('12','conflict_resolution');
+

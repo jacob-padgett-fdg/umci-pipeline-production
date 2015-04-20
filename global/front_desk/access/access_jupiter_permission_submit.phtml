@@ -1,0 +1,82 @@
+<?
+if ($permissions_id!="") {
+	$permissions_id=addslashes($permissions_id);
+	$query_start="update ";
+	$query_end=" where permissions_id = '$permissions_id'";
+	} else {
+	$query_start="insert into ";
+	
+	$query_end="";
+	}
+
+$active=checkfix($active);
+
+if ($sharelist_id!="") $sharelist_id=addslashes($sharelist_id);
+else die("oops, no sharelist_id! application error?");
+
+if ($access_action!="") $access_action=addslashes($access_action);
+else die("oops, no access_action!");
+
+if ($access_type!="") $access_type=addslashes($access_type);
+else die("oops, no access_type!");
+
+if ($for_who!="") $for_who=addslashes($for_who);
+else die("oops, no for_who!");
+
+$this_dir_only=checkfix($this_dir_only);
+
+
+$uog_found="false";
+if ($user_or_group=="user") {
+	if ($uid!="") $uid=addslashes($uid);
+	else die("oops, no uid!");
+	
+	$uid_info=getone("select * from contacts where contacts_id = '$uid'");
+	if ($uid_info->login_name=="") die ("Error: User has no login name!");
+	$query_middle_2="
+		user_or_group = 'user',
+		uid = '$uid',
+		login_name = '$uid_info->login_name',
+		group_name = ''
+		";
+	$uog_found="true";
+	}
+
+if ($user_or_group=="group") {
+	if ($group_name!="") $uid=addslashes($group_name);
+	else die("oops, no group_name!");
+	
+	$query_middle_2="
+		user_or_group = 'group',
+		uid = '0',
+		login_name = '',
+		group_name = '$group_name'
+		";
+	$uog_found="true";
+	}
+
+if ($uog_found!="true") die('oops, invalid user/group setting!');
+
+$path=ereg_replace('[\]','/',$path);
+$path=ereg_replace('^/*','',$path);
+$path=ereg_replace('/*$','',$path);
+$path=addslashes($path);
+
+$query_middle=" access_jupiter_permissions set
+active = '$active',
+sharelist_id = '$sharelist_id',
+access_action = '$access_action',
+access_type = '$access_type',
+this_dir_only = '$this_dir_only',
+path = '$path',
+for_who = '$for_who',
+";
+
+$query_full=$query_start . $query_middle . $query_middle_2 . $query_end;
+
+$res=@mysql_query($query_full);
+if (!($res)) die("SQL ERROR: Could not update database! Failed query:<hr>$query_full");
+@mysql_query("update access_jupiter_sharelist set fileserver_up_to_date = 'N' where sharelist_id = '$sharelist_id'");
+forward("access_jupiter_share_show&sharelist_id=$sharelist_id");
+
+?>

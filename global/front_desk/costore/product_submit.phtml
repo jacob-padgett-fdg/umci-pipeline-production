@@ -1,0 +1,49 @@
+<?
+if (!($adminuser)) die_security();
+
+if ($product_id!="") {
+	$product_id=addslashes($product_id);
+	$query_start="update ";
+	$query_end=" where product_id = '$product_id'";
+	} else {
+	$query_start="insert into ";
+	$query_end="";
+	}
+
+$product_name=addslashes($product_name);
+$item_number=addslashes($item_number);
+$image_id=addslashes($image_id);
+$description=addslashes($description);
+$is_clothing=checkfix($is_clothing);
+$active=checkfix($active);
+$new_item_flag=checkfix($new_item_flag);
+$clearance_item_flag=checkfix($clearance_item_flag);
+
+$price=addslashes($price);
+//$xxl_price=addslashes($xxl_price);
+$non_emp_price=addslashes($non_emp_price);
+
+$query_middle="
+
+costore_products set
+product_name = '$product_name',
+item_number = '$item_number',
+image_id = '$image_id',
+description = '$description',
+is_clothing = '$is_clothing',
+price = '$price',
+non_emp_price = '$non_emp_price',
+active = '$active',
+new_item_flag = '$new_item_flag',
+clearance_item_flag = '$clearance_item_flag'
+";
+
+$query_full=$query_start . $query_middle . $query_end;
+
+//echo "<hr>$query_full<hr>";exit;
+$res=@mysql_query($query_full);
+if (!($res)) die("Failure. Please contact your system administrator.<br>Failed query:<hr>" . $query_full);
+
+forward('main');
+
+?>

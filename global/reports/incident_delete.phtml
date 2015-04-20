@@ -1,0 +1,16 @@
+<?
+set_time_limit("900");
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+include("lam_lib.inc");
+
+if ($incident_id!="") $incident_id=addslashes($incident_id);
+$incident_info=getoneb("select * from front_desk_reports_safety_incidents where incident_id = '$incident_id'");
+if (!($incident_info)) die("Application error. (Incident_id/info)");
+
+@mysql_query("delete from front_desk_reports_safety_incidents where incident_id = '$incident_info->incident_id'");
+$came_from=addslashes($came_from);
+forward("$mode&report_name=incident_edit&incident_id=$came_from");
+?>

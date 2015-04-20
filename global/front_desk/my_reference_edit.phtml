@@ -1,0 +1,126 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+
+if ($reference_id!="") {
+	$reference_id=addslashes($reference_id);
+	$reference_info=getoneb("select * from front_desk_references where reference_id = '$reference_id'");
+	$category_id=$reference_info->category_id;
+	$new=FALSE;
+	} else {
+	$reference_info->others_get_write="N";
+	$reference_info->owner=$global_user_id;
+	$new=TRUE;
+	}
+$category_id=addslashes($category_id);
+$category_info=getoneb("select * from front_desk_reference_categories where category_id = '$category_id'");
+if (!($category_info)) {
+	die("Application error! Category info failure!");
+	}
+
+$write=FALSE;
+if ($adminuser) $write=TRUE;
+if ($category_info->owner==$global_user_id) $write=TRUE;
+if ($reference_info->others_get_write=="Y") $write=TRUE;
+if ($reference_info->owner==$global_user_id) $write=TRUE;
+
+if (!($write)) die_security();
+
+if (!($new)) {
+	echo "Permanent link to this document: <a href=\"https://pipeline.umci.com/global/front_desk/?mode=my_reference_center_lookup&reference_id=$reference_info->reference_id\"><font color=blue>Static Link</font></a><br>";
+	}
+
+echo "
+<form name=fooberry method=post action=$pagename>
+<input type=hidden name=mode value=my_reference_submit>
+<input type=hidden name=category_id value=\"$category_info->category_id\">
+<input type=hidden name=reference_id value=\"$reference_info->reference_id\">
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+	<b>Document Info</b>
+</td></tr>
+
+<tr><td>
+	Name
+</td><td>
+	<input maxsize=40 type=text name=save_name value=\"$reference_info->name\">
+</td></tr>
+
+<tr><td>
+	Doc or URL
+</td><td>
+	<select name=doc_or_url>
+	<option>$reference_info->doc_or_url</option> 
+	<option>doc</option>
+	<option>url</option>
+	<option>url in new window</option>
+	<option>flash video</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Document File
+</td><td>";
+	webfilebox("$reference_info->file_group_id","file_group_id");echo "
+</td></tr>
+
+<tr><td>
+	URL
+</td><td>
+	<input type=text size=50 name=url value=\"$reference_info->url\">
+</td></tr>
+
+<tr><td>
+	Owner
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'",$reference_info->owner,"owner");echo "
+</td></tr>
+
+<tr><td>
+	Notes
+</td><td>
+	<textarea rows=3 cols=30 name=notes>$reference_info->notes</textarea>
+</td></tr>
+
+<tr><td>
+	Public Writes
+</td><td>
+	<select name=others_get_write>
+	<option>$reference_info->others_get_write</option>
+	<option>Y</option>
+	<option>N</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	<a href=$pagename?mode=my_reference_center_manage&category_id=$category_info->category_id><font color=blue>Cancel</font></a>
+</td><td align=right>
+	<input type=submit value=Save>
+</td></tr>
+
+</table>
+
+</form>
+";
+if (!($new)) {
+echo "
+<script>
+function delete_reference() {
+	if (confirm(\"Delete this entire record (including attachment)?\")) {
+		document.location=\"$pagename?mode=my_reference_delete&reference_id=$reference_info->reference_id\";
+		}
+	}
+</script>
+
+<h2><a href=javascript:delete_reference()><font color=blue>Delete this record</font></a></h2>
+
+";
+}
+
+
+
+
+
+mh_navs_footer();
+?>

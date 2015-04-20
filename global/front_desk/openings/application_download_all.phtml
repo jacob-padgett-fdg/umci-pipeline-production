@@ -1,0 +1,21 @@
+<?
+require_once('pdf_lib2.inc');
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+if ($hr_openings_id=="") die("oops, no hr_openings_id!");
+$hr_openings_id=addslashes($hr_openings_id);
+
+$completed_qry="select hr_applications.application_id from hr_applications,hr_application_submissions where 
+	hr_applications.application_id = hr_application_submissions.application_id and 
+	hr_openings_id = '$hr_openings_id'";
+$completed_res=@mysql_query($completed_qry);
+
+$first=TRUE;
+while ($app=@mysql_fetch_object($completed_res)) {
+	if (!($first)) $pdf->ezNewPage();
+	$pdf=application_pdf($pdf,$app->application_id);
+	$first=FALSE;
+	}
+
+$pdf->ezStream();
+?>

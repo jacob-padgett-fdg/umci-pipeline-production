@@ -1,0 +1,291 @@
+<?
+$fontsize=8;
+$standard_gap=16;
+$today=date('m/d/Y');
+
+
+if ($header_all_jobs=="Yes") {
+	$header_all_jobs=TRUE;
+	} else {
+	$header_all_jobs=FALSE;
+	}
+if ($active_jobs_only=="Yes") {
+	$active_jobs_only=TRUE;
+	} else {
+	$active_jobs_only=FALSE;
+	}
+if ($active_jobs_only) {
+	$active_where=" where active = 'Y' ";
+	} else {
+	$active_where="";
+	}
+
+if ($hide_umc_users=="Yes") {
+	$who_and_and=" and contacts.umc_emp = 'N' ";
+	} else {
+	$who_and_and="";
+	}
+
+//$show_this_user=2;
+//$show_this_user=158;
+if ($show_this_user!="") {
+	$show_this_user=mysql_real_escape_string($show_this_user);
+	$who_and=" and contacts.contacts_id = '$show_this_user' ";
+	} else {
+	$who_and="";
+	}	
+
+if ($show_report_permissions=="Yes") {
+	$show_report_permissions=TRUE;
+	} else {
+	$show_report_permissions=FALSE;
+	}
+
+
+function separator($pdf,$text,$second_text="") {
+	global $fontsize;
+	$pdf->ezText("");
+	$pdf->addText(36,$pdf->y +2,$fontsize,"$text");
+	$pdf->line(32,$pdf->y,580,$pdf->y);
+	$pdf->addText(410,$pdf->y + 2,$fontsize,$second_text);
+	//($second_text,$fontsize,array('justification'=>'right'));
+	$pdf->ezText("");
+	return($pdf);
+	}
+
+function print_row($pdf,$jobinfo_id,$app_name,$display_name,$type,$groupname,$login_name) {
+	global $fontsize,$current_job,$header_all_jobs;
+	
+	if (!($header_all_jobs)) {
+		if ("$jobinfo_id"!="$current_job") {
+			if ($jobinfo_id=="0") {
+				$job_text="All - These permissions apply to all jobs";
+				} else {
+				$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+				$pm_info=getoneb("select * from contacts where contacts_id = $jobinfo->project_manager_id");
+				$job_text="$jobinfo->contract_num - $jobinfo->display_name";
+				$pm_text="Project Manager: $pm_info->display_name";
+				}
+				separator($pdf,$job_text,$pm_text);
+				$current_job="$jobinfo_id";
+			}
+		}
+	
+	if ($groupname=="") $groupname='--direct--';
+	$pdf->addText(36,$pdf->y,$fontsize,"$app_name");
+	$pdf->addText(155,$pdf->y,$fontsize,"$display_name");
+	$pdf->addText(255,$pdf->y,$fontsize,"$type");
+	$pdf->addText(300,$pdf->y,$fontsize,"$groupname");
+	$pdf->addText(400,$pdf->y,$fontsize,"$login_name");
+	$pdf->ezText("",$fontsize);
+	return($pdf);
+	}
+
+if ($show_pdf!="TRUE") {
+	//echo "hello";
+	include("header.phtml");
+	include('mh_lib.inc');
+	//include('report_lib.inc');
+	mh_navs_header();
+	echo "
+	<form name=permission_report method=post action=\"$pagename\">
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=\"$report_name\">
+	<input type=hidden name=show_pdf value=\"TRUE\">
+	<table border=1 cellspacing=0 cellpadding=4>
+	<tr><td colspan=2 background=$fd_color_4 align=center>
+		<b>Permission report options</b>
+	</td></tr>
+	
+	<tr><td>
+		<b>User</b>
+	</td><td>
+		";contact("select * from contacts where umc_emp = 'Y' and current = 'Y'","$show_this_user",'show_this_user');echo "
+	</td></tr>
+	
+	<tr><td title=\"Every job regardless of any special permissions assigned.\">
+		<b>Header for every job</b>
+	</td><td>
+		<select name=header_all_jobs>
+			<option>Yes</option>
+			<option>No</option>
+		</select>
+	</td></tr>
+	
+	<tr><td>
+		<b>Active Jobs Only</b>
+	</td><td>
+		<select name=active_jobs_only>
+			<option>Yes</option>
+			<option>No</option>
+		</select>
+	</td></tr>
+
+	<tr><td>
+		<b>Include Reports</b>
+	</td><td>
+		<select name=show_report_permissions>
+			<option>Yes</option>
+			<option>No</option>
+		</select>
+	</td></tr>
+	
+	<tr><td>
+		<b>Hide UMC users</b>
+	</td><td>
+		<select name=hide_umc_users>
+			<option>No</option>
+			<option>Yes</option>
+		</select>
+	</td></tr>
+	
+	<tr><td>
+		<b>Subsort by</b>
+	</td><td>
+		<select name=subsort_by>
+			<option>Application</option>
+			<option>Name</option>
+		</select>
+	</td></tr>
+	
+	<tr><td colspan=2 align=right>
+		<input type=submit value=Search>
+	</td></tr>
+	</table>
+	";
+	
+	
+	
+	
+	
+	
+	mh_navs_footer();
+	
+	
+	
+	exit;
+	}
+
+
+
+
+
+$all_jobs_query="select contract_num, jobinfo_id,job_name, display_name, project_manager_id, job_cost, contract_type,fed_pub,contract_admin,safetyrep,confidential from jobinfo $active_where order by contract_num";
+
+require('pdf_lib2.inc');
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+$pdf->ez_umc_header_start('<b>RESTRICTED INFORMATION</b> - DO NOT DISTRIBUTE');
+$pdf->ezStartPageNumbers(550,35,10,'',"Page {PAGENUM} of {TOTALPAGENUM}");
+$pdf->ezSetMargins(100,36,36,36);
+
+
+////////////////////////////////////////////////////////
+// print the title/header of the report
+////////////////////////////////////////////////////////
+$pdf->ezText("FD 1.0 Access Permissions Report",20,array('justification'=>'center'));
+$pdf->ezText("<i>($today)</i>",$fontsize,array('justification'=>'center'));
+if ($header_all_jobs) {
+	$job_text="All - These permissions apply to all jobs.";
+	separator($pdf,$job_text);
+	}
+
+//////////////////////////////////////////////////////////////////////////
+// First we do things that are not job-specific (jobinfo_id = 0 or null),
+// for all of the published applications
+//////////////////////////////////////////////////////////////////////////
+if ($show_report_permissions) {
+	$report_query="select * from front_desk_reports_permissions 
+	left join front_desk_reports on (front_desk_reports_permissions.report_id = front_desk_reports.report_id) 
+	left join contacts on (front_desk_reports_permissions.contacts_id = contacts.contacts_id)
+	where only_for_job = 0 $who_and $who_and_and order by contacts.company_id,front_desk_reports_permissions.admin_user desc,contacts.display_name";
+	$reports_res=@mysql_query($report_query);
+	while ($report=mysql_fetch_object($reports_res)) {
+		if ($report->admin_user=="Y") $admin="admin";
+		else $admin="user";
+		print_row($pdf,0,"rpt:" . $report->report_display_name,$report->display_name,"$admin","",$report->login_name);
+		}
+	}
+$applist_query="select * from front_desk_applications where devel_only != 'Y'  order by sort_priority,app_short_description";
+$app_res=@mysql_query($applist_query);
+while ($app=@mysql_fetch_object($app_res)) {
+	$perms_query="select access_id,application_name,type,groupname,contacts.display_name,contacts.login_name from access_rights2 left join contacts on (access_rights2.contacts_id = contacts.contacts_id) where display_name is not null and ( jobinfo_id = 0 or jobinfo_id is null ) and application_name = '$app->app_name' $who_and $who_and_and group by application_name,contacts.contacts_id order by contact.company_id,type,display_name";
+	$perms_res=@mysql_query($perms_query);
+	
+	while ($perms=@mysql_fetch_object($perms_res)) {
+		if (($app->app_name=="issue_resolution")&&($perms->type=="read_only")) continue;
+		print_row($pdf,0,$app->app_name,$perms->display_name,$perms->type,$perms->groupname,$perms->login_name);
+		}
+	}
+//////////////////////////////////////////////////////////////////////////
+// Now we do all the same shit, but only for things job-specific.
+//////////////////////////////////////////////////////////////////////////
+
+$aj_res=@mysql_query($all_jobs_query);
+while ($job=@mysql_fetch_object($aj_res)) {
+	if ($header_all_jobs) {
+		$pm_info=getoneb("select * from contacts where contacts_id = $job->project_manager_id");
+		$job_text="$job->contract_num - $job->display_name";
+		$pm_text="Project Manager: $pm_info->display_name";
+		//$job_text="$job->contract_num - $job->display_name";
+		separator($pdf,$job_text,$pm_text);
+		}
+	$pmlist_query="select * from front_desk_job_pms left join contacts on (contacts.contacts_id = front_desk_job_pms.contacts_id) where jobinfo_id = '$job->jobinfo_id' $who_and $who_and_and order by display_name";
+	//die($pmlist_query);
+	$pmlist_res=@mysql_query($pmlist_query);
+	while ($pm=@mysql_fetch_object($pmlist_res)) {
+		print_row($pdf,$job->jobinfo_id,"***GUEST PM***",$pm->display_name,"admin","",$pm->login_name);
+		}
+	if ($show_report_permissions) {
+		$report_query="select * from front_desk_reports_permissions 
+		left join front_desk_reports on (front_desk_reports_permissions.report_id = front_desk_reports.report_id) 
+		left join contacts on (front_desk_reports_permissions.contacts_id = contacts.contacts_id)
+		where only_for_job = $job->jobinfo_id $who_and $who_and_and order by contacts.company_id,front_desk_reports_permissions.admin_user desc,contacts.display_name";
+		$reports_res=@mysql_query($report_query);
+		//die($report_query);
+		//$pdf->ezTableDump($report_query);
+		while ($report=mysql_fetch_object($reports_res)) {
+			if ($report->admin_user=="Y") $admin="admin";
+			else $admin="user";
+			print_row($pdf,$job->jobinfo_id,"rpt:" . $report->report_display_name,$report->display_name,"$admin","",$report->login_name);
+			}
+		}
+
+	if ($subsort_by=="Application") {
+		$applist_query="select * from front_desk_job_applications left join front_desk_applications on (front_desk_job_applications.fd_app_id = front_desk_applications.fd_app_id) where jobinfo_id = '$job->jobinfo_id' and front_desk_job_applications.current = 'Y' order by sort_priority,app_short_description";
+		$app_res=@mysql_query($applist_query);
+		while ($app=@mysql_fetch_object($app_res)) {
+			if ($app->app_name=="issue_resolution") {
+			$perms_query="select * from issue_res_users left join contacts on (issue_res_users.contacts_id = contacts.contacts_id) where jobinfo_id = '$job->jobinfo_id' $who_and $who_and_and";
+			$perms_res=@mysql_query($perms_query);
+			$count=@mysql_num_rows($perms_res);
+			if ($count<1) continue;
+			while ($perms=@mysql_fetch_object($perms_res)) {
+				print_row($pdf,$job->jobinfo_id,$app->app_name,$perms->display_name,'*special*','N/A',$perms->login_name);
+				}
+			} else {
+			$perms_query="select access_id,application_name,type,groupname,contacts.display_name,contacts.login_name from access_rights2 left join contacts on (access_rights2.contacts_id = contacts.contacts_id) where display_name is not null and ( jobinfo_id = '$job->jobinfo_id' ) and application_name = '$app->app_name' $who_and $who_and_and group by application_name,contacts.contacts_id order by type,display_name";
+			$perms_res=@mysql_query($perms_query);
+			$count=@mysql_num_rows($perms_res);
+			if ($count<1) continue;
+			while ($perms=@mysql_fetch_object($perms_res)) {
+				print_row($pdf,$job->jobinfo_id,$app->app_name,$perms->display_name,$perms->type,$perms->groupname,$perms->login_name);
+				}
+			}
+		} 
+	} else {
+			print_row($pdf,"nacho","nacho");
+	}
+}
+
+
+
+
+
+
+
+
+
+$pdf->ezStream();
+exit;
+?>

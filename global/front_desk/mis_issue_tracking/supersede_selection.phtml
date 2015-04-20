@@ -1,0 +1,28 @@
+<?
+if ($issue_id=="") die("ERROR: I don't know what you're talking about. Please call your system administrator");
+$issue_id=addslashes($issue_id);
+
+
+$query="select * from mis_issue_index where status != 'approved' and status != 'complete' order by issue_id";
+
+//tabledump($query);
+
+echo "<html><head><title>Supersede Item Selection for issue number $issue_id</title></head><body bgcolor=#ffffff>
+<b>Selected Issue: </b> $issue_id<hr>
+";
+
+
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) {
+	if ($row->issue_id != $issue_id)
+	echo "<a href=$pagename?mode=supersede_selection_submit&reference_issue=$row->issue_id&issue_id=$issue_id><font color=blue>$row->issue_id</font></a>
+	&nbsp;&nbsp;&nbsp;$row->name<br>";
+	
+	
+	
+	}
+
+
+
+?>

@@ -1,0 +1,29 @@
+<?
+
+$joblistres=@mysql_query("select * from jobinfo where active = 'Y' and length(contract_num) = 4 order by contract_num + 1");
+echo "<table border=1>
+<tr><td>
+	Job #
+</td><Td>
+	Description
+</td><td>
+	Manpower
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($joblistres)) {
+	$workers=getoneb("select sum(1) as total from lam where jobinfo_id = '$row->jobinfo_id' and lamchops_id = '$lamchop_info->lamchops_id'");
+	if ($workers->total=="") $workers->total = 0;
+	//echo "<hr>select sum(1) as total from lam where jobinfo_id = '$row->jobinfo_id' and lamchops_id = '$lamchop_info->lamchops_id'";
+	echo "<tr><td>
+			$row->contract_num
+		</td><td>
+			$row->job_name
+		</td><td>
+			$workers->total
+		</td></tr>";
+	}
+echo "</table>";
+
+
+?>

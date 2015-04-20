@@ -1,0 +1,83 @@
+<?
+require("querylib.inc");
+require("customer.inc");
+
+
+if ($b_dwg == "on" ) $b_dwg="yes"; else $b_dwg="no";
+if ($b_txt == "on" ) $b_txt="yes"; else $b_txt="no";
+if ($b_jpg == "on" ) $b_jpg="yes"; else $b_jpg="no";
+if ($b_tif == "on" ) $b_tif="yes"; else $b_tif="no";
+if ($b_bmp == "on" ) $b_bmp="yes"; else $b_bmp="no";
+if ($b_oth == "on" ) $b_oth="yes"; else $b_oth="no";
+
+$customer=custgetid($customer);
+
+	$cdinfo_id=escapeshellcmd($cdinfo_id);
+	$job_num=escapeshellcmd($job_num);
+	$job_name=escapeshellcmd($job_name);
+//	$customer=htmlspecialchars($customer);
+//	$customer=escapeshellcmd($customer);
+	$manager=escapeshellcmd($manager);
+	$year_ended=escapeshellcmd($year_ended);
+	$new=0;
+
+if ($year_ended <= 90 ) $year_ended=$year_ended + 2000;
+if ($year_ended <= 100 ) $year_ended=$year_ended + 1900;
+if ("$cd_jobinfo_id" != "") {
+	$cd_jobinfo_id=escapeshellcmd($cd_jobinfo_id);
+$query="update $jobinfo set  
+	cdinfo_id = '$cdinfo_id', 
+	job_num = '$job_num', 
+	job_name = '$job_name', 
+	customer = '$customer', 
+	manager = '$manager', 
+	b_dwg = '$b_dwg',
+	b_txt = '$b_txt',
+	b_jpg = '$b_jpg',
+	b_tif = '$b_tif',
+	b_bmp = '$b_bmp',
+	b_oth = '$b_oth',
+	year_ended = '$year_ended'
+	where jobinfo_id = '$cd_jobinfo_id'";
+} else {
+$query="insert into $jobinfo ( 
+	cdinfo_id,
+	job_num,
+	job_name,
+	customer,
+	manager,
+	b_dwg,
+	b_txt,
+	b_jpg,
+	b_tif,
+	b_bmp,
+	b_oth,
+	year_ended ) values ( 
+	'$cdinfo_id',
+	'$job_num',
+	'$job_name',
+	'$customer',
+	'$manager',
+	'$b_dwg',
+	'$b_txt',
+	'$b_jpg',
+	'$b_tif',
+	'$b_bmp',
+	'$b_oth',
+	'$year_ended' )";
+	$new=1;
+}
+
+//echo "$query";exit;
+
+
+$result=mysql_query($query);
+if (!($result)) {
+	include("jobinfo_submit_error.phtml");
+	exit;
+	} else {
+	include("cdinfo_edit.phtml");
+	exit;
+	}
+?>
+

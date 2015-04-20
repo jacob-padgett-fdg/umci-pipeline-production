@@ -1,0 +1,64 @@
+<?
+
+$it_category_id=escapeshellcmd($it_category_id);
+
+echo"
+<html><head><title>Create new issue</title></head><body bgcolor=#ffffff>
+
+
+<form name=create_issue method=post action=$pagename>
+<input type=hidden name=it_category_id value=$it_category_id>
+<input type=hidden name=mode value=issue_new_item_submit>
+<table border=0>
+
+<tr><td>
+	Priority
+</td><td>
+	";dropbox("select priority,priority_text from mis_issue_priorities order by priority desc");echo"
+</td></tr>
+
+<tr><td>
+	Name (short description)
+</td><td>
+	<input type=text size=22 maxlength=35 name=name>
+</td></tr>
+
+<tr><td valign=top>
+	Description
+</td><td>
+	<textarea name=description rows=5 cols=40 scrollbars=no></textarea>
+</td></tr>
+
+<tr><td>
+	Requested Completion Date
+</td><td>
+	";
+	datebox('',"create_issue.requested_completion");
+	//<input type=text size=11 name=requested_completion>
+	echo "
+</td></tr>
+
+<tr><td>
+	Fixed Date
+</td><td>
+	<input type=checkbox name=can_not_slide_date>
+</td></tr>
+
+<tr><td>
+</td><td>
+	<input type=submit value=\"Submit Request\">
+</td></tr>
+
+
+</form>
+</table>
+";
+
+
+
+
+
+
+
+
+?>

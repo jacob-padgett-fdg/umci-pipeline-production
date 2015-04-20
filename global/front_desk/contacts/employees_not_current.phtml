@@ -1,0 +1,13 @@
+<?
+//require('querylib.inc');
+require("../front_desk/mh_lib.inc");
+require("header.phtml");
+mh_navs_header();
+//require('header2.phtml');
+echo "<a href=$pagename?mode=main><font color=blue>Contacts Main Menu</font></a><p>";
+//$query="select * from contacts where umc_emp = 'Y' and current != 'Y' order by last_name,first_name";
+$query="select * from contacts where umc_emp = 'Y' and current != 'Y' order by alphasort";
+contact_table($query);
+//require('footer.phtml');
+mh_navs_footer();
+?>

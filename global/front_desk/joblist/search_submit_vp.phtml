@@ -1,0 +1,26 @@
+<?
+require_once('viewpoint_connect_ro.phtml');
+
+//mssql_connect("viewpoint","reddwarf","cl01st3r");
+//mssql_select_db("Viewpoint");
+require_once("viewpoint_libs.inc");
+
+$oa_text=strtolower(addslashes($oa_text));
+
+$query="select * from JCJM with (NOLOCK),JCCM with (NOLOCK) where JCJM.JCCo = 1 and ( (lower(JCCM.udownername) LIKE '%$oa_text%') or (lower(JCCM.ArchitectName) LIKE '%$oa_text%') ) and JCJM.Contract = JCCM.Contract and JCJM.Job LIKE '%-'";
+$res=@mssql_query($query);
+
+$showtraxx=1;
+if ($showtraxx==1) $colcount=9;
+	else $colcount=8;
+echo "<table border=1 cellspacing=0 cellpadding=4>
+<tr><td colspan=$colcount bgcolor=#eeeeee align=center><h3>Matching Jobs</h3></td></tr><tr><td colspan=$colcount><font size=-3>&nbsp;</font></td></tr>";
+while ($row=@mssql_fetch_object($res)) {
+	$webjobnum=ereg_replace("^0*","",$row->Job);
+	$webjobnum=ereg_replace("[- ]*$","",$webjobnum);
+	$jobinfo=getoneb("select * from jobinfo where contract_num = '$webjobnum'");
+	listjobs_row($jobinfo,1,1);
+	}
+echo "</table>";
+
+?>

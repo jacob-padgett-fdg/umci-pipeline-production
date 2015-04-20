@@ -1,0 +1,58 @@
+<?
+if ($agreement_id=="") die("ERROR: No agreement_id. Please contact your system administrator!");
+else $agreement_id=addslashes($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+
+
+if (($agreement_info->creator!=$global_user_id)&&(!(is_admin()))) {
+	die_security();
+	}
+require("header.phtml");
+
+$owner_info=getone("select * from contacts where contacts_id = '$agreement_info->creator'");
+echo "<a href=$pagename?mode=svc_agreement_edit&agreement_id=$agreement_info->agreement_id><font color=blue>Cancel</font></a><br>"; 
+agreement_summary_box($agreement_id);
+
+echo "
+<h2>Transfer Agreement Ownership</h2><hr> 
+<form name=ag_xfer method=post action=$pagename> 
+<input type=hidden name=mode value=svc_agreement_transfer_submit>
+<input type=hidden name=agreement_id value=\"$agreement_id\">
+
+<table border=0>
+<tr><td>
+	Current Owner:
+</td><td>
+	$owner_info->display_name
+</td></tr>
+
+<tr><td>
+	New Owner:
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'","","new_owner_id","",2);echo "
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=\"Transfer\">
+</td></tr>
+
+</table>
+
+
+
+
+
+
+</form>
+
+";
+
+
+
+
+
+
+
+
+
+?>

@@ -1,0 +1,21 @@
+<?
+
+echo"<html><body bgcolor=white>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+<table border=1 cellspacing=0 cellpadding=5 width=100%><tr bgcolor=#dddddd><td align=center><h2>Timesheets I have been granted access to</h2></td></tr></table>";
+
+$query="select * from contacts,timesheet_permissions where timesheet_guest = '$global_user->contacts_id' and timesheet_owner = contacts_id and contacts.current = 'Y'";
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) {
+	echo "<a href=$pagename?mode=permissions_suid&timesheet_owner=$row->contacts_id><font color=blue>$row->last_name, $row->first_name ($row->login_name)</font></a><br>";
+	
+	
+	
+	}
+
+
+
+
+
+?>

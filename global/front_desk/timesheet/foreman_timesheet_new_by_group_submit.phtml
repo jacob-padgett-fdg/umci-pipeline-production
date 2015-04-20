@@ -1,0 +1,33 @@
+<?
+$creator=$global_user->contacts_id;
+$status="new";
+$week_ending=vali_date($ts_week_ending);
+if ($group_id!="") $group_id=escapeshellcmd($group_id);
+else die ("ERROR: No group_id specified. Please contact your system administrator or try again (start over).");
+$group_info=getone("select * from timesheet_foreman_groups where group_id = '$group_id'");
+
+$group_users_qry="select * from timesheet_group_members,contacts where contacts.contacts_id = timesheet_group_members.employee_id and group_id = '$group_info->group_id' order by last_name,first_name,employee_num";
+
+require('header.phtml');
+//echo "Creating timesheets for $group_info->group_name: Week ending $week_ending<hr>";
+
+$group_users=@mysql_query($group_users_qry);
+
+while($user=@mysql_fetch_object($group_users)) {
+	if (getoneb("select * from timesheet_index where employee_num = '$user->employee_num' and week_ending = '$week_ending'")) {
+		//echo "<b><font color=red>$user->last_name, $user->first_name ($user->employee_num) already has timesheet for $ts_week_ending... skipping!!!!</font></b><hr>";
+		} else {
+		if ($user->current=='Y') {
+			$query="insert into timesheet_index (creator,employee_id,employee_num,employee_group,week_ending,status)
+				values ('$global_user->contacts_id','$user->employee_id','$user->employee_num','$user->employee_group','$week_ending','$status')";
+			$res=@mysql_query($query);
+			if (!($res)) die("ERROR: QUERY FAILED. Please contact your system administrator ASAP. Some timesheets that should have been created were not.<p> Failed Query:<hr>$query<hr>");
+			//echo "$user->last_name, $user->first_name ($user->employee_num): Creating Timesheet<hr>";
+			//echo "Started timesheet for $user->first_name $user->last_name ($user->employee_num)<br>";
+		}
+	}
+}
+
+//echo "<a href=$pagename?mode=foreman_show_group&group_id=$group_info->group_id><font color=blue>Return to $group_info->group_name entry</font></a>";
+
+?>

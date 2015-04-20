@@ -1,0 +1,28 @@
+<?
+if ($group_id=="") {
+	$group_id=$foreman_last_group;
+	if ($group_id!="") forward("foreman_show_group&group_id=$group_id");
+	}
+if ($group_id!="") $group_id=escapeshellcmd($group_id);
+	else die("ERROR: Missing group_id. Contact your system administrator, or try again (start over)");
+session_register('foreman_last_group');
+$foreman_last_group=$group_id;
+$group_info=getone("select * from timesheet_foreman_groups where group_id = '$group_id'");
+require('header.phtml');
+
+
+$query="select week_ending from timesheet_index,timesheet_group_members where timesheet_index.employee_id = timesheet_group_members.employee_id and group_id = '$group_info->group_id' group by week_ending order by week_ending desc";
+$res=@mysql_query($query);
+echo "<b>Download timesheets for:</b><hr>";
+while($row=@mysql_fetch_object($res)) {
+	$we=invali_date($row->week_ending);
+	echo "
+	<a href=\"$pagename?mode=foreman_download_group_pdf_by_week&group_id=$group_info->group_id&week_ending=$we&blah=blahberries/${we}_timesheets.pdf\"><font color=-blue>$we</font></a><br>
+	
+	
+	";
+	
+	
+	}
+
+?>

@@ -1,0 +1,7 @@
+<?
+$current_user_id=$global_user_id;
+$tmp=$timesheet_escape_sheet;
+$timesheet_escape_sheet="";
+if ("$tmp"=="") $tmp="main";
+forward("$tmp");
+?>

@@ -1,0 +1,52 @@
+<?
+$company_id=escapeshellcmd($company_id);
+require('header.phtml');
+$company_info=getone("select * from contacts where contacts_id = '$company_id'");
+
+echo "<b>Contacts for $company_info->display_name</b><hr>
+<a href=$pagename?mode=company_contacts_edit&company_id=$company_id><b><i><font color=blue>New</font></i></b></a><p>
+<table border=1 cellpadding=3 cellspacing=0>
+<tr bgcolor=#dddddd><td>
+	<b>Name</b>
+</td><td>
+	<b>Phone</b>
+</td><td>
+	<b>Fax</b>
+</td><td>
+	<b>Email</b>
+</td><td>
+	<b>Current</b>
+</td></tr>
+";
+
+$res=@mysql_query("select display_name,phone,phone_fax,email,contacts_id,company,current from contacts where company_id = '$company_id' order by alphasort");
+while($row=@mysql_fetch_object($res)) {
+	echo "
+	<tr><td>
+		<a href=$pagename?mode=company_contacts_edit&contacts_id=$row->contacts_id&company_id=$company_id><font color=blue>$row->display_name</font></a>&nbsp;
+	</td><td>
+		$row->phone&nbsp;
+	</td><td>
+		$row->phone_fax&nbsp;
+	</td><td>
+		<a href=mailto:$rw->email>$row->email</a>&nbsp;
+	</td><td>
+		$row->current
+	</td></tr>
+	
+	";
+	}
+
+
+echo "
+</table><p>
+<a href=javascript:all_done();><font color=blue>Finished</font></a>
+
+<script>
+function all_done() {
+	opener.apply_changes();
+	self.close();
+	}
+</script>";
+
+?>

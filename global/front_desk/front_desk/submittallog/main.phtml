@@ -1,0 +1,198 @@
+<?
+$today=date('m-d-Y');
+$query_search_add=query_search_add_text();
+
+$query_final="
+select * from submittallog 
+left join documents on 
+(documents.doc_type = 'submittallog' and 
+documents.app_record_id = submittallog.submittallog_id) 
+where 
+submittallog.jobinfo_id = '$global_jobinfo_id' and 
+submittallog.section = '$current_submittallog_section'
+$query_search_add
+order by 
+spec_section + 0,
+spec_section,
+spec_sub_para + 0, 
+spec_sub_para,
+spec_sub_sub_para + 0, 
+spec_sub_sub_para,
+submittallog_id
+";
+
+
+$query_final_csv="
+select 
+	'$global_jobinfo->contract_num' as 'Contract #',
+	spec_section as 'Spec Section',
+	spec_sub_para as 'Spec Sub Paragraph',
+	spec_sub_sub_para as 'Spec Sub Sub Paragraph',
+	submittal_description as 'Description',
+	submittal_num as 'Submittal #',
+	pkg_num as 'Package #',
+	gc_num as 'GC #',
+	tag as 'Tag',
+	subcontractor_ref_num as 'Subcontractor Ref #',
+	status as 'Status',
+	notes as 'Notes'
+ from submittallog 
+left join documents on 
+(documents.doc_type = 'submittallog' and 
+documents.app_record_id = submittallog.submittallog_id) 
+where 
+submittallog.jobinfo_id = '$global_jobinfo_id' and 
+submittallog.section = '$current_submittallog_section'
+$query_search_add
+order by 
+spec_section + 0,
+spec_section,
+spec_sub_para + 0, 
+spec_sub_para,
+spec_sub_sub_para + 0, 
+spec_sub_sub_para,
+submittallog_id
+";
+
+
+if ($csvdump==1) {
+	header("Content-Type: application/octet-stream; ");
+	header("Content-Disposition: inline; filename=\"" . $global_jobinfo->contract_num . "_submittallog.csv\"");
+	echo "Contract #,Spec Section,Spec Sub Paragraph,Spec Sub Sub Paragraph,Description,Submittal #,Package #,GC #,Tag,Subcontractor Ref #,Current Status,Current Status Date,Orig Status,Orig Status Date,Notes\r\n";
+	$res=@mysql_query($query_final);
+	while ($row=@mysql_fetch_object($res)) {
+		$orig_status=getoneb("select * from submittallog_history where submittallog_id = '$row->submittallog_id' order by document_date,create_time,last_changed limit 1");
+		$current_status=getoneb("select * from submittallog_history where submittallog_id = '$row->submittallog_id' order by document_date desc,create_time desc,last_changed desc limit 1");
+		$row->spec_section=ereg_replace(",",";",$row->spec_section);
+		$row->spec_sub_para=ereg_replace(",",";",$row->spec_sub_para);
+		$row->spec_sub_sub_para=ereg_replace(",",";",$row->spec_sub_sub_para);
+		$row->submittal_description=ereg_replace(",",";",$row->submittal_description);
+		$row->submittal_num=ereg_replace(",",";",$row->submittal_num);
+		$row->pkg_num=ereg_replace(",",";",$row->pkg_num);
+		$row->gc_num=ereg_replace(",",";",$row->gc_num);
+		$row->tag=ereg_replace(",",";",$row->tag);
+		$row->subcontractor_ref_num=ereg_replace(",",";",$row->subcontractor_ref_num);
+		$row->status=ereg_replace(",",";",$row->status);
+		$row->notes=ereg_replace(",",";",$row->notes);
+		$orig_status->status=ereg_replace(",",";",$orig_status->status);
+		$current_status->status=ereg_replace(",",";",$current_status->status);
+		echo "$global_jobinfo->contract_num,$row->spec_section,$row->spec_sub_para,$row->spec_sub_sub_para,$row->submittal_description,$row->submittal_num,$row->pkg_num,$row->gc_num,$row->tag,$row->subcontractor_ref_num,$row->status,$current_status->status,$current_status->document_date,$orig_status->status,$orig_status->document_date,$row->notes\r\n";
+		}
+	die();
+	} else {
+	$res=@mysql_query($query_final);
+	}
+
+require("header.phtml");
+fd_navs_header();
+search_div();
+echo "
+
+<table border=1 cellspacing=0 cellpadding=3>
+<tr><td colspan=15 align=center>
+<b><font size=+1>$dbdescription</font></b><br>$today<br>
+";
+if ($write) echo "<a href=$pagename?mode=submittallog_edit><font color=blue>New Submittal</font></a><br>";
+select_section_box();
+echo "
+<br></td></tr>
+
+<tr bgcolor=$fd_color_4><td>
+	<a href=$pagename?mode=main&csvdump=1><font style=\"background: $fd_color_3; border: 3px solid black;\" color=blue>CSV</font></a>
+</td><td>
+	<b>Spec Section</b>
+</td><td>
+	<b>Submittal #</b>
+</td><td>
+	<b>Package #</b>
+</td><td>
+	<b>Tag</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	<b>Subcontractor</b>
+</td><td>
+	<b>Sub Ref #</b>
+</td><td width=\"120px\">
+	<b>GC #</b>
+</td><td>
+	<b>Ref DWGs</b>
+</td><td colspan=2 align=center>
+	<b>Status</b>
+</td><td colspan=2 align=center>
+	<b>Orig Status</b>
+</td><td>
+	<b>Notes</b>
+</td></tr>
+
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$temp_doc_id=$row->doc_id;
+	$cookie_link=batch_this_document($row->doc_id);
+	$paperclip_link=webfile_paperclip_view($row->document_file_group_id);
+	$bgcolor="#ffffff";
+	if ($row->status=='Approved') $bgcolor="#ccffcc";
+	if ($row->status=='Approved as noted') $bgcolor="#ccffcc";
+	if ($row->status=='No Exceptions Taken') $bgcolor="#ccffcc";
+	$subcontractor_info=getoneb("select * from contacts where contacts_id = '$row->subcontractor'");
+	if ($row->app_reference=="") $row->app_reference="?????";
+	$current_status=getoneb("select * from submittallog_history where submittallog_id = '$row->submittallog_id' order by document_date desc,create_time desc,last_changed desc limit 1");
+	$orig_status=getoneb("select * from submittallog_history where submittallog_id = '$row->submittallog_id' order by document_date,create_time,last_changed limit 1");
+	
+	if ($orig_status->history_id==$current_status->history_id) {
+		$current_status->document_date="";
+		$current_status->status="";
+		}
+	$current_status->document_date=invali_date($current_status->document_date,'/','Y');
+	$orig_status->document_date=invali_date($orig_status->document_date,'/','Y');
+	$current_status->status=ereg_replace(' ','&nbsp;',$current_status->status);
+	$orig_status->status=ereg_replace(' ','&nbsp;',$orig_status->status);
+	echo "<tr bgcolor=\"$bgcolor\"><td>
+			<table border=0 cellspacing=0 cellpadding=0><tr><td width=20px;>$paperclip_link</td><td>$cookie_link</td></tr></table>
+		</td><td>";
+			if ($write) echo "<a style=\"text-decoration: none;\" href=$pagename?mode=submittallog_edit&submittallog_id=$row->submittallog_id><font color=blue>$row->app_reference</font></a>";
+			else echo "$row->app_reference&nbsp;";
+			echo "
+		</td><td>
+			$row->submittal_num&nbsp;
+		</td><td>
+			$row->pkg_num&nbsp;
+		</td><td>
+			<font size=-1>$row->tag&nbsp;</font>
+		</td><td>
+			<font size=-1>$row->submittal_description&nbsp;</font>
+		</td><td>
+			$subcontractor_info->display_name&nbsp;
+		</td><td>
+			$row->subcontractor_ref_num&nbsp;
+		</td><td>
+			$row->gc_num&nbsp;
+		</td><td>";
+			$ref_text=fd_text_doc_list($temp_doc_id,'cnstdwglog');
+			echo "$ref_text
+		</td><td style=\"border-right: 0px solid black;\">
+			<font size=-1>$current_status->status&nbsp;</font>
+		</td><td style=\"border-left: 0px solid black;\">
+			<font size=-1>$current_status->document_date&nbsp;</font>
+		</td><td style=\"border-right: 0px solid black;\">
+			<font size=-1>$orig_status->status&nbsp;</font>
+		</td><td style=\"border-left: 0px solid black;\">
+			<font size=-1>$orig_status->document_date&nbsp;</font>
+		</td><td>
+			<font size=-1>$row->notes</font>  
+		</td></tr>
+		";
+	}
+
+
+
+
+
+echo "</table>";
+//tabledump("select * from submittallog left join documents on (documents.doc_type = 'submittallog' and documents.app_record_id = submittallog.submittallog_id)");
+
+
+
+fd_navs_footer();
+?>

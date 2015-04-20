@@ -1,0 +1,37 @@
+<?
+require('querylib.inc');
+if ($copylog_id=="") {
+	echo "Error: no record specified";
+	exit;
+	}
+
+$copylog_id=escapeshellcmd($copylog_id);
+$verify=getone("select * from copylog_current where copylog_id = '$copylog_id'");
+
+if ($verify->billed != 'no') {
+	echo "Error: This has already been billed, and may not be altered or deleted!<p>";
+	echo "<br>Billed: $verify->billed<br>";
+	exit; 
+	}
+
+$query="delete from copylog_current where copylog_id = '$copylog_id'";
+
+$result=mysql_query($query);
+
+if (!($result)) {
+	echo "Query failed: <br>$query<br>
+		Please contact your system administrator!!!<p>";
+	exit;
+	} else {
+	forward('main');
+	}
+
+
+
+
+
+
+
+
+
+?>

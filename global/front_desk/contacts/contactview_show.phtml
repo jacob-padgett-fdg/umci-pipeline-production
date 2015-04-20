@@ -1,0 +1,226 @@
+<?
+//require_once('querylib.inc');
+require('settings.cfg');
+require('global-auth.inc');
+require_once('contacts_lib.inc');
+
+$application_name="contactview";
+
+$ro_message="";
+if ($read_only_warning=="yes") $ro_message="<b>Contact is READ ONLY</b><hr>";
+
+echo "<html><head><title>Contact Information</title></head><body bgcolor=#ffffff>$ro_message
+
+";
+
+function color_print() {
+	global $shaded;
+	if ($shaded=="no") {
+	$shaded="yes";
+	echo " bgcolor=#ffffff ";
+} else {
+	$shaded="no";
+	echo " bgcolor=#eeeeee ";
+	}
+}
+                                                            
+
+//if (getoneb("select * from access where contacts_id = '$global_user_id' and application_name = 'contacts'")) {
+//	echo "<p align=right><a href=/global/contacts?mode=contacts_edit&contacts_id=$contacts_id><font color=blue><i>Edit</i></font></a>";
+//	}
+
+
+//echo "<hr>$global_user_id<hr>";
+//$global_user_info=getoneb("select * from contacts where contacts_id = '$global_user_id'");
+//if ("$global_user_info->umc_emp"=='Y') {
+//	echo "<p align=right><a href=/global/contacts?mode=contacts_edit&contacts_id=$contacts_id><font color=blue><i>Edit</i></font></a>";
+//	}
+
+
+
+$contact_info=getone("select * from contacts where contacts_id = '$contacts_id'");
+$info=$contact_info;
+contacts_hist_add($contacts_id);
+
+function bgcolor() {
+	global $funccellbgcolor;
+	if ($funccellbgcolor=="#ffffff") $funccellbgcolor="#eeeeee";
+	else $funccellbgcolor="#ffffff";
+	return ($funccellbgcolor);
+	}
+
+
+switch ($info->contact_type) {
+	case "company":
+			include("contactview_show_company.phtml");
+			break;
+	case "site":
+			include("contactview_show_site.phtml");
+			break;
+	case "contact":
+			include("contactview_show_contact.phtml");
+			break;
+	default:
+			include("contactview_show_error.phtml");
+			break;
+	}
+
+exit;
+
+
+
+if ($info->contact_type=="company") {
+	echo "<table border=1 cellspacing=0 cellpadding=0 width=100%><tr><td width=100%>
+	<table border=0 cellspacing=0 cellpadding=3 width=100%>
+	<tr><td colspan=2 align=center bgcolor=#dddddd>
+		<b>Company: $info->display_name</b>
+	</td></tr>";
+	
+	if ($info->phone!="") {
+		$color=bgcolor();
+		echo "<tr bgcolor=$color><td>
+				<b>Phone</b>
+			</td><td>
+				$info->phone $info->phone_ext
+			</td></tr>";
+		}
+	
+
+	if ($info->phone_fax!="") {
+		$color=bgcolor();
+		echo "<tr bgcolor=$color><td>
+				<b>Fax</b>
+			</td><td>
+				$info->phone_fax
+			</td></tr>";
+		}
+	
+
+	if ($info->address_1!="") {
+		$color=bgcolor();
+		echo "
+		<tr bgcolor=$color><td>
+			<b>Address:</b><br>";map_link_this_contact_here($info->contacts_id);echo"
+		</td><td>
+			$info->address_1<br>
+			$info->address_city $info->address_state $info->address_zip
+		</td></tr>";
+		}
+	
+
+		$color=bgcolor();
+		echo "<tr bgcolor=$color><td>
+				<b>Current</b>
+			</td><td>
+				$info->current
+			</td></tr>";
+
+		$color=bgcolor();
+		echo "<tr bgcolor=$color><td>
+				<b>General</b>
+			</td><td>
+				$info->is_general
+			</td></tr>";
+
+		$color=bgcolor();
+		echo "<tr bgcolor=$color><td>
+				<b>Owner</b>
+			</td><td>
+				$info->owner
+			</td></tr>";
+
+		$color=bgcolor();
+		echo "<tr bgcolor=$color><td>
+				<b>Mechanical</b>
+			</td><td>
+				$info->mechanical_contractor
+			</td></tr>";
+
+		$color=bgcolor();
+		echo "<tr bgcolor=$color><td>
+				<b>Consultant</b>
+			</td><td>
+				$info->consultant
+			</td></tr>";
+
+		$color=bgcolor();
+		echo "<tr bgcolor=$color><td>
+				<b>Reprographics</b>
+			</td><td>
+				$info->is_reprographics_firm
+			</td></tr>";
+
+	echo "</table></table>";
+	echo "<table border=0 width=100% align=right>";
+	$conlist=@mysql_query("select * from contacts where company_id = '$info->contacts_id'");
+	while($row=@mysql_fetch_object($conlist)) {
+		echo "<tr><td>";
+				contact_view("$row->display_name",$row->contacts_id);echo "
+			</td></tr>";
+		}
+	echo "</table>";
+
+	} 
+	
+	if ($info->contact_type=="contact") {
+
+	if ($info->email!="") $email_link="<a href=mailto:$info->email><font color=blue>$info->email</font></a>";
+
+	echo "
+	<h3>Contact information: $info->display_name</h3><hr>
+	<table border=0>
+	
+	<tr><td valign=top>
+		<b>Company:</b>
+	</td><td>";
+		contact_view("$info->company","$info->company_id");
+		echo "
+	</td></tr>
+	
+	<tr><td valign=top>
+		<b>Email:</b>
+	</td><td>
+		$email_link
+	</td></tr>
+	
+	<tr><td valign=top>
+		<b>Phone:</b>
+	</td><td>
+		$info->phone $info->phone_ext
+	</td></tr>
+	
+	<tr><td valign=top>
+		<b>Fax:</b>
+	</td><td>
+		$info->phone_fax
+	</td></tr>
+	
+	<tr><td valign=top>
+		<b>Address:</b>
+	</td><td>
+		$info->address_1<br>
+		$info->address_city $info->address_state $info->address_zip
+	</td></tr>
+	
+	<tr><td valign=top>
+		<b>Current:</b>
+	</td><td>
+		$info->current
+	</td></tr>	
+	
+	<tr><td valign=top>
+		<b>Consultant:</b>
+	</td><td>
+		$info->consultant
+	</td></tr>	
+	
+	</table>
+	";
+	}
+
+//$rec_query=recent_contacts_query();
+//contact_table($rec_query,0,"Recent Contacts");
+
+echo "</body></html>";
+
+?>

@@ -1,0 +1,87 @@
+<?
+session_write_close();
+if ($global_jobinfo_id=="") die();
+$global_jobinfo_id=addslashes($global_jobinfo_id);
+
+if ($add_doc_id!="") {
+	$add_doc_id=addslashes($add_doc_id);
+	$doc=getoneb("select * from documents where doc_id = '$add_doc_id'");
+	if ($doc) {
+		$current=getoneb("select * from front_desk_doc_queue where doc_id = '$add_doc_id' and contacts_id = '$global_user_id' limit 1");
+		$current_sort=getoneb("select max(sort_priority) as max from front_desk_doc_queue where contacts_id = '$global_user_id' and jobinfo_id = '$global_jobinfo_id'");
+		if ($current_sort->max=="") $current_sort->max=0;
+		$new_sort=$current_sort->max + 1;
+		if ($current) {
+			@mysql_query("delete from front_desk_doc_queue where doc_id = '$add_doc_id' and contacts_id = '$global_user_id'");
+			} else {
+			@mysql_query("insert into front_desk_doc_queue set contacts_id = '$global_user_id', jobinfo_id = '$global_jobinfo_id', doc_id = '$add_doc_id', description = 'Added w/ cookie log link.', sort_priority = '$new_sort'");
+			}
+		}
+	}
+
+if ($move_up_doc_id!="") {
+	$move_up_doc_id=addslashes($move_up_doc_id);
+	$doc=getoneb("select * from documents where doc_id = '$move_up_doc_id'");
+	$doc_position=getoneb("select * from front_desk_doc_queue where doc_id = '$doc->doc_id'");
+	$position_above=getoneb("select * from front_desk_doc_queue where jobinfo_id = '$doc_position->jobinfo_id' and contacts_id = '$doc_position->contacts_id' and sort_priority < '$doc_position->sort_priority' order by sort_priority desc limit 1");
+	if ($position_above) {
+		@mysql_query("update front_desk_doc_queue set sort_priority = '$position_above->sort_priority' where doc_id = '$doc_position->doc_id'");
+		@mysql_query("update front_desk_doc_queue set sort_priority = '$doc_position->sort_priority' where doc_id = '$position_above->doc_id'");
+		}
+	$move_doc_id=$move_up_doc_id;
+	}
+
+if ($move_down_doc_id!="") {
+	$move_down_doc_id=addslashes($move_down_doc_id);
+	$doc=getoneb("select * from documents where doc_id = '$move_down_doc_id'");
+	$doc_position=getoneb("select * from front_desk_doc_queue where doc_id = '$doc->doc_id'");
+	$position_below=getoneb("select * from front_desk_doc_queue where jobinfo_id = '$doc_position->jobinfo_id' and contacts_id = '$doc_position->contacts_id' and sort_priority > '$doc_position->sort_priority' order by sort_priority limit 1");
+	//tabledump("select * from front_desk_doc_queue where jobinfo_id = '$doc_position->jobinfo_id' and contacts_id = '$doc_position->contacts_id' and sort_priority > '$doc_position->sort_priority' order by sort_priority limit 1");
+	//echo ("<hr>select * from front_desk_doc_queue where jobinfo_id = '$doc_position->jobinfo_id' and contacts_id = '$doc_position->contacts_id' and sort_priority > '$doc_position->sort_priority' order by sort_priority limit 1<hr>");
+	if ($position_below) {
+		@mysql_query("update front_desk_doc_queue set sort_priority = '$position_below->sort_priority' where doc_id = '$doc_position->doc_id'");
+		@mysql_query("update front_desk_doc_queue set sort_priority = '$doc_position->sort_priority' where doc_id = '$position_below->doc_id'");
+		} else {
+		echo "position below not detected<br>";
+		}
+	$move_doc_id=$move_down_doc_id;
+	}
+
+$res=@mysql_query("select * from front_desk_doc_queue where contacts_id = '$global_user_id' and jobinfo_id = '$global_jobinfo_id' order by sort_priority,queue_id");
+$count=@mysql_num_rows($res);
+ if ($count < 1) die();
+$first="Y";
+echo "<table border=1 cellspacing=0 cellpadding=2 bgcolor=$fd_color_3>
+<tr bgcolor=$fd_color_4><td colspan=3><b>Document Batch</b><div style=\"float: right;\"><i><font size=-1 color=gray>(cookie sheet)</font></i>&nbsp;</div></td></tr>
+";
+while($row=@mysql_fetch_object($res)) {
+	$bgcolor="";
+	if ($row->doc_id==$move_doc_id) $bgcolor=$fd_color_2;
+	$description="";
+	if ($row->doc_id>0) {
+		//$cookie=batch_this_document($row->doc_id);
+		$info=getoneb("select * from documents where doc_id = '$row->doc_id'");
+		$description=$info->doc_type . " " . $info->app_reference . " - " . $info->description;
+		}
+	$mu_link="<a href=\"javascript:batch_move_doc_up($row->doc_id)\"><font color=blue>/\</font></a>";
+	$md_link="<a href=\"javascript:batch_move_doc_down($row->doc_id)\"><font color=blue>\/</font></a>";
+	if ($first=='Y') $mu_link="&nbsp;";
+	
+	echo "<tr bgcolor=$bgcolor><td>$mu_link</td><td>$md_link</td><td title=\"$row->description\">$description</td></tr>";
+	$first="N";
+	}
+
+$rearrange_available=getoneb("select * from front_desk_doc_queue left join documents on (front_desk_doc_queue.doc_id = documents.doc_id) where contacts_id = '$global_user_id' and front_desk_doc_queue.jobinfo_id = '$global_jobinfo_id' group by doc_type,section");
+//$rearrange_available=getoneb("select * from front_desk_doc_queue where contacts_id = '$global_user_id' and jobinfo_id = '$global_jobinfo_id' group by doc_type,section");
+if ($rearrange_available) {
+	if ($rearrange_available->doc_type=="cnstdwglog") {
+		echo "<tr bgcolor=$fd_color_1><td colspan=3 align=center><a href=$pagename?mode=rearrange_these_docs&global_jobinfo_id_set=$global_jobinfo_id><font color=blue>Rearrange these documents</font></a></td></tr>";
+		}
+	}
+echo "
+<tr bgcolor=$fd_color_1><td colspan=3 align=center><a href=$pagename?mode=cook_your_batch&global_jobinfo_id_set=$global_jobinfo_id><font color=blue>Cook your batch</font></a></td></tr>
+<tr bgcolor=$fd_color_1><td colspan=3 align=center><a href=$pagename?mode=mail_your_cookie_sheet&global_jobinfo_id_set=$global_jobinfo_id><font color=blue>Email this list</font></a></td></tr>
+<tr bgcolor=$fd_color_1><td colspan=3 align=center><a href=$pagename?mode=clear_doc_queue&global_jobinfo_id_set=$global_jobinfo_id><font color=blue>Hurl your cookies</font></a></td></tr>
+</table>";
+
+?>

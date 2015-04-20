@@ -1,0 +1,35 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+
+$movie_id=addslashes($movie_id);
+$link=webfile_possible_flashview_link($movie_id);
+$category_id=addslashes($category_id);
+echo "
+
+<a href=$pagename?mode=my_reference_center&category_id=$category_id><font color=blue>Return to Reference Center</font</a>
+<p>
+<script type=\"text/javascript\" src=\"/javascript/flowplayer-3.1.2.min.js\"></script>
+<a href=\"https://pipeline.umci.com$link\" style=\"border: 2px solid black;display:block;width:520px;height:330px\" id=\"ref_center_player\"></a>
+<script>
+flowplayer(\"ref_center_player\",\"/javascript/flowplayer-3.1.2.swf\");
+</script>";
+
+
+
+/*
+echo "
+<object id=\"flowplayer\" width=\"520\" height=\"330\" data=\"/javascript/flowplayer-3.1.2.swf\"  
+type=\"application/x-shockwave-flash\"> 
+
+<param name=\"movie\" value=\"/javascript/flowplayer-3.1.2.swf\" />  
+<param name=\"allowfullscreen\" value=\"true\" /> 
+
+<param name=\"flashvars\" value='config={\"clip\":\"https://pipeline.umci.com$link\"}' /> 
+</object>
+";
+*/
+
+mh_navs_footer();
+?>

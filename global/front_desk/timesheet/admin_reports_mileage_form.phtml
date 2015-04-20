@@ -1,0 +1,63 @@
+<?
+if (!($admin_check)) die_security();
+echo "
+
+<a href=$pagename?mode=admin_reports><font color=blue>Cancel</font></a><p>
+
+<form name=mileage method=post action=$pagename target=_mileage_report>
+<table border=1 cellspacing=0 cellpadding=4>
+<input type=hidden name=mode value=admin_reports_mileage_report>
+
+
+<tr><td style=\"border-style: solid; border-color: black;\" colspan=2 align=center><h3>Mileage report search options</h3></td></tr>
+
+<tr><td>
+	Start Date:
+</td><td>
+	";datebox("","mileage.start_date");echo"
+</td></tr>
+
+<tr><td>
+	End Date:
+</td><td>
+	";datebox("","mileage.end_date");echo"
+</td></tr>
+
+<tr><td>
+	Employee (blank for all)
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y'","","employee");echo "
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Search>
+</td></tr>
+
+
+
+
+
+
+</form>
+</table>
+";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

@@ -1,0 +1,38 @@
+<?
+if (!(i_have_underlings($global_user->employee_num))) die ("ERROR: Security Violation! The authorities are being notified");
+
+echo "
+<html>
+<body bgcolor=white>
+
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><p>
+<a href=$pagename?mode=reset_user_id><font color=blue>Reset my user identity</font></a><p>
+<b>Select a User to Switch to:</b><br>
+";
+$res=query_underlings($global_user->employee_num);
+
+while($row=@mssql_fetch_object($res)) {
+	$user=getoneb("select * from contacts where employee_num = '$row->PREmp'");
+	echo "<br>
+	<a href=$pagename?mode=supervisor_assume_new_user_id&assume_id=$user->contacts_id><font color=blue>
+	$user->last_name, $user->first_name</font></a>";
+	}
+
+
+echo "
+
+<p>
+
+</form>
+</body>
+";
+
+
+
+
+
+
+
+
+
+?>

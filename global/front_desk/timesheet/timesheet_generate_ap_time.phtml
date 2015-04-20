@@ -1,0 +1,119 @@
+<?
+echo "
+<html><head><title>AP Time Generation</title></head><body bgcolor=#ffffff>
+<b>Calculating time for $current_user->first_name $current_user->last_name</b><hr>";
+
+$full_ts_info=timesheet_summary_info($timesheet_info->timesheet_id);
+$curr_week_info=date_info($week_end);
+$base_hrs=40;
+$base_hrs=$base_hrs - $full_ts_info->s;
+$base_hrs=$base_hrs - $full_ts_info->h;
+
+echo "
+Sick: $full_ts_info->s<br>
+Vac:  $full_ts_info->v<br>
+Base: $base_hrs<br>
+NDT: $current_user->pref_timesheet_hrs_threshold<br>
+WS: $curr_week_info->week_start_mysql<br>
+WE: $curr_week_info->week_end_mysql<br>
+
+";
+$vp_query_crystal="
+SELECT APTL.Job, JCJM.Contract, HQBC.DatePosted, JCCM.ud2003phasegroup
+FROM
+    { oj ((((((Viewpoint.dbo.APTL APTL with (NOLOCK) INNER JOIN Viewpoint.dbo.APTH APTH with (NOLOCK) ON
+    APTL.APCo = APTH.APCo AND APTL.Mth = APTH.Mth AND APTL.APTrans = APTH.APTrans)
+     INNER JOIN Viewpoint.dbo.HQCO HQCO with (NOLOCK) ON
+        APTL.APCo = HQCO.HQCo)
+     INNER JOIN Viewpoint.dbo.APTD APTD with (NOLOCK) ON APTL.APCo = APTD.APCo AND APTL.Mth = APTD.Mth AND APTL.APTrans = APTD.APTrans AND APTL.APLine = APTD.APLine)
+     LEFT OUTER JOIN Viewpoint.dbo.JCJM JCJM with (NOLOCK) ON
+        APTL.JCCo = JCJM.JCCo AND APTL.Job = JCJM.Job)
+     INNER JOIN Viewpoint.dbo.HQBC HQBC with (NOLOCK) ON
+        APTH.APCo = HQBC.Co AND APTH.Mth = HQBC.Mth AND APTH.BatchId = HQBC.BatchId)
+     INNER JOIN Viewpoint.dbo.APVM APVM with (NOLOCK) ON
+        APTH.VendorGroup = APVM.VendorGroup AND APTH.Vendor = APVM.Vendor)
+     LEFT OUTER JOIN Viewpoint.dbo.JCCM JCCM with (NOLOCK) ON
+        JCJM.JCCo = JCCM.JCCo AND JCJM.Contract = JCCM.Contract}
+WHERE HQBC.DatePosted >= {ts '$curr_week_info->week_start_mysql 00:00:00.00'} AND HQBC.DatePosted <= {ts '$curr_week_info->week_end_mysql 23:59:59.99'} AND APTH.APCo = 1 AND APTL.LineType <> 7 AND HQBC.CreatedBy = '$current_user->login_name'
+ORDER BY JCJM.Contract ASC, APTH.BatchId ASC, APTH.APTrans ASC, APTH.APRef ASC, HQCO.HQCo ASC
+";
+
+
+
+$vp_query_jobs="
+SELECT JCJM.Contract
+FROM
+    { oj ((((((Viewpoint.dbo.APTL APTL INNER JOIN Viewpoint.dbo.APTH APTH with (NOLOCK) ON
+    APTL.APCo = APTH.APCo AND APTL.Mth = APTH.Mth AND APTL.APTrans = APTH.APTrans)
+     INNER JOIN Viewpoint.dbo.HQCO HQCO with (NOLOCK) ON
+        APTL.APCo = HQCO.HQCo)
+     INNER JOIN Viewpoint.dbo.APTD APTD with (NOLOCK) ON APTL.APCo = APTD.APCo AND APTL.Mth = APTD.Mth AND APTL.APTrans = APTD.APTrans AND APTL.APLine = APTD.APLine)
+     LEFT OUTER JOIN Viewpoint.dbo.JCJM JCJM with (NOLOCK) ON
+        APTL.JCCo = JCJM.JCCo AND APTL.Job = JCJM.Job)
+     INNER JOIN Viewpoint.dbo.HQBC HQBC with (NOLOCK) ON
+        APTH.APCo = HQBC.Co AND APTH.Mth = HQBC.Mth AND APTH.BatchId = HQBC.BatchId)
+     INNER JOIN Viewpoint.dbo.APVM APVM with (NOLOCK) ON
+        APTH.VendorGroup = APVM.VendorGroup AND APTH.Vendor = APVM.Vendor)
+     LEFT OUTER JOIN Viewpoint.dbo.JCCM JCCM with (NOLOCK) ON
+        JCJM.JCCo = JCCM.JCCo AND JCJM.Contract = JCCM.Contract}
+WHERE HQBC.DatePosted >= {ts '$curr_week_info->week_start_mysql 00:00:00.00'} AND HQBC.DatePosted <= {ts '$curr_week_info->week_end_mysql 23:59:59.99'} AND APTH.APCo = 1 AND APTL.LineType <> 7 AND HQBC.CreatedBy = '$current_user->login_name'
+GROUP BY JCJM.Contract
+ORDER BY JCJM.Contract ASC
+";
+$total_count=mssql_num_rows(mssql_query($vp_query_crystal));
+echo "total rows: $total_count";
+
+
+echo "<table cellpadding=5>";
+//ms_tabledump($vp_query_jobs);
+$ms_res=@mssql_query($vp_query_jobs);
+$total_calc_hours=0;
+while($row=@mssql_fetch_object($ms_res)) {
+	$vp_total_job="
+	SELECT APTL.Job, JCJM.Contract, HQBC.DatePosted, JCCM.ud2003phasegroup
+	FROM
+	    { oj ((((((Viewpoint.dbo.APTL APTL with (NOLOCK) INNER JOIN Viewpoint.dbo.APTH APTH with (NOLOCK) ON
+	    APTL.APCo = APTH.APCo AND APTL.Mth = APTH.Mth AND APTL.APTrans = APTH.APTrans)
+	     INNER JOIN Viewpoint.dbo.HQCO HQCO with (NOLOCK) ON
+	        APTL.APCo = HQCO.HQCo)
+	     INNER JOIN Viewpoint.dbo.APTD APTD with (NOLOCK) ON APTL.APCo = APTD.APCo AND APTL.Mth = APTD.Mth AND APTL.APTrans = APTD.APTrans AND APTL.APLine = APTD.APLine)
+	     LEFT OUTER JOIN Viewpoint.dbo.JCJM JCJM with (NOLOCK) ON
+	        APTL.JCCo = JCJM.JCCo AND APTL.Job = JCJM.Job)
+	     INNER JOIN Viewpoint.dbo.HQBC HQBC with (NOLOCK) ON
+	        APTH.APCo = HQBC.Co AND APTH.Mth = HQBC.Mth AND APTH.BatchId = HQBC.BatchId)
+	     INNER JOIN Viewpoint.dbo.APVM APVM with (NOLOCK) ON
+	        APTH.VendorGroup = APVM.VendorGroup AND APTH.Vendor = APVM.Vendor)
+	     LEFT OUTER JOIN Viewpoint.dbo.JCCM JCCM with (NOLOCK) ON
+	        JCJM.JCCo = JCCM.JCCo AND JCJM.Contract = JCCM.Contract}
+	WHERE HQBC.DatePosted >= {ts '$curr_week_info->week_start_mysql 00:00:00.00'} AND HQBC.DatePosted <= {ts '$curr_week_info->week_end_mysql 23:59:59.99'} AND APTH.APCo = 1 AND APTL.LineType <> 7 AND HQBC.CreatedBy = '$current_user->login_name' AND JCJM.Contract = '$row->Contract'
+	";
+	//ms_tabledump($vp_total_job);
+	$job_total=mssql_num_rows(mssql_query($vp_total_job));
+	$job_dec=$job_total/$total_count;
+	$job_percent=$job_dec * 100;
+	$job_hrs_float=$base_hrs * $job_dec;
+	$job_hrs_to_bill=((round($job_hrs_float * 2))/2);
+	$total_calc_hours=$total_calc_hours + $job_hrs_to_bill;
+	
+	echo "<tr><td>
+			$row->Contract
+		</td><td>
+			$job_total/$total_count
+		</td><td>
+			$job_hrs_float
+		</td><td align=right>
+			$job_hrs_to_bill
+		</td></tr>";
+	}
+echo "</table>
+<hr>
+Total Calc Hours: $total_calc_hours
+<hr>
+
+<a href=$pagename?mode=timesheet_edit&timesheet_mode_new=timesheet_summary><font color=blue>Timesheet Summary</font></a>
+";
+
+
+
+
+?>

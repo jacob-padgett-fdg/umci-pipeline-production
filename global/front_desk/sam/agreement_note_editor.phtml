@@ -1,0 +1,7 @@
+<?
+if ($agreement_id=="") die("Application error: invalid agreement_id");
+else $agreement_id=addslashes($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+
+echo "<textarea id=\"agreement_notes_textarea_$agreement_info->agreement_id\" name=\"agreement_notes_txname_$agreement_info->agreement_id\" rows=3 cols=50 onblur=\"save_notes($agreement_info->agreement_id)\">$agreement_info->agreement_notes</textarea>";
+?>

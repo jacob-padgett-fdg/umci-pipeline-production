@@ -1,0 +1,19 @@
+<?
+
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+
+if ($sa_document_id!="") {
+	$sa_document_id=addslashes($sa_document_id);
+	@mysql_query("update svc_agreement_documents set document_signed = 'N' where agreement_id = '$agreement_id'");
+	@mysql_query("update svc_agreement_documents set document_signed = 'Y' where sa_document_id = '$sa_document_id'");
+	//echo "<hr>update svc_agreement_documents set document_signed = 'N' where agreement_id = '$agreement_id'";
+	//echo "<hr>update svc_agreement_documents set document_signed = 'Y' where sa_document_id = '$sa_document_id'<hr>";
+	}
+$query="update svc_agreement_index set status = 'Won' where agreement_id = '$agreement_info->agreement_id'";
+@mysql_query($query);
+
+sync_with_proplog($agreement_info->agreement_id);
+forward("svc_agreement_edit&agreement_id=$agreement_info->agreement_id");
+
+?>

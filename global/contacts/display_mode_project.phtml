@@ -1,0 +1,7 @@
+<?
+$jobinfo_id=$options['jobinfo_id'];
+$query="select * from contacts_groups right join contacts_groups_members on (contacts_groups.group_id = contacts_groups_members.group_id) right join contacts on (contacts_groups_members.contacts_id = contacts.contacts_id) where jobinfo_id = '$jobinfo_id' $display_search order by alphasort";
+$res=@mysql_query($query);
+include("display_mode_results.phtml");
+exit; 
+?>

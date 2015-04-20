@@ -1,0 +1,32 @@
+<?
+if (!($admin_check)) die("ERROR: not an admin!");
+
+
+
+echo "
+<a href=$pagename><font color=blue>Return to main</font></a><p>
+
+<a href=$pagename?mode=admin_safety_recipients_test_email><font color=blue>Send a test email</font></a><p>
+
+<form name=recipient_selection method=post action=$pagename>
+<input type=hidden name=mode value=admin_safety_recipients_submit>
+<table border=0><tr><td>
+<b>Add:</b>&nbsp;</td><td>";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'","","contacts_id","opener.document.recipient_selection.submit()");echo"</td></tr></table>
+</form>
+";
+
+$query="select * from timesheet_safety_recipients,contacts where timesheet_safety_recipients.contacts_id = contacts.contacts_id order by alphasort";
+//tabledump($query);
+$res=@mysql_query($query);
+echo "<table border=0 cellspacing=0 cellpadding=6><tr bgcolor=$umc_standard_blue><td colspan=2 align=center><b>Safety Notice Recipients</b></td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			";contact_view("",$row->contacts_id);echo"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</td><td>
+			<a href=$pagename?mode=admin_safety_recipient_remove&contacts_id=$row->contacts_id><font color=blue><i>Remove</i></font></a>
+		</td></tr>
+		";
+	}
+echo "</table>";
+
+?>

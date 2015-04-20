@@ -1,0 +1,38 @@
+<?
+set_time_limit(25);
+require_once('pdf_lib2.inc');
+//if ($paper_size=="") $paper_size="11x17";
+if ($paper_size=="") $paper_size="legal";
+else $paper_size=addslashes($paper_size);
+
+$contacts_id=escapeshellcmd($contacts_id);
+
+if ($history_length!="") $history_length=addslashes($history_length);
+else $history_length="90";
+$history_start=date('Y-m-d',strtotime("-$history_length days"));
+
+
+$pdf=&new Cezpdf("$paper_size","landscape");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+$pdf->ezSetMargins(85,36,36,36);
+
+$pdf->ez_umc_header_start("Jobs Awarded to UMC <i>(last $history_length days)</i>",16,$textopts=array('justification'=>'center'),1);
+$query_1="select * from bidlist_cache where bid_date_mysql >= '$history_start' and bid_date_mysql <= now() and umc_bid_won = 'Y' and revision = ''";
+proposal_search_output_9_pdf($query_1,$pdf);
+$pdf->ez_umc_header_stop();
+$pdf->ezNewPage();
+
+$pdf->ez_umc_header_start("Already Bid, Award Pending",16,$textopts=array('justification'=>'center'),1);
+$query_2="select * from bidlist_cache where bid_date_mysql <= now() and awarded = 'P' and revision = '' and status != 'No Bid'";
+//$query_2="select * from bidlist_cache where bid_date_mysql <= now() and awarded = 'N' and revision = '' and status != 'No Bid' and status != 'Completed'";
+proposal_search_output_9_pdf($query_2,$pdf);
+$pdf->ez_umc_header_stop();
+$pdf->ezNewPage();
+
+$pdf->ez_umc_header_start("Future Bids",16,$textopts=array('justification'=>'center'),1);
+$query_3="select * from bidlist_cache where bid_date_mysql > now() and status = 'Active' and revision = ''";
+proposal_search_output_9_pdf($query_3,$pdf);
+$pdf->ez_umc_header_stop();
+
+$pdf->ezStream();
+?>

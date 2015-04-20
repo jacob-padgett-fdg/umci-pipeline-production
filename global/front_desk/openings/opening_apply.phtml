@@ -1,0 +1,62 @@
+<?
+if ($hr_openings_id!="") $hr_openings_id=addslashes($hr_openings_id);
+else die("Fatal Web Page Error. Missing hr_openings_id");
+
+if ($application_id!="") $application_id=addslashes($application_id);
+else die("Fatal Web Page Error. Missing application_id");
+
+$app_info=getone("select * from hr_applications where application_id = '$application_id'");
+
+if ($app_info->status=="Complete") {
+	$last_app_mode="openings";
+	} else {
+	$last_app_mode="employment_history";
+	}
+
+$existing=getoneb("select * from hr_application_submissions where application_id = '$application_id' and hr_openings_id = '$hr_openings_id' limit 1");
+if ($existing) {
+	forward("application_edit&application_id=$application_id");
+	exit;
+	}
+
+$reqres=@mysql_query("select * from hr_opening_bullets where bullet_category = 'requirements' and hr_openings_id = '$hr_openings_id' order by sort_priority");
+
+$count=@mysql_num_rows($reqres);
+
+if (($count < 1)||($job_requirements_confirmed=='Yes')) {
+	///////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////
+	// Submit the application if either of these happen
+	// (no requirements, or they've confirmed they meet 'em
+	///////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////
+	@mysql_query("insert into hr_application_submissions set 
+	application_id = '$application_id', 
+	hr_openings_id = '$hr_openings_id'");
+	forward("application_edit&application_id=$application_id");
+	}
+
+echo "<center><h2>Job Requirements</h2><hr>";
+
+while($row=@mysql_fetch_object($reqres)) {
+	
+	echo "$row->bullet_text<p>";
+	
+	}
+
+
+
+echo "
+<hr>
+The requirements for this job are listed above.<p>
+Do you meet all of the requirements listed above?<p>
+<a href=$pagename?mode=$mode&application_id=$application_id&hr_openings_id=$hr_openings_id&job_requirements_confirmed=Yes><font color=blue>YES</font></a>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+<a href=$pagename?mode=main&job_requirements_confirmed=No><font color=blue>NO</font></a>
+
+</center>";
+
+
+
+
+
+?>

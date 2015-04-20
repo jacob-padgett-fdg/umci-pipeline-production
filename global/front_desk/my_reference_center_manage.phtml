@@ -1,0 +1,167 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+
+if ($category_id=="") {
+	$category_id=0; 
+	$category_info->parent_id=0;
+	$category_info->category_name="Reference Center";
+	
+	} else {
+	$category_info=getoneb("select * from front_desk_reference_categories where category_id = '$category_id'");
+	}
+if (!($category_info)) die("invalid category");
+
+$idiot=getoneb("select * from front_desk_reference_proven_idiots where idiot_id = '$global_user_id' limit 1");
+
+if ($idiot) {
+	forward('my_home');
+	die();
+	}
+
+echo "<div style=\"border: 2px solid black; padding: 5px; background: $fd_color_6; float: right;\"><a href=$pagename?mode=my_reference_center&category_id=$category_info->category_id><font color=blue>Exit edit mode</font></a></div>";
+
+
+/*
+if (!($idiot)) {
+	if ($adminuser) {
+		if ($create_category_submit=='Y') {
+			$category_name=addslashes($new_category_name);
+			$owner=addslashes($owner);
+			$others_get_write=checkfix($others_get_write);
+			$sort_priority=addslashes($sort_priority);
+			@mysql_query("insert into front_desk_reference_categories set
+				category_name = '$category_name',
+				owner = '$owner',
+				others_get_write = '$others_get_write',
+				sort_priority = '$sort_priority',
+				creator = '$global_user_id'");
+			}
+		if ($add_category) {
+			echo "<table border=1 cellspacing=0 cellpadding=3><form name=new_category method=post action=$pagename>
+			<input type=hidden name=mode value=\"$mode\">
+			<input type=hidden name=create_category_submit value='Y'>
+			<tr><td colspan=2 bgcolor=$fd_color_4 align=center><b>New Category</b></td></tr>
+			<tr><td><b>Name</b></td><td><input type=text name=new_category_name size=20></td></tr>
+			<tr><td><b>Owner</b></td><td>";contactsbox("select * from contacts where current = 'Y' and contact_type = 'contact' and umc_emp = 'Y'",$global_user_id,'owner');echo "</td></tr>
+			<tr><td><b>Others may add files</b></td><td><input type=checkbox name=others_get_write></td></tr>
+			<tr><td><b>Sort priority</b></td><td><input type=text size=3 name=sort_priority value=\"20\"></td></tr>
+			<tr><td colspan=2 align=right><input type=submit value=Add></form></td></tr>
+			";
+			} else {
+			echo "<br><a href=$pagename?mode=$mode&add_category=1><font color=blue>Add New Category</font></a>";
+			}
+		}
+	}
+*/
+//echo "<p>";
+
+echo "
+<center>
+<table bgcolor=$fd_color_6 border=0 cellspacing=0 cellpadding=3 style=\"width: 800px; border: 1px solid black; border-collapse: collapse;\">
+<tr><td colspan=2 align=center><h2>$category_info->category_name details</h2></td></tr>
+";
+//<tr><td><p></td></tr>
+
+
+$writable=FALSE;
+$admin_writable=FALSE;
+//echo "<hr>$adminuser<hr>$global_user->display_name";
+if ($adminuser) $writable=TRUE;
+if ($category_info->owner==$global_user_id) $writable=TRUE;
+$admin_writable=$writable;
+if ($category_info->others_get_write=="Y") $writable=TRUE;
+
+
+
+if ($admin_writable) {
+	//$admin_write=1;
+	echo "<form name=category_settings method=post action=$pagename>
+	<input type=hidden name=mode value=my_reference_update_cat>
+	<input type=hidden name=category_id value=$category_info->category_id>
+	<tr align=left style=\"border: 1px solid black; border-bottom: none;\" bgcolor=$fd_color_4><td colspan=2 align=center><b>Category Settings</b></td></tr>
+	<tr align=left style=\"border-left: 1px solid black; border-right: 1px solid black;\"><td>Name</td><td><input size=20 name=rename_category value=\"$category_info->category_name\"></td></tr>
+	<tr align=left style=\"border-left: 1px solid black; border-right: 1px solid black;\"><td>Owner</td><td>";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'",$category_info->owner,'category_owner',"",8);echo "</td></tr>
+	<tr align=left style=\"border-left: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black;\"><td>Publicly writable</td><td><input type=checkbox name=others_get_write " . checkbreak($category_info->others_get_write) . ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=submit value=Save></td></tr>
+	</td></form></tr>";
+	} else {
+	//$owner_info->first_name $owner_info->last_name is the owner of this category.<br>
+	$owner_info=getoneb("select * from contacts where contacts_id = '$category_info->owner'");
+	echo "<tr><td align=left colspan=2>
+	For questions about this category<br>please contact the owner ($owner_info->first_name $owner_info->last_name)<br>or and adminstrator.</td></tr>";
+	//$write_text="";
+	//if ($category_info->others_get_write=="Y") echo "<tr><td colspan=2>The owner of this category allows other employees to contribute documents to it.</td></tr>";
+	//else echo "<tr><td colspan=2>The owner of this category has forbidden<br>additions to the category by other people.<br>Please contact the owner with questions,<br>comments, or change requests in this category.</td></tr>";
+	}
+
+echo "<tr><td colspan=2>&nbsp;</td></tr>
+<tr bgcolor=$fd_color_4 style=\"border: 1px solid black; border-bottom: none;\" align=center><td colspan=2><b>Categories</b></td></tr>
+";
+
+if ($writable) {
+	echo "
+	<tr style=\"border: 1px solid black; border-top: none;\"><form name=add_subcat method=post action=$pagename><td colspan=2>
+	<input type=hidden name=mode value=\"my_reference_center_add_category\">
+	<input type=hidden name=category_id value=\"$category_info->category_id\">
+	Add: <input size=20 name=new_category_name onchange=\"submit()\" value=\"\"></td></form></tr>";
+	} else {
+	echo "<tr style=\"border: 1px solid black; border-top: none;\"><td>The owner of this category<br>doesn't allow others to add to it.</td></tr>";
+	}
+
+
+
+if ($category_info->category_id>1) echo "<tr style=\"border-left: 1px solid black; border-right: 1px solid black;\"><td><a href=$pagename?mode=$mode&category_id=$category_info->parent_id><font size=+1 color=blue>(..)</a></font></td></tr>";
+
+
+$query="select * from front_desk_reference_categories where parent_id = '$category_id' and category_id != '$category_id' order by sort_priority,category_name";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$remove_link="";
+	if (($admin_writable)||($global_user_id==$row->owner)){
+		$empty=TRUE;
+		if (getoneb("select * from front_desk_reference_categories where parent_id = '$row->category_id' limit 1")) $empty=FALSE;
+		if (getoneb("select * from front_desk_references where category_id = '$row->category_id' limit 1")) $empty=FALSE;
+		//tabledump("select * from front_desk_reference_categories where parent_id = '$row->category_id' limit 1");
+		//tabledump("select * from front_desk_references where category_id = '$row->category_id' limit 1");
+		if ($empty) {
+			$remove_link="&nbsp;<a href=$pagename?mode=my_reference_remove_cat&category_id=$row->category_id><i><font color=blue>remove</font></i></a>";
+			}
+		}
+	if ($row->category_name=="") $row->category_name="?????";
+	echo "<tr style=\"border-left: 1px solid black; border-right: 1px solid black;\"><td><a href=$pagename?mode=$mode&category_id=$row->category_id><font size=+1 color=blue>$row->category_name</font></a></td><td>$remove_link</font></td></tr>";
+	}
+echo "<tr><td colspan=2 style=\"border-top: 1px solid black;\">&nbsp;</td></tr>";
+
+
+echo "<tr><td colspan=2>&nbsp;</td></tr>
+<tr bgcolor=$fd_color_3 style=\"border: 1px solid black; border-bottom: none;\" align=center><td colspan=2><b>Files</b></td></tr>
+";
+if ($writable) {
+	echo "<tr style=\"border: 1px solid black; border-top: none;\"><td colspan=2><a href=$pagename?mode=my_reference_edit&category_id=$category_info->category_id><font color=blue>Add document</font></a></td></tr>";
+	}
+echo "<tr style=\"border-right: 1px solid black; border-left: 1px solid black;\"><td colspan=2 align=left>Documents allowing modifications will<br>show up as links below.</td></tr>";
+$res=@mysql_query("select * from front_desk_references where category_id = '$category_info->category_id' order by name");
+$count=@mysql_num_rows($res);
+if ($count>0) {
+	while ($row=@mysql_fetch_object($res)) {
+		//$link=webfile_possible_view_link($row->file_group_id);
+		if ($row->name=="") $row->name="?????";
+		if (($admin_writable)||($global_user_id==$row->owner)||($row->others_get_write=="Y")) {
+			$edit_link_start="<a href=$pagename?mode=my_reference_edit&reference_id=$row->reference_id><font color=blue>";
+			$edit_link_end="</font></a>";
+			} else {
+			$edit_link_start="";
+			$edit_link_end="";
+			} 
+		echo "<tr style=\"border-left: 1px solid black; border-right: 1px solid black;\"><td colspan=2>$edit_link_start$row->name$edit_link_end</td></tr>";
+		}
+	} else {
+	echo "<tr style=\"border-left: 1px solid black; border-right: 1px solid black;\"><td colspan=2><b>There are currently no documents filed in this category.</b></td></tr>";
+	}
+//echo "<tr><td colspan=2 style=\"border-top: 1px solid black;\">&nbsp;</td></tr>";
+echo "</table>";
+echo "</center>";
+mh_navs_footer();
+
+?>

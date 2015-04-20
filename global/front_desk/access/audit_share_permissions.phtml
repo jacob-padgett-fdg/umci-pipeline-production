@@ -1,0 +1,39 @@
+<?
+//if ($contacts_id!="") $contacts_id=addslashes($contacts_id);
+//else die("Error: No contacts specified!");
+//$contact_info=getone("select * from contacts where contacts_id = '$contacts_id'");
+$server_info=getone("select * from access_servers where name = 'jupiter'");
+if ($sharelist_id=="") die("ERROR: No sharelist_id specified.");
+else $sharelist_id=addslashes($sharelist_id);
+$sharelist_info=getone("select * from access_jupiter_sharelist where sharelist_id = '$sharelist_id'");
+
+require('header.phtml');
+echo "<h2>Permissions for $sharelist_info->share_path</h2><hr>";
+$permlist=@mysql_query("select * from access_jupiter_sharelist,access_jupiter_permissions where access_jupiter_sharelist.sharelist_id = access_jupiter_permissions.sharelist_id and access_jupiter_permissions.sharelist_id = '$sharelist_id' and access_jupiter_permissions.active = 'Y' order by path");
+while ($permrow=@mysql_fetch_object($permlist)) {
+	$whodisp="";
+	if ($permrow->for_who!="everyone in") {
+		$for_who="Everyone except ";
+		} else {
+		$for_who="";
+		}
+	if ($permrow->user_or_group=="user") {
+		$whoinfo=getoneb("select * from contacts where contacts_id = '$permrow->uid'");
+		$whodisp="<b>" . $for_who . $whoinfo->display_name . "</b>";
+		} else {
+		$groupuserslist=@mysql_query("select * from access_servers_group_members,contacts where server_id = '$server_info->server_id' and group_name = '$permrow->group_name' and contacts.contacts_id = access_servers_group_members.user_id order by login_name");
+		$sep="";
+		$groupmembers="";
+		while ($groupusersrow=@mysql_fetch_object($groupuserslist)) {
+			$groupmembers=$groupmembers . $sep . $groupusersrow->login_name;
+			$sep=", ";
+			}
+		$whodisp="<b>" . $for_who . "$permrow->group_name group </b>(" . $groupmembers . ")";
+		}
+	if ($permrow->path=="") $permrow->path="/";
+	if ($permrow->this_dir_only=='Y') $recurse_mode=" <i>(Not Recursive)</i>";
+		else $recurse_mode="";
+	echo "$whodisp<br><ul><li>$permrow->access_action $permrow->access_type to : $permrow->path$recurse_mode</li></ul>";
+	
+	}
+?>

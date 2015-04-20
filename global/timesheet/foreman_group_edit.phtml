@@ -1,0 +1,253 @@
+<?
+if ($global_user->timesheet_group_one_foreman!="Y") 
+	die ("ERROR: Access Violation! The authorities are being notified!");
+
+if ($group_id!="") {
+	$group_id=escapeshellcmd($group_id);
+	$group_info=getone("select * from timesheet_foreman_groups where group_id = '$group_id'");
+	if ($global_user->contacts_id != $group_info->foreman_id) 
+		die("ERROR: Access Violation! The authorities are being notified!");
+	$groupmode="Modify";
+	} else {
+	$groupmode="Add";
+	$new=1;
+	$group_info=new bsclass;
+	}
+
+require('header.phtml');
+
+
+if ($fmn_week_ending=="") {
+	$fmn_week_ending=date('Y-m-d',strtotime('next saturday'));
+	}
+
+if ($show_week_ending!="") {
+	session_register('fmn_week_ending');
+	$temp_date_info=date_info($show_week_ending);
+	$temp_date=$temp_date_info->week_end_mysql;
+	$fmn_week_ending=addslashes($temp_date);
+	}
+
+$fmn_week_ending_nice=invali_date($fmn_week_ending);
+
+
+
+
+//echo "<hr>$fmn_week_ending<hr>";
+
+//if ($show_week_ending==$fmn_week_ending) {
+//	$submit='Create';
+//	$ts_week_ending=invali_date($show_week_ending);
+//	include('foreman_timesheet_new_by_group_submit.phtml');
+//	
+//	}
+
+echo "
+
+<script>
+function show_edit() {
+	document.getElementById('group_edit_text').style.display='none';
+	document.getElementById('group_edit_form').style.display='inline';
+	}
+function tl(timesheet_id) {
+	document.location='$pagename?mode=foreman_timesheet_load&group_id=$group_info->group_id&come_back_to=$mode&ts_id=' + timesheet_id;
+	}	
+
+</script>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a>
+<br>
+<form name=group_edit action=$pagename method=post>
+<input type=hidden name=mode value='foreman_group_submit'>
+<input type=hidden name=group_id value='$group_id'>
+
+<table border=0 id=\"group_edit_text\"><tr><td><font size=+2 title=\"$group_info->group_description\"><b>$group_info->group_name</b></font>&nbsp;&nbsp;<i><a href=javascript:show_edit()>modify</a></i></td></tr></table>
+<table id=\"group_edit_form\" style=\"display: none;\" border=1 cellspacing=0 cellpadding=0><tr><td>
+<table border=0 cellspacing=0 cellpadding=2>
+<tr><td valign=top bgcolor=#dddddd>
+	<b>Group Name</b>
+</td><td>
+	<input size=35 type=text name=group_name value='$group_info->group_name'>
+</td></tr>
+
+<tr><td valign=top bgcolor=#dddddd>
+	<b>Description</b>
+</td><td>
+	<input type=text name=group_description size=20 value=\"$group_info->group_description\">
+	<input type=submit value='$groupmode'>
+</td></tr>
+
+</table>
+</td></tr></table>
+</form>
+";
+
+//echo "
+//<table border=0 cellspacing=0 cellpadding=4>
+//<tr><td valign=top>";
+	
+echo "	<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+		<b>Open Weeks</b>
+	</td></tr>
+	<tr><td>
+	<center>
+	";
+	//$open_query="select * from timesheet_group_members 
+	//	right join timesheet_index on (timesheet_group_members.employee_id = timesheet_index.employee_id )
+	//	right join contacts on ( timesheet_group_members.employee_id = contacts.contacts_id ) 
+	//	where timesheet_group_members.group_id = '$group_info->group_id' and timesheet_index.status = 'new'
+	//	
+	//	order by alphasort
+	//	";
+	$open_query="select * from timesheet_group_members 
+		right join timesheet_index on (timesheet_group_members.employee_id = timesheet_index.employee_id )
+		where timesheet_group_members.group_id = '$group_info->group_id' and timesheet_index.status = 'new'
+		group by timesheet_index.week_ending
+		order by timesheet_index.week_ending
+		";
+	$openres=@mysql_query($open_query);
+	while ($openrow=@mysql_fetch_object($openres)) {
+		$we_nice=invali_date($openrow->week_ending,'/');
+		echo "<a href=$pagename?mode=$mode&group_id=$group_info->group_id&show_week_ending=$openrow->week_ending><font color=blue>$we_nice</font></a><br>";
+		}
+	echo "
+	<hr>
+	<form name=week_selection method=post action=$pagename>
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=group_id value=\"$group_info->group_id\">
+	";datebox($fmn_week_ending,'week_selection.show_week_ending','',"document.week_selection.submit()");echo"
+	</td></form></tr></table>";
+	
+	
+	
+	
+//echo "</td><td valign=top>";
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+/*echo "
+	<table border=1 cellspacing=0 cellpadding=0><tr><td><table border=0 cellspacing=0 cellpadding=4>
+	<tr><td colspan=3 bgcolor=$fd_color_4 align=center style=\"border-bottom: 1px solid black;\">
+		<b>Group Members</b>
+		</td></tr>
+		
+		<tr><td bgcolor=$fd_color_1 colspan=3 align=center style=\"border-bottom: 1px solid black;\">
+		<form name=member_add method=post action=\"$pagename\">
+			<input type=hidden name=mode value=foreman_group_membership_add>
+			<input type=hidden name=\"group_id\" value=\"$group_id\">
+			<b>Add:&nbsp;</b>";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y' and employee_group = '1'",'',"employee_id","opener.document.member_add.submit()",2);echo "
+		</form>
+		
+		
+		
+		</td></tr>";
+
+		$query="select * from timesheet_group_members 
+			right join contacts on (timesheet_group_members.employee_id = contacts.contacts_id )
+			where timesheet_group_members.group_id = '$group_info->group_id'";
+		$res=@mysql_query($query);
+		while($row=@mysql_fetch_object($res)) {
+			echo "<tr><td>
+				$row->last_name, $row->first_name
+			</td><td>
+				($row->employee_num)
+			</td><td>
+				<a href=$pagename?mode=foreman_group_membership_del&group_member_id=$row->group_member_id>
+				<font color=blue><i>Remove</i></font></a>
+			</td></tr>
+			";
+		}
+		echo "</table>";*/
+//////////////////////////////////////////////////////////////////////////////
+
+	
+//echo "
+//	</td></tr></table>
+//</td></tr>
+//";
+
+$show_members_query="select * from timesheet_group_members 
+right join contacts on ( timesheet_group_members.employee_id = contacts.contacts_id ) 
+where group_id = '$group_info->group_id' order by alphasort
+";
+$show_members_res=@mysql_query($show_members_query);
+$member_count=@mysql_num_rows($show_members_res);
+
+if ($fmn_week_ending!="") {
+	echo "
+	<tr><td colspan=2>
+		<table border=1 cellspacing=0 cellpadding=3>
+		<tr><td bgcolor=$fd_color_4 align=center colspan=10>
+			<b>Timesheets for week ending $fmn_week_ending
+		</td><td bgcolor=$fd_color_4><b>Add:&nbsp;Group&nbsp;Memeber</b></td></tr>
+		<tr bgcolor=#dddddd><td>Employee</td><td>Week Ending</td><td>ST</td><td>OT</td><td>DT</td><td>H</td><td>S</td><td>H</td><td>Total</td><td>&nbsp;</td><form name=member_add method=post action=\"$pagename\"><td>
+			<input type=hidden name=mode value=foreman_group_membership_add>
+			<input type=hidden name=\"group_id\" value=\"$group_id\">
+			";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y' and employee_group = '1'",'',"employee_id","opener.document.member_add.submit()",2);echo "
+		</td></form></tr>";
+		
+		while ($member=@mysql_fetch_object($show_members_res)) {
+			$ts_index=getoneb("select * from timesheet_index where employee_id = '$member->contacts_id' and week_ending = '$fmn_week_ending'");
+			//echo("<hr>select * from timesheet_index where employee_id = '$member->contacts_id' and week_ending = '$fmn_week_ending'");
+			if ($ts_index) {
+				$bgcolor="#ffffff";
+				$ts_info=timesheet_summary_info($ts_index->timesheet_id);
+				echo "
+			    <tr><td>
+					$member->display_name<font size=-2><i>&nbsp;&nbsp;&nbsp;($member->employee_num)</i></font>
+			    </td><td>
+					<a href=javascript:tl($ts_info->timesheet_id);><font color=blue>
+					$fmn_week_ending_nice
+					</font></a>
+				</td><td>
+					$ts_info->st
+				</td><td>
+					$ts_info->ot
+				</td><td>
+					$ts_info->dt
+				</td><td>
+					$ts_info->v
+				</td><td>
+					$ts_info->s
+				</td><td>
+					$ts_info->h
+				</td><td>
+					$ts_info->hours
+				</td><td>";
+					if ($ts_index->status=='new') {
+						echo "<a href=$pagename?mode=foreman_submit_timesheet&group_id=$group_info->group_id&timesheet_id=$ts_index->timesheet_id><font color=blue><b>Submit</b></font></a>";
+						}
+					if ($ts_index->status=='complete') {
+						echo "<a href=$pagename?mode=foreman_retrieve_timesheet&group_id=$group_info->group_id&timesheet_id=$ts_index->timesheet_id><font color=blue><b>Retrieve</b></font></a>";
+						}
+				echo "&nbsp;
+				</td><td align=center>
+					<as href=$pagename?mode=foreman_group_membership_del&group_member_id=$member->group_member_id>
+					<font color=grey><i>Remove From Group</i></font></a>
+				</td></tr>";
+				} else {
+				$bgcolor=$fd_color_2;
+			echo "<tr bgcolor=$bgcolor><td>
+					$member->display_name<font size=-2><i>&nbsp;&nbsp;&nbsp;($member->employee_num)</i></font>
+				</td><td colspan=9 align=center>
+					<a href=$pagename?mode=foreman_create_timesheet&group_id=$group_info->group_id&employee_id=$member->employee_id&work_week=$fmn_week_ending><font color=blue><b>Start Timesheet</b></font></a>
+				</td><td align=center>
+					<a href=$pagename?mode=foreman_group_membership_del&group_member_id=$member->group_member_id>
+					<font color=red><i>Remove From Group</i></font></a>
+				</td></tr>";
+				}
+			
+			}
+		echo "</table>
+	</td></tr>";
+	} 
+
+
+echo "</table>";
+
+if ($member_count<1) {
+	echo "<a href=$pagename?mode=foreman_delete_group&group_id=$group_info->group_id><font size=+2 color=blue><b>Delete empty group</b></font></a>";
+	}
+
+?>

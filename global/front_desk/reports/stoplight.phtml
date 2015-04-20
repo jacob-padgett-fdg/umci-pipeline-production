@@ -1,0 +1,184 @@
+<?
+
+
+
+
+$today_mysql=date('Y-m-d');
+
+
+if ($mode=="check_in") {
+	$bu_server_ip="10.0.0.24";
+	$user_ip=$GLOBALS['REMOTE_ADDR'];
+	if ($user_ip==$bu_server_ip) {
+		include("querylib.inc");
+		include("global_connect_rw.phtml");
+		$status_today=getoneb("select * from front_desk_stoplight_bu_log where bu_date = '$today_mysql' limit 1");
+		if (!($status_today)) {
+			@mysql_query("insert into front_desk_stoplight_bu_log set bu_date = '$today_mysql', dr1_status = 'unknown', dr2_status = 'unknown'");
+			$status_today=getoneb("select * from front_desk_stoplight_bu_log where bu_date = '$today_mysql' limit 1");
+			}
+		if (!($status_today)) die("Application Error! Could not initialize the db record for today ($today_mysql)");
+		
+
+		if ($dr1_exp!="") @mysql_query("update front_desk_stoplight_bu_log set dr1_exp = '" 
+			. addslashes($dr1_exp) . "' where bu_log_id = '$status_today->bu_log_id'");
+		
+		if ($dr1_status!="") @mysql_query("update front_desk_stoplight_bu_log set dr1_status = '" 
+			. addslashes($dr1_status) . "' where bu_log_id = '$status_today->bu_log_id'");
+		
+		if ($dr1_got!="") @mysql_query("update front_desk_stoplight_bu_log set dr1_got = '" 
+			. addslashes($dr1_got) . "' where bu_log_id = '$status_today->bu_log_id'");
+		
+		if ($dr1_next!="") @mysql_query("update front_desk_stoplight_bu_log set dr1_next = '" 
+			. addslashes($dr1_next) . "' where bu_log_id = '$status_today->bu_log_id'");
+		
+		
+		
+		if ($dr2_exp!="") @mysql_query("update front_desk_stoplight_bu_log set dr2_exp = '" 
+			. addslashes($dr2_exp) . "' where bu_log_id = '$status_today->bu_log_id'");
+		
+		if ($dr2_status!="") @mysql_query("update front_desk_stoplight_bu_log set dr2_status = '" 
+			. addslashes($dr2_status) . "' where bu_log_id = '$status_today->bu_log_id'");
+		
+		if ($dr2_got!="") @mysql_query("update front_desk_stoplight_bu_log set dr2_got = '" 
+			. addslashes($dr2_got) . "' where bu_log_id = '$status_today->bu_log_id'");
+		
+		if ($dr2_next!="") @mysql_query("update front_desk_stoplight_bu_log set dr2_next = '" 
+			. addslashes($dr2_next) . "' where bu_log_id = '$status_today->bu_log_id'");
+		
+		}
+	exit;
+	}
+
+include("header.phtml");
+include("mh_lib.inc");
+mh_navs_header();
+check_report_permissions();
+
+//tabledump("select * from front_desk_stoplight_bu_log where bu_date = '$today_mysql' limit 1");
+$status_today=getoneb("select * from front_desk_stoplight_bu_log where bu_date = '$today_mysql' limit 1");
+$status_previous=getoneb("select * from front_desk_stoplight_bu_log where bu_date < '$today_mysql' order by bu_date desc limit 1");
+
+function display_status($status,$description) {
+	global $fd_color_4, $fd_color_3,$report_name,$mode;
+	if (!($status)) {
+		echo "<table width=550px border=1 cellspacing=0 cellpadding=4>
+		<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+			<b>Backup Status for $description</b>
+		<tr><td colspan=2 align=center>
+			<img width=100 height=150 src=/images/stoplight_red.png>
+		</td></tr>
+		
+		<tr><td colspan=2>
+			<b><font size=+1>Backup error</font><br>No backup data available.<br>Server hasn't reported<br>in yet.</b>
+		</td></tr>
+		</table>
+		";
+		} else {
+		$pretty_date=invali_date($status->bu_date,'/');
+		$pretty_date_today=date('m/d/Y');
+		if ($pretty_date_today==$pretty_date) $drive_media="numbered";
+		else $drive_media="weekly";
+		if ($status->dr1_status=="") $status->dr1_status="unknown";
+		if ($status->dr2_status=="") $status->dr2_status="unknown";
+		
+		$light1="/images/stoplight_red.png";
+		if ($status->dr1_status=="working") $light1="/images/stoplight_yellow.png";
+		if ($status->dr1_status=="done") $light1="/images/stoplight_green.png";
+		
+		$light2="/images/stoplight_red.png";
+		if ($status->dr2_status=="working") $light2="/images/stoplight_yellow.png";
+		if ($status->dr2_status=="done") $light2="/images/stoplight_green.png";
+		
+		$light_big="/images/stoplight_green.png";
+		if (($light1=="/images/stoplight_red.png")||($light2=="/images/stoplight_red.png")) $light_big="/images/stoplight_red.png";
+		else {
+			if (($light1=="/images/stoplight_yellow.png")||($light2=="/images/stoplight_yellow.png")) $light_big="/images/stoplight_yellow.png";
+			else {
+				if ($status->dr1_got==$status->dr2_got) $light_big="/images/stoplight_yellow.png";
+				}
+			}
+		//echo "$light1";
+		echo "
+		<font size=-1>
+		<table border=1 cellspacing=0 cellpadding=4>
+		<tr><td colspan=4 bgcolor=$fd_color_4 align=center><b>Backup Status for $description ($pretty_date)</b></td><td align=center bgcolor=$fd_color_4><b>Media Status for Removable drives</td></tr>
+		<tr><td colspan=2 bgcolor=$fd_color_3 align=center><b>Numbered Drives</b></td>
+		<td rowspan=5 bgcolor=$fd_color_3><img width=100 height=150 src=\"$light1\"></td><td rowspan=10 bgcolor=$fd_color_4><img src=\"$light_big\"></td>
+		<td rowspan=10 bgcolor=$fd_color_4>
+		<img src=\"$pagename?mode=$mode&report_name=${report_name}_graph_$drive_media&window_set=365&blah=blah/numbered.jpg\">
+		</td></tr>
+		<tr><td>
+			Status
+		</td><td width=80px>
+			$status->dr1_status
+		</td></tr>
+		
+		<tr><td>
+			Expected Drive
+		</td><td>
+			$status->dr1_exp
+		</td></tr>
+		
+		<tr><td>
+			Drive Received
+		</td><td>
+			$status->dr1_got
+		</td></tr>
+		
+		<tr><td>
+			Next Drive in Series
+		</td><td>
+			$status->dr1_next
+		</td></tr>
+		
+		<tr><td colspan=2 bgcolor=$fd_color_3 align=center><b>Mon-Fri Drives</b></td>
+		<td rowspan=5 bgcolor=$fd_color_3><img width=100 height=150 src=\"$light2\"></td></tr>
+
+		<tr><td>
+			Status
+		</td><td>
+			$status->dr2_status</td>
+		</td></tr>
+		
+		<tr><td>
+			Expected Drive
+		</td><td>
+			$status->dr2_exp
+		</td></tr>
+		
+		<tr><td>
+			Drive Received
+		</td><td>
+			$status->dr2_got
+		</td></tr>
+		
+		<tr><td>
+			Next Drive in Series
+		</td><td>
+			$status->dr2_next
+		</td></tr>
+		
+		</table>
+		</font>
+		";
+		}
+	}
+
+
+//echo "<h2>Today's Backup Status</h2><hr>";
+display_status($status_today,"Today");
+//echo "<h2>Previous Backup Status</h2><hr>";
+echo "<p>";
+display_status($status_previous,"Previous Backup");
+
+
+
+
+//echo "<img src=\"$pagename?mode=$mode&report_name=${report_name}_graph_prediction&blah=blah/prediction.jpg\">";
+
+
+
+
+mh_navs_footer();
+?>

@@ -1,0 +1,13 @@
+<?
+$cart=getoneb("select sum(total_dollars) as total_dollars, sum(quantity) as total_count from costore_cart where contacts_id = '$global_user_id' and status = 'new'");
+
+$status="processing";
+if ($billing_jobinfo_id!="") {
+	$billing_jobinfo_id=addslashes($billing_jobinfo_id);
+	$status="PM Approval";
+	}
+$res=@mysql_query("insert into costore_cart_invoice set cart_status = '$status', contacts_id = '$global_user_id', cart_total = '$cart->total_dollars', cart_count = '$cart->total_count', billing_jobinfo_id = '$billing_jobinfo_id', invoice_date = now()");
+$id=@mysql_insert_id();
+@mysql_query("update costore_cart set status = '$status', invoice_id = '$id'  where contacts_id = '$global_user_id' and status = 'new'");
+forward('shopping_cart');
+?>

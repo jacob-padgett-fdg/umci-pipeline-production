@@ -1,0 +1,50 @@
+<?
+require("querylib.inc");
+
+if ($it_category_id!="") {
+	$new=0;
+	$it_category_id=addslashes($it_category_id);
+	$cat_info=getone("select * from mis_issue_categories where it_category_id = '$it_category_id'");
+	$cat_info->category_name=addslashes($cat_info->category_name);
+	$cat_info->category_description=addslashes($cat_info->category_description);
+	} else {
+	$cat_info->it_category_id="";
+	$new=1;
+	}
+
+echo "
+<html><head><title>MIS Issue - Category Edit</title><head>
+<body bgcolor=#ffffff>
+<a href=$pagename?mode=categories><font color=blue>Back to categories</font></a><p>
+
+<center><h2>MIS Issue - Category Edit</h2></center><hr>
+<form name=category_edit method=post action=$pagename>
+<input type=hidden name=mode value=category_submit>
+<table border=0>
+<tr><td>
+	Category ID:
+</td><td>
+	$cat_info->it_category_id
+	<input type=hidden name=it_category_id value=\"$cat_info->it_category_id\">
+</td></tr>
+
+<tr><td>
+	Category Name:
+</td><td>
+	<input type=text name=category_name value=\"$cat_info->category_name\">
+</td></tr>
+
+<tr><td>
+	Category Description:
+</td><td>
+	<textarea name=category_description rows=5 cols=40>$cat_info->category_description</textarea>
+</td></tr>
+";
+
+if ($new) 
+	echo "<tr><td colspan=2 align=right><input type=submit value=\"Create\"></td></tr>";
+else 
+	echo "<tr><td colspan=2 align=right><input type=submit value=\"Save\"></td></tr>";
+
+echo"</form>";
+?>

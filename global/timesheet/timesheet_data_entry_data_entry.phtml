@@ -1,0 +1,418 @@
+<?
+if (!($timesheet_data_entry_check)) die_security();
+//////////// Figure out the employee ////////////////////////
+if ($timesheet_data_entry_selected_employee_set!="") {
+	session_register('timesheet_data_entry_selected_employee');
+	$timesheet_data_entry_selected_employee=addslashes($timesheet_data_entry_selected_employee_set);
+	}
+$employee_info=getoneb("select * from contacts where employee_num = '$timesheet_data_entry_selected_employee' and current = 'Y'");
+$timesheet_data_entry_selected_employee=$employee_info->employee_num;
+//////////// Pick a sane default for the week ending ////////
+if ($timesheet_data_entry_week_ending=="") $timesheet_data_entry_week_ending=date('m-d-Y',strtotime('3 days ago'));
+if ($data_entry_batch<1) {
+	forward('timesheet_data_entry_batch_selection');
+	die();
+	}
+
+$date_info=date_info($timesheet_data_entry_week_ending);
+$timesheet_data_entry_week_ending=$date_info->week_end;
+
+$week_ending_unix_time=strtotime("$date_info->week_end_mysql");
+$timesheet_sunday=date('m-d-Y',strtotime('6 days ago',$week_ending_unix_time));
+$timesheet_monday=date('m-d-Y',strtotime('5 days ago',$week_ending_unix_time));
+$timesheet_tuesday=date('m-d-Y',strtotime('4 days ago',$week_ending_unix_time));
+$timesheet_wednesday=date('m-d-Y',strtotime('3 days ago',$week_ending_unix_time));
+$timesheet_thursday=date('m-d-Y',strtotime('2 days ago',$week_ending_unix_time));
+$timesheet_friday=date('m-d-Y',strtotime('1 days ago',$week_ending_unix_time));
+$timesheet_saturday=date('m-d-Y',$week_ending_unix_time);
+$week_ending_mysql=date('Y-m-d',$week_ending_unix_time);
+
+//////////////////////////////////////////////////////////
+// Create a timesheet for them if we need to...
+//////////////////////////////////////////////////////////
+
+$eclist=array();
+$eclist[1]='Straight Time';
+$eclist[2]='Over Time';
+$eclist[3]='Double Time';
+$eclist[5]='Subsistence';
+$eclist[6]='Parking';
+$eclist[7]='Travel';
+$eclist[8]='Vacation';
+$eclist[9]='Sick';
+
+$employee_form="
+<form  name=select_employee method=post action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr><td>
+	<b>Employee&nbsp;#</b>
+</td><td>
+	<input type=text name=\"timesheet_data_entry_selected_employee_set\" onfocus=\"document.select_employee.employee_has_focus.value=1\" onblur=\"document.select_employee.employee_has_focus.value=0\" value=\"$timesheet_data_entry_selected_employee\" onchange=submit()>
+	<input type=hidden name=employee_has_focus value=0>
+</td></tr>
+</table>
+</form>
+";
+
+if ($employee_info) {
+	$ts_info=getoneb("select * from timesheet_index where employee_id = '$employee_info->contacts_id' and week_ending = '$date_info->week_end_mysql'");
+	$ts_time=getoneb("select sum(hours) as Hours from timesheet_time where timesheet_id = '$ts_info->timesheet_id'");
+	$ts_info->hours=$ts_time->Hours;
+	if (!($ts_info)) {
+		$new_ts_query="insert into timesheet_index set 
+			creator = '$global_user->contacts_id', 
+			employee_id = '$employee_info->contacts_id',
+			employee_num = '$employee_info->employee_num',
+			employee_group = '$employee_info->employee_group',
+			week_ending = '$week_ending_mysql',
+			status = 'new'";
+		@mysql_query($new_ts_query);
+		$ts_info=getoneb("select * from timesheet_index where employee_id = '$employee_info->contacts_id' and week_ending = '$date_info->week_end_mysql'");
+		}
+	
+	if ($submode=="delete_timesheet_entry") {
+		$delete_info=getoneb("select * from timesheet_time where timesheet_time_id = '" . addslashes($timesheet_time_id) . "'");
+		if (!($delete_info)) die("Application error! Trying to delete a time entry in error!");
+		if ($ts_info->timesheet_id!=$delete_info->timesheet_id) die("Application error! Trying to delete an entry from the wrong timesheet!");
+		if ($ts_info->status!="new") die("Application error! Trying to delete entry from a timesheet that isn't 'new'.");
+		if ($delete_info->timesheet_status!="new") die("Application error! Trying to delete entry that isn't 'new'.");
+		@mysql_query("delete from timesheet_time where timesheet_time_id = '$delete_info->timesheet_time_id'");
+		forward($mode);
+		}
+	
+	$ts_last=getoneb("select * from timesheet_time where timesheet_id = '$ts_info->timesheet_id' order by timesheet_time_id desc limit 1");
+	if (!($ts_last)) {
+		$ts_last->shift="1";
+		} else {
+		$ts_last->dow=date('w',strtotime($ts_last->workday));
+		}
+	}
+
+require('header.phtml');
+echo "
+
+<a href=$pagename><font color=blue>Return to main</font></a><p>
+
+<table border=1 cellspacing=0 cellpadding=3>
+<tr><td>
+	<b>Employee&nbsp;</b>
+</td><td>
+	$employee_info->display_name ($employee_info->employee_num)</b>
+</td><td rowspan=3 id=\"newemp\" style=\"display: none\">
+	$employee_form
+</td></tr>
+
+<tr><td>
+	<b>Week Ending&nbsp;</b>
+</td><td>
+	<form name=week_ending_selection method=post action=$pagename>
+	<input type=hidden name=mode value=$mode>
+	";datebox2("$timesheet_saturday",'week_ending_selection.timesheet_data_entry_week_ending','submit()');echo"
+	</form>
+</td></tr>
+
+<tr><td>
+	<b>Timesheet&nbsp;Status</b>&nbsp;
+</td><td>
+	$ts_info->status
+</td></tr>
+
+<tr><td>
+	<b>Timesheet&nbsp;Hours</b>&nbsp;
+</td><td>
+	$ts_info->hours
+</td></tr>
+
+</table>
+
+<script>
+function select_new_employee() {
+	document.getElementById('newemp').style.display='table-cell';
+	document.select_employee.timesheet_data_entry_selected_employee_set.focus();
+	document.select_employee.timesheet_data_entry_selected_employee_set.select();
+	//return false;
+	}
+document.select_employee.timesheet_data_entry_selected_employee_set.focus();
+</script>";
+if (!($employee_info)) {
+	echo "<b>No valid field employee selected. Please select an employee!</b>
+	<script>
+	select_new_employee();
+	</script>	
+	";
+	exit;
+	}
+
+if (!($ts_info)) {
+	die("Timesheet data entry error. Timesheet doesn't exist, and wasn't automatically created?!?!?!?");
+	}
+$time_query="select * from timesheet_time where timesheet_id = '$ts_info->timesheet_id' order by workday,job_num,phase,timesheet_time_id";
+echo "<table border=1 cellspacing=0 cellpadding=2>
+<tr><td>
+	Record&nbsp;Type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td><td>
+	Job&nbsp;#
+</td><td>
+	Phase
+</td><td>
+	Date
+</td><td>
+	Shift
+</td><td>
+	EC
+</td><td>
+	Hrs
+</td><td>
+	$
+</td><td>
+	Action
+</td></tr>
+";
+$time_res=@mysql_query($time_query);
+while ($time_row=@mysql_fetch_object($time_res)) {
+	$day=invali_date($time_row->workday);
+	$record_type=$eclist[$time_row->earnings_code];
+	echo "<tr><td>
+			$record_type
+		</td><td>
+			$time_row->job_num
+		</td><td>
+			$time_row->phase
+		</td><td>
+			$day
+		</td><td>
+			$time_row->shift
+		</td><td>
+			$time_row->earnings_code
+		</td><td>";
+			if (($time_row->earnings_code <4)||($time_row->earnings_code==9)||($time_row->earnings_code==8)) {
+				echo "$time_row->hours";
+				} else {
+				echo "$time_row->dollars";
+				} echo "
+		</td><td>
+			&nbsp;
+		</td><td>
+			<i><a href=$pagename?mode=$mode&submode=delete_timesheet_entry&timesheet_time_id=$time_row->timesheet_time_id>delete</a></i>
+		</td></tr>";
+	}
+
+//if ($default_dow=="") {
+//	session_register('default_dow');
+//	$default_dow=1; // Monday
+//	}
+
+//if ($current_dow=="") {
+//	session_register('default_dow');
+//	$default_dow=1; // Monday
+//	}
+$current_dow=$ts_last->dow;
+//print_r($ts_last);
+//if ($timesheet_info->
+
+echo "<form name=time_entry method=post action=$pagename>
+<input type=hidden name=mode value=timesheet_data_entry_data_submit>
+<input type=hidden name=timesheet_id value=\"$ts_info->timesheet_id\">
+<input type=hidden name=form_position value=1>
+<input type=hidden name=workday value=\"\">
+<input type=hidden name=dow value=\"$current_dow\">
+
+<tr><td>
+	<font id=\"ec_text\"></font>($ts_last->dow)
+</td><td>
+	<input type=text size=9 name=job_num value=\"$ts_last->job_num\" onfocus='this.style.background=\"orange\"' onblur='this.style.background=\"white\"'>
+</td><td>
+	<input type=text size=5 name=phase value=\"$ts_last->phase\" onfocus='this.style.background=\"orange\"' onblur='this.style.background=\"white\"'>
+</td><td>
+	<font id=\"date_text\"></font>
+</td><td>
+	<input type=text size=2 name=shift value=\"$ts_last->shift\" onfocus='this.style.background=\"orange\"' onblur='this.style.background=\"white\"'>
+</td><td>
+	<input type=text size=2 name=earnings_code value\"$ts_last->earnings_code\" onfocus='this.style.background=\"orange\"' onblur='this.style.background=\"white\";earnings_code_check();'>
+</td><td>
+	<input type=text size=3 name=hours value\"1\" onfocus='this.style.background=\"orange\"' onblur='this.style.background=\"white\"'>
+</td><td>
+	<input type=text size=4 name=dollars value\"1\" onfocus='this.style.background=\"orange\"' onblur='this.style.background=\"white\"'>
+</td></tr>
+</table>
+</form>
+
+<script>
+var day=new Array(7);
+day[0]=\"$timesheet_sunday\";
+day[1]=\"$timesheet_monday\";
+day[2]=\"$timesheet_tuesday\";
+day[3]=\"$timesheet_wednesday\";
+day[4]=\"$timesheet_thursday\";
+day[5]=\"$timesheet_friday\";
+day[6]=\"$timesheet_saturday\";
+
+var eclist=new Array(9);
+eclist[1]='Straight Time';
+eclist[2]='Over Time';
+eclist[3]='Double Time';
+eclist[5]='Subsistence';
+eclist[6]='Parking';
+eclist[7]='Travel';
+eclist[8]='Vacation';
+
+function move_position_forward() {
+	oldpos=parseInt(document.time_entry.form_position.value);
+	newpos=oldpos + 1;
+	if (newpos >= 7) {
+		//alert('document submit');
+		verify_data();
+		} else {
+		document.time_entry.form_position.value=newpos;
+		set_pos();
+		}
+	}
+
+function move_position_backward() {
+	oldpos=parseInt(document.time_entry.form_position.value);
+	if (oldpos<2) newpos='1';
+	else newpos=oldpos - 1;
+	document.time_entry.form_position.value=newpos;
+	set_pos();
+	}
+
+function proc_ret() {
+	if (document.select_employee.employee_has_focus.value=='1')
+		document.select_employee.timesheet_data_entry_selected_employee_set.blur();
+	else move_position_forward();
+	}
+
+
+function set_pos() {
+	document.getElementById('date_text').style.background='white';
+	current=document.time_entry.form_position.value;
+	switch (current) {
+		case '1':
+			document.time_entry.job_num.select();
+			break;
+		case '2':
+			document.time_entry.phase.select();
+			break;
+		case '3':
+			document.time_entry.phase.blur();
+			document.time_entry.shift.blur();
+			document.getElementById('date_text').style.background='orange';
+			break;
+		case '4':
+			document.time_entry.shift.select();
+			break;
+		case '5':
+			document.time_entry.earnings_code.select();
+			break;
+		case '6':
+			if ((document.time_entry.earnings_code.value<4)||(document.time_entry.earnings_code.value>7))
+				document.time_entry.hours.select();
+				else 
+				document.time_entry.dollars.select();
+			break;
+		default:
+			alert('form position error');
+			break;
+		}
+	}
+
+function verify_data() {
+	error=0;
+	if (document.time_entry.job_num.value=='') error=1;
+	if (document.time_entry.phase.value=='') error=1;
+	if (document.time_entry.shift.value=='') error=1;
+	//if (document.time_entry.earnings_code.value=='') error=1;
+	ec=document.time_entry.earnings_code.value;
+	if (((ec>=1)&&(ec<=3))||(ec==8)) {
+		if (!(document.time_entry.hours.value>0)) error=1;
+		} else {
+		if ((ec>=5)&&(ec<=7)) {
+			if (!(document.time_entry.dollars.value>0)) error=1;
+			}
+		}
+	if (error!=1) document.time_entry.submit();
+	else alert('ERRORS');
+	}
+
+function down_arrow() {
+	if (document.time_entry.form_position.value=='3') date_down();
+	}
+function up_arrow() {
+	if (document.time_entry.form_position.value=='3') up_down();
+	}
+
+function shift_check() {
+	alert('shift_check');
+	}
+
+function earnings_code_check() {
+	ec=document.time_entry.earnings_code.value;
+	if ((ec>=5)&&(ec<=7)) {
+		// We're a dollar amount EC
+		document.time_entry.hours.value='0';
+		document.time_entry.hours.style.background='gray';
+		document.getElementById('ec_text').innerHTML=eclist[ec];
+		return 0;
+		} else {
+		if (((ec>=1)&&(ec<=3))||(ec==8)) {
+			// We're a hour entry
+			document.time_entry.dollars.value='0.00';
+			document.time_entry.dollars.style.background='gray';
+			//document.getElementById('ec_text').innerHTML=eclist[ec];
+			//return 0;
+			} else {
+			document.time_entry.earnings_code.value=1;
+			earnings_code_check();
+			}
+		document.getElementById('ec_text').innerHTML=eclist[ec];
+		return 0;
+		}
+	alert('script error');
+	}
+
+function date_up() {
+	oldval=parseInt(document.time_entry.dow.value);
+	if (oldval<1) newvalue=0;
+	else newvalue=oldval - 1;
+	document.time_entry.dow.value=newvalue;
+	show_date();
+	}
+function date_down() {
+	oldval=parseInt(document.time_entry.dow.value);
+	newvalue=oldval + 1;
+	if (newvalue>6) newvalue=6;
+	document.time_entry.dow.value=newvalue;
+	show_date();
+	}
+function show_date() {
+	document.time_entry.workday.value=day[document.time_entry.dow.value];
+	document.getElementById('date_text').innerHTML=document.time_entry.workday.value;
+	}
+
+
+document.getElementById('date_text').innerHTML=document.time_entry.workday.value;
+earnings_code_check();
+set_pos();
+show_date();
+</script>
+";
+
+
+
+//}
+
+
+	//'ret'=>"move_position_forward()",
+$keylist=array(
+	'b'=>"select_new_batch()",
+	'*'=>"select_new_batch()",
+	'/'=>"select_new_employee()",
+	'ret'=>"proc_ret()",
+	'uar'=>"date_up()",
+	'lar'=>"move_position_backward()",
+	'rar'=>"move_position_forward()",
+	'dar'=>"down_arrow()"
+	);
+javascript_hotkeys($keylist);
+?>

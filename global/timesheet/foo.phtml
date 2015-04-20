@@ -1,0 +1,42 @@
+<?
+$new_week_ending="2010-10-16";
+//tabledump("select * from timesheet_index where employee_group = 1 and week_ending = '2010/10/23' and status = 'complete'");
+$timesheet_list=@mysql_query("select * from timesheet_index where employee_group = 1 and week_ending = '2010/10/23' and status = 'complete' limit 1");
+$rowcount=@mysql_num_rows($timesheet_list);
+echo "timesheets: $rowcount<br>";
+while ($row=@mysql_fetch_object($timesheet_list)) {
+	$time_list=@mysql_query("select * from timesheet_time where timesheet_id = '$row->timesheet_id'");
+	while ($time=@mysql_fetch_object($time_list)) {
+		$old_workday=$time->workday;
+		$new_workday=$old_workday;
+		if ($old_workday=="2010-10-23") $new_workday="2010-10-16";
+		if ($old_workday=="2010-10-22") $new_workday="2010-10-15";
+		if ($old_workday=="2010-10-21") $new_workday="2010-10-14";
+		if ($old_workday=="2010-10-20") $new_workday="2010-10-13";
+		if ($old_workday=="2010-10-19") $new_workday="2010-10-12";
+		if ($old_workday=="2010-10-18") $new_workday="2010-10-11";
+		if ($old_workday=="2010-10-17") $new_workday="2010-10-10";
+		if ("$old_workday"=="$new_workday") die("workday was not adjusted!!!! ($old_workday / $new_workday)");
+		//echo "$time->timesheet_time_id: $old_workday -> $new_workday<br>";
+		//@mysql_query("update timesheet_time set workday = '$new_workday', weekending = '$new_week_ending' where timesheet_time_id = '$time->timesheet_time_id'");
+		echo ("update timesheet_time set workday = '$new_workday', week_ending = '$new_week_ending' where timesheet_time_id = '$time->timesheet_time_id'<br>");
+		@mysql_query("update timesheet_time set workday = '$new_workday', week_ending = '$new_week_ending' where timesheet_time_id = '$time->timesheet_time_id'");
+		}
+	echo ("update timesheet_index set week_ending = '$new_week_ending' where timesheet_id = '$row->timesheet_id'<br>");
+	@mysql_query("update timesheet_index set week_ending = '$new_week_ending' where timesheet_id = '$row->timesheet_id'");
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

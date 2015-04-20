@@ -1,0 +1,176 @@
+<?
+
+if ($new==1) {
+	$contact->current="Y";
+	$contact->owner=$c_info->owner;
+	$contact->consultant=$c_info->consultant;
+	$contact->mechanical_contractor=$c_info->mechanical_contractor;
+	$contact->manufacturer=$c_info->manufacturer;
+	$contact->is_general=$c_info->is_general;
+	$contact->is_reprograpics_firm=$c_info->is_reprographics_firm;
+	}
+
+$contact->current=checkbreak($contact->current);
+$contact->owner=checkbreak($contact->owner);
+$contact->consultant=checkbreak($contact->consultant);
+$contact->mechanical_contractor=checkbreak($contact->mechanical_contractor);
+$contact->manufacturer=checkbreak($contact->manufacturer);
+$contact->is_general=checkbreak($contact->is_general);
+$contact->is_reprographics_firm=checkbreak($contact->is_reprographics_firm);
+
+
+//$cancel_link="$pagename?mode=$contacts_last_main_mode";
+$cancel_link="$pagename?mode=contacts_edit&contacts_id=$contact->company_id";
+if ($return_to!="") {
+	//$return_to=addslashes($return_to);
+	//$abort_url=base64_decode($return_to);
+	//$cancel_link=$abort_url;
+	$cancel_link=get_return_to_link($return_to);
+	}
+
+
+echo "
+<table border=0 cellspacing=0 cellpadding=0>
+
+<a href=$cancel_link><font color=blue>Cancel</font></a><br>
+
+<form name=standardform method=get action=$pagename>
+<input type=hidden name=mode value=contacts_submit>
+<input type=hidden name=contacts_id value=\"$contact->contacts_id\">
+<input type=hidden name=contact_type value=\"$contact_type\">
+<input type=hidden name=company_id value=\"$contact->company_id\">
+<input type=hidden name=exit_target value=$contacts_last_main_mode>
+<input type=hidden name=return_to value=\"$return_to\">
+
+<h2>Site for: $c_info->display_name</h2>
+
+<tr><td>
+	Site Name:
+</td><td>
+	<input type=text size=40 name=company value=\"$contact->company\">
+</td></tr>
+
+<tr><td>
+	E-mail:
+</td><td>
+	<input type=text name=email value='$contact->email'>
+</td></tr>
+
+<tr><td>
+	Address:
+</td><td>
+	<textarea rows=5 cols=40 scroll=auto wrap=soft name=address_1>$contact->address_1</textarea>
+</td></tr>
+
+<tr><td>
+	City:
+</td><td>
+	<input type=text name=address_city value='$contact->address_city'>
+</td></tr>
+
+<tr><td>
+	State:
+</td><td>
+	<input type=text name=address_state size=3 value='$contact->address_state'>
+</td></tr>
+
+<tr><td>
+	Zip Code:
+</td><td>
+	<input type=text name=address_zip size=10 value='$contact->address_zip'>
+</td></tr>
+
+<tr><td>
+	Phone:
+</td><td>
+	<input type=text name=phone value='$contact->phone'>
+</td></tr>
+
+<tr><td>
+	Phone Extension:
+</td><td>
+	<input type=text name=phone_ext value='$contact->phone_ext'>
+</td></tr>
+
+<tr><td>
+	Fax:
+</td><td>
+	<input type=text name=phone_fax value='$contact->phone_fax'>
+</td></tr>
+
+
+<tr><td colspan=2>
+	<b>Contact Categories</b>
+	<font size=-2><i>(check all that apply <u>TO THIS SITE</u>)</i><b>:</b></font>
+</td></tr>
+
+<tr><td>
+	Current:
+</td><td>
+	<input type=checkbox name=current $contact->current>
+</td></tr>
+
+<tr><td>
+	Owner (customer):
+</td><td>
+	<input type=checkbox name=owner $contact->owner>
+</td></tr>
+
+<tr><td>
+	Consultant:
+</td><td>
+	<input type=checkbox name=consultant $contact->consultant>
+</td></tr>
+
+<tr><td>
+	Mechanical Contractor:
+</td><td>
+	<input type=checkbox name=mechanical_contractor $contact->mechanical_contractor>
+</td></tr>
+
+<tr><td>
+	Manufacturer:
+</td><td>
+	<input type=checkbox name=manufacturer $contact->manufacturer>
+</td></tr>
+
+<tr><td>
+	General Contractor:
+</td><td>
+	<input type=checkbox name=is_general $contact->is_general>
+</td></tr>
+
+<tr><td>
+	Reprographics Firm:
+</td><td>
+	<input type=checkbox name=is_reprographics_firm $contact->is_reprographics_firm>
+</td></tr>
+
+<tr><td></td><td>
+	<input type=button value=Apply onclick=apply_changes();>
+	<input type=button value=Finish onclick=submit();>
+</td></tr>
+</table>
+</form>
+<script>
+function apply_changes() {
+	document.standardform.exit_target.value='contact_edit';
+	document.standardform.submit();
+	}
+</script>
+
+";
+
+
+if ($new!="1") {
+	echo "<hr>Other Sites for this company&nbsp<a href=$pagename?mode=contacts_edit&contact_type=site&company_id=$contact->contacts_id><font color=blue>(Add)</font></a><p>";
+	contact_table("select * from contacts where (company_id = '$contact->company_id' and contact_type = 'site' and contacts_id != '$contact->contacts_id') or (contacts_id = '$contact->company_id') order by alphasort");
+
+	//echo "<hr>Contacts for this company&nbsp<a href=$pagename?mode=contacts_edit&company_id=$contact->contacts_id><font color=blue>(Add)</font></a><p>";
+	//contact_table("select * from contacts where company_id = '$contact->contacts_id' order by alphasort");
+	}
+
+
+
+require('footer.phtml');
+?>

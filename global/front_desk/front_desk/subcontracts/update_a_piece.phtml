@@ -1,0 +1,8 @@
+<?
+$piece_id=addslashes($piece_id);
+$value=addslashes($value);
+@mysql_query("update subcontracts_parts_pieces set part_value = '$value' where piece_id = '$piece_id'");
+if ($value=="") $bgcolor=$fd_color_6;
+else $bgcolor="#ffffff";
+echo "<input style=\"background: $bgcolor;\" type=text size=20 onchange=\"update_a_piece($piece_id,this.value)\" value=\"$value\">";
+?>

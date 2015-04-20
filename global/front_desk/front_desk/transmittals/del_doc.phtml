@@ -1,0 +1,8 @@
+<?
+if ($trans_doc_id=="") die("Application error: no doc id found");
+else $trans_doc_id=addslashes($trans_doc_id);
+if ($global_user->umc_emp!='Y') die_security();
+$info=getoneb("select * from transmittal_documents where trans_doc_id = '$trans_doc_id'");
+@mysql_query("delete from transmittal_documents where trans_doc_id = '$trans_doc_id'");
+forward("transmittal_edit&transmittal_id=$info->transmittal_id");
+?>

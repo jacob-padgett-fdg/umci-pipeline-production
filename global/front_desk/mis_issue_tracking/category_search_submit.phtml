@@ -1,0 +1,114 @@
+<?
+
+///////////////////////////////////////////////////////////////////////////
+//	Automatic query builder settings:
+///////////////////////////////////////////////////////////////////////////
+
+$basequery="select reference_this_issue,mis_issue_index.issue_id,it_category_id,priority,name,mis_issue_index.status,creator,requested_completion,expected_completion from mis_issue_index,mis_issue_history,mis_issue_concerned_parties where mis_issue_index.issue_id = mis_issue_history.issue_id and mis_issue_history.issue_history_id = mis_issue_concerned_parties.issue_history_id and current_hist_item = 'Y'";
+$basequery_group_by=" group by mis_issue_index.issue_id ";
+$basequery_order_by=""; // This order by will always be used, then whatever was requested
+$basequery_alt_order_by="expected_completion_date,expected_completion"; // This is the order by used if nothing else is requested
+
+$variables=array(
+			"mis_issue_index__it_category_id",
+			"expected_completion",
+			"expected_completion_date",
+			"requested_completion",
+			"name",
+			"description",
+			"mis_issue_index__status",
+			"mis_issue_concerned_parties__contacts_id",
+			"mis_issue_history__us_or_them",
+			"mis_issue_concerned_parties__us_or_them",
+			"priority"
+			);
+////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////
+//	Automatically build that query now
+////////////////////////////////////////////////////////////////////
+
+$query_order_by_1_direction=addslashes($query_order_by_1_direction);
+$query_order_by_2_direction=addslashes($query_order_by_2_direction);
+if ($query_order_by_1!="") {
+	$query_order_by_1=addslashes($query_order_by_1);
+	$query_order_by_1=ereg_replace("__",".",$query_order_by_1);
+	if ($basequery_order_by=="") $basequery_order_by="order by $query_order_by_1 $query_order_by_1_direction";
+	else $basequery_order_by="$basequery_order_by,$query_order_by_1 $query_order_by_1_direction";
+	if ($query_order_by_2!="") {
+		$query_order_by_1=addslashes($query_order_by_2);
+		$query_order_by_2=ereg_replace("__",".",$query_order_by_2);
+		$basequery_order_by="$basequery_order_by,$query_order_by_2 $query_order_by_2_direction";
+		}
+	} else { 
+		if ($basequery_order_by=="") $basequery_order_by="order by $basequery_alt_order_by";
+		else $basequery_order_by="$basequery_order_by,$basequery_alt_order_by";
+	}
+	
+
+
+
+foreach($variables as $variable) {
+
+if (${$variable}!="") {
+	//////////////////////////////////////////////////////////////////
+	///	Begin parsing for the multi-select boxen
+	//////////////////////////////////////////////////////////////////
+	if (is_array(${$variable})) {
+		//echo "Multi-select output found: ${$variable}";exit;
+		$basequery=$basequery . " and (";
+		$connector="";
+		foreach(${$variable} as $array_chunk) {
+			$array_chunk=addslashes($array_chunk);
+			$variable=ereg_replace("__",".",$variable);
+			$basequery=$basequery . " $connector $variable = '$array_chunk'";
+			$connector="or";
+			}
+		$basequery=$basequery . ")";
+	} 
+	//////////////////////////////////////////////////////////////////
+	///	End parsing for the multi-select boxen
+	//////////////////////////////////////////////////////////////////
+	else {
+		//echo "NON Multi-select output found: ${$variable}";exit;
+		$var_is_date=$variable . "_is_date";
+		//echo "$var_is_date<hr>";
+		if (${$var_is_date}!="") {
+			${$variable}=vali_date(${$variable});
+		} else {
+			${$variable}=addslashes(${$variable});
+		}
+
+
+		$column_name=ereg_replace("__",".",$variable);
+		$var_radio=$variable . "_radio";
+
+		if (${$var_radio}!="") {
+			$sign=${$var_radio};
+			if (($sign!='>') && ($sign!='<') && ($sign!='=')) {
+				//echo "Value: ${$var_radio}";exit;
+				${$var_radio}='=';
+				}
+			$basequery=$basequery . " and $column_name ${$var_radio} '${$variable}'";
+		} else {
+		$var_is_date=${$variable} . "_is_date";
+		
+			$basequery=$basequery . " and $column_name like '%${$variable}%'";
+		}
+		}
+	}
+}
+$basequery=$basequery . $basequery_group_by . $basequery_order_by;
+
+
+//////////////////////////////////////////////////////////////////
+//	End of Generic query builder.. Put your query to use below
+//////////////////////////////////////////////////////////////////
+
+//echo "$basequery<hr>";exit;
+echo "
+<html><body bgcolor=#ffffff>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><p>";
+category_show($basequery);
+?>

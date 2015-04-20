@@ -1,0 +1,70 @@
+<?
+
+if ($account_id!="") {
+	$account_id=addslashes($account_id);
+	$account_info=getoneb("select * from positivepay_accounts where account_id = '$account_id'");
+	$account_info->active=checkbreak($account_info->active);
+	}
+
+echo "
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td colspan=2 bgcolor=\"$umc_standard_blue\" align=center>
+	<b>Account Information</b>
+</td></tr>
+<form name=account_edit method=post action=$pagename>
+<input type=hidden name=mode value=account_submit>
+<input type=hidden name=account_id value=\"$account_info->account_id\">
+
+<tr><td>
+	<b>Account Name</b>
+</td><td>
+	<input type=text size=40 name=account_name value=\"$account_info->account_name\">
+</td></tr>
+
+<tr><td>
+	<b>Account #</b>
+</td><td>
+	<input type=text size=50 name=account_number value=\"$account_info->account_number\">
+</td></tr>
+
+<tr><td>
+	<b>Output Format</b>
+</td><td>
+	<select name=account_output_plugin>
+	<option>$account_info->account_output_plugin</option>
+	<option>Key</option>
+	<option>Wells</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>Output Option 1</b>
+</td><td>
+	<input type=text size=50 name=option_1 value=\"$account_info->option_1\">
+</td></tr>
+
+<tr><td>
+	<b>Output Option 2</b>
+</td><td>
+	<input type=text size=50 name=option_2 value=\"$account_info->option_2\">
+</td></tr>
+
+<tr><td>
+	<b>Notes</b>
+</td><td>
+	<textarea name=account_notes row=5 cols=40>$account_info->account_notes</textarea>
+</td></tr>
+
+<tr><td>
+	<b>Enabled?</b>
+</td><td>
+	<input type=checkbox name=active $account_info->active>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save
+</td></tr>
+
+</table>
+";
+?>

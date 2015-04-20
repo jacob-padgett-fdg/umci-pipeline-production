@@ -1,0 +1,33 @@
+<?
+//require('header.phtml');
+
+//require_once('querylib.inc');
+include("eeoc.phtml");
+exit;
+
+$query="select * from hr_openings where active = 'Y' order by deadline";
+
+echo "<center>";
+
+include("main_section_start.phtml");
+if ($private!=TRUE) {
+	list_openings_public($query);
+	} else {
+	list_openings($query);
+	}
+
+
+echo "
+<a href=$pagename?mode=apply><font color=black size=-1><b>Keep my application on file</b></font></a>
+<p>
+<a href=$pagename?mode=application_find><font color=black size=-1><b>Update my existing application</b></font></a> 
+<p>
+&nbsp;<p>
+</center>
+<a href=$pagename?mode=eeoc><font color=black size=-1><b>Affirmative Action Information Form</b></font></a>
+";
+
+include("main_section_end.phtml");
+
+
+?>

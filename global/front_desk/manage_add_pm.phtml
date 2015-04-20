@@ -1,0 +1,24 @@
+<?
+
+if (($global_jobinfo->project_manager_id!=$global_user_id)&&($global_user_id!=2)&&($global_user_id!=1)&&($global_user_id!=158)&&($global_user_id!=11)&&($global_user_id!=5809)) die_security();
+if ($pm=="") die("Application error!");
+$pm=addslashes($pm);
+
+@mysql_query("insert into front_desk_job_pms set jobinfo_id = '$global_jobinfo_id', contacts_id = '$pm'");
+security_log_email(
+$pm,
+0,
+$global_jobinfo_id,
+"added user as guest PM",
+"fd job setup");
+
+@mysql_query("insert into front_desk_job_admins set jobinfo_id = '$global_jobinfo_id', contacts_id = '$pm'");
+security_log_email(
+$pm,
+0,
+$global_jobinfo_id,
+"added user as front desk admin",
+"fd job setup");
+
+include("manage_jobs_show_pm.phtml");
+?>

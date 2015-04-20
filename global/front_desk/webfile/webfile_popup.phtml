@@ -1,0 +1,9 @@
+<?
+session_name("global");
+session_start();
+// GPH MARK - absolute path
+// FRON-36 MARK MARK - changed path for debugging purposes
+// include("/data/web/pipeline/global/webfile${devel}/webfile_popup_real.phtml");
+include("global/webfile/webfile_popup_real.phtml");
+exit;
+?>

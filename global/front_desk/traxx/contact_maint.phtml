@@ -1,0 +1,9 @@
+<?
+
+$reconcile_query="select * from contacts where last_touched >= (now() - 300)";
+$skip_viewpoint="true";
+$no_forward_please=1;
+require("/home/web/umci.com/global/contacts/contact_maint.phtml");
+$no_forward_please=0;
+
+?>

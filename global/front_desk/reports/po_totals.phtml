@@ -1,0 +1,48 @@
+<?
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+
+echo"<table border=1 cellspacing=0 cellpadding=4>";
+$po_totals_query="select 
+sum(POIT.OrigCost + POIT.OrigTax) as 'OrigCost',
+sum(POIT.TotalCost + POIT.TotalTax) as 'TotalCost',
+sum(POIT.InvCost + POIT.InvTax) as 'InvCost',
+sum(POIT.RemCost + POIT.RemTax) as 'RemCost'
+from POIT with (NOLOCK) where POIT.POCo = 1 and POIT.Job like '0$global_jobinfo->contract_num%' group by substring(Job,1,5)";
+
+$po_totals_info=ms_getoneb($po_totals_query);
+//ms_tabledump("select sum(POIT.OrigCost) as 'Orig Cost' from POIT where POIT.Job like '0$global_jobinfo->contract_num%' group by substring(Job,1,5)");
+if ($po_totals_info) {
+	$po_totals_info->OrigCost=round($po_totals_info->OrigCost,2);
+	$po_totals_info->TotalCost=round($po_totals_info->TotalCost,2);
+	$po_totals_info->InvCost=round($po_totals_info->InvCost,2);
+	$po_totals_info->RemCost=round($po_totals_info->RemCost,2);
+	echo "
+	<table border=1 cellspacing=0 cellpadding=3>
+	<tr bgcolor=$fd_color_4><td colspan=4 align=center>
+		<div style=\"float: right\"><i><font size=-1>Includes tax where applicable</font></i></div><font size=-1><b>PO Totals</b></font>
+	</td></tr>
+	
+	<tr bgcolor=$fd_color_1><td>
+		Orig&nbsp;Cost
+	</td><td>
+		Total&nbsp;Cost
+	</td><td>
+		Inv&nbsp;Cost
+	</td><td>
+		Rem&nbsp;Cost
+	</td></tr>
+	
+	<tr><td>
+		$po_totals_info->OrigCost
+	</td><td>
+		$po_totals_info->TotalCost
+	</td><td>
+		$po_totals_info->InvCost
+	</td><td>
+		$po_totals_info->RemCost
+	</td></tr>
+	</table>";
+	}
+?>

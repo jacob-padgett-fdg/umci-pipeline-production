@@ -1,0 +1,44 @@
+<?
+
+echo "<a href=$pagename><font color=blue>Main Menu</font></a><p><a href=$pagename?mode=account_edit><font color=blue>Add Account</font></a><br>";
+
+
+$res=@mysql_query("select * from positivepay_accounts order by account_name,account_number");
+
+echo "<table border=1 cellspacing=0 cellpadding=4>
+<tr><td colspan=6 bgcolor=\"$umc_standard_blue\" align=center><b>Account List</b></td></tr>
+<tr><td>
+	Account name
+</td><td>
+	Account #
+</td><td>
+	Active
+</td><td>
+	Output
+</td><td>
+	Out opt 1
+</td><td>
+	Out opt 2
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		<a href=$pagename?mode=account_edit&account_id=$row->account_id><font color=blue>$row->account_name</font></a>
+	</td><td>
+		$row->account_number
+	</td><td>
+		$row->active
+	</td><td>
+		$row->account_output_plugin
+	</td><td>
+		$row->option_1&nbsp;
+	</td><td>
+		$row->option_2&nbsp;
+	</td></tr>
+	";
+	}
+echo "</table>";
+
+
+?>

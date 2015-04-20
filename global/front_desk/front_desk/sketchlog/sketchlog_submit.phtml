@@ -1,0 +1,91 @@
+<?
+$sketch_num=addslashes($sketch_num);
+$dwg_title=addslashes($dwg_title);
+
+$jobinfo_id=addslashes($jobinfo_id);
+$floor=addslashes($floor);
+$rfi_num=addslashes($rfi_num);
+$ref_shop_dwg=addslashes($ref_shop_dwg);
+$area=addslashes($area);
+$issued_for=addslashes($issued_for);
+$originator=addslashes($originator);
+$submitted_to_umc=checkfix($submitted_to_umc);
+$submitted_to_gc=checkfix($submitted_to_gc);
+$submitted_to_owner=checkfix($submitted_to_owner);
+$submitted_to_consultant=checkfix($submitted_to_consultant);
+$cust_1=addslashes($cust_1);
+$cust_2=addslashes($cust_2);
+$cust_3=addslashes($cust_3);
+$cust_4=addslashes($cust_4);
+$cust_5=addslashes($cust_5);
+if ($file_group_id!="") $file_group_id=addslashes($file_group_id);
+
+if ($sketchlog_id=="") die("ERROR: No sketchlog_id specified! Please contact your system administrator");
+$sketchlog_id=addslashes($sketchlog_id);
+
+$old_sketch_info=getone("select * from sketchlog where sketchlog_id = '$sketchlog_id'");
+
+if (!($write)) {
+	if (!(($guest)&&($old_sketch_info->creator==$global_user_id))) die_security();
+	}
+
+if (($old_sketch_info->orig_issue=="0000-00-00")||($adminuser)) {
+	$orig_issue=vali_date($orig_issue);
+	} else {
+	$orig_issue=$old_sketch_info->orig_issue;
+	}
+
+if (($sort_priority=="")||($sort_priority==0)) {
+	$sort_info=getone("select max(sort_priority) as current_max from sketchlog where jobinfo_id = '$jobinfo_id'");
+	$sort_priority=$sort_info->current_max + 1;
+	}
+
+$query="
+update sketchlog set 
+jobinfo_id = '$jobinfo_id',
+sketch_num = '$sketch_num',
+dwg_title = '$dwg_title',
+rfi_num = '$rfi_num',
+ref_shop_dwg = '$ref_shop_dwg',
+orig_issue = '$orig_issue',
+floor = '$floor',
+area = '$area',
+file_group_id = '$file_group_id',
+sort_priority = '$sort_priority',
+issued_for = '$issued_for',
+originator = '$originator',
+submitted_to_umc = '$submitted_to_umc',
+submitted_to_gc = '$submitted_to_gc',
+submitted_to_owner = '$submitted_to_owner',
+submitted_to_consultant = '$submitted_to_consultant',
+cust_1 = '$cust_1',
+cust_2 = '$cust_2',
+cust_3 = '$cust_3',
+cust_4 = '$cust_4',
+cust_5 = '$cust_5'
+where sketchlog_id = '$sketchlog_id'
+";
+
+$myres=@mysql_query($query);
+if (!($myres)) die("Query failed: $query");
+
+if ($sketchlog_id=="") {
+	$sketchlog_id=@mysql_insert_id();
+	}
+
+if ($savemode=='next') {
+	forward("sketchlog_edit");
+	exit;
+	}
+
+if ($savemode=='clone') {
+	forward("sketchlog_edit&sketchlog_id=$sketchlog_id&load_mode=$savemode");
+	exit;
+	}
+
+if ($savemode=='apply') {
+	forward("sketchlog_edit&sketchlog_id=$sketchlog_id");
+	exit;
+	}
+forward('main');
+?>

@@ -1,0 +1,31 @@
+<?
+if ($batch_id=="") die("ERROR: No batch ID specified!");
+else $batch_id=addslashes($batch_id);
+
+$batch_info=getone("select * from positivepay_batch_history where batch_id = '$batch_id'");
+$ppl_formatted=str_pad($batch_info->batch_number,5,"0",STR_PAD_LEFT);
+
+$filename="files/send/ARP$ppl_formatted.txt";
+if (!$handle=fopen($filename,'w')) {
+	die("ERROR Creating file: $filename<br>Please contact your system administrator!");
+	}
+
+fwrite($handle,$batch_info->output_file);
+fclose($handle);
+passthru("./wells_send");
+$directory=dir("files/send/");
+
+$count=0;
+while ($directory->read()) $count++;
+if ($count>2) {
+	log_batch_activity($batch_info->batch_id,"File upload to Wells seemed to fail!");
+	die("Warning, some file(s) might not have been sent successfully! Please contact your system administrator!");
+	
+	}
+log_batch_activity($batch_info->batch_id,"File upload to Wells seemed successful!");
+
+echo "<script>
+alert(\"File send procedure seemed successful\");
+self.close();
+</script>";
+?>

@@ -1,0 +1,63 @@
+<?
+require('querylib.inc');
+require('header.phtml');
+echo "<a href=$pagename?mode=main><font color=blue>Cancel</font></a>";
+
+if ($jobinfo_id != "") {
+	$new=0;
+	$jobinfo_id=addslashes($jobinfo_id);
+	$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+	} else {
+	$new=1;
+	}
+
+echo "<center>";
+
+include("jobinfo_edit_tabs_start.phtml");
+
+$jobinfo->job_name=ereg_replace(" ","&nbsp;",$jobinfo->job_name);
+echo "
+<table width=100% bgcolor=#ffffff border=1 cellspacing=0 cellpadding=3 style=\"font-variant: small-caps; font-size: small; font-weight: bold;\">
+
+<tr><td colspan=4 align=center bgcolor=#eeeeee width=100%>
+	<i>$jobinfo->contract_num&nbsp;-&nbsp;<i>$jobinfo->job_name</i>
+</td></tr>
+
+<tr><td colspan=4>
+    Type of Construction:
+	<select name=construction_type>
+	<option value=\"$jobinfo->construction_type\" selected>$jobinfo->construction_type
+	<option value=\"New Construction\">New Construction
+	<option value=\"Tenant Improvement\">Tenant Improvement
+	<option value=\"Fabshop\">Fabshop
+	<option value=\"Refurbish/Remodel\">Refurbish/Remodel
+	<option value=\"Rework\">Rework
+	<option value=\"Addition\">Addition
+	</select>
+	Other: <input type=text size=15 name=construction_other>
+</td></tr>
+
+
+<tr><td colspan=4>
+	Special Project Notes<br>
+	<textarea rows=5 cols=40 name=svc_notes>$jobinfo->svc_notes</textarea>
+</td></tr>
+
+<tr><td colspan=2 width=50%>
+	&nbsp;
+</td><td colspan=2>
+	<table border=1 cellspacing=0 cellpadding=2 width=100%>
+		<tr bgcolor=#eeeeee><td align=center onclick=apply_changes();>
+			<b><a href=javascript:apply_changes();><font color=black>Apply</font></a></b>
+		</td><td align=center onclick=document.jobinfo_edit.submit();>
+			<b><a href=javascript:document.jobinfo_edit.submit();><font color=black>Save</font></a></b>
+		</td></tr>
+	</table>
+</td></tr>
+
+
+</table>";
+include("jobinfo_edit_tabs_end.phtml");
+
+echo "</center>";
+?>

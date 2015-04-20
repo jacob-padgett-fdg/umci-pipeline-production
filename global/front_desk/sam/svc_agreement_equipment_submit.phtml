@@ -1,0 +1,30 @@
+<?
+
+$el_id=escapeshellcmd($el_id);
+$agreement_id=escapeshellcmd($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+$age=escapeshellcmd($age);
+$category_id=escapeshellcmd($category_id);
+$equip_type_id=escapeshellcmd($equip_type_id);
+$mfg=escapeshellcmd($mfg);
+$age=escapeshellcmd($age);
+$model_number=escapeshellcmd($model_number);
+$serial_num=escapeshellcmd($serial_num);
+$tag_num=escapeshellcmd($tag_num);
+$location=escapeshellcmd($location);
+
+$query="
+update svc_agreement_equip_list set
+mfg = '$mfg',
+age = '$age',
+model_number = '$model_number',
+serial_num = '$serial_num',
+tag_num = '$tag_num',
+location = '$location'
+where el_id = '$el_id'
+";
+
+$res=@mysql_query($query);
+//echo "<hr>$query<hr>";
+forward("svc_agreement_equipment_edit&el_id=$el_id");
+?>

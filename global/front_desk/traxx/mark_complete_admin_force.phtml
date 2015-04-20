@@ -1,0 +1,21 @@
+<?
+$bid_info=load_proposal_info(escapeshellcmd($bidlist_id));
+
+if (!($adminuser)) die("Permission Denied! Only admins can force a record complete!");
+
+$newstatus="Completed";
+$query="update bidlist set status = '$newstatus' where bidlist_id = '$bid_info->bidlist_id'";
+
+@mysql_query($query);
+
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+
+//forward('main');
+
+?>

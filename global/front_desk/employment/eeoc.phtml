@@ -1,0 +1,123 @@
+<?
+require("header.phtml");
+
+echo "
+<form name=eeoc method=post action=$pagename>
+<input type=hidden name=mode value=\"eeoc_submit\">
+<center>
+<h3><u>UNIVERSITY MECHANICAL CONTRACTORS, INC.</u></h3><p>
+<h3><u>APPLICANT AFFIRMATIVE ACTION INFORMATION FORM</u></h3><p>
+<i><u><b>Voluntary -- Not Required</b></u></i><p>
+
+<table border=0 cellspacing=0 cellpadding=10 width=800>
+<tr><td>
+	&nbsp;
+</td><td>
+	&nbsp;
+</td><td width=100%>
+	&nbsp;
+</td></tr>
+
+<tr><td colspan=3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thank you for your interest in employment with our Company.  The following questions about your race and gender are included only because of government regulations, and you do not have to answer them.  As an Equal Opportunity Employer, the Company does not use this information in its employment decisions, so whether or not you return this form has no effect on your application.  Submitting this information is purely <u>voluntary</u>.  If you choose to submit it, it will be kept confidential to the extent provided by law.  Not returning this form or leaving any section blank is treated as deciding not to disclose the information, which is your right.<p>
+</td></tr>
+
+<tr><td>
+	1.&nbsp;Name:
+</td><td>
+	<input type=text name=applicant_name size=50>
+</td></tr>
+
+<tr><td>
+	2.&nbsp;Date&nbsp;of&nbsp;application:
+</td><td>
+	<input type=text name=doa size=50>
+</td></tr>
+
+<tr><td>
+	3.&nbsp;Position(s)&nbsp;applied&nbsp;for:
+</td><td>
+	<input type=text name=paf size=50>
+</td></tr>
+
+<tr><td>
+	4.&nbsp;Sex:
+</td><td>
+	<select name=sex>
+		<option></option>
+		<option>Female</option>
+		<option>Male</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	5.&nbsp;Race/ethnic&nbsp;background:<br>&nbsp;&nbsp;&nbsp;&nbsp;(check&nbsp;one&nbsp;only)
+</td></tr>
+
+<tr><td colspan=3>
+	<table border=0 width=100% cellspacing=0 cellpadding=5>
+		<tr><td>
+			&nbsp;&nbsp;
+		</td><td valign=top>
+			<input type=radio name=race value=White>
+		</td><td valign=top>
+			White
+		</td><td valign=top>
+			(Persons having origins in any of the original peoples of Europe, North Africa, or the Middle East).
+		</td></tr>
+
+		<tr><td>
+			&nbsp;&nbsp;
+		</td><td valign=top>
+			<input type=radio name=race value=\"Black\">
+		</td><td valign=top>
+			Black
+		</td><td valign=top>
+			(Persons having origins in any of the Black racial groups of Africa).
+		</td></tr>
+
+		<tr><td>
+			&nbsp;&nbsp;
+		</td><td valign=top>
+			<input type=radio name=race value=\"Hispanic\">
+		</td><td valign=top>
+			Hispanic
+		</td><td valign=top>
+			(Persons of Mexican, Puerto Rican, Cuban, Central or South American, or other Spanish culture or origin, regardless of race).
+		</td></tr>
+		
+		<tr><td>
+			&nbsp;&nbsp;
+		</td><td valign=top>
+			<input type=radio name=race value=\"Asian/Pacific Islander\">
+		</td><td valign=top>
+			Asian/Pacific&nbsp;Islander
+		</td><td valign=top>
+			(Persons having origins in any of the original peoples of the Far East, Southeast Asia, the Indian Subcontinent, or the Pacific Islands; this includes, for example, China, India, Japan, Korea, the Philippine Islands, and Samoa).
+		</td></tr>
+		
+		<tr><td>
+			&nbsp;&nbsp;
+		</td><td valign=top>
+			<input type=radio name=race value=\"American Indian/Alaskan Native\">
+		</td><td valign=top>
+			American&nbsp;Indian/Alaskan&nbsp;Native
+		</td><td valign=top>
+			(Persons having origins in any of the original peoples of North America and who maintain cultural identification through tribal affiliation or community recognition).
+		</td></tr>
+		
+		</table>
+</td></tr>	
+	
+	
+<tr><td colspan=3 align=right>
+	<input type=submit value=\"Submit\">
+</td></tr>
+
+
+</form>
+</table>
+
+";
+
+?>

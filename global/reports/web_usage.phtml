@@ -1,0 +1,236 @@
+<?
+require('header.phtml');
+include("report_lib.inc");
+include("mh_lib.inc");
+check_report_permissions();
+mh_navs_header();
+$quid_link=@mysql_connect("10.0.0.80","squiddy","calamaris");
+@mysql_select_db("squidlog",$quid_link);
+
+function hr($bytes) {
+	$suffix="";
+	if ($bytes<1024) return (format_long_decimal($bytes,1) . $suffix);
+	$bytes=$bytes/1024;$suffix="K";
+	if ($bytes<1024) return (format_long_decimal($bytes,1) . $suffix);
+	$bytes=$bytes/1024;$suffix="M";
+	if ($bytes<1024) return (format_long_decimal($bytes,1) . $suffix);
+	$bytes=$bytes/1024;$suffix="G";
+	if ($bytes<1024) return (format_long_decimal($bytes,1) . $suffix);
+	$bytes=$bytes/1024;$suffix="T";
+	if ($bytes<1024) return (format_long_decimal($bytes,1) . $suffix);
+	$bytes=$bytes/1024;$suffix="P";
+	if ($bytes<1024) return (format_long_decimal($bytes,1) . $suffix);
+	$bytes=$bytes/1024;$suffix="Err";
+	return (format_long_decimal($bytes,2) . $suffix);
+	
+	
+	}
+
+
+if ($start_date=="") {
+	$query_start_date=date('Y-m-d',strtotime('1 week ago'));
+	$start_date=invali_date($query_start_date);
+	} else {
+	$query_start_date=vali_date($start_date);
+	}
+
+if ($end_date=="") {
+	$query_end_date=date('Y-m-d');
+	$end_date=invali_date($query_end_date);
+	} else {
+	$query_end_date=date('Y-m-d',strtotime(vali_date($end_date) . ' + 1 day'));
+	}
+
+$additional_where="";
+
+if ($internet_domain!="") {
+	$internet_domain=addslashes($internet_domain);
+	$additional_where=$additional_where . " and internet_domain = '$internet_domain' ";
+	}
+
+if ($url!="") {
+	$url_html=htmlspecialchars($url);
+	$url=addslashes($url);
+	$additional_where=$additional_where . " and url like '%$url%' ";
+	}
+
+if ($host_name!="") {
+	$host_name=addslashes($host_name);
+	$additional_where=$additional_where . " and host_name = '$host_name' ";
+	}
+
+if ($mime_type!="") {
+	$mime_type=addslashes($mime_type);
+	$additional_where=$additional_where . " and mime_type like '%$mime_type%' ";
+	}
+
+if ($primary_sort=="") $primary_sort="visits";
+if ($primary_sort=="visits") $visits_select="checked";
+if ($primary_sort=="bytes") $bytes_select="checked";
+
+
+echo "
+
+<script>
+function set_internet_domain(domain) {
+	document.search_options.internet_domain.value=domain;
+	document.search_options.submit();
+	}
+function set_host_name(hostname) {
+	document.search_options.host_name.value=hostname;
+	document.search_options.submit();
+	}
+function set_url(url) {
+	document.search_options.url.value=url;
+	document.search_options.submit();
+	}
+function set_mime_type(mime_type) {
+	document.search_options.mime_type.value=mime_type;
+	document.search_options.submit();
+	}
+</script>
+
+<table border=0 cellspacing=0 cellpadding=5>
+<tr valign=top><td>
+
+<form name=search_options>
+<input type=hidden name=mode method=post value=$mode>
+<input type=hidden name=report_name method=post value=web_usage>
+
+<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=$fd_color_4><td colspan=2 align=center><h2>Search<br>Criteria</h2></td></tr>
+
+<tr><td>
+From:</td><td>";
+datebox($start_date,'search_options.start_date',"","submit()"); 
+echo "</td></tr>
+<tr><td>To:</td><td>";
+datebox($end_date,'search_options.end_date',"","submit()"); 
+echo "</td></tr>
+<tr><td>
+	Computer:
+</td><td>
+	<input type=text size=20 name=host_name value=\"$host_name\">
+</td></tr>
+
+<tr><td>
+	Domain:
+</td><td>
+	<input type=text size=20 name=internet_domain value=\"$internet_domain\">
+</td></tr>
+
+<tr><td>
+	URL:
+</td><td>
+	<input type=text size=20 name=url value=\"$url_html\">
+</td></tr>
+
+<tr><td>
+	Mime type:
+</td><td>
+	<input type=text size=20 name=mime_type value=\"$mime_type\">
+</td></tr>
+
+<tr><td>
+	Primary Sort:
+</td><td>
+	<input type=radio name=primary_sort value=visits $visits_select> Visits
+	<input type=radio name=primary_sort value=bytes $bytes_select> Bytes
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Search>
+</td></tr>
+
+</table>
+</form>
+</td><td>
+";
+
+$query="select sum(1) as visits, sum(bytes) as bytes, host_name from access_log where access_date >= '$query_start_date' and access_date < '$query_end_date' $additional_where group by host_ip order by $primary_sort desc limit 20";
+$res=@mysql_query($query);
+echo "<font size=-1><table border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_4><td><b>Visits</b></td><td><b>Size</b></td><td><b>Host Name</b></td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		" . gap_num($row->visits) . "
+	</td><td>
+		" . hr($row->bytes) . "
+	</td><td>
+		<a href=javascript:set_host_name('$row->host_name')><b>$row->host_name</b></a>
+	</td></tr>";
+	}
+echo "</table>";
+		
+echo "</td><td>";
+
+$query="select sum(1) as visits, sum(bytes) as bytes, internet_domain from access_log where access_date >= '$query_start_date' and access_date < '$query_end_date' $additional_where group by internet_domain order by $primary_sort desc limit 20";
+$res=@mysql_query($query);
+echo "<font size=-1><table border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_4><td><b>Visits</b></td><td><b>Size</b></td><td><b>Domain</b></td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		" . gap_num($row->visits) . "
+	</td><td>
+		" . hr($row->bytes) . "
+	</td><td>
+		<a href=javascript:set_internet_domain('$row->internet_domain')><b>$row->internet_domain</b></a>
+	</td></tr>";
+	}
+echo "</table>";
+
+echo "</td><td>";
+
+$query="select sum(1) as visits, sum(bytes) as bytes, mime_type from access_log where access_date >= '$query_start_date' and access_date < '$query_end_date' $additional_where group by mime_type order by $primary_sort desc limit 20";
+$res=@mysql_query($query);
+echo "<font size=-1><table border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_4><td><b>Visits</b></td><td><b>Size</b></td><td><b>Mime Type</b></td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		" . gap_num($row->visits) . "
+	</td><td>
+		" . hr($row->bytes) . "
+	</td><td>
+		<a href=javascript:set_mime_type('$row->mime_type')><b>$row->mime_type</b></a>
+	</td></tr>";
+	}
+echo "</table>";
+		
+
+//tabledump($query,1,"",$quid_link);
+echo "</td></tr>
+<tr valign=top><td colspan=4>";
+
+$query="select sum(1) as visits, sum(bytes) as bytes, url,access_time,host_ip from access_log where access_date >= '$query_start_date' and access_date < '$query_end_date' $additional_where group by url order by $primary_sort desc limit 20";
+$res=@mysql_query($query);
+echo "<font size=-1><table border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_4><td><b>Visits</b></td><td><b>Size</b></td><td><b>URL</b></td><td>&nbsp;</td><td><b>Time</b></td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		" . gap_num($row->visits) . "
+	</td><td>
+		" . hr($row->bytes) . "
+	</td><td>
+		<a href=javascript:set_url('$row->url')><b>$row->url</b></a>
+	</td><td>
+		<a target=_blank href=\"$row->url\"><i>View</i></a>
+	</td><td title=\"$row->host_ip\">
+		$row->access_time
+	</td></tr>";
+	}
+echo "</table>";
+		
+//tabledump($query,1,"",$quid_link);
+
+//echo "</td><td>";
+
+//tabledump($query,1,"",$quid_link);
+
+echo "
+</td></tr>
+</table>";
+
+mysql_close();
+include("global_connect_rw.phtml");
+mh_navs_footer();
+?>

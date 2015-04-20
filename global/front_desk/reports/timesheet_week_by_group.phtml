@@ -1,0 +1,81 @@
+<?
+check_report_permissions();
+require_once("timesheet_libs_all.inc");
+require_once('pdf_lib2.inc');
+
+require('mh_lib.inc');
+require('report_lib.inc');
+
+
+if (($payroll_group=="")||($week_ending=="")) {
+	mh_navs_header();
+	echo "
+	<form name=simple_select method=post action=\"$pagename\">
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=report_name value=\"$report_name\"
+	<table border=1 cellspacing=0 cellpadding=3>
+	
+	<tr><td colspan=2 align=center bgcolor=$fd_color_4>
+		<b>Select Options</b>
+	</td></tr>
+	
+	<tr><td>
+		Group:
+	</td><td>
+		<select name=payroll_group>
+		<option></option>
+		<option value=1>1 (Field)</option>
+		<option value=3>3 (Admin)</option>
+		</select>
+	</td></tr>
+	
+	<tr><td>
+		Week Ending:
+	</td><td>
+		";datebox("$week_ending","simple_select.week_ending","","");echo "
+	</td></tr>
+	
+	<tr><td colspan=2 align=right>
+		<input type=submit value=Search>
+	</td></tr>
+	</table>
+	</form>";
+	
+	mh_navs_footer();
+	exit();
+	}
+
+
+$we_info=date_info($week_ending);
+$payroll_group=addslashes($payroll_group);
+
+$query="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and 
+status = 'posted' and week_ending = '$we_info->week_end_mysql' and timesheet_index.employee_group = '$payroll_group' order by last_name";
+
+//tabledump($query);
+
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$pdf=pdf_timesheet_2($pdf,$row->timesheet_id);
+	}
+
+//pdf_end($page_info);
+$pdf->ezStream();
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

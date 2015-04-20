@@ -1,0 +1,9 @@
+<?
+
+$doc_type=addslashes($doc_type);
+$app_info=getoneb("select * from front_desk_applications where app_alias = '$doc_type'");
+
+if (is_readable("../$app_info->app_name$devel/mini_edit_javascript.phtml")) {
+	include("../$app_info->app_name$devel/mini_edit_javascript.phtml");
+	}
+?>

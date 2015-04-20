@@ -1,0 +1,26 @@
+<?
+
+$task_id=escapeshellcmd($task_id);
+
+$task_text=ereg_replace("[	 ]*[0-9][0-9]*[.]","",$task_text);
+$text_array=split('[]',"$task_text");
+$length=count($text_array);
+
+$element=0;
+while ($element<=$length) {
+	$text=trim($text_array[$element]);
+	$text=ereg_replace("^[0-9][0-9]*[.] *","",$text);
+	$text=trim($text);
+	
+	if ($text!="") {
+		$text=escapeshellcmd($text);
+		$nextnum=get_next_tasknum($task_id);
+		$query="insert into svc_task_lists set task_id = '$task_id', task_list_number = '$nextnum', task_text = '$text'";
+		@mysql_query($query);
+		}
+	$element++;
+	}
+forward("task_item_edit&task_id=$task_id&focus_tlist=1");
+
+
+?>

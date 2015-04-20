@@ -1,0 +1,16 @@
+<?
+//if ($doc_id=="") {
+	//die("doc_id error");
+//	}
+//include("../oiclog-devel/local.inc");
+
+if (!($options)) {
+	if ($options_encoded!="") {
+		$options=unserialize(base64_decode($options_encoded));
+		}
+	}
+if (!($options)) die("application error: short_doc_list_with_attachments: failure detecting options!");
+
+$list=fd_short_doc_list_with_attachments($options);
+echo "$list";
+?>

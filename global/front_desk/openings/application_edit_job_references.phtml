@@ -1,0 +1,85 @@
+<?
+require_once('application_edit_form_start.phtml');
+
+if ($references_history_id!="") {
+	$references_history_id=addslashes($references_history_id);
+	$references_info=getone("select * from hr_applications_references_history where references_history_id = '$references_history_id'");
+	}
+
+echo "
+<script>
+function form_verify(newmode) {
+	if (document.application_edit.name.value!='') { 
+		if (document.application_edit.company_title.value=='') { document.application_edit.company_title.focus(); alert('Company/Title is a required field.'); return 0; }
+		if (document.application_edit.phone.value=='') { document.application_edit.phone.focus(); alert('Phone is a required field.'); return 0; }
+		if (document.application_edit.years_known.value=='') { document.application_edit.years_known.focus(); alert('Years known is a required field.'); return 0; }
+		}
+	document.application_edit.target_app_mode.value=newmode;
+	document.application_edit.submit();
+	}
+</script>
+<input type=hidden name=references_history_id value=\"$references_history_id\">
+<table width=100% border=0 cellspacing=4 cellpadding=0 bgcolor=$app_form_bg>
+<tr><td colspan=4 align=right width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr><td width=25%>
+	</td><td width=50% align=center>
+		<input type=button value=\"More Job References\" onclick=form_verify(\"job_references\")>
+	</td><td width=25% align=right>
+		<input type=button value=\"Next Section\" onclick=form_verify(\"eligibility\")>
+	</td></tr>
+	</table>
+</td></tr>
+<tr><td colspan=4 align=center>
+<h3>Job References</h3>
+</td></tr>
+
+<tr><td>
+	<b>Name</b>
+</td><td>
+	<input type=text size=30 name=name value=\"$references_info->name\">
+</td><td colspan=1>
+	<b>Company/Title</b>
+</td><td>
+	<input type=text size=12 name=company_title value=\"$references_info->company_title\">
+</td></tr> 
+
+<tr><td>
+	<b>Phone</b>
+</td><td>
+	<input type=text size=20 name=phone value=\"$references_info->phone\">
+</td><td>
+	<b>Years Known</b>
+</td><td>
+	<input type=text name=years_known value=\"$references_info->years_known\">
+</td></tr>
+
+";
+
+//tabledump("select name,company_title,phone from hr_applications_references_history where application_id = '$application_id'");
+$res=@mysql_query("select * from hr_applications_references_history where application_id = '$application_id'");
+echo "<tr><td colspan=4>&nbsp;<hr></td></tr>";
+
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->references_history_id==$references_history_id) continue;
+	echo "<tr><td></td></tr>";
+	echo "<tr bgcolor=#eeeeee><td colspan=4>
+			<table border=1 cellspacing=0 cellpadding=2 width=100%>
+				<tr><td width=50%>
+					<a href=javascript:form_verify(\"job_references&references_history_id=$row->references_history_id\")>$row->name</a>
+				</td><td width=25%>
+					$row->company_title
+				</td><td width=25%>
+					$row->phone
+				</td></tr>
+			</table>
+		</td></tr>";
+	
+	}
+
+echo"</table></center>";
+
+
+require_once('application_edit_form_end.phtml');
+
+?>

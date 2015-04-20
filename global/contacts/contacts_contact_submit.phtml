@@ -1,0 +1,188 @@
+<?
+//require("querylib.inc");
+//echo "<hr>gotcha<hr>";exit;
+
+//$return_to_url="";
+//if ($return_to!="") {
+//	$return_to=addslashes($return_to);
+//	$return_to_url=base64_decode($return_to);
+//	}
+
+if ($new==1) {
+	$c_info=getone("select * from contacts where contacts_id = '" . addslashes($company_id) . "'");
+	$query_command="insert into contacts set ";
+	$query_where="";
+	$company=addslashes($c_info->display_name);
+	} else {
+	$query_command="update contacts set ";
+	$query_where=" where contacts_id = '$contacts_id' ";
+	$contact_info=getoneb("select * from contacts where contacts_id = '$contacts_id'");
+	}
+
+if ($company=="") {
+	$c_info=getone("select * from contacts where contacts_id = '" . addslashes($company_id) . "'");
+	$company=addslashes($c_info->display_name);
+	}
+
+$first_name=addslashes($first_name);
+$first_name_real=addslashes($first_name_real);
+$last_name=addslashes($last_name);
+$point_of_contact_id=clean_int($point_of_contact_id);
+$photo_file_group_id_id=clean_int($photo_file_group_id);
+$login_name=addslashes($login_name);
+$initials=addslashes($initials);
+$employee_num=addslashes($employee_num);
+$web_password=addslashes($web_password);
+$company=addslashes($company);
+$company_id=addslashes($company_id);
+$email=addslashes($email);
+$title=addslashes($title);
+$address_1=addslashes($address_1);
+$address_city=addslashes($address_city);
+$address_state=addslashes($address_state);
+$address_zip=addslashes($address_zip);
+$phone=addslashes($phone);
+$phone_ext=addslashes($phone_ext);
+$phone_fax=addslashes($phone_fax);
+$phone_cell=addslashes($phone_cell);
+$phone_page=addslashes($phone_page);
+$phone_home=addslashes($phone_home);
+$icq_number=addslashes($icq_number);
+$auto_notify_method=addslashes($auto_notify_method);
+$notes=addslashes($notes);
+$current=checkfix($current);
+$umc_emp=checkfix($umc_emp);
+$is_company='N';
+$proj_manager=checkfix($proj_manager);
+$proj_sponsor=checkfix($proj_sponsor);
+$bidlist_takeoff_lists=checkfix($bidlist_takeoff_lists);
+$gc_proj_manager=checkfix($gc_proj_manager);
+$contract_admin=checkfix($contract_admin);
+$foreman=checkfix($foreman);
+$consultant=checkfix($consultant);
+$superintendent=checkfix($superintendent);
+$mech_engineer=checkfix($mech_engineer);
+$proj_engineer=checkfix($proj_engineer);
+$estimator=checkfix($estimator);
+$head_cheese=checkfix($head_cheese);
+$detailer=checkfix($detailer);
+$owner=checkfix($owner);
+
+$display_name=$last_name . ", " . $first_name;
+$alphasort=$last_name . $first_name;
+
+
+
+$query_base="
+	first_name='$first_name',
+	first_name_real='$first_name_real',
+	point_of_contact_id='$point_of_contact_id',
+	photo_file_group_id='$photo_file_group_id',
+	last_name='$last_name',
+	initials='$initials',
+	employee_num='$employee_num',
+	company='$company',
+	email='$email',
+	title='$title',
+	address_1='$address_1',
+	address_city='$address_city',
+	address_state='$address_state',
+	address_zip='$address_zip',
+	phone='$phone',
+	phone_ext='$phone_ext',
+	phone_fax='$phone_fax',
+	phone_cell='$phone_cell',
+	phone_page='$phone_page',
+	phone_home='$phone_home',
+	icq_number='$icq_number',
+	auto_notify_method='$auto_notify_method',
+	current='$current',
+	is_company='N',
+	proj_manager='$proj_manager',
+	proj_sponsor='$proj_sponsor',
+	bidlist_takeoff_lists='$bidlist_takeoff_lists',
+	gc_proj_manager='$gc_proj_manager',
+	contract_admin='$contract_admin',
+	foreman='$foreman',
+	consultant='$consultant',
+	superintendent='$superintendent',
+	mech_engineer='$mech_engineer',
+	proj_engineer='$proj_engineer',
+	estimator='$estimator',
+	head_cheese='$head_cheese',
+	detailer='$detailer',
+	owner='$owner',
+	display_name='$display_name',
+	alphasort='$alphasort',
+	notes = '$notes',
+	record_creator = '$global_user_id'
+	";
+
+if ($adminuser) $query_base="umc_emp = '$umc_emp', " . $query_base;
+
+//if ($adminuser) $query_base="web_password = '$web_password', " . $query_base;
+//if ($adminuser) $query_base="login_name = '$login_name', " . $query_base;
+
+if (($adminuser)||(($contact_info->umc_emp=='N')&&($auth_backend_access_type->type=='full'))) {
+	$query_base="web_password = '$web_password', " . $query_base;
+	$query_base="login_name = '$login_name', " . $query_base;
+
+	if ($contact_info->web_password!=$web_password) {
+		security_log_email(
+			$contact_info->contacts_id,
+			0,
+			0,
+			"web password changed to \"$web_password\"",
+			"contacts_edit"
+			);
+		}
+
+	if ($contact_info->login_name!=$login_name) {
+		security_log_email(
+			$contact_info->contacts_id,
+			0,
+			0,
+			"login name changed to \"$login_name\"",
+			"contacts_edit"
+			);
+		}
+
+	}
+
+if ($realnew=="1") {
+	$query_base="
+	contact_type = 'contact',
+	company_id = '$company_id'," . $query_base;
+	}
+
+
+$query=$query_command . $query_base . $query_where;
+
+$result=mysql_query($query);
+if ($contacts_id=="") $contacts_id=mysql_insert_id();
+	
+if(!($result)) {
+	echo "Error.. the stupid query is broke.... Please contact your system administrator! <hr>Query: $query";
+	exit;
+	}
+
+require("contact_maint_quick.phtml");
+
+follow_return_to($return_to);
+//if ($return_to_url!="") {
+//	echo "<script>
+//	document.location=\"$return_to_url\";
+//	</script>";
+//	exit;
+//	}
+
+if ($exit_target=='main') {
+	forward('main');
+	exit;
+	}
+
+if ($exit_target=='contact_edit') {
+	forward("contacts_edit&contacts_id=$contacts_id");
+	exit;
+	}
+?>

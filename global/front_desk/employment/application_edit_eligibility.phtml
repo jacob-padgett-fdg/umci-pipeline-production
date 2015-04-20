@@ -1,0 +1,160 @@
+<?
+require_once('application_edit_form_start.phtml');
+$optional="<i><font color=red>";
+$optional_end="</font></i>";
+
+echo "
+<script>
+function form_verify(newmode) {
+	if (document.application_edit.init_1.value=='') { alert('You must initial all sections of this document in order to submit your application.'); return 0; }
+	if (document.application_edit.init_2.value=='') { alert('You must initial all sections of this document in order to submit your application.'); return 0; }
+	if (document.application_edit.init_3.value=='') { alert('You must initial all sections of this document in order to submit your application.'); return 0; }
+	if (document.application_edit.init_4.value=='') { alert('You must initial all sections of this document in order to submit your application.'); return 0; }
+	document.application_edit.target_app_mode.value=newmode;
+	document.application_edit.submit();
+	}
+
+function explain(status) {
+	open(status + '_explain.phtml','disabled_explain','width=550,height=500');
+	}
+
+</script>
+<table width=100%>
+<tr><td colspan=4 align=right width=100%>
+	<input type=button value=\"Complete Application\" onclick=form_verify(\"openings\")>
+</td></tr>
+<tr><td colspan=2>
+	<b>Please read the following carefully before initialing this application.</b>
+</td></tr>
+
+<tr><td colspan=2>
+	University Mechanical Contractors, Inc. is a Drug Free Workplace and an Affirmative Action, Equal Opportunity Employer.
+</td></tr>
+
+<tr><td colspan=2>
+	Applications are screened, and interviews are given, on a competitive basis using job-related criteria. Not all candidates who apply for a vacant position will be interviewed.
+</td></tr>
+
+<tr><td>
+	&nbsp;<br><i><b>Initials</b></i>
+</td></tr>
+
+<tr><td colspan=2><hr></td></tr>
+
+<tr><td valign=top>
+	<input type=text size=3 name=init_1 value=\"$application_info->init_1\">
+</td><td>
+	I understand that an offer of employment will be contingent upon having a satisfactory driving record, and passing a pre-employment drug screen and alcohol test.
+</td></tr>
+
+<tr><td colspan=2><hr></td></tr>
+
+<tr><td valign=top>
+	<input type=text size=3 name=init_2 value=\"$application_info->init_2\">
+</td><td>
+	I understand that, if selected, I will be required to provide proof of my identity and my legal right to work in the United States, before actual employment with University Mechanical Contractors, Inc.
+</td></tr>
+
+<tr><td colspan=2><hr></td></tr>
+
+<tr><td valign=top>
+	<input type=text size=3 name=init_3 value=\"$application_info->init_3\">
+</td><td>
+	I certify that the answers given herin are true and complete. I authorize investigation of all information contained in this applications for employment as may be necessary in arriving at an employment decision. I understand that a misrepresentation or material omission on this application wil result in my being eliminated from further consideration. In the event of employment, I understand that false or misleading information given in my application or interview(s) will result in discharge.
+</td></tr>
+
+<tr><td colspan=2><hr></td></tr>
+
+<tr><td valign=top>
+	<input type=text size=3 name=init_4 value=\"$application_info->init_4\">
+</td><td>
+	I authorize all previous employers and supervisors to give University Mechanical representatives any and all information regarding my previous employment and my work performance. I release University Mechanical Contractors, Inc. from any liability for any damages that may result from furnishing information to University Mechanical Contractors, Inc.
+</td></tr>
+
+<tr><td colspan=2><hr></td></tr>
+
+<tr><td colspan=2>
+	<table border=1 cellspacing=0 cellpadding=3 width=100%>
+	<tr><td bgcolor=#dddddd align=center>
+		<b>Invitation to Self-Identify</b>
+	</td></tr>
+	
+	<tr><td bgcolor=#ccccff>
+		<font size=-1>You are invited to complete and submit this self-identifcation information. We request this information so we can accurately report for affirmative action, veteran employment, and equal employment opportunity purposes. You are not required to provide this information, although your cooperation is appreciated. Your disclosure of this information, or refusal to provide it, will not subject you to any adverse treatment. The information will be kept confidential and used soley for the purpose of fulfilling our reporting requirements to the federal government. If you have any questions please contact a University Mechanical human resources representative at (206) 368-6206.</font><br>
+		<table border=0 cellspacing=0 cellpadding=3>
+			<tr><td>
+				<b>Gender</b>
+			</td><td>
+				<select name=info_gender>
+				<option>$application_info->info_gender</option>
+				<option>Female</option>
+				<option>Male</option>
+				<option>Decline to answer</option>
+				</select>
+			</td></tr>
+			
+			<tr><td>
+				<b>Racial/Ethnic Background</b>
+			</td><td>
+				<select name=info_race>
+				<option>$application_info->info_race</option>
+				<option>Asian</option>
+				<option>Black</option>
+				<option>Hispanic</option>
+				<option>Native American</option>
+				<option>White</option>
+				<option>Decline to answer</option>
+				</select>
+			</td><td>
+				<a href=\"javascript:explain('ethnic')\"><font color=blue>?</font></a>
+			</td></tr>
+			
+			<tr><td>
+				<b>Veteran Status</b>
+			</td><td>
+				<select name=info_veteran_status>
+				<option>$application_info->info_veteran_status</option>
+				<option>Not a Veteran</option>
+				<option>Veteran of the Vietnam Era</option>
+				<option>*Special Disabled Veteran</option>
+				<option>Recently separated Veteran</option>
+				<option>Other Eligible Veteran</option>
+				<option>Decline to Answer</option>
+				</select>
+			</td><td>
+				<a href=\"javascript:explain('veteran')\"><font color=blue>?</font></a>
+			</td></tr>
+			
+			<tr><td>
+				<b>Disabled</b>
+			</td><td>
+				<select name=info_disabled>
+				<option>$application_info->info_disabled</option>
+				<option>Yes</option>
+				<option>No</option>
+				<option>Decline to Answer</option>
+				</select>
+			</td><td>
+				<a href=\"javascript:explain('disabled')\"><font color=blue>?</font></a>
+			</td></tr>
+		</table>
+	</td></tr>
+
+
+
+
+	</table>
+</td></tr>
+
+<tr><td colspan=2><hr></td></tr>
+
+<tr><td colspan=2 align=center><b>All candidates will be required to physically sign and application before completing the interview process.</b></td></tr>
+
+</table>
+";
+
+
+
+
+require_once('application_edit_form_end.phtml');
+?>

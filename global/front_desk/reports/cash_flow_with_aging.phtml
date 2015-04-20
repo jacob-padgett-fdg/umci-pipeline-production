@@ -1,0 +1,371 @@
+<?
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+check_report_permissions();
+$standard_width="800px";
+$standard_height="100px";
+//$standard_height="900px";
+$cf_column_width="80px";
+
+//tabledump("select * from jobinfo_financials_by_contract_current limit 2");
+
+/*
+ms_tabledump("select * from UMC_Aging_By_Contract where Contract = '05309-'");
+ms_tabledump("select * from Z_UMC_AR_AGING_MADE_EASY where Contract = '05309-'");
+
+// zz_ar_aging_made_easy (old version)
+ms_tabledump("
+SELECT     TOP (100) PERCENT 
+	dbo.ARTL.Contract, 
+	MIN(dbo.ARTH.TransDate) AS TransDate, 
+	MAX(dbo.ARTH.Description) AS Description, 
+	dbo.ARTH.Customer, 
+	SUM(dbo.ARTL.Amount - dbo.ARTL.Retainage) AS TotalAged, 
+	SUM(dbo.ARTL.Retainage) AS Retainage, 
+	ARTH1.Invoice, 
+	SUM(dbo.ARTL.Amount) AS Amount, 
+	SUM(dbo.ARTL.TaxBasis) AS TaxBasis, 
+	SUM(dbo.ARTL.TaxAmount) AS TaxAmount, 
+	DATEDIFF(day, MIN(dbo.ARTH.TransDate), 
+	GETDATE()) AS days_ago, 
+
+	(CASE 
+	WHEN 
+		datediff(day, MIN(ARTH.TransDate), getdate()) < 31 
+		
+	THEN 
+		(SUM(ARTL.Amount - ARTL.Retainage)) ELSE 0 END) 
+	AS current_due, 
+
+	(CASE 
+	WHEN 
+		(datediff(day, MIN(ARTH.TransDate), getdate()) < 61) AND 
+		(datediff(day, MIN(ARTH.TransDate), getdate()) >= 31) 
+	THEN 
+		(SUM(ARTL.Amount - ARTL.Retainage)) ELSE 0 END) 
+	AS over_30, 
+
+	(CASE 
+	WHEN 
+		datediff(day, MIN(ARTH.TransDate), getdate()) >= 61 AND 
+		datediff(day, MIN(ARTH.TransDate), getdate()) < 91 
+	THEN 
+		(SUM(ARTL.Amount - ARTL.Retainage)) ELSE 0 END) 
+	AS over_60, 
+	
+	(CASE 
+	WHEN 
+		datediff(day, MIN(ARTH.TransDate), getdate()) >= 91 
+	THEN 
+		(SUM(ARTL.Amount - ARTL.Retainage)) ELSE 0 END) 
+	AS over_90, 
+
+	MAX(SUBSTRING(dbo.ARCN.Notes, 0,200)) AS Notes
+
+	FROM dbo.ARTL INNER JOIN dbo.ARTH ON 
+		dbo.ARTL.ARCo = dbo.ARTH.ARCo AND 
+		dbo.ARTL.Mth = dbo.ARTH.Mth AND 
+		dbo.ARTL.ARTrans = dbo.ARTH.ARTrans 
+
+	INNER JOIN dbo.ARTH AS ARTH1 ON 
+		dbo.ARTL.ARCo = ARTH1.ARCo AND 
+		dbo.ARTL.ApplyMth = ARTH1.Mth AND 
+		dbo.ARTL.ApplyTrans = ARTH1.ARTrans 
+
+	LEFT OUTER JOIN dbo.ARCN ON 
+		dbo.ARTH.Customer = dbo.ARCN.Customer AND 
+		dbo.ARTH.CustGroup = dbo.ARCN.CustGroup AND 
+		dbo.ARTH.Invoice = dbo.ARCN.Invoice AND 
+		dbo.ARCN.KeyID = ( 	SELECT MAX(KeyID) AS Expr1
+							FROM dbo.ARCN
+							WHERE
+								(dbo.ARTH.Customer = Customer) AND 
+								(dbo.ARTH.CustGroup = CustGroup) AND 
+								(dbo.ARTH.Invoice = Invoice)
+								)
+	WHERE
+		(dbo.ARTH.ARCo = 1) AND 
+		(dbo.ARTH.Customer >= 0) and ARTL.Contract like '05309-%'
+
+	GROUP BY 
+		dbo.ARTL.Contract, 
+		dbo.ARTH.Customer, 
+		ARTH1.Invoice
+	
+	ORDER BY ARTH1.Invoice
+");
+
+// New One - Grouped by contract
+ms_tabledump("
+SELECT     TOP (100) PERCENT 
+	dbo.ARTL.ARCo, 
+	dbo.ARTL.Contract, 
+	MIN(dbo.ARTH.TransDate) AS TransDate, 
+	MAX(dbo.ARTH.Description) AS Description, 
+	SUM(dbo.ARTL.Amount - dbo.ARTL.Retainage) AS TotalAged, 
+	SUM(dbo.ARTL.Retainage) AS Retainage, 
+	SUM(dbo.ARTL.Amount) AS Amount, 
+	SUM(dbo.ARTL.TaxBasis) AS TaxBasis, 
+	SUM(dbo.ARTL.TaxAmount) AS TaxAmount, 
+	DATEDIFF(day, MIN(dbo.ARTH.TransDate), GETDATE()) AS days_ago, 
+
+	(CASE 
+	WHEN 
+		datediff(day, MIN(ARTH.TransDate), getdate()) < 31 
+	THEN 
+		(SUM(ARTL.Amount - ARTL.Retainage)) ELSE 0 END) 
+	AS current_due, 
+
+	(CASE 
+	WHEN 
+		(datediff(day, MIN(ARTH.TransDate), getdate()) < 61) AND 
+		(datediff(day, MIN(ARTH.TransDate), getdate()) >= 31) 
+	THEN 
+		(SUM(ARTL.Amount - ARTL.Retainage)) ELSE 0 END) 
+	AS over_30, 
+
+	(CASE 
+	WHEN 
+		datediff(day, MIN(ARTH.TransDate), getdate()) >= 61 AND 
+		datediff(day, MIN(ARTH.TransDate), getdate()) < 91 
+	THEN 
+		(SUM(ARTL.Amount - ARTL.Retainage)) ELSE 0 END) 
+	AS over_60, 
+
+	(CASE 
+	WHEN 
+		datediff(day, MIN(ARTH.TransDate), getdate()) >= 91 
+	THEN 
+		(SUM(ARTL.Amount - ARTL.Retainage)) ELSE 0 END) 
+	AS over_90, 
+
+	MAX(SUBSTRING(dbo.ARCN.Notes, 0, 200)) AS Notes
+
+
+FROM dbo.ARTL 
+
+INNER JOIN dbo.ARTH ON 
+	dbo.ARTL.ARCo = dbo.ARTH.ARCo AND 
+	dbo.ARTL.Mth = dbo.ARTH.Mth AND 
+	dbo.ARTL.ARTrans = dbo.ARTH.ARTrans 
+
+INNER JOIN dbo.ARTH AS ARTH1 ON 
+	dbo.ARTL.ARCo = ARTH1.ARCo AND 
+	dbo.ARTL.ApplyMth = ARTH1.Mth AND 
+	dbo.ARTL.ApplyTrans = ARTH1.ARTrans 
+
+LEFT OUTER JOIN dbo.ARCN ON 
+	dbo.ARTH.Customer = dbo.ARCN.Customer AND 
+	dbo.ARTH.CustGroup = dbo.ARCN.CustGroup AND 
+	dbo.ARTH.Invoice = dbo.ARCN.Invoice AND 
+	dbo.ARCN.KeyID =	(SELECT MAX(KeyID) AS Expr1
+						FROM dbo.ARCN
+						WHERE
+							(dbo.ARTH.Customer = Customer) AND 
+							(dbo.ARTH.CustGroup = CustGroup) AND 
+							(dbo.ARTH.Invoice = Invoice))
+WHERE 
+	(dbo.ARTH.ARCo = 1) AND 
+	(dbo.ARTH.Customer >= 0)and 
+	ARTL.Contract like '05309-%'
+
+GROUP BY dbo.ARTL.Contract, dbo.ARTL.ARCo
+
+");
+
+
+
+
+
+*/
+
+function cfbox($query,$title) {
+	global $over_current,$over_30,$over_60,$over_90,$fd_color_1,$fd_color_4,$cf_column_width,$pagename;
+	
+	if ($over_current=="on") $over_current_flag="*";;
+	if ($over_30=="on") $over_30_flag="*";;
+	if ($over_60=="on") $over_60_flag="*";;
+	if ($over_90=="on") $over_90_flag="*";;
+	
+
+	$cf_column_header="
+	<tr align=center bgcolor=$fd_color_1><td>
+		<i>Billed CF</i>
+	</td><td>
+		<i>Cash Flow</i>
+	</td><td>
+		<i>Current${over_current_flag}</i>
+	</td><td>
+		<i>Over 30${over_30_flag}</i>
+	</td><td>
+		<i>Over 60${over_60_flag}</i>
+	</td><td>
+		<i>Over 90${over_90_flag}</i>
+	</td><td>
+		<i>Retainage</i>
+	</td><td>
+		<i>Description</i>
+	</td></tr>
+	";
+	$res=@mysql_query($query);
+	$result_count=@mysql_num_rows($res);
+	if ($result_count<1) return (FALSE);
+	$CFSum=0;$BCFSum=0;$cfbox="";$group="";
+	while ($row=@mysql_fetch_object($res)) {
+		if ($row->Contract!="") {
+			$contract=ereg_replace("^0*","",$row->Contract);
+			$contract=ereg_replace("-$","",$contract);
+			$row_jobinfo=getoneb("select jobinfo_id from jobinfo where contract_num = '$contract'");
+			if ($row_jobinfo) {
+				$contract="<a target=_blank href=$pagename?mode=main_financial_summary&global_jobinfo_id_set=$row_jobinfo->jobinfo_id><font color=blue>$contract</font></a>&nbsp;";
+				}
+			} else $contract="";
+		if ($row->GroupBy!=$group) {
+			if ($group!="") {
+				echo "<div class=cf><table class=cf><tr class=cf><td colspan=8 bgcolor=$fd_color_4><div style=\"float: right;\"><b>Billed CF Diff:</b>&nbsp;" . gap_num($BCFSum - $CFSum) . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Cash Flow:</b>&nbsp;" . gap_num($CFSum) . "</div><b>$title $group</td></tr>" . $cf_column_header . $cfbox . "</table></div>";
+				$CFSum=0;$BCFSum=0;$cfbox="";
+				}
+			}
+		$cfbox=$cfbox . "<tr>
+			<td width=$cf_column_width valign=top align=right>" . gap_num($row->ECashFlow) . "&nbsp;&nbsp;&nbsp;</td>
+			<td width=$cf_column_width valign=top align=right>" . gap_num($row->CashFlow) . "&nbsp;&nbsp;&nbsp;</td>
+			<td width=$cf_column_width valign=top align=right>" . gap_num($row->AgingCurrentDue) . "&nbsp;&nbsp;&nbsp;</td>
+			<td width=$cf_column_width valign=top align=right>" . gap_num($row->AgingOver30) . "&nbsp;&nbsp;&nbsp;</td>
+			<td width=$cf_column_width valign=top align=right>" . gap_num($row->AgingOver60) . "&nbsp;&nbsp;&nbsp;</td>
+			<td width=$cf_column_width valign=top align=right>" . gap_num($row->AgingOver90) . "&nbsp;&nbsp;&nbsp;</td>
+			<td width=$cf_column_width valign=top align=right>" . gap_num($row->CurrentRetainAmt) . "&nbsp;&nbsp;&nbsp;</td>
+			<td>${contract}$row->Description</td></tr>";
+		$CFSum=$CFSum + $row->CashFlow;
+		$BCFSum=$BCFSum + $row->ECashFlow;
+		$group=$row->GroupBy;
+		}
+	echo "<div class=cf><table class=cf><tr class=cf><td colspan=8 bgcolor=$fd_color_4><div style=\"float: right;\"><b>Billed CF Diff:</b>&nbsp;" . gap_num($BCFSum - $CFSum) . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Cash Flow:</b>&nbsp;" . gap_num($CFSum) . "</div><b>$title $group</td></tr>" . $cf_column_header . $cfbox . "</table></div>";
+	}
+
+if ($umc_cost=="") $umc_cost="both";
+
+echo "
+<style>
+table.cf { width: 100%; border: 0px solid black; border-spacing: 0px; }
+table.cf td { font: 12px helvetica; border: 0px solid black; padding: 1px; }
+div.cf { float: left; border: 1px solid black; max-height: $standard_height; width: $standard_width; overflow: auto; }
+</style>
+
+<div style=\"width: 805px;\">
+<center><font size=+2><b>Cash Flow With Aging</b></font><br><i><font size=-1>(Created for $global_user->display_name on " . date('m/d/y @ H:i:s') . ")</font></i></center>
+
+<form class=noprint name=cfopts method=post action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=report_name value=\"$report_name\">
+<div style=\"float: left; border: 1px solid black; width: 300px;\">
+<div style=\"width: 100%; background: $fd_color_3; text-align: center;\">Show jobs that are</div>
+Positive<input type=radio name=umc_cost value=\"positive\" ";if ($umc_cost=="positive") echo "checked";echo">&nbsp;&nbsp;&nbsp;
+Negative<input type=radio name=umc_cost value=\"negative\" ";if ($umc_cost=="negative") echo "checked";echo">&nbsp;&nbsp;&nbsp;
+All<input type=radio name=umc_cost value=\"both\" ";if ($umc_cost=="both") echo "checked";echo">
+</div>
+<div style=\"float: left; border: 1px solid black; width: 400px;\">
+<div style=\"width: 100%; background: $fd_color_3; text-align: center;\">Count toward Cash Flow</div>
+Current<input type=checkbox name=over_current ";if ($over_current=="on") echo "checked";echo">&nbsp;&nbsp;&nbsp;
+Over 30<input type=checkbox name=over_30 ";if ($over_30=="on") echo "checked";echo">&nbsp;&nbsp;&nbsp;
+Over 60<input type=checkbox name=over_60 ";if ($over_60=="on") echo "checked";echo">&nbsp;&nbsp;&nbsp;
+Over 90<input type=checkbox name=over_90 ";if ($over_90=="on") echo "checked";echo">
+</div>
+<input type=submit value=Update>
+</form>
+<br><b>*=included in Billed CF</b>
+";
+
+//die("$over_30");
+switch ($umc_cost) {
+	case "positive": 	$umc_cost_qry=" and CashFLow >= 0 ";
+						break;;
+	case "negative":	$umc_cost_qry=" and CashFlow < 0 ";
+						break;;
+	default: 			$umc_cost_qry="";
+	}
+
+$cashflow_value=" CashFlow ";
+//$over_current="on";
+//$over_30="on";
+//$over_60="on";
+//$over_90="on";
+
+if ($over_current=="on") $cashflow_value=$cashflow_value . ' + AgingCurrentDue ';
+if ($over_30=="on") $cashflow_value=$cashflow_value . ' + AgingOver30 ';
+if ($over_60=="on") $cashflow_value=$cashflow_value . ' + AgingOver60 ';
+if ($over_90=="on") $cashflow_value=$cashflow_value . ' + AgingOver90 ';
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Admin user interface..
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+if ($adminuser) {
+	// Cash flow w/ aging by department div
+	//die("select sum($cashflow_value) as CashFlow,Department,max(DPDesc) as Description from jobinfo_financials_by_contract_current where 1 = 1 $umc_cost_qry group by Department order by CashFlow,Department");
+	cfbox("select sum(CashFlow) as CashFlow,sum($cashflow_value) as ECashFlow,
+		sum(AgingCurrentDue) as AgingCurrentDue,
+		sum(AgingOver30) as AgingOver30, 
+		sum(AgingOver60) as AgingOver60, 
+		sum(AgingOver90) as AgingOver90, 
+		sum(CurrentRetainAmt) as CurrentRetainAmt, 
+		Department,max(DPDesc) as Description from jobinfo_financials_by_contract_current where 1 = 1 $umc_cost_qry group by Department order by ECashFlow,Department", "Cash Flow by Department");
+	// Cash flow by PM div
+	cfbox("select sum(CashFlow) as CashFlow,sum($cashflow_value) as ECashFlow,
+		sum(AgingCurrentDue) as AgingCurrentDue,
+		sum(AgingOver30) as AgingOver30, 
+		sum(AgingOver60) as AgingOver60, 
+		sum(AgingOver90) as AgingOver90, 
+		sum(CurrentRetainAmt) as CurrentRetainAmt, 
+	concat(PMFirstName,' ',PMLastName) as Description from jobinfo_financials_by_contract_current where 1 = 1 $umc_cost_qry group by PM,PMFirstName,PMLastName order by CashFlow,PMLastName,PMFirstName","Cash Flow by Project Manager");
+	// Cash flow by Customer
+	cfbox("select sum(CashFlow) as CashFlow,sum($cashflow_value) as ECashFlow,
+		sum(AgingCurrentDue) as AgingCurrentDue,
+		sum(AgingOver30) as AgingOver30, 
+		sum(AgingOver60) as AgingOver60, 
+		sum(AgingOver90) as AgingOver90, 
+		sum(CurrentRetainAmt) as CurrentRetainAmt, 
+	CustomerName as Description from jobinfo_financials_by_contract_current where 1 = 1 $umc_cost_qry group by CustomerName order by CashFlow,CustomerName","Cash Flow by Customer");
+	// Cash flow by contract in departments
+	//tabledump("select CashFlow, Contract, Description, DPDesc as GroupBy from jobinfo_financials_by_contract_current where CashFlow < 0 order by Department,CashFlow","Cash Flow by Contract for");
+	cfbox("select CashFlow,($cashflow_value) as ECashFlow, 
+	AgingCurrentDue,
+	AgingOver30, 
+	AgingOver60, 
+	AgingOver90, 
+	CurrentRetainAmt, 
+	Contract, Description, DPDesc as GroupBy from jobinfo_financials_by_contract_current where 1 = 1 $umc_cost_qry order by Department,CashFlow","Cash Flow by Contract for");
+	}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PM View
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//$is_real_pm=ms_getoneb("select top 1 * from JCCM where ContractStatus = 1 and JCCo = 1 and udpm1 = '$global_user->employee_num' and Contract not like 'AA%' and Contract not like 'BB%' and Contract not like 'CC%' and Contract not like 'DD%'");
+//if ($is_real_pm) {
+cfbox("select CashFlow, Contract, Description from jobinfo_financials_by_contract_current where PM = '$global_user->employee_num' $umc_cost_qry order by CashFlow","Cash Flow by Project for $global_user->display_name");
+//	}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Department Head View
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Pat Damitio is also in charge of special projects even though he is not listed on it.
+$dh_query_add="";
+if ($global_user->employee_num=="4511") $dh_query_add=" or DPDesc = 'Major Projects' ";
+// Cash Flow by PM
+$query="select sum(CashFlow) as CashFlow,concat(PMFirstName,' ',PMLastName) as Description, DPDesc as GroupBy from jobinfo_financials_by_contract_current where DepartmentHead = '$global_user->employee_num' $dh_query_add $umc_cost_qry group by PMFirstName,PMLastName,DPDesc,Department order by Department,CashFlow";
+echo "<div style=\"float: left; width: $standard_width;\">";
+cfbox($query,"Cash Flow by PM in");
+echo "</div>";
+// Cash Flow by Contract
+$query="select CashFlow,Contract,Description, DPDesc as GroupBy from jobinfo_financials_by_contract_current where DepartmentHead = '$global_user->employee_num' $dh_query_add $umc_cost_qry order by Department,CashFlow";
+echo "<div style=\"float: left; width: $standard_width;\">";
+cfbox($query,"Cash Flow by Contract for");
+echo "</div>";
+///////////////////////////////////////////////////////////////////////////////////
+// Close up the div that is used to limit width (create 2 columns of smaller divs)
+///////////////////////////////////////////////////////////////////////////////////
+echo "</div>";
+mh_navs_footer();
+?>

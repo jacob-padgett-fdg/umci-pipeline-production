@@ -1,0 +1,61 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+$report_name="recent_activity";
+check_report_permissions();
+
+function local_tabledump($query,$title) {
+	global $pagename,$mode,$fd_color_4,$fd_color_1,$fd_color_3;
+	$res=@mysql_query($query);
+	if (!($res)) die("Query failed!<hr>$query");
+	$rank=0;
+	$num_rows=mysql_num_rows($res);
+	$step=100/$num_rows;
+	$current_percentile=100;
+	echo "<table border=1 cellspacing=0 cellpadding=2>
+	<tr bgcolor=$fd_color_4><td colspan=4 align=center><font size=+1><b>$title</b></font></td></tr>
+	<tr bgcolor=$fd_color_1><td>
+		Rank
+	</td><td>
+		Hits
+	</td><td>
+		Name
+	</td></tr>
+		
+	";
+	while ($row=@mysql_fetch_object($res)) {
+		$rank++;
+		//$rank_percentile=round(100 - (($rank - 1) * $step));
+		$bgadd="";
+		if ($row->umc_emp!='Y') $bgadd="bgcolor=\"$fd_color_3\"";
+		if ($row->username=="") $row->username='??????';
+		echo "<tr $bgadd><td>
+				$rank
+			</td><td>
+				$row->Total
+			</td><td>
+				<a href=$pagename?mode=$mode&report_name=recent_activity&show_date=01%2f01%2f2000&show_date_end=12%2f31%2f2030&show_contact=$row->contacts_id><font color=blue>$row->username</font></a>
+			</td></tr>";
+		}
+	echo "</table>";
+	}
+
+echo "
+<a href=$pagename?mode=$mode&report_name=recent_activity><font color=blue>Return to Activity Search</font></a><p>
+Yellow indicates someone who is not a UMC Employee
+<table border=0 cellspacing=0 cellpadding=5>
+<tr valign=top><td>";
+	local_tabledump("select sum(Total) as Total,`User Name` as username,umc_emp,contacts_id from ((select sum(1) as Total,display_name as `User Name`,umc_emp,contacts.contacts_id from documents_review_history left join contacts on contacts.contacts_id = documents_review_history.contacts_id group by contacts.contacts_id) union all (select sum(1) as Total,display_name as `User Name`,umc_emp,contacts.contacts_id from front_desk_page_history left join contacts on contacts.contacts_id = front_desk_page_history.contacts_id group by contacts.contacts_id)) as a group by `User Name`  order by Total desc","Combined history");
+	echo"
+</td><td>";
+	local_tabledump("select sum(1) as Total,display_name as username,umc_emp,contacts.contacts_id from front_desk_page_history left join contacts on contacts.contacts_id = front_desk_page_history.contacts_id group by front_desk_page_history.contacts_id order by sum(1) desc","Page view history");
+	echo "
+</td><td>";
+	local_tabledump("select sum(1) as Total,display_name as username,umc_emp,contacts.contacts_id from documents_review_history left join contacts on contacts.contacts_id = documents_review_history.contacts_id group by documents_review_history.contacts_id order by sum(1) desc","Document review history");
+	echo "
+</td></tr>
+</table>";
+
+mh_navs_footer();
+?>

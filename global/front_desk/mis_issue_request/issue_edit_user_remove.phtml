@@ -1,0 +1,16 @@
+<?
+$issue_history_id=escapeshellcmd($issue_history_id);
+$contacts_id=escapeshellcmd($contacts_id);
+
+$query="delete from mis_issue_concerned_parties where issue_history_id = '$issue_history_id' and contacts_id = '$contacts_id' and us_or_them = 'them'";
+//echo "$query";exit;
+@mysql_query($query);
+
+$info=getone("select * from mis_issue_history where issue_history_id = '$issue_history_id'");
+forward("issue_edit_userchange&issue_id=$info->issue_id");
+
+
+
+
+
+?>

@@ -1,0 +1,19 @@
+<?
+require("header.phtml");
+if ($adminuser) { 
+	if ($show_completed_orders=='Y') { 
+		echo "<a href=$pagename?mode=orders_admin><font color=blue>Return to normal view</font></a>";
+		admin_list("select * from costore_cart_invoice where cart_status = 'complete'","Completed orders");
+		} else {
+		echo "<a href=$pagename?mode=orders_admin&show_completed_orders=Y><font color=blue>Show Completed Orders</font></a>";
+		admin_list("select * from costore_cart_invoice where cart_status = 'PM Approval'","Orders waiting for PM Approval");
+		admin_list("select * from costore_cart_invoice where cart_status = 'processing'","Orders for Processing");
+		admin_list("select * from costore_cart_invoice where cart_status = 'accepted'","Accepted orders");
+		}
+	
+	
+	} else {
+	admin_list("select * from costore_cart_invoice left join jobinfo on (costore_cart_invoice.billing_jobinfo_id = jobinfo.jobinfo_id) where project_manager_id = '$global_user_id' and cart_status = 'PM Approval'","Awaiting My Approval");
+	}
+require("footer.phtml");
+?>

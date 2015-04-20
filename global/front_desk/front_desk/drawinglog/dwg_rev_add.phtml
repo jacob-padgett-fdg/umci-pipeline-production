@@ -1,0 +1,44 @@
+<?
+if ($drawing_id!="") $drawing_id=addslashes($drawing_id);
+else die("Application error. No drawing specified!");
+
+$drawing_info=getone("select * from drawinglog where drawing_id = '$drawing_id'");
+
+$rev_date=vali_date($rev_date);
+$sent_to_field_date=vali_date($sent_to_field_date);
+$revision=addslashes($revision);
+$rev_description=addslashes($rev_description);
+
+
+$at_query="select * from drawinglog_revs where drawing_id = '$drawing_info->drawing_id' and revision = '$revision' limit 1";
+$already_there=getoneb($at_query);
+//tabledump($at_query);
+//echo "<hr>$at_query<hr>";
+//exit;
+if ($already_there) {
+	$max_rev_info=getoneb("select max(revision) as maxrev from drawinglog_revs where drawing_id = '$drawing_info->drawing_id'");
+	$new_rev=$max_rev_info->maxrev + 1;
+	$revision=$new_rev;
+	echo "<script>
+	alert('An invalid revision was selected, so a new one was chosen for you! Talk to Curtis if you have a problem with that.');
+	</script>
+	";
+	}
+
+
+$query="insert into drawinglog_revs set drawing_id = '$drawing_info->drawing_id', revision = '$revision', rev_date = '$rev_date', rev_description = '$rev_description', sent_to_field_date = '$sent_to_field_date', creator = '$global_user->contacts_id'";
+@mysql_query($query);
+set_drawing_current($drawing_info->drawing_id);
+update_rev($drawing_info->drawing_id);
+
+if (($rev_date!="")&&($sent_to_field_date!="")) {
+	if ($rev_date>$sent_to_field_date) {
+		echo "
+		<script>
+		alert(\"Hey, those dates don't make any sense!!!\");
+		</script>";
+		}
+	
+	}
+forward("drawinglog_edit&drawing_id=$drawing_info->drawing_id");
+?>

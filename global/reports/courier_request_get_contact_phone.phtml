@@ -1,0 +1,17 @@
+<?
+require('mh_lib.inc');
+require('report_lib.inc');
+if ($contacts_id!="") $contacts_id=addslashes($contacts_id);
+else die();
+
+$contact_info=getoneb("select * from contacts where contacts_id = '$contacts_id'");
+
+if ($contact_info->phone=="") {
+	$company_info=getoneb("select * from contacts where contacts_id = '$contact_info->company_id'");
+	if ($comapany_info->phone_ext!="") $company_info->phone="$company_info->phone ext $company_info->phone_ext";
+	$contact_info->phone="$company_info->phone (company)";
+	} else {
+	if ($contact_info->phone_ext!="") $contact_info->phone="$contact_info->phone ext $contact_info->phone_ext";
+	}
+echo "$contact_info->phone";
+?>

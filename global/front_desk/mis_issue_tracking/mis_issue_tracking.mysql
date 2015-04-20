@@ -1,0 +1,69 @@
+drop table if exists mis_issue_index;
+create table mis_issue_index (
+	issue_id int not null auto_increment,
+	it_category_id int not null,
+	priority int default '100',
+	name char(20) not null,
+	description char(254),
+	requested_completion date,
+	expected_completion date,
+	next_action char(50),
+	next_action_date date,
+	creator int not null,
+	us_or_them char(20) default 'us',
+	can_not_slide_date char(5) default 'N',
+	status char(20) default 'new',
+	reference_this_issue int,
+	primary key (issue_id)
+	);
+
+drop table if exists mis_issue_categories;
+create table mis_issue_categories (
+	it_category_id int not null auto_increment,
+	category_name char(20) not null,
+	category_description char(254),
+	primary key (it_category_id)
+	);
+
+drop table if exists mis_issue_history;
+create table mis_issue_history (
+	issue_history_id int not null auto_increment,
+	issue_id int not null,
+	action_required char(254),
+	notes char(254),
+	it_notes char(254),
+	status char(20) default 'current',
+	expected_completion_date date,
+	actual_completion_date date,
+	us_or_them char(20) default 'us',
+	primary key(issue_history_id)
+	);
+	
+drop table if exists mis_issue_concerned_parties;
+create table mis_issue_concerned_parties (
+	concerned_parties_id int not null auto_increment,
+	issue_history_id int not null,
+	contacts_id int not null,
+	us_or_them char(20),
+	primary key (concerned_parties_id)
+	);
+	
+drop table if exists mis_issue_uslist;
+create table mis_issue_uslist (
+	uslist_id int not null auto_increment,
+	contacts_id int not null,
+	primary key (uslist_id)
+	);
+	
+	
+drop table if exists mis_issue_priorities;
+create table mis_issue_priorities (
+	priority_id int not null auto_increment,
+	priority int not null,
+	priority_text char(20) not null,
+	primary key (priority_id),
+	unique (priority),
+	unique (priority_text)
+	);
+	
+	

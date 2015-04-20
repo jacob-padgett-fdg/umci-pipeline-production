@@ -1,0 +1,51 @@
+<?
+require_once('querylib.inc');
+
+if ($hr_opening_bullets_id!="") {
+	$hr_opening_bullets_id=addslashes($hr_opening_bullets_id);
+	$query_start="update ";
+	$query_end=" where hr_opening_bullets_id = '$hr_opening_bullets_id'";
+	$bullet_array=array($bullet_text);
+	} else {
+	$query_start="insert into ";
+	$query_end="";
+	$bullet_array=split("\n[·-]",$bullet_text);
+	}
+
+
+//print_r($bullet_array);exit;
+
+$hr_openings_id=clean_int($hr_openings_id);
+$bullet_category=addslashes($bullet_category);
+//$bullet_text=addslashes($bullet_text);
+$allow_responses=checkfix($allow_responses);
+
+if ($sort_priority!="") $sort_priority=clean_int($sort_priority);
+else $sort_priority='3';
+
+
+while ($bullet_text=array_shift($bullet_array)) {
+	//$bullet_text=ereg_replace("^[- ]*","",$bullet_text);
+	$bullet_text=ereg_replace("^[- 	·]*","",$bullet_text);
+	$bullet_text=addslashes($bullet_text);
+	$query_middle=" hr_opening_bullets set 
+	hr_openings_id = '$hr_openings_id',
+	bullet_category = '$bullet_category',
+	bullet_text = '$bullet_text',
+	allow_responses = '$allow_responses',
+	sort_priority = '$sort_priority'";
+
+	$query=$query_start . $query_middle . $query_end;
+	//echo "<hr>$query";
+	$res=@mysql_query($query);
+	}
+
+if (!($res)) die("ERROR: The damn query failed. Please contact your system administrator.<br>Failed query:<hr>$query");
+forward("opening_edit&hr_openings_id=$hr_openings_id");
+
+
+
+
+
+
+?>

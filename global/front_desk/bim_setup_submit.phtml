@@ -1,0 +1,23 @@
+<? 
+if (!(member_of_global_group_named("BIM Admins"))) die_security();
+
+if ($jobinfo_id!="") {
+	$jobinfo_id=addslashes($jobinfo_id);
+	$global_jobinfo_id=$jobinfo_id;
+	$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+	//$jobinfo->bim_budget_log=checkbreak($jobinfo->bim_budget_log);
+	} else {
+	die('Job information error!');
+	}
+
+
+
+$bim_budget_log=checkfix($bim_budget_log);
+$bim_hours_correction=addslashes($bim_hours_correction);
+$detailing_lead_id=addslashes($detailing_lead_id);
+
+if ($jobinfo) @mysql_query("update jobinfo set bim_budget_log = '$bim_budget_log', bim_hours_correction = '$bim_hours_correction', detailing_lead_id = '$detailing_lead_id' where jobinfo_id = '$jobinfo->jobinfo_id'");
+else die("Application error! Job information error!");
+
+forward('bim_setup&jobinfo_id=' . $jobinfo->jobinfo_id);
+?>

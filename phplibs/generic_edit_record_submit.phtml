@@ -1,0 +1,95 @@
+<?
+if (!(is_admin())) die("Security violation! The authorities have been notified");
+require('header.phtml');
+
+$table=addslashes($table);
+$primary_key=addslashes($primary_key);
+$value=addslashes(${$primary_key});
+
+//echo "$table/$primary_key/$value";
+
+$query_start="update $table set ";
+$query_middle="";
+$seperator="";
+$query_end=" where $primary_key = \"$value\" ";
+
+$t_info=table_info($table);
+if ($t_info->primary_key!=$primary_key) die ("Application error: Primary key mismatch. Please contact your system administrator!");
+
+$res=@mysql_query("describe $table");
+if (!($res)) die("Table error! Please contact your system adminstrator!");
+
+
+
+while ($row=@mysql_fetch_object($res)) {
+	$field=$row->Field;
+	$fielddata=addslashes(${$row->Field});
+	if (($row->Field!=$primary_key)&&(strncmp($row->Type,"timestamp",8)!=0)) {
+		$query_middle=$query_middle . $seperator . " $field = '" . $fielddata . "'";
+		$seperator=",";
+		}
+	}
+
+
+$query=$query_start . $query_middle . $query_end;
+
+//echo "<hr>$query<hr>";
+
+$result=@mysql_query($query);
+
+if (!($result)) die("ERROR: Query failed. Please contact your system administrator!<p>Failed query<hr>$query");
+
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+
+
+
+
+exit;
+
+
+
+while ($row=@mysql_fetch_object($res)) {
+	$rowdata=$data->{$row->Field};
+	$rowdata=ereg_replace('"','\"',$rowdata);
+	echo "<tr><td>
+			<b>$row->Field</b>
+		</td><td>
+		";
+			// Make anything but a timestamp, or the primary key editable
+			if (($row->Field!=$primary_key)&&(strncmp($row->Type,"timestamp",8)!=0)) {
+				/////////////////////////////////////////////////////////
+				/////////////////////////////////////////////////////////
+				// Later on, this will be a good place to branch off, and 
+				// have different input interfaces depeding on the type
+				// of field. We could even include the contact popup 
+				// without filtering, since we have a seperate DB to keep
+				// track of which fields are contacts and which aren't
+				/////////////////////////////////////////////////////////
+				/////////////////////////////////////////////////////////
+				echo "<input type=text size=20 name=\"$row->Field\" value=\"$rowdata\">";
+				} else {
+				echo "$rowdata";
+				}
+		
+		
+		echo "
+		</td></tr>";
+	}
+echo "
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+	</form>
+</td></tr>
+</table>";
+
+
+
+
+
+?>

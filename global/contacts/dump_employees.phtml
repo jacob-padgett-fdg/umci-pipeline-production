@@ -1,0 +1,9 @@
+<?
+//require_once('querylib.inc');
+$query="select contract_num,job_name,last_name,first_name from contacts,jobinfo where contacts_id = project_manager_id and jobinfo.active = 'Y' order by contract_num";
+excel_dump($query);
+
+
+
+
+?>

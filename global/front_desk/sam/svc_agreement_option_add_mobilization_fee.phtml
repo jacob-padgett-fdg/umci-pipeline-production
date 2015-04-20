@@ -1,0 +1,30 @@
+<?
+$mobilization_fee="97.48";
+if ($agreement_id=="") die("Application error! No agreement_id specified! Please contact your system administrator.");
+$yearly_visits=agreement_yearly_visits_based_on_schedule($agreement_id);
+
+$mobilization_fees=0;
+$count=0;
+while ($count < $agreement_info->years) {
+	$inflation_mult=pow($inflation,$count);
+	$mobilization_fees=$mobilization_fees + ($inflation_mult * $yearly_visits * $mobilization_fee); 
+	$count++;
+	}
+
+$mobilization_fees=(round($mobilization_fees*100)/100);
+$option_message =addslashes("Mobilization fee based on yearly visits ($yearly_visits) * mobilization fee ($mobilization_fee) and inflation of $inflation and an agreement term ($agreement_info->years)."); 
+
+$query="insert into svc_agreement_additional_options set
+agreement_id = '$agreement_id',
+option_type = 'mobilization_fee',
+option_description = 'Mobilization fees',
+calculation_notes = '$option_message',
+cost = '$mobilization_fees',
+markup = 'N'";
+
+//echo "$query";exit;
+
+@mysql_query("delete from svc_agreement_additional_options where option_type = 'mobilization_fee' and agreement_id = '$agreement_id'");
+@mysql_query($query);
+
+?>

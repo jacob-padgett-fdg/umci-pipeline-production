@@ -1,0 +1,44 @@
+<?
+if ($global_user->timesheet_group_one_foreman!="Y") 
+	die ("ERROR: Access Violation! The authorities are being notified!");
+
+$timesheet_id=addslashes($timesheet_id);
+$timesheet_info=getoneb("select * from timesheet_index where timesheet_id = '$timesheet_id'");
+if (!($timesheet_info)) die('error');
+$employee_id=$timesheet_info->employee_id;
+
+
+if ($timesheet_info->status!='new') die("Application error! Invalid status");
+
+
+$employee_id=addslashes($employee_id);
+$employee_info=getoneb("select * from contacts where contacts_id = '$employee_id'");
+if (!($employee_info)) die("Application error! Employee information invalid.");
+
+if ($employee_info->employee_group!=1) {
+	die("Application error! Employee information invalid..");
+	}
+
+
+@mysql_query("update timesheet_index set status = 'complete' where timesheet_id = '$timesheet_info->timesheet_id'");
+@mysql_query("update timesheet_time set timesheet_status = 'complete' where timesheet_id = '$timesheet_info->timesheet_id'");
+forward("foreman_group_edit&group_id=$group_id");
+
+die ('ok');
+
+
+
+//$work_week=addslashes($work_week);
+//$week_info=date_info($work_week);
+//$week_end=$week_info->week_end;
+//$week_end_mysql=$week_info->week_end_mysql;
+//$group_id=addslashes($group_id);
+
+//@mysql_query("insert into timesheet_index set 
+//	creator = '$global_user_id',
+//	employee_id = '$employee_info->contacts_id',
+//	employee_num = '$employee_info->employee_num',
+//	employee_group = '$employee_info->employee_group',
+//	week_ending = '$week_end_mysql',
+//	status = 'new'");
+?>

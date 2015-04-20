@@ -1,0 +1,76 @@
+drop table if exists svc_equip_types;
+create table svc_equip_types (
+	equip_type_id int not null auto_increment,
+	category_id int not null,
+	category_type_id int not null,
+	primary key (equip_type_id)
+	);
+
+drop table if exists svc_equip_categories;
+create table svc_equip_categories (
+	category_id int not null auto_increment,
+	category char(100) not null,
+	description char(255),
+	primary key (category_id)
+	);
+
+drop table if exists svc_equip_category_types;
+create table svc_equip_category_types (
+	category_type_id int not null auto_increment,
+	category_id int not null,
+	category_type char(100) not null,
+	category_description char(255),
+	primary key (category_type_id)
+	);
+
+drop table if exists svc_task_items;
+create table svc_task_itmes (
+	task_id int not null auto_increment,
+	equip_type_id int not null,
+	agreement_type_id int not null,
+	maint_type_id int not null,
+	recommended_times_a_year int not null,
+	required_times_a_year int not null,
+	subs_required char(5) default 'N',
+	preditcitve_svc_avail char(5) default 'N',
+	primary key (task_id)
+	);
+
+drop table if exists svc_agreement_types;
+create table svc_agreement_types (
+	agreement_type_id int not null auto_increment,
+	agreement_type char(100) not null,
+	description char (255),
+	primary key (agreement_type_id)
+	);
+	
+drop table if exists svc_task_hrs;
+create table svc_task_hrs (
+	task_hrs_id int not null auto_increment,
+	task_id int not null,
+	labor_type_id int not null,
+	hrs float(8,2),
+	primary key (task_hrs_id)
+	);
+
+drop table if exists svc_labor_types;
+create table svc_labor_types (
+	labor_type_id int not null auto_increment,
+	labor_type char(100) not null,
+	description char(255),
+	st_rate float (8,2) not null,
+	ot_rate float (8,2) not null,
+	dt_rate float (8,2) not null,
+	primary key (labor_type_id)
+	);
+
+drop table if exists svc_maint_types;
+create table svc_maint_types (
+	maint_type_id int not null auto_increment,
+	maint_type char(100) not null,
+	description char(255),
+	primary key (maint_type_id)
+	);
+
+
+	

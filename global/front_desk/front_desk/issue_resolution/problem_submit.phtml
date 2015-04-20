@@ -1,0 +1,172 @@
+<?
+testrights("read_write");
+
+if ($issue_res_skip_all_escapes != 1) {
+	$conflict_id=escapeshellcmd($conflict_id);
+	$bld_floor=escapeshellcmd($bld_floor);
+	$grid=escapeshellcmd($grid);
+	//$summary=escapeshellcmd($summary);
+	$summary=addslashes($summary);
+	//$solution=escapeshellcmd($solution);
+	$solution=addslashes($solution);
+	//$actual_solution=escapeshellcmd($actual_solution);
+	$actual_solution=addslashes($actual_solution);
+	$responsibility=escapeshellcmd($responsibility);
+	$completed_by=escapeshellcmd($completed_by);
+		session_register('last_due_date');
+		$last_due_date=$due_date;
+	$due_date=vali_date($due_date);
+	$completed=vali_date($completed);
+	$approved=escapeshellcmd($approved);
+	$attached_files=addslashes($attached_files);
+	}
+	$new=0;
+
+if ($issue_parent > 0) {
+	# Make sure the conflict ID is the same as the parent...
+	$issue_parent=escapeshellcmd($issue_parent);
+	$problem_parent_info=getone("select * from issue_res_issues where problem_id = '$issue_parent'"); 
+	$conflict_id=$problem_parent_info->conflict_id;
+	} else {
+	$issue_parent="0";
+	}
+
+
+
+
+
+if ("$problem_id" != "") {
+	$problem_id=escapeshellcmd($problem_id);
+	$problem_info=getoneb("select * from issue_res_issues where problem_id = '$problem_id'");
+	$category_info=getoneb("select * from issue_res_category where issue_res_category_id = '$problem_info->issue_res_category_id'");
+$query="update issue_res_issues set  
+	conflict_id = '$conflict_id', 
+	bld_floor = '$bld_floor', 
+	grid = '$grid', 
+	summary = '$summary', 
+	solution = '$solution', 
+	actual_solution = '$actual_solution', 
+	responsibility = '$responsibility', 
+	completed_by = '$completed_by', 
+	due_date = '$due_date', 
+	completed = '$completed',
+	attached_files = '$attached_files',
+	approved = '$approved'
+	where problem_id = '$problem_id'";
+
+	$old_problem_info=getone("select * from issue_res_issues where problem_id = '$problem_id'");
+
+	if ($old_problem_info->issue_child > 0) {
+		if ($completed=="") $completed="0000-00-00";
+		
+		$child_status="OK";
+		if ("$old_problem_info->completed" != "$completed") {
+			$child_problem_info=$old_problem_info;
+			while($child_problem_info->issue_child>0) {
+				$child_problem_info=getone("select * from issue_res_issues where problem_id = '$child_problem_info->issue_child'");
+				if ($child_problem_info->completed=="0000-00-00") $child_status="NOT OK";
+				}
+			}
+
+		if ("$old_problem_info->approved" != "$approved") {
+			$child_problem_info=$old_problem_info;
+			$child_status="OK";
+			while($child_problem_info->issue_child>0) {
+				$child_problem_info=getone("select * from issue_res_issues where problem_id = '$child_problem_info->issue_child'");
+				if ($child_problem_info->approved=="") $child_status="NOT OK";
+				}
+			}
+		if ($category_info->strict_parents!='N') if ($child_status!="OK") die("ERROR: Sub-Issues must be approved/completed date before status of the parent issue can be modified!<hr>Please <a href=javascript:history.go(-1);>go back</a> and correct the sub-issue first.");
+		}
+} else {
+	$query="insert into issue_res_issues ( 
+	issue_res_category_id,
+	issue_parent,
+	conflict_id,
+	c_parent,
+	bld_floor,
+	grid,
+	summary,
+	solution,
+	actual_solution,
+	responsibility,
+	completed_by,
+	due_date,
+	completed,
+	approved,
+	attached_files
+	) values ( 
+	'$issue_res_category_id',
+	'$issue_parent',
+	'$conflict_id',
+	'$global_user_id',
+	'$bld_floor',
+	'$grid',
+	'$summary',
+	'$solution',
+	'$actual_solution',
+	'$responsibility',
+	'$completed_by',
+	'$due_date',
+	'$completed',
+	'$approved',
+	'$attached_files'
+	 )";
+	$new=1;
+}
+
+if ($approved!="") {
+	testrights("full");
+	}
+
+$result=mysql_query($query);
+if (!($result))
+	die("Error: Error updating database. Please contact your system administrator. <hr>The flawed query is:<hr>$query<br>");
+
+if ($problem_id == "")
+	$problem_id=mysql_insert_id();
+
+if ($problem_id == "") {
+	echo "Error setting/detecting record ID.. Could not set notifications!!!! Please edit record to add them again...<p>";
+	}
+
+
+if ($problem_parent_info) {
+	# Make sure the parent points to the child issue...
+	$parent_set_query="update issue_res_issues set issue_child = '$problem_id' where problem_id = '$problem_parent_info->problem_id'";
+	//echo "<hr>$parent_set_query</hr>";exit;
+	@mysql_query($parent_set_query);
+	}
+
+//
+//	Modifications to make notification work..
+//
+
+if ($issue_res_notification_id)
+	testrights("full");
+if ($retransmit_notifications != "") {
+	$clear_notifications_query="delete from issue_res_notify where problem_id = '$problem_id'";
+	@mysql_query($clear_notifications_query);
+	}
+
+$userlist_query="select * from issue_res_users where jobinfo_id = '$global_jobinfo_id'";
+$userlist_res=@mysql_query($userlist_query);
+
+while ($user_record=@mysql_fetch_object($userlist_res)) {
+	if (@in_array($user_record->contacts_id,$issue_res_notification_id))
+		if(getoneb("select * from issue_res_notify where problem_id = '$problem_id' and contacts_id = '$user_record->contacts_id'"))
+			$exists=1;
+		else
+			@mysql_query("insert into issue_res_notify (problem_id,contacts_id) values ('$problem_id','$user_record->contacts_id')");
+	else
+		if(getoneb("select * from issue_res_notify where problem_id = '$problem_id' and contacts_id = '$user_record->contacts_id'"))
+			@mysql_query("delete from issue_res_notify where problem_id = '$problem_id' and contacts_id = '$user_record->contacts_id'");
+		else
+			$exists=0;
+	}
+
+
+include("problem_submit_success.phtml");
+exit;
+
+?>

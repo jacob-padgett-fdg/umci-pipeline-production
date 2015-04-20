@@ -1,0 +1,92 @@
+<?
+fd_navs_header();
+include("header.phtml");
+fd_document_box_scripts();
+$qid="4321";
+if (fast_connection()) {
+	$load_delay=100;
+	} else {
+	$load_delay=10000;
+	}
+$queue_info=load_file_group_info($qid);
+
+if ($show=="") {
+	$contract_num=$global_jobinfo->contract_num;
+	$first_file=getoneb("select * from webfile_files where file_group_id = '$queue_info->file_group_id' and ( file_name like '%-$contract_num-%' or file_name like '%-${contract_num}_%' ) order by files_id limit 1");
+	$show=$first_file->files_id;
+	} else {
+	$show=addslashes($show);
+	}
+
+if ($show<1) {
+	echo "
+	<meta http-equiv=\"refresh\" content=\"30;url=$pagename?mode=$mode\">
+	<center><h2>No documents in inbound queue.</h2><p>If you have already scanned something and you are expecting to find it here, then please wait a couple of minutes as it may still be processing on another server right now.<p> For your convenience, this screen will automatically refresh twice a minute.</center>
+	";
+	fd_navs_footer();
+	exit;
+	}
+
+
+echo "
+<script>
+
+function dsel(show) {
+	//if (!(show)) return 0;
+	document.show_id=show;
+	clearTimeout(document.show_timout_id);
+	ajaxManager('load_page','$pagename?mode=doc_selector&current_files_id=' + document.show_id,'doc_selector');
+	document.show_timeout_id=setTimeout('watch_the_show()',$load_delay);
+	}
+
+function watch_the_show() {
+	if (document.show_id!=document.show_id_last) {
+		document.show_id_last=document.show_id;
+		pdflink='https://pipeline.umci.com/global/webfile$devel/index.html/files/inbound_preview.pdf?mode=webfile_view&files_id=' + document.show_id;
+		doc_viewport.location=pdflink;
+		//doc_viewport.src=pdflink;
+		}
+	document.show_timeout_id=setTimeout('watch_the_show()',$load_delay);
+	}
+
+document.show_id='$show';
+document.show_id_last='';
+</script>
+
+<table border=0 cellspacin=0 cellpadding=0 style=\"height: 100%; width: 100%;\">
+<tr><td style=\"width: 250px;\" id=doc_selector valign=top>
+	";
+	//include("doc_selector3.phtml");
+	echo"
+</td><td valign=top 90% height=100%>
+<iframe src=\"$current_link\" name=doc_viewport width=100% height=100%>No file loaded</iframe>
+</td></tr></table>
+<div id=\"document_counter_div\" style=\"display: none;\"></div>
+
+
+<script>
+ajaxManager('load_page','$pagename?mode=doc_selector','doc_selector');
+setTimeout('watch_the_show()',1000);
+</script>
+";
+/*
+echo "
+<table border=0 cellspacin=0 cellpadding=0 style=\"height: 100%; width: 100%;\">
+<tr><td style=\"width: 150px;\" id=doc_selector valign=top>
+	<a target=\"doc_viewport\" href=\"https://pipeline.umci.com/global/webfile/index.html/files/AutoSplit-5051-Front_Desk-1.pdf?mode=webfile_view&files_id=18999\">Test 1</a><br>
+	<a target=\"doc_viewport\" href=\"https://pipeline.umci.com/global/webfile/index.html/files/MultiPage-5051-Front_Desk.pdf?mode=webfile_view&files_id=19138\">Test 2</a><br>
+	<a target=\"doc_viewport\" href=\"https://pipeline.umci.com/global/webfile/index.html/files/multipage-5051-Front_Desk-0.21211000AR_M455N_20081212_042928.pdf?mode=webfile_view&files_id=19563\">Test 3</a><br>
+	<a target=\"doc_viewport\" href=\"https://pipeline.umci.com/global/webfile/index.html/files/multipage-5051-Front_Desk-0.2535110001_m0_01.pdf?mode=webfile_view&files_id=19904\">Test 4</a><br>
+	<a target=\"doc_viewport\" href=\"https://pipeline.umci.com/global/webfile/index.html/files/AutoSplit-5051-Front_Desk-1.pdf?mode=webfile_view&files_id=20192\">Test 5</a><br>
+	<a target=\"doc_viewport\" href=\"https://pipeline.umci.com/global/webfile/index.html/files/AutoSplit-5051-Front_Desk-1.pdf?mode=webfile_view&files_id=20203\">Test 6</a><br>
+	<a target=\"doc_viewport\" href=\"https://pipeline.umci.com/global/webfile/index.html/files/multipage-5051-Front_Desk-0.29722900turner_1_9_09.pdf?mode=webfile_view&files_id=20236\">Test 7</a><br>
+	<a target=\"doc_viewport\" href=\"https://pipeline.umci.com/global/webfile/index.html/files/multipage-5051-Front_Desk-0.732550005051___grd_list.pdf?mode=webfile_view&files_id=20824\">Test 8</a><br>
+</td><td valign=top 90% height=100%>
+<iframe src=\"$current_link\" name=doc_viewport width=100% height=100%>No file loaded</iframe>
+</td></tr></table>
+<div id=\"document_counter_div\" style=\"display: none;\"></div>
+
+";
+*/
+fd_navs_footer();
+?>

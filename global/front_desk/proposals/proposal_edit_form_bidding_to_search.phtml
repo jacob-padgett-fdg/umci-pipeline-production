@@ -1,0 +1,21 @@
+<?
+
+echo "
+<input type=hidden name=proposal_form_bidding_to value=true>
+<b>Bidding To</b>
+<table border=1 cellpadding=0 cellspacing=0 width=100%>
+<tr bgcolor=#eeeeee><td>
+General ";dropbox("select contacts_id as 'general_id$dropboxaddvar',left(display_name,20) as display_name from contacts where is_company = 'Y' and is_general = 'Y' order by alphasort","","3","","","$dropboxmode");echo"
+<input type=hidden name=general_id_radio value='='>
+</td><td>
+	Winning Bid: 
+	Y<input type=radio name=low_bid value='Y'>
+	N<input type=radio name=low_bid value='N'>
+</td></tr>
+</table>
+";
+
+
+
+
+?>

@@ -1,0 +1,98 @@
+<?
+//echo "Hi<hr>$REQUEST_URI";
+
+if ($start_date=="") die("Error: Start date/Due Date is a required field!");
+if ($end_date=="") $end_date=$start_date;
+
+
+if ($cal_jobppinfo_id<1) {
+	if ($shared=='Y') die("Error: You can't have a shared item that isn't attached to a job. Please contact an administrator if you think this message was in error.");
+	}
+
+$unique_id=addslashes($unique_id);
+$start_date=vali_date($start_date);
+$end_date=vali_date($end_date);
+$owner_id=addslashes($owner_id);
+$title=addslashes($title);
+$is_a_task=checkfix($is_a_task);
+$is_signed_off=checkfix($is_signed_off);
+$category=addslashes($category);
+if ($is_a_task=='Y') {
+	$end_date=$start_date;
+	$end_time_hours="00";
+	$end_time_minutes="00";
+	}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//	Fix up the start and end times.. (chopped up, put them back together now...
+/////////////////////////////////////////////////////////////////////////////////
+if ($start_time_hours!="") $start_time_hours=addslashes($start_time_hours);
+else $start_time_hours="00";
+if ($start_time_minutes!="") $start_time_minutes=addslashes($start_time_minutes);
+else $start_time_minutes="00";
+if ($end_time_hours!="") $end_time_hours=addslashes($end_time_hours);
+else $end_time_hours="00";
+if ($end_time_minutes!="") $end_time_minutes=addslashes($end_time_minutes);
+else $end_time_minutes="00";
+$start_time=$start_time_hours . ":" . $start_time_minutes . ":00";
+$end_time=$end_time_hours . ":" . $end_time_minutes . ":00";
+/////////////////////////////////////////////////////////////////////////////////
+
+if ($calendar_id!="") {
+	$calendar_id=addslashes($calendar_id);
+	$query_start="update front_desk_calendar ";
+	$creator_string="";
+	$old_info=getoneb("select * from front_desk_calendar where calendar_id = '$calendar_id'");
+	if ($old_info->is_signed_off!=$is_signed_off) {
+		if ($is_signed_off=="N") $signed_off_by=0;
+		else $signed_off_by=$global_user_id;
+		}
+	$query_end="where calendar_id = '$calendar_id'";
+	} else {
+	$query_start="insert into front_desk_calendar ";
+	$creator_string="creator_id = '$global_user_id',unique_id = '$unique_id',";
+	$query_end="";
+	}
+
+$query_middle=" set 
+jobinfo_id = '$cal_jobinfo_id',
+$creator_string
+owner_id = '$owner_id',
+start_date = '$start_date',
+start_time = '$start_to',
+end_date = '$end_date',
+end_time = '$end_time',
+title = '$title',
+description = '$description',
+is_a_task = '$is_a_task',
+is_signed_off = '$is_signed_off',
+signed_off_by = '$signed_off_by',
+category = '$category',
+file_group_id = '$file_group_id'
+";
+
+
+//echo "<br>$start_time / $end_time<br>";
+$query_full=$query_start . $query_middle . $query_end;
+//die($query_full);
+//echo "<hr>$query_full<hr>";
+$res=@mysql_query($query_full);
+if (!($res)) {
+	die("Query error! Details below:<hr>$query_full");
+	}
+echo "
+
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+
+
+
+
+
+
+?>

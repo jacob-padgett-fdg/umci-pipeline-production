@@ -1,0 +1,71 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+ajax_load();
+//check_report_permissions();
+
+$courier_request_id=addslashes($courier_request_id);
+$courier_request_info=getoneb("select * from courier_request_log where courier_request_id = '$courier_request_id'");
+
+
+if (!($courier_request_info)) die("Application error: Error loading courier request information! Did you save? Please contact your system administrator if you need assistance.");
+
+
+
+if ($courier_request_info->confidential=='Y') {
+	if (!(($adminuser)||($courier_request_info->owner==$global_user_id))) {
+		die_security();
+		}
+	}
+
+$job_info=getoneb("select * from jobinfo where jobinfo_id = '$courier_request_info->jobinfo_id'");
+//$courier_request_info->phase=ereg_replace(" .*$","",$courier_request_info->phase);
+$requester_info=getoneb("select * from contacts where contacts_id = '$courier_request_info->owner'");
+//$address=nl2br($courier_request_info->address);
+$courier_request_info->address=nl2br($courier_request_info->address);
+$courier_request_info->additonal_notes=nl2br($courier_request_info->additional_notes);
+echo "
+<center>
+<h3><u>Courier Request $courier_request_info->courier_request_id</u></h3><br>
+</center>
+<font size=-1>
+
+<b>Requester Name & Info:</b>
+	<ul><ul>$global_user->display_name<br>
+	Phone:	$global_user->phone<br>
+	Ext: 	$global_user->phone_ext<br>
+	Cell:	$global_user->phone_cell<br>
+	Email: 	$global_user->email</ul>
+	</ul>
+<b>Job #:</b>
+	<ul><ul>$job_info->contract_num </ul></ul>
+<b>Work to be performed:</b>
+	<ul><ul>$courier_request_info->action</ul></ul>
+<b>Descriptio of item(s):</b>
+	<ul><ul>$courier_request_info->description</ul></ul>
+<b>Address</b>
+	<ul><ul>$courier_request_info->address<br>Contact: $courier_request_info->contact_name @ $courier_request_info->contact_phone</ul></ul>";
+if (($courier_request_info->action=="Pick Up From")&&($courier_request_info->delivery_address!="")) {
+	$courier_request_info->delivery_address=nl2br($courier_request_info->delivery_address);
+	echo "<b>Delivery Address:</b>
+	<ul><ul>$courier_request_info->delivery_address<br>Contact: $courier_request_info->delivery_contact_name @ $courier_request_info->delivery_contact_phone</ul></ul>";
+	}
+
+echo "
+<b>Required Delivery Time:</b>
+<ul><ul>Time Sensitive: $courier_request_info->time_sensitive<br>Deliver by: $courier_request_info->deadline</ul></ul>
+<b>Additional Notes:</b>
+<ul><ul>$courier_request_info->additional_notes</ul></ul>
+
+<div style=\"padding-top: 5px; padding-left: 5px; width: 300px; height: 100px; border: 2px solid black; background: #cccccc; position: fixed; bottom: 0; right: 0;\"><i><center>Courier Use Only</center></i><br>&nbsp;Received: $courier_request_info->creation_time<p>&nbsp;Time spent on job: <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u></div>
+</font>
+<script>
+print();
+history.go(-1);
+</script>
+";
+?>

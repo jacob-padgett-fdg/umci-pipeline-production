@@ -1,0 +1,77 @@
+<?
+if (!($timesheet_data_entry_check)) die_security();
+//////////// Pick a sane default for the week ending ////////
+if ($timesheet_data_entry_week_ending=="") $timesheet_data_entry_week_ending=date('m-d-Y',strtotime('4 days ago'));
+//////////// Use the requested week ending //////////////////
+if ($timesheet_data_entry_week_ending_set!="") {
+	$dinfo=date_info($timesheet_data_entry_week_ending_set);
+	session_register('timesheet_data_entry_week_ending');
+	$timesheet_data_entry_week_ending=$dinfo->week_end;
+	}
+//// ...and sanitize it..
+$date_info=date_info($timesheet_data_entry_week_ending);
+$timesheet_data_entry_week_ending=$date_info->week_end;
+$next_week_link="$pagename?mode=$mode&timesheet_data_entry_week_ending_set=$date_info->next_week_end";
+$last_week_link="$pagename?mode=$mode&timesheet_data_entry_week_ending_set=$date_info->last_week_end";
+$timesheet_monday=date('m-d-Y',strtotime('5 days ago',strtotime("$date_info->week_end_mysql")));
+
+echo"<a href=$pagename><font color=blue>Return to main</font></a>
+
+<form name=batch_employee_select method=post action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+
+<table border=1><tr><td>
+<table border=0>
+<tr><td>
+	<b>For Date</b>
+</td><td>
+	<a href=$last_week_link><font color=blue>&lt;</font></a><input type=text size=10 name=timesheet_data_entry_week_ending_set value=\"$timesheet_data_entry_week_ending\" onchange=\"submit()\"><a href=$next_week_link><font color=blue>&gt;</font></a>";echo"
+</td></tr>
+</table>
+</td></tr>
+</table>
+</form>
+
+
+";
+
+$keylist=array(
+	'esc'=>"document.location='$pagename'",
+	'u'=>"alert('u is for University Mechanical Contractors, Inc.')",
+	'lar'=>"document.location='$last_week_link'",
+	'rar'=>"document.location='$next_week_link'",
+	'w'=>"document.batch_employee_select.timesheet_data_entry_week_ending_set.select()"
+	);
+if ($create_ts=="ok") {
+	$keylist=array_merge($keylist,array('c'=>"create_timesheet()"));
+	}
+if ($edit_ts=="ok") {
+	$keylist=array_merge($keylist,array('c'=>"load_timesheet($ts_info->timesheet_id)"));
+	}
+javascript_hotkeys($keylist);
+
+$query="select *,timesheet_index.timesheet_id as real_timesheet_id from timesheet_index left join timesheet_time on (timesheet_index.timesheet_id = timesheet_time.timesheet_id) left join contacts on (contacts.contacts_id = timesheet_index.employee_id) where timesheet_index.week_ending = '$date_info->week_end_mysql' and (timesheet_index.creator = '$global_user->contacts_id' or timesheet_time.creator = '$global_user->contacts_id') group by timesheet_index.timesheet_id";
+
+$res=@mysql_query($query);
+echo "<table border=0>
+<tr><td>Name</td><td>ST</td><td>OT</td><td>DT</td><td>Hrs</td></tr>
+";
+while ($row=@mysql_fetch_object($res)) {
+	$ts_summary=timesheet_summary_info($row->real_timesheet_id);
+	echo "<tr><td>
+			&nbsp;&nbsp;<a href=$pagename?mode=timesheet_load&ts_id=$row->real_timesheet_id&come_back_to=$mode><font color=blue>$row->display_name</font></a>
+		</td><td>
+			&nbsp;&nbsp;$ts_summary->st
+		</td><td>
+			&nbsp;&nbsp;$ts_summary->ot
+		</td><td>
+			&nbsp;&nbsp;$ts_summary->dt
+		</td><td>
+			&nbsp;&nbsp;$ts_summary->hours
+		</td></tr>
+		
+		
+		";
+	}
+echo "</table>";
+?>

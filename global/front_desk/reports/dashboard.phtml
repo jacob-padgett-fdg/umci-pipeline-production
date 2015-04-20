@@ -1,0 +1,46 @@
+<?
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+//////////////////////////////////////////////////////////////////////////////
+// Example code, just for rdavison.
+//////////////////////////////////////////////////////////////////////////////
+if ($global_user->login_name=='rdavison') {
+if ($adminuser) echo "You seem to be an admin user of this report!<br>";
+ms_tabledump("select Contract,Description,PMLastName,ContractAmt,CurrentRetainAmt,CashFlow,AgingTotal from UMC_Financial_Summary_By_Contract_With_Aging order by Contract");
+echo "<hr>";$sep="";
+$resultpointer=@mssql_query("select Contract from UMC_Financial_Summary_By_Contract order by Contract desc");
+while ($row=@mssql_fetch_object($resultpointer)) echo "${sep}$row->Contract";$sep=",";
+echo "<hr>";
+$cashflowtemp=ms_getoneb("select CashFlow from UMC_Financial_Summary_By_Contract where Contract = '05131-'");
+if ($cashflowtemp) echo "I found an answer, and your number is $cashflowtemp->CashFlow<p>";
+	else echo "I didn't find anything for 05131-...<p>";
+}
+//////////////////////////////////////////////////////////////////////////////
+
+
+// Need to look at rgraph for drawing charts etc.. looks nice., html5 based.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mh_navs_footer();
+?>

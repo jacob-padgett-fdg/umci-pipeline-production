@@ -1,0 +1,51 @@
+<?
+if ("$opts_set" == "") {
+	session_register("opts_set");
+	session_register('h_complete');
+	session_register('h_new');
+	session_register('h_approved');
+	$opts_set="yes";
+	$h_complete="checked";
+	$h_new="checked";
+	$h_approved="";
+	}
+
+echo "<head><title>$dbdescription</title></head><body bgcolor=#ffffff><center>
+
+$global_jobinfo->job_name ($global_jobinfo->contract_num):
+$issue_res_application_info->issue_res_application_name:
+$issue_res_category_info->category_name
+";
+
+echo "</center><hr>";
+
+if ("$submode" == "changeopts") {
+
+	if ($h_complete_new=="checked") {
+		$h_complete=$h_complete_new;
+		} else {
+		$h_complete="";
+		}
+
+	if ($h_new_new=="checked") {
+		$h_new=$h_new_new;
+		} else {
+		$h_new="";
+		}
+
+	if ($h_approved_new=="checked") {
+		$h_approved=$h_approved_new;
+		} else {
+		$h_approved="";
+		}
+	}
+
+echo "
+<b>Showing:&nbsp;&nbsp;&nbsp;&nbsp;</b>";
+
+if ($h_new) echo "Open ";
+if ($h_complete) echo "Complete ";
+if ($h_approved) echo "Approved ";
+echo "<p>";
+
+?>

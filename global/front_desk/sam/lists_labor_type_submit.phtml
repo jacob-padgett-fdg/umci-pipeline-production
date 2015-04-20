@@ -1,0 +1,27 @@
+<?
+if (!($adminuser)) die ("ERROR: Security Violation! The authorities have been notified!!!");
+
+$labor_type=escapeshellcmd($labor_type);
+$description=escapeshellcmd($description);
+$st_rate=clean_float($st_rate);
+$ot_rate=clean_float($ot_rate);
+$dt_rate=clean_float($dt_rate);
+
+if ($labor_type_id!="") {
+	$labor_type_id=escapeshellcmd($labor_type_id);
+	$query="update svc_labor_types set labor_type = '$labor_type',description = '$description',st_rate = '$st_rate',ot_rate = '$ot_rate', dt_rate = '$dt_rate' where labor_type_id = '$labor_type_id'";
+	} else {
+	$query="insert into svc_labor_types set labor_type = '$labor_type',description = '$description',st_rate = '$st_rate',ot_rate = '$ot_rate', dt_rate = '$dt_rate'";
+	}
+
+//echo "<hr>$query<hr>";
+
+@mysql_query($query);
+
+forward('lists_labor_types');
+
+
+
+
+
+?>

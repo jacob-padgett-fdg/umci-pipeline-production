@@ -1,0 +1,20 @@
+<?
+if ($global_user->timesheet_group_one_foreman!="Y") 
+	die ("ERROR: Access Violation! The authorities are being notified!");
+
+$group_id=addslashes($group_id);
+$group_info=getoneb("select * from timesheet_foreman_groups where group_id = '$group_id'");
+
+if (!($group_info)) die("application error. invalid group.");
+
+
+$show_members_query="select * from timesheet_group_members 
+where group_id = '$group_info->group_id'
+";
+$show_members_res=@mysql_query($show_members_query);
+$member_count=@mysql_num_rows($show_members_res);
+
+if ($member_count!=0) die("application error! Invalid group.");
+@mysql_query("delete from timesheet_foreman_groups where group_id = '$group_info->group_id'");
+forward('main');
+?>

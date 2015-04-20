@@ -1,0 +1,17 @@
+<?
+require("settings.cfg");
+require('global-auth.inc');
+
+if ($files_id=="") die("Application Error!!");
+
+//if (!(($readable)||($adminuser))) die("Permission Denied: The authorities have been notified!");
+
+$files_id=addslashes($files_id);
+$file=getone("select * from webfile_files where files_id = '$files_id'");
+
+$source_file="$storage_root$file->file_path";
+
+header("Content-disposition: inline; filename=\"$file->file_name\"");
+header("Content-type: $file->mime_type");
+readfile($source_file);
+?>

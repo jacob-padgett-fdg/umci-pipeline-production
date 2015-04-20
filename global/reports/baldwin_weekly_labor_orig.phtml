@@ -1,0 +1,148 @@
+<?
+session_write_close();
+require('header.phtml');
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+
+function show_weekdays($mainrow) {
+	global $global_jobinfo,$date_info;
+	$week="";
+	$week->sunday="&nbsp;";
+	$week->monday="&nbsp;";
+	$week->tuesday="&nbsp;";
+	$week->wednesday="&nbsp;";
+	$week->thursday="&nbsp;";
+	$week->friday="&nbsp;";
+	$week->saturday="&nbsp;";
+	$query="select PREH.Employee,PREH.FirstName,PREH.LastName,SUM(JCCD.ActualHours) as ActualHours,JCCD.ActualDate,JCCD.EarnFactor$addfactors from JCCD with (NOLOCK) 
+		left join PREH with (NOLOCK) on (PREH.PRCo = JCCD.JCCo and PREH.Employee = JCCD.Employee)
+	where 
+		JCCD.JCCo = 1 and 
+		JCCD.PhaseGroup = 1 and 
+		JCCD.CostType = 1 and
+		JCCD.ActualHours != 0 and
+		JCCD.Employee = '$mainrow->Employee' and 
+		JCCD.EarnFactor = '$mainrow->EarnFactor' and 
+		JCCD.Job like '0$global_jobinfo->contract_num%' and 
+		JCCD.PostedDate >= '$date_info->week_start' and 
+		JCCD.PostedDate <= '$date_info->week_end'
+		group by PREH.FirstName,PREH.LastName,PREH.Employee,JCCD.EarnFactor,JCCD.ActualDate $addfactors
+		order by PREH.LastName,PREH.FirstName,PREH.Employee,JCCD.ActualDate
+		";
+	//ms_tabledump($query);
+	
+	$res=@mssql_query($query);
+	while ($row=@mssql_fetch_object($res)) {
+		//echo "$row->ActualDate,";
+		$day=date('D',strtotime($row->ActualDate));
+		switch ($day) {
+			case "Sun": 	$week->sunday=$row->ActualHours + 0;break;
+			case "Mon": 	$week->monday=$row->ActualHours + 0;break;
+			case "Tue": 	$week->tuesday=$row->ActualHours + 0;break;
+			case "Wed": 	$week->wednesday=$row->ActualHours + 0;break;
+			case "Thu": 	$week->thursday=$row->ActualHours + 0;break;
+			case "Fri": 	$week->friday=$row->ActualHours + 0;break;
+			case "Sat": 	$week->saturday=$row->ActualHours + 0;break;
+			}
+		}
+	
+	echo "
+	<td style=\"border-top: 1px solid black;\">$week->sunday</td>
+	<td style=\"border-top: 1px solid black;\">$week->monday</td>
+	<td style=\"border-top: 1px solid black;\">$week->tuesday</td>
+	<td style=\"border-top: 1px solid black;\">$week->wednesday</td>
+	<td style=\"border-top: 1px solid black;\">$week->thursday</td>
+	<td style=\"border-top: 1px solid black;\">$week->friday</td>
+	<td style=\"border-top: 1px solid black;\">$week->satday</td>
+	";
+	
+	}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// When did payroll last close for both groups.
+$last_closed_grp_1=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 1 and Status = 1 order by PREndDate desc");
+$last_closed_grp_3=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 3 and Status = 1 order by PREndDate desc");
+$lcg1date=date('Ymd',strtotime($last_closed_grp_1->PREndDate));
+$lcg3date=date('Ymd',strtotime($last_closed_grp_3->PREndDate));
+if ($lcg1date>$lcg3date) {
+	$closed_date=date('m/d/Y',strtotime($last_closed_grp_3->PREndDate));
+	} else {
+	$closed_date=date('m/d/Y',strtotime($last_closed_grp_1->PREndDate));
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// If we didn't ask about a specific date, then set the last closed date
+if ($week_ending=="") $week_ending=$closed_date;
+$date_info=date_info($week_ending);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+$addfactors=",JCCD.ActualDate";
+$addfactors="";
+$query="select PREH.Employee,PREH.FirstName,PREH.LastName,SUM(JCCD.ActualHours) as ActualHours,JCCD.EarnFactor$addfactors from JCCD with (NOLOCK) 
+	left join PREH with (NOLOCK) on (PREH.PRCo = JCCD.JCCo and PREH.Employee = JCCD.Employee)
+where 
+	JCCD.JCCo = 1 and 
+	JCCD.PhaseGroup = 1 and 
+	JCCD.CostType = 1 and
+	JCCD.ActualHours != 0 and
+	JCCD.Job like '0$global_jobinfo->contract_num%' and 
+	JCCD.PostedDate >= '$date_info->week_start' and 
+	JCCD.PostedDate <= '$date_info->week_end'
+	group by PREH.FirstName,PREH.LastName,PREH.Employee,JCCD.EarnFactor$addfactors
+	order by PREH.LastName,PREH.FirstName,PREH.Employee
+	";
+
+echo "<table border=0 cellspacing=0 cellpadding=2 style=\"width: 450px; border: 1px solid black;\">
+<tr><td colspan=11 align=center><font size=+2>Weekly Labor Report</font></td></tr>
+<tr><td colspan=4><i>Week Ending $date_info->week_end_slashes</td>
+<td><i>Sun</i></td>
+<td><i>Mon</i></td>
+<td><i>Tue</i></td>
+<td><i>Wed</i></td>
+<td><i>Thu</i></td>
+<td><i>Fri</i></td>
+<td><i>Sat</i></td>
+</tr>";
+$res=@mssql_query($query);
+while ($row=@mssql_fetch_object($res)) {
+	if ($row->EarnFactor>1) {
+		$fontcolor="red";
+		$time_type="OT";
+		} else {
+		$time_type="ST";
+		if ($row->EarnFactor==2) $time_type="DT";
+		$fontcolor="black";
+		}
+	$background="white";
+	if ($row->ActualHours>40 && $row->EarnFactor==1) {
+		$background="$fd_color_3";
+		}
+	
+	$contact_info=getoneb("select * from contacts where employee_num = '$row->Employee'");
+	echo "
+		<tr style=\"border-top: 1px solid black; color: $fontcolor; background: $background;\"><td style=\"border-top: 1px solid black;\">
+			$row->Employee
+		</td><td style=\"border-top: 1px solid black;\">
+			"; contact_view("$row->LastName, $row->FirstName",$contact_info->contacts_id); echo "
+		</td><td style=\"border-top: 1px solid black;\">
+			$time_type
+		</td><td style=\"border-top: 1px solid black;\">
+			$row->ActualHours";
+		//if ($weekdays=='Y') {
+		if (TRUE) {
+			show_weekdays($row);
+			}
+		
+			
+		echo "
+		</td></tr>
+		";
+			
+	}
+echo "</table>";
+die();
+?>

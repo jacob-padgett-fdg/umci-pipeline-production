@@ -1,0 +1,121 @@
+<?
+if (!($timesheet_data_entry_check)) die_security();
+
+if ($timesheet_id!="") $timesheet_id=addslashes($timesheet_id);
+else die("Application error: no timesheet id specified. Please contact your system administrator!");
+$timesheet_info=getone("select * from timesheet_index where timesheet_id = '$timesheet_id'");
+$employee_info=getoneb("select * from contacts where contacts_id = '$timesheet_info->employee_id' and current = 'Y'");
+if (!($employee_info)) die("Bad Employee information. Please contact your system administrator!");
+
+if ($timesheet_info->status!='new') {
+	echo "<script>
+	alert('Timesheet not \"new\". Save aborted!');
+	</script>";
+	forward('timesheet_data_entry_data_entry');
+	die();
+	}
+
+$job_info=is_valid_viewpoint_job($job_num);
+if (!($job_info)) die("ERROR: Invalid job ($job_num)");
+
+$labor=0;
+switch ($earnings_code) {
+	case 1:
+	case 2:
+	case 3:
+	case 8: $labor=1;
+			$dollars=0;
+			break;;
+	case 5:
+	case 6:
+	case 7: $labor=0;
+			$hours=0;
+			break;;
+	default: die("Application Error: Invalid earnings code");
+	}
+switch ($shift) {
+	case 1:
+	case 2:
+	case 3:
+		break;;
+	default: die("Application Error: Invalid shift code!");
+	}
+
+if ($labor==0) {
+	echo "spt<br>";
+	$phase_info=is_valid_viewpoint_spt_phase($phase,$job_info->job);
+	} else {
+	$phase_info=is_valid_viewpoint_labor_phase($phase,$job_info->job);
+	}
+if(!($phase_info)) die("Application Error: Invalid phase code");
+$workday_info=date_info($workday);
+if (!($workday_info)) die("bad workday");
+if ($workday_info->week_end_mysql!=$timesheet_info->week_ending) die("bad workday/week_ending match! ($workday_info->week_end_mysql / $timesheet_info->week_ending)");
+
+$hours=float_clean($hours);
+$dollars=float_clean($dollars);
+
+$data_entry_batch=clean_int($data_entry_batch);
+if (($data_entry_batch=="")||($data_entry_batch<1)) die("Application Error: Invalid data entry batch!");
+
+
+
+
+$local_job=ereg_replace("-.*","",$job_info->job);
+$local_job++;$local_job--;
+$local_job_info=getoneb("select * from jobinfo where contract_num = '$local_job'");
+
+if($local_job_info) {
+	$local_jobinfo_id=$local_job_info->jobinfo_id;
+	} else {
+	$local_jobinfo_id=0;
+	}
+
+/*
+
+echo "
+timesheet_id: $timesheet_id<br>
+creator: $global_user->contacts_id<br>
+employee_id: $employee_info->contacts_id<br>
+employee_num: $employee_info->employee_num<br>
+employee_group: $employee_info->employee_group<br>
+job_num: $job_info->job<br>
+job_desc: $job_info->Description<br>
+phase: $phase_info->phase<br>
+phase_desc: $phase_info->Description<br>
+workday: $workday_info->date_mysql ($workday_info->day_of_week_num)<br>
+week_ending: $timesheet_info->week_ending<br>
+earnings_code: $earnings_code<br>
+shift: $shift<br>
+hours: $hours<br>
+dollars: $dollars<br>
+timesheet_status: $timesheet_info->status<br>
+data entry batch: $data_entry_batch<br>
+";
+*/
+$query="insert into timesheet_time set
+	timesheet_id = '$timesheet_id',
+	creator = '$global_user->contacts_id',
+	employee_id = '$employee_info->contacts_id',
+	employee_num = '$employee_info->employee_num',
+	employee_group = '$employee_info->employee_group',
+	jobinfo_id = '$local_jobinfo_id',
+	job_num = '$job_info->job',
+	job_desc = '$job_info->Description',
+	phase = '$phase_info->phase',
+	phase_desc = '$phase_info->Description',
+	workday = '$workday_info->date_mysql',
+	week_ending = '$timesheet_info->week_ending',
+	earnings_code = '$earnings_code',
+	shift = '$shift',
+	hours = '$hours',
+	dollars = '$dollars',
+	timesheet_status = 'new',
+	data_entry_batch = '$data_entry_batch'";
+	
+//echo "<hr><pre>$query</pre><hr>";
+@mysql_query($query);
+forward('timesheet_data_entry_data_entry');
+
+exit;
+?>

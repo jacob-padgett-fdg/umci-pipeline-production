@@ -1,0 +1,58 @@
+<?
+//set_time_limit('3600');
+set_time_limit('60');
+//////////////////////////
+//
+//	Script settings
+//
+//////////////////////////
+$auth_object->check_web_pw='Y';
+$auth_object->check_smb_pw='Y';
+$auth_object->check_webfile_exceptions='N';
+$auth_object->check_access_permission='N';
+
+$auth_object->require_login='Y';
+$auth_object->require_access_permissions='N';
+$auth_object->require_employee='N';
+$auth_object->require_local_networks='N';
+$auth_object->require_local_or_logged_in='N';
+
+$auth_object->include_local_auth='N';
+$auth_object->always_attach_db='N';
+
+$application_name="front_desk";
+$dbdescription="UMC WebDB- Front Desk DB";
+$sitedescription="UMC Front Desk";
+$rejectmsg="<b>You must log in to access this database</b>";
+
+$auth_user_name="administrator";
+$auth_user_pass="witchisdead";
+$SYSTEM_AUTH_REQUESTED="1";
+
+include("global-auth.inc");
+
+//echo "hello there, my name is $global_user->first_name $global_user->last_name";
+
+$contract_num=addslashes($contract_num);
+
+$global_jobinfo=getoneb("select * from jobinfo where contract_num = '$contract_num'");
+
+
+
+if (!($global_jobinfo)) {
+	die("<hr><h3>Invalid job specified. This page expects to have a contract number passed to it on every page load as it was written to aid a system that doesn't automatically support sessions.</h3>");
+	}
+
+//tabledump("select * from documents where jobinfo_id = '$global_jobinfo->jobinfo_id'");
+$full_doc_list_res=@mysql_query("select * from documents where jobinfo_id = '$global_jobinfo->jobinfo_id'");
+while ($doc_row=@mysql_fetch_object($full_doc_list_res)) {
+	//echo "<hr>$doc_row->doc_id";
+	//flush();
+	$doc_id=$doc_row->doc_id;
+	include("view_pdf_by_doc_id.phtml");
+	}
+
+
+//$contract_num_cleaned=@mysql_
+
+?>

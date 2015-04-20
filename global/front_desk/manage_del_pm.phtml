@@ -1,0 +1,16 @@
+<?
+
+if (($global_jobinfo->project_manager_id!=$global_user_id)&&($global_user_id!=2)&&($global_user_id!=11)&&($global_user_id!=5809)&&($global_user_id!=$pm)) die_security();
+if ($pm=="") die("Application error!");
+$pm=addslashes($pm);
+@mysql_query("delete from front_desk_job_pms where jobinfo_id = '$global_jobinfo_id' and contacts_id = '$pm'");
+security_log_email(
+$pm,
+0,
+$global_jobinfo_id,
+"removed user as guest PM",
+"fd job setup");
+include("manage_jobs_show_pm.phtml");
+
+
+?>

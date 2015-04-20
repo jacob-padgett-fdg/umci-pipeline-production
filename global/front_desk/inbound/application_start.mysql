@@ -1,0 +1,30 @@
+
+delimiter |
+create trigger docreg_inbound_insert after insert on inbound
+for each row begin
+call docreg_generic2 ('inbound',NEW.inbound_id,NEW.jobinfo_id,NEW.scan_sequence,NEW.description,'default');
+end;
+|
+delimiter ;
+
+
+
+delimiter |
+create trigger docreg_inbound_update after update on inbound
+for each row begin
+call docreg_generic2 ('inbound',NEW.inbound_id,NEW.jobinfo_id,NEW.scan_sequence,NEW.description,'default');
+end;
+|
+delimiter ;
+
+
+
+
+delimiter |
+create trigger docreg_inbound_delete after delete on inbound
+for each row begin
+call docunreg ('inbound',OLD.inbound_id);
+end;
+|
+delimiter ;
+

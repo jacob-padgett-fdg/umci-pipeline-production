@@ -1,0 +1,22 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified");
+if ($category_id=="") die("ERROR: Application error (category_id!). Please contact your system administrator.");
+$category_id=escapeshellcmd($category_id);
+
+$cat_info=getone("select * from svc_equip_categories where category_id = '$category_id'");
+
+echo "
+<form>
+<input type=hidden name=mode value=lists_equip_category_update>
+<input type=hidden name=category_id value=$cat_info->category_id>
+<b>Rename:&nbsp;</b><input type=text name=category size=20 value=\"$cat_info->category\"><input type=submit value=Submit><p>
+</form>
+<form><input type=hidden name=mode value=lists_equip_categories><input type=submit value=Cancel></form>
+";
+
+
+
+
+
+
+?>

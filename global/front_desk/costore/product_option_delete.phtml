@@ -1,0 +1,10 @@
+<?
+if (!($adminuser)) die_security();
+//require("header.phtml");
+if ($option_id=="") die("Application error. Please contact your system administrator!");
+$option_id=addslashes($option_id);
+$option_info=getoneb("select * from costore_products_options where option_id = '$option_id'");
+
+@mysql_query("delete from costore_products_options where option_id = '$option_id'");
+forward("product_edit&product_id=$option_info->product_id");
+?>

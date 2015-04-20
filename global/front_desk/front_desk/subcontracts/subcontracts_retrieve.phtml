@@ -1,0 +1,18 @@
+<?
+$subcontracts_id=addslashes($subcontracts_id);
+$subcontracts_info=getoneb("select * from subcontracts where subcontracts_id = '$subcontracts_id'");
+$d_job_info=getoneb("select * from jobinfo where jobinfo_id = '$subcontracts_info->jobinfo_id'");
+
+$ca=member_of_global_group_named("Contract Admin");
+//if ($ca) die("ca");
+$pm=pm_for_this_job();
+if ( (!($pm)) && (!($ca)) ) {
+	echo ("<script>alert('ERROR! Only the PM or a contract admin can retrieve the subcontract!');</script>");
+	forward('main');
+	die();
+	}
+if ($subcontracts_info->status=="submitted") {
+	@mysql_query("update subcontracts set status = 'new' where subcontracts_id = '$subcontracts_info->subcontracts_id'");
+	}
+forward('main');
+?>

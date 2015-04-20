@@ -1,0 +1,46 @@
+<?
+
+if ($el_id=="") die("Failed in $mode. el_id is missing. Please contact your system administrator!");
+else $el_id=addslashes($el_id);
+
+if ($frequency_in_months=="") $frequency_in_months=12;
+
+$nn=predict_nice_name($event_type);
+
+
+echo "
+<h2>$nn</h3><hr>
+
+<table border=0>
+<tr><td>
+<form name=el_ev_add method=post action=$pagename>
+<input type=hidden name=mode value=svc_agreement_equipment_event_submit_$event_type>
+<input type=hidden name=el_id value=$el_id>
+<input type=hidden name=event_type value=$event_type>
+<input type=hidden name=show_in_summary value=on>
+<input type=hidden name=inflation value=\"\">
+<input type=hidden name=description value=\"$nn\">
+
+<tr><td><b title=Optional>Est.&nbsp;First&nbsp;Service&nbsp;Date:</b></td><td>";datebox("","el_ev_add.event_date");echo"</td></tr>
+
+<tr><td>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><b>Interval:</b></td><td align=right>every&nbsp;</td></tr></table>
+</td><td>
+	<input size=4 type=text name=frequency_in_months value=\"$frequency_in_months\"> months
+</td></tr>
+
+
+<tr><td>
+	<b>Cost Per Visit:</b>
+</td><td>
+	<input size=5 type=text name=cost>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+</td></tr>
+</table>
+</form>";
+
+
+?>

@@ -1,0 +1,309 @@
+<?
+//fill_all_gaps();
+
+if (!($write)) die_security("User should not be in the cnstdwglog_edit page when they don't have write permissions..");
+
+if ($cnstdwglog_edit_view=="") {
+	if (slow_connection()) $cnstdwglog_edit_view="collapsed";
+	else  $cnstdwglog_edit_view="expanded";
+	session_register('cnstdwglog_edit_view');
+	}
+
+if ($cnstdwglog_edit_view_set!="") {
+	$cnstdwglog_edit_view=addslashes($cnstdwglog_edit_view_set);
+	}
+
+//if ($showmode=="") $showmode="current_only";
+
+if ($cnstdwglog_id!="") {
+	$cnstdwglog_id=addslashes($cnstdwglog_id);
+	$cnstdwglog_info=getoneb("select * from cnstdwglog where cnstdwglog_id = '$cnstdwglog_id'");
+	if ($cnstdwglog_info) fill_all_gaps($cnstdwglog_info->cnstdwglog_id);
+	$global_jobinfo_id=$cnstdwglog_info->jobinfo_id;
+	check_addenda($cnstdwglog_info->cnstdwglog_id);
+	} else {
+	$cnstdwglog_info="";
+	$cnstdwglog_info->active="Y";
+	if ($clone_id!="") {
+		$clone_id=addslashes($clone_id);
+		$cnstdwglog_info=getoneb("select * from cnstdwglog where cnstdwglog_id = '$clone_id'");
+		$cnstdwglog_info->cnstdwglog_id="";
+		$cnstdwglog_info->drawing_num++;
+		}
+	}
+require("header.phtml");
+fd_navs_header();
+$doc_id=fd_get_doc_id($cnstdwglog_info->cnstdwglog_id);
+
+$cnstdwglog_info->active=checkbreak($cnstdwglog_info->active);
+
+
+
+if ($cnstdwglog_id!="") {
+	if (fd_manager($global_jobinfo_id,$global_user_id)||$adminuser||pm_for_this_job()) {
+		echo "
+		<script>
+		function delete_this_record() {
+			record=$cnstdwglog_id;
+			if (record<1) return (false);
+			if (confirm(\"Are you sure you REALLY sure?\"))
+			if (confirm(\"Are you sure you REALLY REALLY sure?\"))
+			if (confirm(\"All issuances and supplemental data will be gone!?!\"))
+			document.location='$pagename?mode=cnstdwglog_delete&cnstdwglog_id=' + record;
+			}
+		</script>
+	
+		<div style=\"float: right; padding-right: 40px;\"><input type=button onclick=delete_this_record() value=Delete></div>";
+		}
+	}
+
+echo "
+
+
+
+
+
+<style type=\"text/css\">
+table.history {
+	background: $fd_color_1;
+	border-width: 0px 0px 0px 0px;
+	border-collapse: collapse;
+	}
+table.history td {
+	border: 1px solid black;
+	border-width: 1px 1px 1px 1px;
+	border-color: black;
+	}
+table.history th {
+	padding: 1px;
+	font-size: 8pt;
+	border: 1px solid black;
+	border-width: 1px 1px 1px 1px;
+	border-color: black;
+	}
+</style>
+
+
+<form name=cnstdwglog_edit method=post action=$pagename>
+<input type=hidden name=mode value=cnstdwglog_submit>
+<input type=hidden name=cnstdwglog_id value=\"$cnstdwglog_id\">
+<input type=hidden name=global_jobinfo_id_set value=\"$global_jobinfo_id\">
+<table border=0 cellspacing=0 cellpadding=5>
+
+<tr><td>
+	DWG Number:
+</td><td>
+	<input type=text name=drawing_num size=20 value=\"$cnstdwglog_info->drawing_num\">
+</td><td rowspan=10 valign=top>";
+	pal_box($doc_id);echo"
+</td></tr>
+
+<tr><td>
+	Document Type:
+</td><td>
+	<select name=drawing_type>
+	<option>$cnstdwglog_info->drawing_type</option>
+	<option>Arch</option>
+	<option>Civil</option>
+	<option>Controls</option>
+	<option>Data/Comm</option>
+	<option>Electrical</option>
+	<option>Electrical 400hz</option>
+	<option>Electrical Lighting</option>
+	<option>Electrical Low Voltage</option>
+	<option>Electrical Power</option>
+	<option>Equipment-Owner</option>
+	<option>Equipment-UMC</option>
+	<option>Fire Protection</option>
+	<option>General</option>
+	<option>Interiors</option>
+	<option>Kitchen</option>
+	<option>Life Safety</option>
+	<option>Mechanical</option>
+	<option>Med Gas</option>
+	<option>P & ID</option>
+	<option>Plumbing</option>
+	<option>Pneumatic Tubes</option>
+	<option>Reference Docs</option>
+	<option>Structural</option>
+	<option>Specifications</option>
+	<option>Other</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Description:
+</td><td>
+	<input type=text name=description size=50 value=\"$cnstdwglog_info->description\">
+</td></tr>
+
+<tr><td>
+	Active in current issuance:
+</td><td>
+	<input type=checkbox name=active $cnstdwglog_info->active>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit name=save_button value=\"Save and Clone\">
+	<input type=submit name=save_button value=\"Save and New\">
+	";
+	if ($cnstdwglog_id!="") 
+		echo "<input type=submit name=save_button value=Apply><input type=submit name=save_button value=Save>";
+	else 
+		echo "<input type=submit name=save_button value=Create>";
+echo "
+</td></tr>
+</table>
+</form>
+";
+
+if ($cnstdwglog_info) {
+	$query="select * from cnstdwglog_files 
+	right join cnstdwglog_issuances on (cnstdwglog_files.issuance_id = cnstdwglog_issuances.issuance_id )
+	where cnstdwglog_id = '$cnstdwglog_info->cnstdwglog_id' and jobinfo_id = '$global_jobinfo_id'
+	order by issuance_type,issuance_date desc,sort_priority desc,name desc,cnstdwglog_issuances.issuance_id desc
+	";
+	//tabledump($query);
+	$res=@mysql_query($query);
+	$issuance_count=@mysql_num_rows($res);
+	
+	//echo "<hr>$query<hr>$issuance_count<hr>";
+	//tabledump("explain " . $query);
+	//tabledump($query);exit;
+	//$res=@mysql_query($query);
+	//$issuance_count=@mysql_num_rows($res);
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+	//
+	//	Starting to show the different issuances
+	//		-Two main columns, Issuance, and Data/Details
+	//
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+	if ($cnstdwglog_edit_view=="expanded") {
+		echo "<a href=$pagename?mode=$mode&cnstdwglog_id=$cnstdwglog_info->cnstdwglog_id&cnstdwglog_edit_view_set=collapsed><font color=blue>Collapse issuances</font></a>";
+		} else {
+		echo "<a href=$pagename?mode=$mode&cnstdwglog_id=$cnstdwglog_info->cnstdwglog_id&cnstdwglog_edit_view_set=expanded><font color=blue>Expand issuances ($issuance_count)</font></a>";
+		}
+	
+	echo "<table class=history cellspacing=0 cellpadding=3>";
+	
+	$print_records="Y";
+	$issuance_count=0;
+	while ($row=@mysql_fetch_object($res)) {
+		$issuance_count++;
+		if ($print_records!="Y") continue;
+		$row->scope_change=checkbreak($row->scope_change);
+		$row->issuance_date=invali_date($row->issuance_date);
+		$file_link=webfile_paperclip_view($row->file_group_id);
+		
+		$formname="quick_upload$row->issuance_id";
+		echo "
+		<tr bgcolor=$fd_color_4><td>
+			<b>Issuance</b>
+		</td><td>
+			<b>Issue Date</b>
+		</td><td align=center>
+			<b>Type</b>
+		</td><td>
+			<b>Revision</b>
+		</td><td>
+			<b>Scope Change</b>
+		</td><td align=center>
+			<b>Sheet</b>
+		</td></tr>
+
+		<tr><td bgcolor=$fd_color_4 valign=top rowspan=2>
+			<b>$row->name</b>
+		</td><td valign=top>
+			$row->issuance_date
+		</td><td valign=top>
+			$row->issuance_type
+		</td><form name=$formname><td valign=top>
+			<input type=text size=6 name=revision value=\"$row->revision\">
+		</td><td align=center>
+			<input type=checkbox name=scope_change $row->scope_change>
+		</td><td>
+			<input type=hidden name=mode value=\"cnstdwglog_files_submit\">
+			<input type=hidden name=files_id value=\"$row->files_id\">";
+			webfilebox($row->file_group_id,'file_group_id',"opener.document.${formname}.submit()");if ($file_link!="&nbsp;") echo"&nbsp;&nbsp;&nbsp;&nbsp;$file_link";echo"
+			<input type=submit value=Save>
+			</form>
+		</td></tr>";
+		
+		$addenda_res=@mysql_query("select * from cnstdwglog_addenda where files_id = '$row->files_id'");
+		$addenda_count=@mysql_num_rows($addenda_res);
+		echo "<tr><td colspan=10 style=\"padding: 0px; border: 0px;\"><table width=100% border=1 cellspacing=0 cellpadding=3><tr><th bgcolor=$fd_color_3 align=center colspan=7><div style=\"float: right;\"><a href=$pagename?mode=add_addendum_link&files_id=$row->files_id><font color=blue>Add&nbsp;Link</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href=$pagename?mode=add_addendum_file&files_id=$row->files_id><font color=blue>Add&nbsp;File</font></a></div><b>Supplemental Documents</b></th></tr>";
+		if ($addenda_count > 0) {
+			while ($addendum_info=@mysql_fetch_object($addenda_res)) {
+				$actual_record_id=$addendum_info->addenda_id;
+				$actual_record_info=getoneb("select * from cnstdwglog_addenda where addenda_id = '$actual_record_id'");
+				$adtype="document";
+				if ($addendum_info->doc_id<$addendum_info->parent_addenda_id) {
+					$addendum_info=getoneb("select * from cnstdwglog_addenda where addenda_id = '$addendum_info->parent_addenda_id'");
+					$adtype="addendum";
+					}
+				
+				
+				//////// The start of the addendum.. Just gives the description, and ID on hover
+				if ($addendum_info->description=="") $addendum_info->description="&nbsp;";
+				echo "<tr><td align=right colspan=1 title=\"addenda_id: $addendum_info->addenda_id\">$addendum_info->description</td><td colspan=4>";
+				//////// The Incorporated link or info depeding on full sheet status.. 
+				//$incorporated='Y';
+				$addendum_info->required_in_this_issuance=$actual_record_info->required_in_this_issuance;
+				$posted=$addendum_info->posted;
+				if ($addendum_info->required_in_this_issuance=='Y') $incorporated='N';
+				else { $incorporated='Y'; $posted='Y'; }
+				
+				
+				if ($adtype=="document") {
+					$document_info=getoneb("select * from documents where doc_id = '$addendum_info->doc_id'");
+					echo "<div style=\"float: left;\"><a target=_blank href=\"/global/front_desk$devel/?mode=open_doc&doc_id=$addendum_info->doc_id\"><font color=blue>$document_info->doc_type $document_info->app_reference - $document_info->description</font></a></div>";
+					}
+				if ($adtype=="addendum") {
+					$link=webfile_possible_view_link($addendum_info->file_groups_id);
+					if ($link) { echo "<form name=garbonzo_$actual_record_id><div style=\"float: left;\"><a target=_blank href=$link><font color=blue>View</font></a>&nbsp;&nbsp;&nbsp;&nbsp;";webfilebox($addendum_info->file_groups_id,'qwerty',"","16");echo "</div></form>"; }
+					else echo "<div style=\"float: left;\">ERROR: No File Attached!</div>";
+					}
+				echo "</td>";
+				
+				///////////////////////////////////////////////////////////////////
+				// Print the Incorporated link on the right...
+				///////////////////////////////////////////////////////////////////
+				echo "<td width=90px><font size=-1>Incorporated:&nbsp;";
+				if ($file_link!="&nbsp;") echo "<a href=$pagename?mode=toggle_addendum_incorporated&addenda_id=$actual_record_id><font color=blue>$incorporated</font>";
+				else echo "$incorporated";
+				echo "</font></td>";
+				///////////////////////////////////////////////////////////////////
+			
+				///////////////////////////////////////////////////////////////////
+				// Print the Posted link on the right...
+				///////////////////////////////////////////////////////////////////
+				echo "<td width=80px><font size=-1>Posted:&nbsp;";
+				if ($file_link!="&nbsp;") echo "<a href=$pagename?mode=toggle_addendum_posted&addenda_id=$actual_record_id><font color=blue>$posted</font>";
+				else echo "n/a";
+				echo "</font></td>";
+				///////////////////////////////////////////////////////////////////
+			
+				echo "</tr>";
+				}
+			
+			//echo "</table></td></tr>";
+			} 
+		echo "</table></td></tr>"; // End of the supplimentals table
+		echo "<tr><td style=\"border-left: 0px solid white; border-right: 0px solid white; height: 3px;\" colspan=6 bgcolor=white><font size=-2></font></td></tr>";
+
+		//if ($showmode=="current_only") $print_records="N";
+		if ($cnstdwglog_edit_view=="collapsed") $print_records="N";
+		}
+	echo "</table>"; // End of the whole list of issuances.
+
+	}
+
+//if ($print_records!="Y") {
+//	echo "<a href=$pagename?mode=$mode&cnstdwglog_id=$cnstdwglog_info->cnstdwglog_id&cnstdwglog_edit_view_set=expanded><font color=blue>Show all issuances ($issuance_count)</font></a>";
+//	}
+
+
+fd_navs_footer();
+?>

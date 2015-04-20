@@ -1,0 +1,13 @@
+<?
+//if (!($suid_check)) die ("ERROR: Security Violation! The authorities are being notified!");
+
+$timesheet_owner=escapeshellcmd($timesheet_owner);
+$test_query="select * from timesheet_permissions where timesheet_owner = '$timesheet_owner' and timesheet_guest = '$global_user->contacts_id' limit 1";
+if (!(getoneb($test_query))) {
+	echo "ERROR: You do not appear to have permissions to this user's timesheet. Please do not continue to attempt to load this user's profile. If you believe this is an error, please contact your system administrator.";
+	exit;
+	}
+
+$current_user_id=$timesheet_owner;
+forward('main');
+?>

@@ -1,0 +1,248 @@
+
+*** These modified files were found in JOE when it aborted on Sun Feb  7 07:21:54 2010
+*** JOE was aborted by UNIX signal 15
+
+*** File '(Unnamed)'
+This
+table
+..
+Jump
+jump
+Create
+pal_status
+full
+ion webmail
+webmail
+
+*** File '(Unnamed)'
+local.inc
+pal_edit.phtml
+pal_edit.phtml
+pal_edit.phtml
+pal_edit_submit.phtml
+pal_edit_submit.phtml
+global/contacts-devel/settings_option_defaults.phtml
+full_viewpoint_sync.phtml
+/etc/crontab
+/data/web/phplibs/querylib.inc
+application_list.phtml
+
+*** These modified files were found in JOE when it aborted on Sun Feb  7 07:21:54 2010
+*** JOE was aborted by UNIX signal 15
+
+*** File 'application_lists.phtml'
+<?
+
+$access_app_last_list_type="application";
+$access_app_last_list_subtype="";
+
+
+
+//if ($adminuser) {
+if ($show_hidden=='Y') {
+	$query="select * from access_applications order by application_description";
+	} else {
+	$query="select * from access_applications where application_active = 'Y' order by application_description";
+	}
+//	} else {
+//		$query="select * from access_applications where application_active = 'Y' order by application_description";
+//	}
+//tabledump($query);
+
+$zero=1;
+
+echo "<html><head><title>access/application list</title></head><body bgcolor=#ffffff>
+<center><h2>Application List</h2><hr></center>
+
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><p>
+<a href=$pagename?mode=application_list&show_hidden=Y><font color=blue>Show disabled apps also</font></a><p>
+<a href=$pagename?mode=application_edit><font color=blue>Add New Application</font></a><p>
+
+<table border=1 cellspacing=0 cellpadding=0>
+<tr><td>
+<table border=0 cellspacing=0 cellpadding=7>
+<tr bgcolor=$fd_color_4><td>
+	<b>Description</b>
+</td><td>
+	<b>Application Name</b>
+</td>
+"; if ($adminuser) { echo"<td><b>Active</b></td>"; } echo "
+<td><b>Wide Open</b></td>";
+if ($adminuser) { echo "<td>&nbsp</td>"; }
+echo "</tr>";
+
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) {
+	if ($zero==0) {
+		$zero=1;
+		$bgcolor="#dddddd";
+		} else {
+		$zero=0;
+		$bgcolor="#ffffff";
+		}
+	echo "
+	<tr bgcolor=$bgcolor><td>
+		<a href=$pagename?mode=application_list_permissions&access_applications_id=$row->access_applications_id><font color=blue>$row->application_description</font></a>
+	</td><td>
+		$row->application_name
+	</td>";
+	
+	if ($adminuser) { echo "<td align=center>$row->application_active</td>"; }
+	echo "
+	<td align=center>
+		$row->front_door_open
+	</td>";
+	if ($adminuser) { echo "<td><a href=$pagename?mode=application_edit&access_applications_id=$row->access_applications_id><font color=blue><i>Edit</i></font></a></td>"; }
+	echo "</tr>";
+	}
+
+echo "
+</table></td></tr></table>
+";
+
+
+
+
+
+
+
+?>
+
+*** File '(Unnamed)'
+table
+..
+Jump
+jump
+Create
+pal_status
+Backup
+zero
+Main
+list
+
+*** File '(Unnamed)'
+application_list_permissions.phtml
+application_list_permissions.phtml
+application_list.phtml
+application_list.phtml
+application_list.phtml
+application_list.phtml
+application_list.phtml
+application_list.phtml
+main.phtml
+main.phtml
+group_lists.phtml
+application_lists.phtml
+application_lists.phtml
+group_lists.phtml
+
+*** These modified files were found in JOE when it aborted on Sun Feb  7 07:21:54 2010
+*** JOE was aborted by UNIX signal 1
+
+*** File 'application_lists.phtml'
+<?
+
+$access_app_last_list_type="application";
+$access_app_last_list_subtype="";
+
+
+
+//if ($adminuser) {
+if ($show_hidden=='Y') {
+	$query="select * from access_applications order by application_description";
+	} else {
+	$query="select * from access_applications where application_active = 'Y' order by application_description";
+	}
+//	} else {
+//		$query="select * from access_applications where application_active = 'Y' order by application_description";
+//	}
+//tabledump($query);
+
+$zero=1;
+
+echo "<html><head><title>access/application list</title></head><body bgcolor=#ffffff>
+<center><h2>Application List</h2><hr></center>
+
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><p>
+<a href=$pagename?mode=application_list&show_hidden=Y><font color=blue>Show disabled apps also</font></a><p>
+<a href=$pagename?mode=application_edit><font color=blue>Add New Application</font></a><p>
+
+<table border=1 cellspacing=0 cellpadding=0>
+<tr><td>
+<table border=0 cellspacing=0 cellpadding=7>
+<tr bgcolor=$fd_color_4><td>
+	<b>Description</b>
+</td><td>
+	<b>Application Name</b>
+</td>
+"; if ($adminuser) { echo"<td><b>Active</b></td>"; } echo "
+<td><b>Wide Open</b></td>";
+if ($adminuser) { echo "<td>&nbsp</td>"; }
+echo "</tr>";
+
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) {
+	if ($zero==0) {
+		$zero=1;
+		$bgcolor="#dddddd";
+		} else {
+		$zero=0;
+		$bgcolor="#ffffff";
+		}
+	echo "
+	<tr bgcolor=$bgcolor><td>
+		<a href=$pagename?mode=application_list_permissions&access_applications_id=$row->access_applications_id><font color=blue>$row->application_description</font></a>
+	</td><td>
+		$row->application_name
+	</td>";
+	
+	if ($adminuser) { echo "<td align=center>$row->application_active</td>"; }
+	echo "
+	<td align=center>
+		$row->front_door_open
+	</td>";
+	if ($adminuser) { echo "<td><a href=$pagename?mode=application_edit&access_applications_id=$row->access_applications_id><font color=blue><i>Edit</i></font></a></td>"; }
+	echo "</tr>";
+	}
+
+echo "
+</table></td></tr></table>
+";
+
+
+
+
+
+
+
+?>
+
+*** File '(Unnamed)'
+table
+..
+Jump
+jump
+Create
+pal_status
+Backup
+zero
+Main
+list
+
+*** File '(Unnamed)'
+application_list_permissions.phtml
+application_list_permissions.phtml
+application_list.phtml
+application_list.phtml
+application_list.phtml
+application_list.phtml
+application_list.phtml
+application_list.phtml
+main.phtml
+main.phtml
+group_lists.phtml
+application_lists.phtml
+application_lists.phtml
+group_lists.phtml

@@ -1,0 +1,30 @@
+<?
+if ($global_user->umc_emp!='Y') die("ERROR");
+
+$sketchlog_id=addslashes($sketchlog_id);
+$field=addslashes($field);
+
+switch ($field) {
+	case "sort_priority":
+	case "cust_1":
+	case "cust_2":
+	case "cust_3":
+	case "cust_4":
+	case "cust_5":
+	case "dwg_title":
+			$data=addslashes($data);
+			break;;
+	default:
+			die("FIELD SUBMIT ERROR");
+			break;;
+	}
+$query="update sketchlog set $field = '$data' where sketchlog_id = '$sketchlog_id'";
+$res=@mysql_query($query);
+if (!($res)) {
+	die ("<b><font color=red>ERROR!</font></b><hr>$query");
+	} else {
+	if ($data=="") $data="&nbsp;";
+	echo "$data";
+	record_history($drawing_id);
+	}
+?>

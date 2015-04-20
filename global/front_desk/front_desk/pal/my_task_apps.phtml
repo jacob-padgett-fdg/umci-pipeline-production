@@ -1,0 +1,192 @@
+<?
+if ($jobinfo_id!="") {
+	$jobinfo_id=addslashes($jobinfo_id);
+	} else {
+	die("Job information error!");
+	}
+/*
+// This query is totally foo, due to a conflict between viewed, and 
+// priority. You can't get both the correct 'viewed' result and the correct
+// priority result unless they're on the same record. If you only needed
+// one or ther other, it would work just fine, but you can't get a value
+// from different records for two different fields no matter what you do.
+// This is an inherent limitation in the way grouping works, and is really
+// kind of a bummer. This function is going to be hit enough I would like 
+// to find a more efficient way, but I think I'm going to have to get all
+// the results and walk the entire tree. This will get even worse when we're
+// talking about going from the "select a job first" level... 
+
+
+$query="
+select doc_type,pal_num,description,viewed,priority from pal_buddies s1
+where 
+priority=(
+		select priority from pal_buddies s2 
+		where
+		s1.doc_type = s2.doc_type and 
+		s2.jobinfo_id = '$jobinfo_id' and
+		s2.status = 'active' and 
+		s2.pass_signed_off = 'N' and 
+		s2.owner_id = '$global_user_id' and 
+		s2.doc_id > 0
+		order by s2.priority asc
+		limit 1
+		)
+		and 
+viewed = (
+		select viewed from pal_buddies s3 
+		where
+		s1.doc_type = s3.doc_type and 
+		s3.jobinfo_id = '$jobinfo_id' and
+		s3.status = 'active' and 
+		s3.pass_signed_off = 'N' and 
+		s3.owner_id = '$global_user_id' and 
+		s3.doc_id > 0
+		order by s3.viewed asc
+		limit 1
+	) and 
+jobinfo_id = '$jobinfo_id' and 
+status = 'active' and 
+pass_signed_off = 'N' and 
+owner_id = '$global_user_id' and 
+doc_id > 0
+group by doc_type
+order by doc_type,viewed desc
+";
+*/
+
+$query="
+select doc_type,pal_num,description,viewed,priority from pal_buddies s1
+where 
+jobinfo_id = '$jobinfo_id' and 
+status = 'active' and 
+pass_signed_off = 'N' and 
+owner_id = '$global_user_id' and 
+doc_id > 0
+order by doc_type,viewed desc
+";
+
+/*
+$query="
+select 
+case when doc_type is null then 'pal' else doc_type end as doc_type,
+pal_num,description,viewed,priority from pal_buddies s1
+where 
+jobinfo_id = '$jobinfo_id' and 
+status = 'active' and 
+pass_signed_off = 'N' and 
+owner_id = '$global_user_id'
+order by doc_type,viewed desc
+";
+*/
+//tabledump($query);
+$res=@mysql_query($query);
+$shaded=$fd_color_1;
+$bg=$shaded;
+//die('test');
+$count=@mysql_num_rows($res);
+echo "<table style=\"width: 200px; border: 2px solid black; border-spacing: 0;\" cellspacing=0 cellpadding=4>";
+if ($count > 0) {
+	$total_count=0;
+	$new_count=0;
+	$viewed='Y';
+	$priority='normal';
+	$row=@mysql_fetch_object($res);
+	$lastrow=$row;
+	$last_type=$row->doc_type;
+	
+	while ($row=@mysql_fetch_object($res)) {
+		//die(print_r($row));
+		//echo "<hr>$row->doc_type";
+		//if ($row->doc_type=='pal') {
+		//	echo "hiya";
+		//	continue;
+		//	}
+		
+		
+		// Print data if we need to.. 
+		$total_count++;
+		if ($lastrow->viewed=='N') {
+			$viewed='N';
+			$new_count++;
+			}
+		if ($lastrow->priority=='high') $priority='high';
+		if ($row->doc_type!="$lastrow->doc_type") {
+			if ($viewed=='N') {
+				$tstart='<b>';
+				$tend='</b>';
+				} else {
+				$tstart='';
+				$tend='';
+				}
+			if ($bg==$shaded) $bg='';
+			else $bg=$shaded;
+			echo "<tr bgcolor=\"$bg\"><td onmouseover=\"my_tasks_menu_hold();toggle_my_task_items($jobinfo_id,'$lastrow->doc_type',this,'on');\" onmouseout=my_tasks_menu_release(); class=normnav style=\"border: 1px solid black;\">";
+			if ($priority=='high') echo "<div style=\"float: right; background: white; color: red;\"><font title=\"Contains a high priority item!\">&nbsp;<b>!</b>&nbsp;</font></div>";
+			echo "<div style=\"float: right;\">$tstart&nbsp;&nbsp;($new_count/$total_count)$tend</div>";
+			echo"$tstart$lastrow->doc_type$tend</td></tr>";
+			
+			// Reset our markers now that we've printed for this type..
+			$viewed='Y';
+			$priority='normal';
+			$new_count=0;
+			$total_count=0;
+			}
+		//$last_type=$row->doc_type;
+		$lastrow=$row;
+		}
+	$total_count++;
+	if ($lastrow->viewed=='N') {
+		$viewed='N';
+		$new_count++;
+		}
+	if ($lastrow->priority=='high') $priority='high';
+	if ($viewed=='N') {
+		$tstart='<b>';
+		$tend='</b>';
+		} else {
+		$tstart='';
+		$tend='';
+		}
+	if ($bg==$shaded) $bg='';
+	else $bg=$shaded;
+	echo "<tr bgcolor=\"$bg\"><td onmouseover=\"toggle_my_task_items($jobinfo_id,'$lastrow->doc_type',this,'on');\" class=normnav style=\"border: 1px solid black;\">";
+	if ($priority=='high') echo "<div style=\"float: right; background: white; color: red;\"><font title=\"Contains a high priority item!\">&nbsp;!&nbsp;</font></div>";
+	echo "<div style=\"float: right;\">$tstart&nbsp;($new_count/$total_count)$tend</div>";
+	echo"$tstart$lastrow->doc_type$tend</td></tr>";
+	$foundstuff=1;
+	}
+	
+$query="
+select doc_type,pal_num,jobinfo_id,pal_id,description,viewed,priority from pal_buddies s1
+where 
+jobinfo_id = '$jobinfo_id' and 
+status = 'active' and 
+pass_signed_off = 'N' and 
+owner_id = '$global_user_id' and 
+(doc_id <= 0 or doc_id is null)
+order by doc_type,viewed desc
+";
+$res=@mysql_query($query);
+$count=@mysql_num_rows($res);
+if ($count > 0) {
+	while ($row=@mysql_fetch_object($res)) {
+		echo "<tr bgcolor=\"$bg\"><td onclick=\"document.location='/global/front_desk$devel/pal$devel/?mode=pal_edit&pal_id=$row->pal_id&jobinfo_id_set=$row->jobinfo_id'\" class=normnav style=\"border: 1px solid black;\">";
+		echo "PAL - $row->pal_num";
+		echo"$tstart$lastrow->doc_type$tend</td></tr>";
+		}
+	
+	
+	$foundstuff=1;
+	}
+
+
+
+if ($foundstuff!=1)	{
+	echo "<tr><td><b>There are no outstanding tasks for you on this job.</b></td></tr>";
+	}
+
+
+
+echo "</table>";
+?>

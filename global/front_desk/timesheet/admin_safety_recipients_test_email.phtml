@@ -1,0 +1,14 @@
+<?
+
+send_safety_email("This is just a test email.
+You received it because you are on a list of people to be notified when
+someone turns in a timesheet that indicates that there may be some safety
+related comments on it. This is just a test to make sure the email mechanism
+is working properly.
+
+Oh, and there's the test of properly escaped text in the message as well.
+\"Things\" can get messed up if they're not escaped properly before going into
+the database.
+");
+forward('admin_safety_recipients_list');
+?>

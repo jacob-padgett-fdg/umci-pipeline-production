@@ -1,0 +1,33 @@
+<?
+require('header.phtml');
+//require('querylib.inc');
+
+if ($search_items!="") {
+	$search_items=escapeshellcmd($search_items);
+	$search_items_list=$search_items;
+	$search_items_array=explode(" ",$search_items);
+	$seperator="";
+	$query="select * from contacts where is_company = 'Y' and (";
+	while($row=@each($search_items_array)) {
+		$query=$query . $seperator . " display_name like '%$row[1]%' ";
+		$seperator=" or ";
+		}
+	$query=$query . ") order by alphasort";
+	contact_table($query);
+	
+	$show_create_button=1;
+	} else {
+	$show_create_button=0;
+	}
+
+
+echo "
+<font size=+1><b>Please search for and select the contact's company. <br>If there is not company, please select \"N/A\".</b></font><br>
+
+<form name=company_search method=post action=\"$pagename\">
+<input type=hidden name=mode value=contact_new_search>
+<input type=text name=search_items value=\"$search_items_list\">
+<input type=submit value=\"Search\">
+</form>";
+
+?>

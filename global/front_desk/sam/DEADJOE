@@ -1,0 +1,84 @@
+
+*** Modified files in JOE when it aborted on Fri May  6 18:02:45 2005
+*** JOE was aborted by signal 15
+
+*** File '(Unnamed)'
+svc_agreement_edit_finalized.phtml
+svc_agreement_edit_finalized.phtml
+svc_agreement_edit_finalized.phtml
+
+*** File '(Unnamed)'
+Download
+
+*** Modified files in JOE when it aborted on Fri May  6 18:02:45 2005
+*** JOE was aborted by signal 15
+
+*** File 'svc_agreement_pdf_create.phtml'
+<?
+set_time_limit("900");
+//max_execution_time(900);
+if ($agreement_id=="") die ("ERROR: Fatal application error. Agreement_id is missing. Pleast contact your system administrator");
+if ($executive_summary=="show") {
+	$show_exec_summary=1;
+	} else {
+	$show_exec_summary=0;
+	}
+
+$agreement_id=escapeshellcmd($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+
+require_once("pdf_lib2.inc");
+
+$pdf =& new Cezpdf('letter','portrait');
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+
+$pdf=pdf_title_page($agreement_id,$pdf);
+$pdf=pdf_sig_page($agreement_id,$pdf);
+$pdf->ezStartPageNumbers($pdf->ez['pageWidth'] - $pdf->ez['rightMargin'],$pdf->ez['bottomMargin'] - 52,9,"left","Page {PAGENUM} of {TOTALPAGENUM}");
+$pdf=pdf_tac_pages($pdf);
+$pdf=pdf_scope_of_service($agreement_info->agreement_type_id,$pdf);
+$pdf=pdf_equipment_list($agreement_info->agreement_id,$pdf,$show_exec_summary);
+
+////////////////////////////////////////////
+// Gimme some task list baby...
+////////////////////////////////////////////
+$tl_query=agreement_tasks_query($agreement_id);
+$tl_res=@mysql_query($tl_query);
+while ($tl_row=@mysql_fetch_object($tl_res)) $pdf=pdf_task_list($tl_row->task_id,$pdf);
+
+$pdf->ezStream();
+
+?>
+
+*** These modified files were found in JOE when it aborted on Mon Apr 19 16:40:59 2010
+*** JOE was aborted by UNIX signal 15
+
+*** File '(Unnamed)'
+0
+
+*** File '(Unnamed)'
+exit
+while
+div
+cnstdwglog_info
+open
+cnstdwglog_select_dwg
+cnstdwg
+cnst
+cnst
+current_link
+ion pdf_title_page
+
+*** File '(Unnamed)'
+cnstdwglog_linker.phtml
+cnstdwglog_linker.phtml
+main.phtml
+main.phtml
+main.phtml
+doc_selector.phtml
+doc_selector.phtml
+doc_selector.phtml
+doc_selector.phtml
+svc_agreement_pdf_create.phtml
+local.inc

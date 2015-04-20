@@ -1,0 +1,67 @@
+<?
+if ($save_link=="true") {
+	if ($link_text!="") $link_text=addslashes($link_text);
+	else $save_link_error='true';
+	
+	if ($link_url!="") $link_url=addslashes($link_url);
+	else $save_link_error='true';
+
+
+	if ($save_link_error!='true') {
+		$jobinfo_id=addslashes($jobinfo_id);
+		if ($link_id!="") {
+			// save here
+			$link_id=addslashes($link_id);
+			@mysql_query("update front_desk_links set link_text = '$link_text', link_url = '$link_url' where link_id = '$link_id'");
+			} else {
+			$last_max=getoneb("select max(sort_priority) as sort_num from front_desk_links where jobinfo_id = '$jobinfo_id'");
+			//tabledump("select max(sort_priority) as sort_num from front_desk_links where jobinfo_id = '$jobinfo_id'");
+			if (($last_max->sort_num=="")||($last_max->sort_num=="0")) $last_max->sort_num='1';
+			else $last_max->sort_num=$last_max->sort_num + 1;
+			
+			@mysql_query("insert into front_desk_links set link_text = '$link_text', link_url = '$link_url', jobinfo_id = '$jobinfo_id', sort_priority = '$last_max->sort_num'");
+			}
+			$link_url="";
+			$link_text="";
+			} else {
+			echo "<font color=red><b>Error: Text and URL must both be filled in!</b></font>";
+		}
+}
+
+$res=@mysql_query("select * from front_desk_links where jobinfo_id = '$jobinfo_id'");
+echo "
+<table border=0 cellspacing=0 cellpadding=2>
+<tr><td>
+	Link Text
+</td><td>
+	Link URL
+</td><td>
+	&nbsp;
+</td><td>
+	&nbsp;
+</td></tr>
+
+";
+
+while($row=@mysql_fetch_object($res)) {
+	echo "
+	<tr><td>
+		<input size=10 type=text id=\"link_text$row->link_id\" value=\"$row->link_text\">
+	</td><td>
+		<input type=text id=\"link_url$row->link_id\" value=\"$row->link_url\">
+	</td><td colspan=2>
+		<input type=button onclick=\"save_job_link($row->link_id);\" value=\"Update\">
+	</td></tr>";
+	}
+
+echo "
+<tr><td>
+	<input size=10 type=text id=\"link_text\" size=15>
+</td><td>
+	<input type=text id=\"link_url\" size=25>
+</td><td colspan=2>
+	<input type=button onclick=\"save_job_link()\" value=\"Add\">
+</td></tr>
+</table>
+";
+?>

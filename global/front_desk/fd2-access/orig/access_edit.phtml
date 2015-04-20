@@ -1,0 +1,142 @@
+<?
+require("querylib.inc");
+
+if ($access_id=="") {
+	$accessinfo=new bsclass;
+	$new=1;
+	} else {
+	$access_id=escapeshellcmd($access_id);
+	$accessinfo=getone("select * from access where access_id = '$access_id'");
+	$new=0;
+	}
+
+echo "
+<html><body bgcolor=white>
+Access Information:<hr>
+<form name=access_information method=post action=$pagename>
+<table border=1 cellspacing=0 cellpadding=3>
+<input type=hidden name=mode value=access_submit>
+<input type=hidden name=access_id value=\"$access_id\">
+
+<tr><td>
+	Entry&nbsp;type:
+</td><td>
+	<a href=javascript:setcontactmode()><font color=blue id='contacttext'>Contact</font></a>&nbsp;/&nbsp;<a href=javascript:setgroupmode()><font color=blue id='grouptext'>Group</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+
+<tr id='contactrow' style=\"display: none;\"><td>
+	Contact:
+</td><td>
+	";contactsbox("select * from contacts where login_name != '' order by last_name,first_name,company","$accessinfo->contacts_id","contacts_id");echo"
+</td></tr>
+
+
+<tr id='grouprow' style=\"display: none;\"><td>
+	Group:
+</td><td>
+	";dropbox("select group_id,description from contacts_groups where active = 'Y' and jobinfo_id < 1 order by description",$accessinfo->group_id,"","",2);echo"
+</td></tr>
+
+<tr><td>
+	Application:
+</td><td>
+	";
+	if ($access_applications_id!="") {
+		$access_applications_id=escapeshellcmd($access_applications_id);
+		$app_info=getone("select * from access_applications where access_applications_id = '$access_applications_id'");
+		echo "
+		$app_info->application_name
+		<input type=hidden name=set_application_name value=\"$app_info->application_name\">
+		";
+		} else { 
+		dropbox("select application_name as set_application_name,application_name from access_applications order by application_name","$accessinfo->application_name");
+		}
+	echo"
+</td></tr>
+
+<tr><td>
+	Type:
+</td><td>
+	<select name=type>
+		<option value=\"$accessinfo->type\">$accessinfo->type</option>
+		<option value=admin>admin</option>
+		<option value=full>full</option>
+		<option value=guest>guest</option>
+		<option value=read_only>read_only</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Mode:
+</td><td>
+	<input type=hidden name=rightsmode value=\"grant\">grant
+</td></tr>
+
+<tr><td>
+	<input type=button value=Save onclick=checkform();>
+</td></tr>
+</table>
+</form>
+";
+echo "
+<script>
+function areyousure(){
+	if(confirm('Are you sure?')) document.access_entry_delete.submit();
+}
+
+function setgroupmode() {
+	document.getElementById('contactrow').style.display='none';
+	document.getElementById('grouprow').style.display='table-row';
+
+	document.getElementById('grouptext').style.background='blue';
+	document.getElementById('grouptext').style.color='white';
+	document.getElementById('contacttext').style.background='white';
+	document.getElementById('contacttext').style.color='blue';
+
+	document.access_information.contacts_id.value='';
+	document.access_information.contacts_id_disp.value='';
+	}
+function setcontactmode() {
+	//alert('hi');
+	document.getElementById('grouprow').style.display='none';
+	document.getElementById('contactrow').style.display='table-row';
+	
+	document.getElementById('contacttext').style.background='blue';
+	document.getElementById('contacttext').style.color='white';
+	document.getElementById('grouptext').style.background='white';
+	document.getElementById('grouptext').style.color='blue';
+
+	//document.access_information.contacts_id.value='';
+	document.access_information.group_id.selectedIndex=0;
+	}
+
+function checkform() {
+	cmode=document.getElementById('contactrow').style.display
+	gmode=document.getElementById('grouprow').style.display
+	if ((cmode != 'table-row')&&(gmode != 'table-row')) {
+		alert('You have to pick contact or group mode!')
+		return 0
+		}
+	//alert('submit');
+	document.access_information.submit();
+	}
+</script>
+";
+if ($access_id!=""){
+echo"
+<form name=access_entry_delete method=post action=$pagename>
+<input type=hidden name=mode value=access_delete>
+<input type=hidden name=access_id value=$access_id>
+<input type=button value=\"Delete\" onclick=areyousure();>
+</form>
+
+";
+
+if ($accessinfo->group_id > 0) echo "<script>setgroupmode()</script>";
+if ($accessinfo->contacts_id > 0) echo "<script>setcontactmode()</script>";
+
+}
+
+echo "<hr><a href=$pagename?mode=main><font color=blue>Main Menu</font></a>";
+
+?>

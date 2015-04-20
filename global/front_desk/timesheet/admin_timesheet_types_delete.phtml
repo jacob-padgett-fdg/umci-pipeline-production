@@ -1,0 +1,14 @@
+<?
+if (!($admin_check)) die("ERROR: Security Violation! The authorities are being notified!");
+
+$timesheet_type_id=escapeshellcmd($timesheet_type_id);
+
+$query="delete from timesheet_types where timesheet_type_id = '$timesheet_type_id'";
+$res=@mysql_query($query);
+
+if (!($res)) die("Operation Failed: The operation could not be completed for some reason. Please contact your system administrator.<br>Failing query:<hr>$query<hr>");
+
+forward('admin_timesheet_types_modify');
+
+
+?>

@@ -1,0 +1,12 @@
+<?
+
+
+
+echo "
+<form name=my_log style=\"display: inline;\" action=$pagename method=get>
+<input type=hidden name=mode value=report_show>
+<input type=hidden name=report_name value=my_log_submit>
+<input onchange=submit() title=\"Enter a personal log entry\" onfocus=\"document.my_log.log_entry.value='';\" type=text name=log_entry size=20 value=\"log entry\">
+</form><a href=$pagename?mode=report_show&report_name=my_log><font color=blue>+</font></a>
+";
+?>

@@ -1,0 +1,29 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+require_once('timesheet_libs_pdf.inc');
+require_once('pdf_lib2.inc');
+
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+$payroll_seq=addslashes($payroll_seq);
+$seq_info=getoneb("select * from timesheet_payroll_sequences where seq_id = '$payroll_seq'");
+if (!($seq_info)) die("Application error! Sequence error!");
+$current_employee_group=$seq_info->payroll_group;
+
+
+//-----------------------------------------------------------------------------------
+//	Page Printing
+//-----------------------------------------------------------------------------------
+
+$show_week_last_mysql=vali_date($show_week_last);
+$query="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and status = 'posted' and timesheet_index.employee_group = '$current_employee_group' and week_ending = '$show_week_last_mysql' order by last_name";
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$pdf=pdf_timesheet_2($pdf,$row->timesheet_id);
+	}
+
+//pdf_end($page_info);
+$pdf->ezStream();
+?>

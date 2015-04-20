@@ -1,0 +1,478 @@
+<?
+include("report_lib.inc");
+include("mh_lib.inc");
+check_report_permissions();
+require('header.phtml');
+if (!($printable)) mh_navs_header();
+
+function get_figure_num($article_id) {
+		$article_info=getoneb("select * from front_desk_manual_articles where article_id = '$article_id'");
+		$figure_info=getoneb("select * from (select *,(@row:=@row + 1) as figure_num from 
+			(select *,(select @row:=0) as fzi 
+			from front_desk_manual_articles where type = 'figure' and sections_id = '$article_info->sections_id' order by sort_priority,article_id) p) q where article_id = '$article_id'");
+		$num=$figure_info->figure_num;
+		if ($num>0) return $num;
+		else return FALSE;
+		}
+
+function display_figure($article_id) {
+	global $fd_color_1,$fd_color_2,$fd_color_3,$fd_color_4;
+	$article_id=addslashes($article_id);
+	$article=getoneb("select * from front_desk_manual_articles where article_id = '$article_id'");
+	if ($article->type!='figure') {
+		echo "Warning article not printed. Attempt to print non-figure article as a figure. Article omitted.";
+		return FALSE;
+		}
+	$file=getoneb("select * from webfile_files where file_group_id = '$article->file_group_id'");
+	$figure_num=get_figure_num($article->article_id);
+	$image=webfile_image_show($file->files_id);
+	echo "
+	<left><div style=\"max-width: 790px; border: 3px solid black; background: $fd_color_1;\">
+	<img style=\"border-bottom: 2px solid black; max-width: 790px;\" src=\"$image\"><br>
+	<table border=0 cellspacing=0 cellpadding=2><tr><td style=\"background: $fd_color_2; border: 1px solid black;\">&nbsp;Figure&nbsp;$figure_num&nbsp;</td><td style=\"border-left: 1px solid black;\" rowspan=5>$article->article_text</td></tr></table></left></div><br>";
+	}
+
+
+if ($move_up_sections_id!="") {
+	$move_up_sections_id=addslashes($move_up_sections_id);
+	$move_up_section_info=getoneb("select * from front_desk_manual_sections where sections_id = '$move_up_sections_id'");
+	$above_me_section_info=getoneb("select * from front_desk_manual_sections where parent_section_id = '$move_up_section_info->parent_section_id' and subchapter < '$move_up_section_info->subchapter' order by subchapter desc limit 1");
+	
+	if ($above_me_section_info && $move_up_section_info) {
+		
+		@mysql_query("update front_desk_manual_sections set subchapter = '$above_me_section_info->subchapter' where sections_id = '$move_up_section_info->sections_id'");
+		@mysql_query("update front_desk_manual_sections set subchapter = '$move_up_section_info->subchapter' where sections_id = '$above_me_section_info->sections_id'");
+		}
+	if ($sections_id=="") {
+		$sections_id=$move_up_section_info->parent_section_id;
+		}
+	
+	}
+
+
+
+
+echo "
+<script type='text/javascript' src='/javascript/tiny_mce/tiny_mce.js'></script>
+<script>
+
+function delete_article(article_id) {
+	if(confirm('Are you sure you really want to delete this article?')) {
+		document.location='$pagename?mode=$mode&report_name=$report_name&delete_article_id=' + article_id;
+		}
+	}
+
+function delete_sections(sections_id) {
+	if(confirm('Are you sure you really want to delete this article?')) {
+		document.location='$pagename?mode=$mode&report_name=$report_name&delete_sections_id=' + sections_id;
+		}
+	}
+
+tinyMCE.init({
+	mode : \"specific_textareas\",
+	editor_selector : \"mceEditor\",
+	theme : \"advanced\",
+	plugins : \"table\",
+	theme_advanced_layout_manager : \"SimpleLayout\",
+	theme_advanced_toolbar_location : \"top\",
+	theme_advanced_toolbar_align : \"left\",
+	theme_advanced_buttons1 : \"bold,italic,underline,strikethrough,justifyleft,justifycenter,justifyright,bullist,numlist,outdent,indent,undo,hr,fontselect,fontsizeselect,charmap,sub,sup,table,row_props,cell_props\",
+	theme_advanced_buttons2 : \"\",
+	theme_advanced_buttons3 : \"\"
+	});
+</script>
+";
+
+
+if ($new_section_name!="") {
+	$new_section_name=addslashes($new_section_name);
+	$parent_section_id=addslashes($parent_section_id);
+	$description=addslashes($description);
+	
+	if ($parent_section_id!=0) {
+		$max_subchapter=getoneb("select max(subchapter) as maxchapter from front_desk_manual_sections where parent_section_id = '$parent_section_id'");
+		$new_subchapter=$max_subchapter->maxchapter + 1;
+		}
+	@mysql_query("insert into front_desk_manual_sections set subchapter = '$new_subchapter', title = '$new_section_name', description = '$description', parent_section_id = '$parent_section_id'");
+	$sections_id=$parent_section_id;
+	$new_section_inserted='Y';
+	}
+if ($adminuser) {
+	if ($delete_article_id!="") {
+		$delete_article_id=addslashes($delete_article_id);
+		$del_article_info=getoneb("select * from front_desk_manual_articles where article_id = '$delete_article_id'");
+		if ($del_article_info->file_group_id>0) {
+			include("../webfile/storage_settings.cfg");
+			include("../webfile/local.inc");
+			delete_webfile_group($del_article_info->file_group_id);
+			}
+		@mysql_query("delete from front_desk_manual_articles where article_id = '$del_article_info->article_id'");
+		$sections_id=$del_article_info->sections_id;
+		}
+	if ($delete_sections_id!="") {
+		$delete_sections_id=addslashes($delete_sections_id);
+		$del_sections_info=getoneb("select * from front_desk_manual_sections where sections_id = '$delete_sections_id'");
+		$section_children=getoneb("select * from front_desk_manual_sections where parent_section_id = '$del_sections_info->sections_id' limit 1");
+		$section_articles=getoneb("select * from front_desk_manual_articles where sections_id = '$del_sections_info->sections_id limit 1'");
+		if ($section_children) {
+			die("Unable to delete a manual section that has subsections attached.");
+			}
+		if ($section_articles) {
+			die("Unable to delete a manual section that has articles or figures still attached.");
+			}
+		@mysql_query("delete from front_desk_manual_sections where sections_id = '$del_sections_info->sections_id'");
+		$sections_id=$del_sections_info->parent_section_id;
+		}
+	}
+
+
+if ($sections_id!="") {
+	$sections_id=addslashes($sections_id);
+	$section_info=getoneb("select * from front_desk_manual_sections where sections_id = '$sections_id'");
+	}
+
+if ($article_submit=='Y') {
+	$article_id=addslashes($article_id);
+	$article_info=getoneb("select * from front_desk_manual_articles where article_id = '$article_id'");
+	
+	$sort_priority=addslashes($sort_priority);
+	$sections_id=addslashes($sections_id);
+	$type=addslashes($type);
+	$file_group_id=addslashes($file_group_id);
+	$article_text=addslashes($article_text);
+	
+	$query_middle="
+	sections_id = '$sections_id',
+	sort_priority = '$sort_priority',
+	type = '$type',
+	file_group_id = '$file_group_id',
+	article_text = '$article_text'
+	";
+	
+	if ($article_info) {
+		$query_start="update front_desk_manual_articles set ";
+		$query_end=" where article_id = '$article_info->article_id' ";
+		} else {
+		$query_start="insert into front_desk_manual_articles set ";
+		
+		$query_end="";
+		}
+	
+	$query_full=$query_start . $query_middle . $query_end ;
+	$res=@mysql_query($query_full);
+	if (!($res)) {
+		die('Query caused an error: please show this to your programmer..<hr><pre>' . $query_full . '</pre><hr>');
+		}
+	
+	}
+
+
+
+
+
+if (!($section_info)) {
+	if ($new_manual=='Y') {
+		echo "<form name=new_manual method=post action=$pagename>
+		<input type=hidden name=mode value=$mode>
+		<input type=hidden name=report_name value=$report_name>
+		<input type=hidden name=parent_section_id value=0>
+		<table border=1 cellspacing=0 cellpadding=3>
+		<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+			Create&nbsp;new&nbsp;manual
+		</td></tr>
+		
+		<tr><td>
+			<b>Name</b>
+		</td><td>
+			<input type=text size=30 name=new_section_name value=\"\">
+		</td></tr>
+		
+		<tr><td>
+			<b>Notes/Description</b>
+		</td><td>
+			<textarea name=description rows=4 cols=60></textarea>
+		</td></tr>
+		
+		<tr><td colspan=2 align=right>
+			<div style=\"float: left;\"><input type=button onclick=\"document.location='$pagename?mode=$mode&report_name=$report_name'\" value=\"Cancel\"></div><input type=submit value=Create>
+		</td></tr>
+		</form>
+		
+		</table>
+		"; 
+		if (!($printable)) mh_navs_footer();
+		exit;
+		} 
+	
+	echo "
+	<table border=0 cellspacing=0 cellpadding=5 style=\"border: 1px solid black;\">
+	<tr><td colspan=4 style=\"border: 1px solid black; background: $fd_color_4;\" align=center><div style=\"float: right;\"><a href=$pagename?mode=$mode&report_name=$report_name&new_manual=Y><font size=-1 color=blue>New</font></a></div>
+	<b>Manuals</b></td></tr>
+	";
+	
+	$res=@mysql_query("select * from front_desk_manual_sections where parent_section_id = 0 order by title");
+	while ($row=@mysql_fetch_object($res)) {
+		echo "<tr><td title=\"$row->description\">
+					<a href=$pagename?mode=$mode&report_name=$report_name&sections_id=$row->sections_id><font color=blue>$row->title</font></a>
+				</td></tr>";
+		}
+	echo "</table>";
+	if (!($printable)) mh_navs_footer();
+	exit;
+	}
+
+
+if (!($printable)) {
+echo "<a class=noprint href=$pagename?mode=$mode&report_name=$report_name&sections_id=$section_info->parent_section_id><font color=blue>Up</font></a>";
+} else {
+echo "<div class=noprint><a href=$pagename?mode=$mode&report_name=$report_name&sections_id=$sections_id><font color=blue>return to editable</font></a></div>";
+}
+
+$path="";
+
+
+$current_sections_id=$section_info->sections_id;
+while ($current_section->parent_section_id!="0") {
+	$current_section=getoneb("select * from front_desk_manual_sections where sections_id = '$current_sections_id'");
+	if ($current_section->subchapter!=0) $prefix="$current_section->subchapter.&nbsp;";
+	else $prefix="";
+	
+	
+	$full_title=$current_section->title . $title_sep . $full_title;
+	$prefix_path=$prefix . $prefix_path;
+	$title_sep="&nbsp;::&nbsp;";
+	$path="
+	
+	<li><a href=$pagename?mode=$mode&report_name=$report_name&sections_id=$current_section->sections_id><font color=blue>$prefix $current_section->title</font></a>
+		<ul style=\"line-height: 1em; margin: 0px;\">
+	$path</li></ul>
+	";
+	$current_sections_id=$current_section->parent_section_id;
+	}
+
+if (!($printable)) {
+echo "
+<table border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_4><td align=center>
+	<div style=\"float: right;\"><a href=$pagename?mode=$mode&report_name=$report_name&sections_id=$sections_id&printable=1><font color=blue><i>printable</i></font></a></div>
+	<b>Current location</b>
+</td><td align=center>
+	<b>Subsections</b>
+</td></tr>
+
+<tr><td valign=top>
+$path
+</td><td valign=top>";
+	$children_res=@mysql_query("select * from front_desk_manual_sections where parent_section_id = '$section_info->sections_id' order by subchapter");
+	while ($child=@mysql_fetch_object($children_res)) {
+		echo "<a href=$pagename?mode=$mode&report_name=$report_name&sections_id=$child->sections_id><font color=blue>$child->subchapter. $child->title</font></a>&nbsp;&nbsp;&nbsp;<a href=$pagename?mode=$mode&report_name=$report_name&move_up_sections_id=$child->sections_id><font color=blue>/\</font></a><br>";
+		}
+	echo "
+</td></tr>
+
+<tr bgcolor=$fd_color_3>
+<form name=new_subsection method=post action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=report_name value=$report_name>
+<input type=hidden name=parent_section_id value=\"$section_info->sections_id\">
+<td>
+	<b>New Subsection</b>
+</td><td>
+	<input type=text size=20 id=new_section_name_id name=new_section_name value=\"$section_edit_info->title\">
+	<input type=submit value=Add>
+</td></tr>
+
+<tr bgcolor=$fd_color_3><td align=center>
+	<a href=$pagename?mode=$mode&report_name=$report_name&article_edit=Y&sections_id=$section_info->sections_id&article_type=text><font color=blue><i>New article</i></font></a>
+</td><td align=center>
+	<a href=$pagename?mode=$mode&report_name=$report_name&article_edit=Y&sections_id=$section_info->sections_id&article_type=figure><font color=blue><i>New figure</i></font></a>
+</td></tr>	
+
+</table>
+</div>
+</form>
+
+";
+} else {
+}
+
+if ($new_section_inserted=='Y') {
+	echo "
+	<script>
+	document.getElementById('new_section_name_id').focus();
+	</script>
+	";
+	}
+
+
+if ($article_edit=='Y') {
+	if ($article_id!="") {
+		$article_id=addslashes($article_id);
+		$article_info=getoneb("select * from front_desk_manual_articles where article_id = '$article_id'");
+		$article_type=$article_info->type;
+		}
+	if ($article_info->sort_priority=="") $article_info->sort_priority="100";
+	if ($article_info->sections_id=="") $article_info->sections_id=$section_info->sections_id;
+	if ($article_type=="text") {
+		echo "
+		<form name=article_edit method=post action=$pagename>
+		<table border=1 cellspacing=0 cellpadding=4>
+		<input type=hidden name=mode value=$mode>
+		<input type=hidden name=report_name value=$report_name>
+		<input type=hidden name=article_submit value=Y>
+		<input type=hidden name=article_id value=$article_info->article_id>
+		<input type=hidden name=sections_id value=\"$article_info->sections_id\">
+		<input type=hidden name=type value=\"$article_type\">
+		<tr bgcolor=$fd_color_4><td colspan=2 align=center>
+			<b>Article information</b>
+		</td></tr>
+		
+		<tr><td>
+			<b>Type</b>
+		</td><td>
+			$article_type
+		</td></tr>
+		
+		<tr><td>
+			<b>Sort Priority</b>
+		</td><td>
+			<input type=text size=4 name=sort_priority value=\"$article_info->sort_priority\">
+		</td></tr>
+		
+		<tr><td>
+			<b>Article Text</b>
+		</td><td>
+			<textarea class=mceEditor name=article_text rows=30 cols=80>$article_info->article_text</textarea>
+		</td></tr>
+		
+		<tr><td colspan=2 align=right>
+			<input type=submit value=Save>
+		</td></tr>
+		
+		</table>
+		</form>
+		<a href=javascript:delete_article($article_info->article_id)><font color=blue><i>delete</i></font></a>
+		";
+		}
+	if ($article_type=="figure") {
+		
+		echo "
+		<form name=article_edit method=post action=$pagename>
+		<table border=1 cellspacing=0 cellpadding=4>
+		<input type=hidden name=mode value=$mode>
+		<input type=hidden name=report_name value=$report_name>
+		<input type=hidden name=article_submit value=Y>
+		<input type=hidden name=article_id value=$article_info->article_id>
+		<input type=hidden name=sections_id value=\"$article_info->sections_id\">
+		<input type=hidden name=type value=\"$article_type\">
+		<tr bgcolor=$fd_color_4><td colspan=2 align=center>
+			<b>Article information</b>
+		</td></tr>
+		
+		<tr><td>
+			<b>Type</b>
+		</td><td>
+			$article_type
+		</td></tr>
+		
+		<tr><td>
+			<b>Sort Priority</b>
+		</td><td>
+			<input type=text size=4 name=sort_priority value=\"$article_info->sort_priority\">
+		</td></tr>
+		
+		<tr><td>
+			<b>Figure Img</b>
+		</td><td>
+			";webfilebox($article_info->file_group_id,'file_group_id');echo"
+		</td></tr>
+		
+		<tr><td>
+			<b>Caption Comments</b>
+		</td><td>
+			<textarea class=mceEditor name=article_text rows=10 cols=80>$article_info->article_text</textarea>
+		</td></tr>
+		
+		<tr><td colspan=2 align=right>
+			<input type=submit value=Save>
+		</td></tr>
+		
+		</table>
+		</form>
+		<a href=javascript:delete_article($article_info->article_id)><font color=blue><i>delete</i></font></a>
+		";
+		}
+	
+	if (!($printable)) mh_navs_footer();
+	exit;
+	}
+
+
+
+function section_path($sections_id) {
+	while ($current_section->parent_section_id!="0") {
+		$current_section=getoneb("select * from front_desk_manual_sections where sections_id = '$sections_id'");
+		if ($current_section->subchapter!=0) $prefix="$current_section->subchapter.&nbsp;";
+		else $prefix="";
+		//$full_title=$current_section->title . $title_sep . $full_title;
+		$path="$current_section->title $title_sep  $path";
+		$title_sep="&nbsp;::&nbsp;";
+		$sections_id=$current_section->parent_section_id;
+		}
+	return ($path);
+	}
+
+function section_number($current_sections_id) {
+	$current_section=getoneb("select * from front_desk_manual_sections where sections_id = '$current_sections_id'");
+	while ($current_section->parent_section_id!="0") {
+		if ($current_section->subchapter!=0) $prefix="$current_section->subchapter.&nbsp;";
+		$sec_num="$current_section->subchapter${sec_sep}$sec_num";
+		$sec_sep=".";
+		$current_sections_id=$current_section->parent_section_id;
+		$current_section=getoneb("select * from front_desk_manual_sections where sections_id = '$current_sections_id'");
+		}
+	return ($sec_num);
+	}
+
+
+function display_section($sections_id,$printable=FALSE,$recursion="N") {
+	global $devel;
+	$path=section_path($sections_id);
+	$sec_num=section_number($sections_id);
+	
+	
+	if (!(
+		($recursion=='Y') &&
+		(!(getoneb("select * from front_desk_manual_sections where parent_section_id = '$sections_id' order by subchapter limit 1"))) &&
+		(!(getoneb("select * from front_desk_manual_articles where sections_id = '$sections_id' limit 1")))
+		)) {
+			echo "<hr><b>";
+			if ($sec_num!="") echo "$sec_num - ";
+			echo "$path</b><br>";
+			}
+	
+	
+	$articles_res=@mysql_query("select * from front_desk_manual_articles where sections_id = '$sections_id' order by sort_priority,article_id");
+	while ($article=@mysql_fetch_object($articles_res)) {
+		if ($article->type=="text") {
+			if (!($printable)) echo "<a style=\"float: left;\" href=\"http://pipeline.umci.com/global/front_desk$devel/index.html?mode=report_show&report_name=web_manuals&article_edit=Y&sections_id=$article->sections_id&article_type=text&article_id=$article->article_id\"><font color=blue><i>edit</i></font></a><br>";
+			echo "$article->article_text<br>";
+			}
+		if ($article->type=="figure") {
+			if (!($printable)) echo "<a style=\"float: left;\" href=\"http://pipeline.umci.com/global/front_desk$devel/index.html?mode=report_show&report_name=web_manuals&article_edit=Y&sections_id=$article->sections_id&article_type=text&article_id=$article->article_id\"><font color=blue><i>edit</i></font></a><br>";
+			display_figure($article->article_id);
+			}
+		}
+	if ($recursion=='Y') {
+		$sections_res=@mysql_query("select * from front_desk_manual_sections where parent_section_id = '$sections_id' order by subchapter");
+		while ($sec_row=@mysql_fetch_object($sections_res)) {
+			display_section($sec_row->sections_id,$printable,$recursion);
+			}
+		}
+	
+	}
+
+
+display_section($section_info->sections_id);
+if (!($printable)) mh_navs_footer();
+?>

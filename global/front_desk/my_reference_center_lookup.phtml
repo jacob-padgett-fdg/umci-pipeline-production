@@ -1,0 +1,26 @@
+<?
+//require('mh_lib.inc');
+if ($reference_id=="") die("Application error. No document requested. Please contact a system administrator.");
+
+$reference_id=addslashes($reference_id);
+$row=getoneb("select * from front_desk_references where reference_id = '$reference_id'");
+
+$type="";
+if ($row->doc_or_url=="") $row->doc_or_url="doc";
+if ($row->doc_or_url=="doc") {
+	$type="doc";
+	$link=webfile_possible_view_link($row->file_group_id);
+	}
+if (($row->doc_or_url=="url")||($row->doc_or_url=="url in new window")) {
+	$type="url";
+	$link=$row->url;
+	}
+if ($type=="") {
+	die("Application error. Unable to determine type. Please contact an administrator.");
+	}
+//echo "<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"$seconds; URL=$link\">Loading document.. Please wait(1).";
+header("Location: $link");
+
+
+
+?>

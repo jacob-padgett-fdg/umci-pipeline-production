@@ -1,0 +1,26 @@
+#!/usr/local/bin/php
+<?
+require_once('global_connect_rw.phtml');
+require_once('viewpoint_connect_ro.phtml');
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/front_desk/reports/report_lib.inc");
+set_time_limit(900);
+#$debug=TRUE;
+$query="select contract_num, job_name, project_manager_id, job_cost, contract_type,fed_pub,contract_admin,safetyrep,confidential from jobinfo where active = 'Y' order by contract_num";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	job_financial_summary("$row->contract_num","","Y");
+	//echo "$row->contract_num\r\n";
+	}
+
+
+
+
+
+
+
+
+
+?>

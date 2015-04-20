@@ -1,0 +1,72 @@
+<?
+require('header.phtml');
+echo "
+
+<a href=$pagename><font color=blue>Back to access controls</font></a><p>
+<table style=\"border-style: solid;\"border=1 cellspacing=0 cellpadding=4>
+<tr><td>
+	<a href=$pagename?mode=server_edit><font color=blue>Add New Server</font></a>
+</td><td>
+	<a href=$pagename?mode=server_report><font color=blue>Server Report</font></a><p>
+</td><td>
+	<a href=$pagename?mode=server_lookups><font color=blue>Edit Other Tables</font></a><p>
+</td><td>
+	<a href=$pagename?mode=list_server_ips><font color=blue>List gateway server addresses</font</a><p>
+</td><td>
+	<a href=$pagename?mode=server_list&show_inactive=Y><font color=blue>List all servers</font</a><p>
+</td></tr>
+</table>
+";
+
+$slist_where="where active = 'Y'";
+if ($show_inactive=='Y') $slist_where="";
+
+
+//tabledump ("select * from access_servers order by name");
+//$res=@mysql_query("select * from access_servers left join access_servers_backup_styles on (access_servers_backup_styles.backup_style_id = access_servers.access_servers_backup_styles) order by name");
+$query="select * from access_servers $slist_where order by name";
+$res=@mysql_query($query);
+
+echo "<table style=\"border-style: solid;\" border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=6 align=center bgcolor=#dddddd><b>Servers</b></td></tr>
+<tr bgcolor=#dddddd><td>
+	<b>#</b>
+</td><td>
+	<b>Server</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	<b>Backup Method</b>
+</td><td>
+	<b>Production</b>
+</td><td>
+	<b>Job Site</b>
+</td></tr>
+";
+
+$count=1;
+while ($row=@mysql_fetch_object($res)) {
+	$bustyle=getoneb("select * from access_servers_backup_styles where backup_style_id = '$row->backup_style_id'");
+	if ($row->active=='Y') $bgcolor="#ffffff";
+	else $bgcolor="#cccccc";
+	echo "<tr bgcolor=\"$bgcolor\"><td>
+		$count
+		</td><td>
+			<a href=$pagename?mode=server_view&server_id=$row->server_id><font color=blue>$row->name</font></a>
+		</td><td>
+			$row->description
+		</td><td>
+			$bustyle->name
+		</td><td>
+			$row->in_production
+		</td><td>
+			$row->job_site_server
+		</td></tr>
+		";
+	$count++;
+	}
+echo "</table>";
+
+
+
+?>

@@ -1,0 +1,88 @@
+<?
+require("header2.phtml");
+
+if (!($issue_res_admin)) 
+	die("Error: You don't have permission to be here, so go away now!");
+
+$query="select * from issue_res_users,contacts where jobinfo_id = '$global_jobinfo_id' and issue_res_users.contacts_id = contacts.contacts_id order by last_name,first_name";
+$res=@mysql_query($query);
+
+echo "
+<center><b>$global_jobinfo->job_name:$issue_res_application_info->issue_res_application_name</b></center><hr>
+<a href=$pagename?mode=main><font color=blue>Return to category list</font></a><p>
+<font size=+1><b>Unassigned user rights:</b></font><p>
+<table border=1 cellpadding=2>
+<tr bgcolor=$tableheadbgcolor><td>Name</td><td>Login Name</td><td>Email Address</td><td>UMC Employee</td><td>Grant</td><td>Grant</td><td>Grant</td><td>Grant</td></tr>";
+
+while($row=@mysql_fetch_object($res)){
+	if(!(getoneb("select * from issue_res_application_rights where contacts_id = '$row->contacts_id' and issue_res_application_id = '$issue_res_application_id'"))) {
+		if(getoneb("select * from access where application_name = '$application_name' and contacts_id = '$row->contacts_id' and rightsmode = 'grant'"))
+			$row_bgcolor="#ffffff";
+			else
+			$row_bgcolor="#ff6666";
+		echo "
+		<tr bgcolor=\"$row_bgcolor\"><td>
+			$row->last_name, $row->first_name
+		</td><td>
+			$row->login_name
+		</td><td>
+			$row->email
+		</td><td>
+			$row->umc_emp
+		</td><td>
+			<a href=$pagename?mode=admin_application_add_rights&issue_res_user_type=read_only&issue_res_contacts_id=$row->contacts_id>
+			<font color=blue>Read Only</font></a>
+		</td><td>
+			<a href=$pagename?mode=admin_application_add_rights&issue_res_user_type=read_write&issue_res_contacts_id=$row->contacts_id>
+			<font color=blue>Read/Write</font></a>
+		</td><td>
+			<a href=$pagename?mode=admin_application_add_rights&issue_res_user_type=full&issue_res_contacts_id=$row->contacts_id>
+			<font color=blue>Full Access</font></a>
+		</td><td>
+			<a href=$pagename?mode=admin_application_add_rights&issue_res_user_type=admin&issue_res_contacts_id=$row->contacts_id>
+			<font color=blue>Admin Access</font></a>
+		</td></tr>
+		";
+		}
+	}
+
+
+$query2="select * from issue_res_application_rights,contacts where issue_res_application_id = '$issue_res_application_id' and issue_res_application_rights.contacts_id = contacts.contacts_id order by user_type,last_name,first_name,company";
+$res2=@mysql_query($query2);
+
+echo "
+</table>
+
+<p>
+<font size=+1><b>Assigned user rights:</b></font>
+<p>
+<table border=1 cellpadding=2>
+<tr bgcolor=$tableheadbgcolor><td>
+	Name
+</td><td>
+	UMC Employee
+</td><td>
+	Rights
+</td><td>
+	&nbsp;
+</td></tr>
+";
+while($row2=@mysql_fetch_object($res2)) {
+		if(getoneb("select * from access where application_name = '$application_name' and contacts_id = '$row2->contacts_id' and rightsmode = 'grant'"))
+			$row_bgcolor="#ffffff";
+			else
+			$row_bgcolor="#ff6666";
+	echo "<tr bgcolor=$row_bgcolor><td>
+			$row2->last_name, $row2->first_name
+		</td><td>
+			<center>$row2->umc_emp</center>
+		</td><td>
+			$row2->user_type
+		</td><td>
+			<a href=$pagename?mode=admin_application_remove_rights&issue_res_application_rights_id=$row2->issue_res_application_rights_id>
+			<font color=blue><i>Remove</i></font></a>
+		</td></tr>";
+	}
+
+echo "</table>";
+?>

@@ -1,0 +1,885 @@
+<?
+$it=member_of_global_group_named("IT");
+$childrennodrag='Y';
+
+if ($labor_manager==$global_user_id) $lm=TRUE;
+else $lm=FALSE;
+
+if ($default_jobinfo_id>0) {
+	$default_jobinfo_id=addslashes($default_jobinfo_id);
+	$default_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$default_jobinfo_id'");
+	}
+
+if ($lamchops_id!="") {
+	$lamchops_id=addslashes($lamchops_id);
+	$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$lamchops_id'");
+	$lamchops_id=$lamchop_info->lamchops_id;
+	}
+
+if (!($lamchop_info)) {
+	if ($week_ending!="") {
+		$week_info=date_info(vali_date($week_ending));
+		$we_date_mysql=$week_info->week_end_mysql;
+		} else {
+		$we_date_mysql=date('Y-m-d',strtotime('next saturday',strtotime('+1 days')));
+		}
+	$lamchop_info=getoneb("select * from lamchops where week_ending = '$we_date_mysql' and prime_cut = 'Y' limit 1");
+	}
+
+if (!($lamchop_info)) {
+	@mysql_query("insert into lamchops set week_ending = '$we_date_mysql', prime_cut = 'Y', description = 'Default LAMchop', shepherd_id = '$labor_manager'"); 
+	$insert_id=@mysql_insert_id();
+	$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$insert_id'");
+	}
+
+if (!($lamchop_info)) die("Error initializing! Please contact your network administrator!");
+
+
+if ($lock_this_chop=="Y") {
+	if (($global_user_id==$labor_manager)||($global_user_id==$sheet_metal_manager)||(member_of_global_group_named("IT"))) {
+		@mysql_query("update lamchops set status = 'locked' where lamchops_id = '$lamchop_info->lamchops_id'");
+		$lamchop_info->status='locked';
+		}
+	}
+
+if ($complete_this_chop=="Y") {
+	if ((member_of_global_group_named("Safety"))||(member_of_global_group_named("IT"))||(member_of_global_group_named("Front Desk Admins"))) {
+		@mysql_query("update lamchops set status = 'complete' where lamchops_id = '$lamchop_info->lamchops_id'");
+		$lamchop_info->status='complete';
+		}
+	}
+
+$week_info=date_info($lamchop_info->week_ending);
+$lamchop_info->week_ending=$week_info->week_end;
+$lamchop_info->week_end_mysql=$week_info->week_end_mysql;
+
+$we_date_mysql=$week_info->week_end_mysql;
+$shepherd_qry="select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and employee_id = '$lamchop_info->shepherd_id' and jobinfo_id = '999999'";
+$shepherd_lam=getoneb($shepherd_qry);
+
+
+if ($sign_off_now=='Y') {
+	@mysql_query("insert into lam_labor_manager_signoff set lamchops_id = '$lamchop_info->lamchops_id', contacts_id = '$global_user_id', notes = now()");
+	}
+//print_r($lamchop_info);
+
+if (!($shepherd_lam)) {
+	if ($copy_week_down=='Y') {
+		//tabledump("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and parent_lam_id = 0 and jobinfo_id = 999999 and employee_id = '$lamchop_info->shepherd_id'");
+		@mysql_query("insert into lam set lamchops_id = '$lamchop_info->lamchops_id', parent_lam_id = 0, jobinfo_id = 999999, employee_id = '$lamchop_info->shepherd_id'");
+		//tabledump("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and parent_lam_id = 0 and jobinfo_id = 999999 and employee_id = '$lamchop_info->shepherd_id'");
+		$insert_id=@mysql_insert_id();
+		//echo "<hr>$insert_id<hr>";die();
+		$shepherd_lam=getoneb("select * from lam where lam_id = '$insert_id'");
+		
+		if (!($shepherd_lam)) die("Application error loading shepherd lam! Please contact your system administrator!!!"); 
+		$last_week_default_lamchop=getoneb("select * from lamchops where week_ending = '$week_info->last_week_end_mysql' and prime_cut = 'Y' and shepherd_id = '$labor_manager'");
+		
+		//tabledump("select * from lamchops where week_ending = '$week_info->last_week_end_mysql' and prime_cut = 'Y' and shepherd_id = '$labor_manager'");
+		//die("testing point");
+		if ($last_week_default_lamchop) {
+			//$last_week_default_lam=getoneb("select * from lam where employee_id = '$last_week_default_lamchop->shepherd_id' and lamchops_id = '$last_week_default_lamchop->lamchops_id'");
+			$last_week_default_lam=getoneb("select * from lam where employee_id = '$last_week_default_lamchop->shepherd_id' and lamchops_id = '$last_week_default_lamchop->lamchops_id' and parent_lam_id = 0 and jobinfo_id = 999999");
+			//tabledump("select * from lam where employee_id = '$last_week_default_lamchop->shepherd_id' and lamchops_id = '$last_week_default_lamchop->lamchops_id' and parent_lam_id = 0 and jobinfo_id = 999999");
+			//tabledump("select * from lam where employee_id = '$last_week_default_lamchop->shepherd_id' and lamchops_id = '$last_week_default_lamchop->lamchops_id'");die("testing point");
+			}
+			if ($last_week_default_lam) {
+			copy_lam_children($last_week_default_lam->lam_id,$shepherd_lam->lam_id);
+			}
+		
+		///////////////////////////////////////////////////////////
+		// Now that we have a fresh LAM, lets clean up some of the 
+		// absolute garbage...
+		///////////////////////////////////////////////////////////
+		$cleanres=@mysql_query("select * from lam where lamchops_id = '$lamchop_info->lamchops_id'");
+		while ($clean_row=@mysql_fetch_object($cleanres)) {
+			if (is_child_free($clean_row->lam_id)) {
+				$temp_lam_info=getoneb("select * from lam where lam_id = '$clean_row->lam_id'");
+				if ($temp_lam_info->employee_id!=$labor_manager) {
+					$employee_info=getoneb("select * from contacts where contacts_id = '$temp_lam_info->employee_id'");
+					if ($employee_info->current=='Y') {
+						$temp_contract_num=get_vp_contract_num($temp_lam_info->jobinfo_id);
+						$overhead_job=(!(ereg('^[0-9]',$temp_contract_num)));
+						if (!($overhead_job)) {
+							$long_history=has_long_history($clean_row->lam_id);
+							if ($long_history) {
+								if (lacks_recent_time($clean_row->lam_id,$long_history)) {
+									// User has been around forever not working on this job.. kill it.. 
+									@mysql_query("delete from lam where lam_id = '$clean_row->lam_id'");
+									}
+								}
+							}
+						} else {
+							// User is no longer an active employee... delete.. 
+							@mysql_query("delete from lam where lam_id = '$clean_row->lam_id'");
+						}
+					}
+				}
+			}
+		}
+	}
+
+////////////////////////////////////////////////////////////
+// Process requests made using the "tools" menu.. 
+////////////////////////////////////////////////////////////
+//if ($nuke_this_lamchop=='Y') {
+//	@mysql_query("delete from lam where employee_id != '$lamchop_info->shepherd_id' and lamchops_id = '$lamchop_info->lamchops_id'");
+///	@mysql_query("delete from lam where employee_id != '$lamchop_info->shepherd_id' and lamchops_id = '$lamchop_info->lamchops_id'");
+//	}
+
+if ($reset_this_lamchop=='Y') {
+	//echo "<hr>delete from lam where lamchops_id = '$lamchop_info->lamchops_id'<hr>";die();
+	@mysql_query("delete from lam where lamchops_id = '$lamchop_info->lamchops_id'");
+	@mysql_query("update lamchops set status = 'new' where lamchops_id = '$lamchop_info->lamchops_id'");
+	forward("$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id");
+	exit;
+	}
+if ($initialize_from_vp_basic=='Y') { include("lam_header_viewpoint_init_basic.phtml");exit; }
+if ($initialize_from_vp_advanced=='Y') { include("lam_header_viewpoint_init_advanced.phtml");exit; }
+if ($sort_from_guess=='Y') { include("lam_header_guess.phtml");exit; }
+////////////////////////////////////////////////////////////
+
+echo"
+<title>Front Desk Labor Manager</title>
+<style>
+.dragme{
+	position:relative;
+	cursor: hand;
+	z-index: 4;
+	}
+.dragmenot{
+	position:relative;
+	z-index: 4;
+	}
+.landingspot{
+	z-index: 4;
+	position:relative;
+	}
+@media print {
+	table.wideprint {
+		width: 100%;
+		}
+	table.noprint {
+		display: none;
+		}
+	td.noprint {
+		display: none;
+		}
+	div.noprint {
+		display: none;
+		}
+	a.noprint {
+		display: none;
+		}
+	font.noprint {
+		display: none;
+		}
+	br.noprint {
+		display: none;
+		}
+	}
+@media screen {
+	tr.floatheader {
+        position: relative;
+        top: -1px;
+        background-color:$fd_color_4;
+        }
+    tbody.floatheader {
+        overflow: auto;
+        overflow-x: visible;
+        overflow-y: auto;   
+        height: 100%;
+        }
+	td.noprint {
+		}
+	}
+td.normnav:hover { background: $fd_color_4; }
+div.hover { color: green; }
+
+td.normnav {
+	border: 1px solid black;
+	border-collapse: collapse;
+	}
+.normnav {
+	border-collapse: collapse;
+	border: 1px solid black;  
+	cursor: hand;    
+	}
+.selectnav {
+	background: white;             
+	border: 1px solid black; 
+	cursor: hand;    
+	}
+td.filler {
+	border: 0px solid black;
+	border-right: 1px solid black;
+	border-left: 1px solid black; 
+	}
+</style>
+
+
+
+
+
+<script>
+var nn6=document.getElementById;
+var isdrag=false;
+var i_am_over='';
+var object_in_hand;
+var x,y;
+var dobj;
+
+function lock_this_lamchop() {
+	if (confirm('Are you sure you\'d like to lock this LAM? Options to make changes will be limited.')) document.location='$pagename?mode=report_show&report_name=lam&default_jobinfo_id=$default_jobinfo_id&week_ending=$week_ending&lamchops_id=$lamchop_info->lamchops_id&lock_this_chop=Y'
+	}
+
+function complete_this_lamchop() {
+	if (confirm('Are you sure you\'d like to complete this LAM? No more changes will be allowed.')) document.location='$pagename?mode=report_show&report_name=lam&default_jobinfo_id=$default_jobinfo_id&week_ending=$week_ending&lamchops_id=$lamchop_info->lamchops_id&complete_this_chop=Y'
+	}
+
+function go_back_a_week() {
+	document.location='$pagename?mode=report_show&report_name=lam&default_jobinfo_id=&week_ending=$week_info->last_week_end'
+	}
+
+function go_forward_a_week() {
+	document.location='$pagename?mode=report_show&report_name=lam&default_jobinfo_id=&week_ending=$week_info->next_week_end'
+	}
+
+function load_user_here() {
+	cv=document.lamchops_ppl_form.required_user_id.value;
+	ajaxManager('load_page','?mode=report_show&report_name=lam_show_blank_lam&employee_id=' + cv,'lamchops_ppl_loader');
+	}
+
+function lam_lost_and_found(lamchops_id) {
+	document.getElementById('lam_lost_and_found').innerHTML='Searching the fields...<br>Please wait';
+	ajaxManager('load_page','$pagename?mode=$mode&report_name=lam_lost_and_found&lamchops_id=' + lamchops_id,'lam_lost_and_found');
+	}
+
+function setZposition(obj, z) {
+	obj.style.zIndex = z
+	}
+
+function movemouse(e)
+{
+  if (isdrag)
+  {
+    dobj.style.left = nn6 ? tx + e.clientX - x : tx + event.clientX - x;
+    dobj.style.top  = nn6 ? ty + e.clientY - y : ty + event.clientY - y;
+    return false;
+  }
+}
+
+function selectmouse(e)
+{
+  var fobj       = nn6 ? e.target : event.srcElement;
+  var topelement = nn6 ? \"HTML\" : \"BODY\";
+  while (fobj.tagName != topelement && fobj.className != \"dragme\")
+  {
+    fobj = nn6 ? fobj.parentNode : fobj.parentElement;
+  }
+  if (fobj.className==\"dragme\")
+  {
+	object_in_hand=fobj.id;
+	setZposition(fobj,2);
+    isdrag = true;
+    dobj = fobj;
+    fobj.getting_dragged='Y';
+    tx = parseInt(dobj.style.left+0,10);
+    ty = parseInt(dobj.style.top+0,10);
+    x = nn6 ? e.clientX : event.clientX;
+    y = nn6 ? e.clientY : event.clientY;
+    document.onmousemove=movemouse;
+    return false;
+  }
+}
+
+//function reload_with_delay() {
+//	document.location='$pagename?mode=$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id&with_delay=TRUE';
+//	}
+
+function reload_no_delay() {
+	document.location='$pagename?mode=$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id&default_jobinfo_id=$default_jobinfo_id';
+	}
+
+function lam_del (lam_id) {
+	if(confirm(\"Delete the branch and all it\'s leaves?\")) 
+		ajaxManager('load_page','/global/front_desk$devel/reports/?mode=lam_del&lam_id=' + lam_id,'render_lam_' + lam_id);
+	}
+
+function show_advanced_lam() {
+	advanced=document.getElementById('advanced_lam');
+	basic=document.getElementById('basic_lam');
+	basic.style.display='none';
+	advanced.style.display='block';
+	} 
+
+function show_basic_lam() {
+	advanced=document.getElementById('advanced_lam');
+	basic=document.getElementById('basic_lam');
+	basic.style.display='block';
+	advanced.style.display='none';
+	} 
+
+function drop_action (lam_catcher,lam_pitcher) {
+	catcher_object_id=lam_catcher;
+	pitcher_object_id=lam_pitcher;
+	catcher_id=lam_catcher.replace('lam_','');
+	pitcher_id=lam_pitcher.replace('lam_','');
+	
+	cobj=document.getElementById(catcher_object_id);
+
+	pobj=document.getElementById(pitcher_object_id);
+	if (pobj.title=='drag to copy') {
+		pobj.style.left=0;
+		pobj.style.top=0;
+		} else {
+		wpobj=document.getElementById('render_' + pitcher_object_id);
+		wpobj.style.display='none';
+		}
+	if (lam_catcher.substring(0,3)=='job') {
+		rend_obj=document.getElementById('render_' + lam_catcher);
+		rend_obj.ajax_trigger_function='reload_no_delay();';
+		}
+	
+	if (cobj.catcher_type=='active_job') {
+		//ajaxManager('load_page','/global/front_desk$devel/reports/?mode=lam_add_child&parent_lam=' + catcher_id + '&child_lam=' + pitcher_id + '&default_jobinfo_id=$default_jobinfo_id&redraw=Y','render_' + lam_catcher);
+		document.location='/global/front_desk$devel/reports/?mode=lam_add_child&parent_lam=' + catcher_id + '&child_lam=' + pitcher_id + '&default_jobinfo_id=$default_jobinfo_id&redraw=Y&forward_to_job_only=Y';
+		} else {
+		//ajaxManager('load_page','/global/front_desk$devel/reports/?mode=lam_add_child&parent_lam=' + catcher_id + '&child_lam=' + pitcher_id + '&default_jobinfo_id=$default_jobinfo_id&redraw=Y','render_' + lam_catcher);
+		if (pobj.exceptions_object=='Y') ajaxManager('load_page','/global/front_desk$devel/reports/?mode=lam_add_child&pay_it_forward=Y&parent_lam=' + catcher_id + '&child_lam=' + pitcher_id + '&default_jobinfo_id=$default_jobinfo_id&redraw=Y','render_' + lam_catcher);
+		else ajaxManager('load_page','/global/front_desk$devel/reports/?mode=lam_add_child&parent_lam=' + catcher_id + '&child_lam=' + pitcher_id + '&default_jobinfo_id=$default_jobinfo_id&redraw=Y','render_' + lam_catcher);
+		}
+	}
+
+function initialize_vp_advanced() {
+	vp_min_hrs=document.getElementById('vp_min_hrs').value;
+	document.location='$pagename?mode=$mode&report_name=$report_name&initialize_from_vp_advanced=Y&lamchops_id=$lamchop_info->lamchops_id&vp_min_hrs=' + vp_min_hrs;
+	}
+
+function refresh_lam (lam_catcher) {
+	catcher_object_id=lam_catcher;
+	catcher_id=lam_catcher.replace('lam_','');
+	ajaxManager('load_page','/global/front_desk$devel/reports/?mode=lam_refresh&parent_lam=' + catcher_id,'render_' + lam_catcher);
+	}
+
+function update_lam_job(lam_id,jobinfo_id) {
+	lam_div_id='lam_' + lam_id;
+	render_target='render_' + lam_div_id;
+	ajaxManager('load_page','/global/front_desk$devel/reports/?mode=lam_set_job&lam_id=' + lam_id + '&jobinfo_id=' + jobinfo_id,render_target);
+	}
+
+function umc_drop() {
+	isdrag=false;
+	obj=document.getElementById(object_in_hand);
+	if (obj) {
+		obj.getting_dragged='N';
+		setZposition(obj,4);
+		}
+	if (object_in_hand!=i_am_over) {
+		if (i_am_over!='') {
+			drop_action (i_am_over,object_in_hand);
+			i_am_over='';
+			object_in_hand='';
+			}
+		}
+	}
+
+function above_object(object) {
+	i_am_over=object.id;
+	if ((object.getting_dragged!='Y') && (isdrag)) object.style.MozOpacity=.3;
+	}
+
+function not_above_object(object) {
+	i_am_over='';
+	object.style.opacity=100;
+	}
+
+function lam_tools(lam_id) {
+	open('$pagename?mode=$mode&report_name=lam_tools&lam_id=' + lam_id,'lam_tools' + lam_id,'scrollbars=1,resizable=1,width=800,height=800');
+	}
+
+function notes_click(obj) {
+	obj.parentNode.style.left=0;
+	obj.parentNode.style.top=0;
+	ajaxManager('load_page','$pagename?mode=$mode&report_name=lam_edit_note&object_id=' + obj.id,obj.id);
+	}
+
+function notes_save(lam_id,value) {
+	ajaxManager('load_page','$pagename?mode=$mode&report_name=lam_submit_note&lam_id=' + lam_id + '&value=' + value,'lam_edit_note_' + lam_id);
+	}
+
+document.onmousedown=selectmouse;
+document.onmouseup=new Function(\"umc_drop()\");
+</script>
+";
+
+echo "<div class=noprint style=\"background: white; float: right; padding-right: 40px;\">";
+
+//////////////////////////////////////////////////////////////////////////////////////
+// Lamchops maintenance
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+if ($updated_description!="") {
+	$updated_description=addslashes($updated_description);
+	@mysql_query("update lamchops set description = '$updated_description' where lamchops_id = '$lamchop_info->lamchops_id'");
+	$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$lamchop_info->lamchops_id'");
+	}
+
+if ($fork_lamchop=='Y') {
+	//die("$lamchop_info->week_end_mysql");
+	@mysql_query("insert into lamchops set week_ending = '$lamchop_info->week_end_mysql', description = '$lamchop_info->description', prime_cut = 'N', shepherd_id = '$lamchop_info->shepherd_id'");
+	$new_lamchop_id=@mysql_insert_id();
+	@mysql_query("insert into lam set lamchops_id = '$new_lamchop_id', parent_lam_id = 0, jobinfo_id = 999999, employee_id = '$lamchop_info->shepherd_id'");
+	$new_lam_id=@mysql_insert_id();
+	copy_lam_children($shepherd_lam->lam_id,$new_lam_id);
+	}
+
+if ($make_default_lamchop=='Y') {
+	mysql_query("update lamchops set prime_cut = 'N' where week_ending = '$week_info->week_end_mysql'");
+	mysql_query("update lamchops set prime_cut = 'Y' where lamchops_id = '$shepherd_lam->lamchops_id'");
+	$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$lamchop_info->lamchops_id'");
+	}
+
+if ($delete_lamchop_id!="") {
+	$delete_lamchop_id=addslashes($delete_lamchop_id);
+	@mysql_query("delete from lamchops where lamchops_id = '$delete_lamchop_id'");
+	@mysql_query("delete from lam where lamchops_id = '$delete_lamchop_id'");
+	}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Start of the lamchops tools box.. 
+///////////////////////////////////////////////////////////////////////////////////////////
+
+if ($lamchop_info->prime_cut=='Y') $dmark="&nbsp;<b>*</b>";else $dmark="&nbsp;&nbsp;&nbsp;";
+echo "
+<form name=labor_report method=get action=$pagename>
+<div align=center class=noprint style=\"border: 1px solid black;\">
+
+
+<input type=hidden name=mode value=report_show>
+<input type=hidden name=report_name value=\"lam\">
+<input type=hidden name=default_jobinfo_id value=\"$default_jobinfo_id\">
+<div style=\"background: $fd_color_4; border: 2px solid black;\">
+<input type=button value=\"<-\" onclick=\"go_back_a_week()\">";datebox("$week_info->week_end","labor_report.week_ending",'','document.labor_report.submit()');echo"<input type=button value=\"->\" onclick=\"go_forward_a_week()\">
+<br>
+<a href=$pagename?mode=$mode&report_name=$report_name&printable=1&lamchops_id=$lamchop_info->lamchops_id><font color=blue>Print Paged Copy</font></a><br>
+</div>
+</form>
+";
+
+
+if ($it) {
+
+echo "
+
+
+<table border=0 id=\"basic_lam\" class=\"noprint\" style=\"\" cellspacing=0 cellpadding=2>
+
+<tr><td>
+	<a href=javascript:show_advanced_lam();><font color=blue><i>Advanced Options</i></font></a>
+</td></tr>
+</table>
+
+<table border=0 id=\"advanced_lam\" class=\"noprint\" style=\"display: none;\" cellspacing=0 cellpadding=2>
+<tr><td>
+	<a href=javascript:show_basic_lam();><font color=blue><i>Hide Advanced Options</i></font></a>
+</td></tr>
+<tr bgcolor=$fd_color_4><td align=center>
+	<b>LAMChop</b>
+</td><td>
+</td></tr>
+
+<form name=rename_lamchop method=post action=$pagename>
+<tr><td colspan=2>
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=$report_name>
+	<input type=hidden name=lamchops_id value=$lamchop_info->lamchops_id>
+$dmark&nbsp;<input type=text size=15 onchange=submit() name=updated_description value=\"$lamchop_info->description\">
+</td></tr>
+</form>
+
+
+<tr><td valign=top colspan=2>";
+
+	$choplist=@mysql_query("select * from lamchops where week_ending = '$week_info->week_end_mysql' and lamchops_id != '$lamchop_info->lamchops_id' order by prime_cut desc,description");
+	while ($choprow=@mysql_fetch_object($choplist)) {
+		if ($choprow->lamchops_id==$lamchop_info->lamchops_id) {
+			$cstart="<b>";
+			$cend="</b>";
+			} else {
+			$cstart="";
+			$cend="";
+			}
+		if ($choprow->prime_cut=='Y') $dmark="&nbsp;<i>default</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		else $dmark="&nbsp;<a href=$pagename?mode=$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id&delete_lamchop_id=$choprow->lamchops_id><font color=blue><i>delete</i></font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		
+		echo "$dmark<a href=$pagename?mode=$mode&report_name=$report_name&lamchops_id=$choprow->lamchops_id><font color=blue>$cstart$choprow->description$cend</font></a>&nbsp;<br>";
+		}
+if ($vp_min_hrs=="") $vp_min_hrs="8";
+echo "
+<a href=$pagename?mode=$mode&report_name=$report_name&fork_lamchop=Y&lamchops_id=$lamchop_info->lamchops_id><font color=blue><i>Create New</i></font></a><br>
+</td></tr>
+
+<tr><td bgcolor=$fd_color_4 valign=top colspan=2 onclick=show_actions() align=center>
+	<b>Actions</b>
+</td></tr>
+
+<tr><td colspan=2 align=center>";
+
+if ($lamchop_info->prime_cut!='Y') {
+	echo "<a href=$pagename?mode=$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id&make_default_lamchop=Y><font color=blue>Make \"$lamchop_info->description\" the default<br>";
+	}
+
+echo "
+	<a href=$pagename?mode=$mode&report_name=$report_name&sort_from_guess=Y&ignore_last_week=Y&lamchops_id=$lamchop_info->lamchops_id><font title=\"Make LAM guess like crazy (but ignore last week as reference)\" color=blue>Fresh Smart Init</font></a><br>
+
+	<a href=$pagename?mode=$mode&report_name=$report_name&nuke_this_lamchop=Y&lamchops_id=$lamchop_info->lamchops_id><font color=blue>Clear Lamchop Contents</font></a><br>
+	<a href=$pagename?mode=$mode&report_name=$report_name&reset_this_lamchop=Y&lamchops_id=$lamchop_info->lamchops_id><font color=blue>Delete Lamchop</font></a><br>
+	<a href=$pagename?mode=$mode&report_name=$report_name&initialize_from_vp_basic=Y&lamchops_id=$lamchop_info->lamchops_id><font title=\"One job to rule them all\" color=blue>Basic VP Init</font></a><br>
+	<a href=\"javascript:initialize_vp_advanced()\"><font color=blue>VP init</a></font>&nbsp;on&nbsp;<input type=text name=vp_min_hrs id=vp_min_hrs value=$vp_min_hrs size=1>&nbsp;hrs<br>
+	<a href=$pagename?mode=$mode&report_name=$report_name&sort_from_guess=Y&lamchops_id=$lamchop_info->lamchops_id><font title=\"Make LAM guess like crazy\" color=blue>Smart Init</font></a><br>
+</td></tr>
+</table> 
+";
+}
+echo "
+</div>
+";
+///////////////////////////////////////////////////////////////////////////
+//	End of lamchops tools.. 
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+//	Lamchops people loader.. Lets you load a specific person randomly from
+//	from the contacts list.. Then you can drag the lam whereever you like..
+///////////////////////////////////////////////////////////////////////////
+echo "<form style=\"display: inline;\" name=lamchops_ppl_form method=post action=$pagename>
+<div style=\"border: 1px solid black;\" id=\"lamchops_ppl_loader\"></div></form>";
+
+///////////////////////////////////////////////////////////////////////////
+//	End of lamchops people loader..
+///////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////
+// Start of people pool...
+/////////////////////////////////////////////////////////////
+if ($lamchop_info->status=='new') {
+echo "
+<div class=noprint style=\"z-index: 0; border: 1px solid black;\">";
+$res=@mysql_query("select employee_trade from contacts where umc_emp = 'Y' and current = 'Y' and employee_trade != '' group by employee_trade order by employee_trade");
+echo "<div id=\"lam_lost_and_found\" onclick=\"lam_lost_and_found($lamchop_info->lamchops_id)\" style=\"border: 1px solid black; text-align: center;\"><b><i>Lost Sheep</i></b></div>";
+echo "<div id=\"lam labor $row->employee_trade\">";
+print_trade_header($row->employee_trade,$we_date,'N');
+echo "</div>";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<div id=\"lam labor $row->employee_trade\">";
+	print_trade_header($row->employee_trade,$lamchop_info->lamchops_id,'N');
+	echo "</div>";
+	}
+echo "</div>";
+}
+/////////////////////////////////////////////////////////////
+// End of people pool...
+/////////////////////////////////////////////////////////////
+
+$grp_1_closed=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 1 and Status = 1 and PREndDate = '$week_info->week_end'");
+$grp_3_closed=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 3 and Status = 1 and PREndDate = '$week_info->week_end'");
+//ms_tabledump("select top 1 * from PRPC where PRCo = 1 and PRGroup = 1 and PREndDate = '$week_info->week_end'");
+//ms_tabledump("select top 1 * from PRPC where PRCo = 1 and PRGroup = 3 and PREndDate = '$week_info->week_end'");
+if ($grp_1_closed && $grp_3_closed) $this_payroll_closed=TRUE;
+
+$grp_1_closed=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 1 and Status = 1 and PREndDate = '$week_info->last_week_end'");
+$grp_3_closed=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 3 and Status = 1 and PREndDate = '$week_info->last_week_end'");
+if ($grp_1_closed && $grp_3_closed) $last_payroll_closed=TRUE;
+
+/////////////////////////////////////////////////////////////
+// Start of exceptions list..
+/////////////////////////////////////////////////////////////
+if ($lamchop_info->status=='locked') {
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+echo "
+<div class=noprint style=\"z-index: 0; border: 1px solid black;\">";
+
+if ($last_payroll_closed) {
+	$rec_query="SELECT     Employee, substring(Job,1,5) as Job, SUM(Hours) AS Hours
+	FROM         PRTH with (NOLOCK)
+	WHERE     
+	(PREndDate = '$week_info->week_end') AND 
+	(PRGroup = 1) AND (PRCo = 1) and 
+	(Phase not like '25040%') and 
+	(Phase not like '%-999%') and 
+	(Phase not like '29060%') and 
+		(
+		Job like 'BB301%' or 
+		Job like 'AA300%' or (
+			Job not like 'AA%' and 
+			Job not like 'BB%' and 
+			Job not like 'CC%' and 
+			Job not like 'DD%' 
+			)
+		)
+	GROUP BY Employee, substring(Job,1,5)
+	ORDER BY Hours DESC";
+	//echo "<hr>$rec_query<hr>";
+	//ms_tabledump($rec_query);
+	$res=@mssql_query($rec_query);
+	while ($row=@mssql_fetch_object($res)) {
+		$emp_info=getoneb("select * from contacts where umc_emp = 'Y' and employee_num = '$row->Employee'");
+		//if ($emp_info->employee_trade=="teamster") continue;
+		$contract_num_temp=$row->Job;
+		$contract_num_temp=ereg_replace("-.*$","",$contract_num_temp);
+		if(!(ereg("^[0-9]",$contract_num_temp))) {
+			if ((ereg("^M[0-9]",$contract_num_temp))) $contract_num_temp="AA300";
+			$do_nothing_here=TRUE;
+			} else {
+			$contract_num_temp=$contract_num_temp + 1;
+			$contract_num_temp=$contract_num_temp - 1;
+			if ($contract_num_temp > 9999)  $contract_num_temp="AA300";
+			}
+		$jobinfo_temp=getoneb("select * from jobinfo where contract_num = '$contract_num_temp'");
+		if (!($jobinfo_temp)) {
+			if ($jobinfo_temp!="") echo "Error detecting job for contract number: $contract_num_temp ($row->Job)<br>";
+			continue;
+			}
+		if ($emp_info->contacts_id!=$labor_manager) 
+			$applicable_lam=getoneb("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and jobinfo_id = '$jobinfo_temp->jobinfo_id' and employee_id = '$emp_info->contacts_id'");
+		else 
+			$applicable_lam=TRUE;
+		if ($row->Hours==0) $applicable_lam=TRUE;
+		
+		if ($default_jobinfo_id>0) {
+			if ($default_jobinfo_id!=$jobinfo_temp->jobinfo_id) continue;
+			}
+		////////////////////////////////////////////////////////////////////////
+		// Now we check with Front Desk to see if someone told us who the 
+		// foreman was supposed to be..
+		////////////////////////////////////////////////////////////////////////
+		if (!($applicable_lam)) {
+			$sup_may_be=FALSE;
+			$gen_may_be=FALSE;
+			$gen_lam_info=FALSE;
+			$sup_lam_info=FALSE;
+			if ($emp_info->employee_trade=="fitter") {
+				//$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and pipe = 'Y' and foreman_id != '$emp_info->contacts_id'");
+				$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and pipe = 'Y'");
+				}
+			if ($emp_info->employee_trade=="plumber") {
+				//$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and plumb = 'Y' and foreman_id != '$emp_info->contacts_id'");
+				$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and plumb = 'Y'");
+				//tabledump("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and plumb = 'Y' and foreman_id != '$emp_info->contacts_id'");
+				//echo ("<hr>select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and plumb = 'Y' and foreman_id != '$emp_info->contacts_id'<hr>");
+				}
+			if ($emp_info->employee_trade=="sheet metal workers") {
+				//$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and sheet = 'Y' and foreman_id != '$emp_info->contacts_id'");
+				$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and sheet = 'Y'");
+				}
+			$gen_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and general = 'Y' and foreman_id != '$emp_info->contacts_id'");
+			//tabledump("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_temp->jobinfo_id' and general = 'Y' and foreman_id != '$emp_info->contacts_id'");
+			//echo "<pre>";print_r($sup_may_be);echo "</pre>";
+			//echo "<pre>";print_r($sup_may_be);echo "</pre>";
+			if ($gen_may_be) {
+				$gen_lam_info=getoneb("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and jobinfo_id = '$jobinfo_temp->jobinfo_id' and employee_id = '$gen_may_be->foreman_id'");
+				//tabledump("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and jobinfo_id = '$jobinfo_temp->jobinfo_id' and employee_id = '$gen_may_be->foreman_id'");
+				if (!($gen_lam_info)) {
+					@mysql_query("insert into lam set lamchops_id = '$lamchop_info->lamchops_id', parent_lam_id = '$shepherd_lam->lam_id', jobinfo_id = '$jobinfo_temp->jobinfo_id', employee_id = '$gen_may_be->foreman_id'");
+					$gen_lam_info=getoneb("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and jobinfo_id = '$jobinfo_temp->jobinfo_id' and employee_id = '$gen_may_be->foreman_id'");
+					}
+				}
+			
+			if ($sup_may_be) {
+				$sup_lam_info=getoneb("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and jobinfo_id = '$jobinfo_temp->jobinfo_id' and employee_id = '$sup_may_be->foreman_id'");
+				//tabledump("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and jobinfo_id = '$jobinfo_temp->jobinfo_id' and employee_id = '$sup_may_be->foreman_id'");
+				if (!($sup_lam_info)) {
+						if ($gen_lam_info) {
+						@mysql_query("insert into lam set lamchops_id = '$lamchop_info->lamchops_id', parent_lam_id = '$gen_lam_info->lam_id', jobinfo_id = '$jobinfo_temp->jobinfo_id', employee_id = '$sup_may_be->foreman_id'");
+						} else {
+						@mysql_query("insert into lam set lamchops_id = '$lamchop_info->lamchops_id', parent_lam_id = '$shepherd_lam->lam_id', jobinfo_id = '$jobinfo_temp->jobinfo_id', employee_id = '$sup_may_be->foreman_id'");
+						}
+					$sup_lam_info=getoneb("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and jobinfo_id = '$jobinfo_temp->jobinfo_id' and employee_id = '$sup_may_be->foreman_id'");
+					} 
+				
+				}
+				
+			if ($sup_lam_info) {
+				@mysql_query("insert into lam set lamchops_id = '$lamchop_info->lamchops_id', parent_lam_id = '$sup_lam_info->lam_id', jobinfo_id = '$jobinfo_temp->jobinfo_id', employee_id = '$emp_info->contacts_id'");
+				} else {
+				if ($gen_lam_info) {
+					@mysql_query("insert into lam set lamchops_id = '$lamchop_info->lamchops_id', parent_lam_id = '$gen_lam_info->lam_id', jobinfo_id = '$jobinfo_temp->jobinfo_id', employee_id = '$emp_info->contacts_id'");
+					}
+				}
+			
+			$applicable_lam=getoneb("select * from lam where lamchops_id = '$lamchop_info->lamchops_id' and jobinfo_id = '$jobinfo_temp->jobinfo_id' and employee_id = '$emp_info->contacts_id'");
+			}
+		
+		/////////////////////////////////////////////////////////////////////////////
+		//	Try to apply some common sense.. 
+		/////////////////////////////////////////////////////////////////////////////
+		if (!($applicable_lam)) {
+			if (($emp_info->employee_class=="General Foreman" or $emp_info->employee_class == "Foreman")) {
+				
+				$timecount_qry="SELECT sum(1) as count,substring(Job,1,5), Employee from PRTH with (NOLOCK) WHERE Job like '$row->Job%' and (PREndDate = '02-07-2009') AND (PRGroup = 1) AND (PRCo = 1) and (Phase not like '25040%') and (Phase not like '%-999%') and (Phase not like '29060%') and (Job like 'BB301%' or Job like 'AA300%' or (Job not like 'AA%' and Job not like 'BB%' and Job not like 'CC%' and Job not like 'DD%')) GROUP BY Employee, substring(Job,1,5)";
+				//echo "<hr>$timecount_qry<hr>";
+				$timecount=ms_getoneb($timecount_qry);
+				//ms_tabledump($timecount_qry);
+				//die();
+				}
+			if ($timecount) {
+				//echo "gf/f common sense rule detected.<br>";
+				continue;
+				}
+			}
+		////////////////////////////////////////////////////////////////////////////
+		// A little more common sense
+		////////////////////////////////////////////////////////////////////////////
+		//$applicable_lam=getoneb("select * from lam where ");
+		
+		
+		
+		
+		
+		////////////////////////////////////////////////////////////////////////////
+		//	Create the blank lam object to show in the exceptions list if we need to
+		////////////////////////////////////////////////////////////////////////////
+		if (!($applicable_lam)) {
+			$blank_lam=getoneb("select * from lam where lamchops_id = 0 and jobinfo_id = 0 and employee_id = '$emp_info->contacts_id'");
+			if (!($blank_lam)) { @mysql_query("insert into lam set employee_id = '$emp_info->contacts_id',lamchops_id = '0',jobinfo_id = 0,parent_lam_id = 0");}
+			
+			$job_link="<a href=$pagename?mode=report_show&report_name=lam&lamchops_id=$lamchop_info->lamchops_id&default_jobinfo_id=$jobinfo_temp->jobinfo_id><font color=blue>$jobinfo_temp->contract_num</font></a>";
+			print_lam_div($blank_lam->lam_id,array('exceptions_object'=>'Y','depth'=>'0','hide_notes'=>'Y','replacement_text'=>" <i>$emp_info->display_name</i> <b>$row->Hours@$job_link</b>"));
+			}
+		}
+	} else {
+		echo "Payroll for this week still open";
+	}
+echo "</div>";
+
+
+}
+/////////////////////////////////////////////////////////////
+// End of exceptions list...
+/////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+echo "</div>";
+$viewlink_start="$pagename?mode=$mode&report_name=$report_name&lam_id=$lam_id&lamchops_id=$lamchops_id&week_ending=$week_ending";
+/*
+echo "<table class=noprint border=1 cellspacing=0 cellpadding=4>
+	<tr><td>
+		<b>LAM Views</b>
+	</td><td bgcolor=$fd_color_3>	
+		<a href=$viewlink_start&lam_mode=main><font color=blue>View</font></a>
+	</td><td bgcolor=$fd_color_3>
+		<a href=$viewlink_start&lam_mode=jobs_overview><font color=blue>Active Jobs Overview</font></a>
+	</td></tr>
+</table>
+";
+*/
+
+
+echo "
+<script src=\"/javascript/urlencode.js\"></script>
+<script src=\"/javascript/contacts_1.js\"></script>
+<script>
+ajaxManager('load_page','?mode=report_show&report_name=lam_show_blank_lam','lamchops_ppl_loader');
+</script>
+
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=3 bgcolor=\"$fd_color_4\" align=center>
+	<b>LAM Infomation</b>&nbsp;<i>(Chop #$lamchop_info->lamchops_id)</i>
+</td><td align=center bgcolor=\"$fd_color_4\">
+	<b>Labor Mangers Signoff</b>
+</td></tr>
+
+<tr><td>
+	<b>Week Ending</b>
+</td><td>
+	$week_info->week_end_slashes
+</td><td rowspan=3 valign=top>
+	<a href=$pagename?mode=$mode&report_name=$report_name&lam_mode=active_jobs&lamchops_id=$lamchop_info->lamchops_id><font color=blue>Active Jobs List</font></a><br>
+	<a href=$pagename?mode=$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id><font color=blue>Show All Jobs</font></a><p>
+";
+
+if ($lamchop_info->status=="new") {
+	//if (($global_user_id==$labor_manager)||($global_user_id==$sheet_metal_manager)||(member_of_global_group_named("IT"))) {
+	if ((member_of_global_group_named("Labor Managers"))||($it)) {
+		if ($shepherd_lam) echo "<a href=\"javascript:lock_this_lamchop()\"><font color=blue>Change status to 'locked'</font></a>";
+		$childrennodrag='N';
+		}
+	}
+		
+if ($lamchop_info->status=="locked") {
+	if ((member_of_global_group_named("Safety"))||($it)||(member_of_global_group_named("Front Desk Admins"))) {
+		echo "<a href=\"javascript:complete_this_lamchop()\"><font color=blue>Change status to 'complete'</font></a>";
+		$childrennodrag='N';
+		}
+	if (!($this_payroll_closed)) echo "<br><b><font color=red>Payroll not closed for this week yet.<br>Information may be incomplete.</font></b>";
+	}
+echo "
+	</td><td rowspan=3 valign=top>
+	<table border=0 cellspacing=0 cellpadding=3>
+	";
+	$labor_managers_list=@mysql_query("select * from contacts_groups_members right join contacts_groups on (contacts_groups.group_id = contacts_groups_members.group_id ) right join contacts on (contacts_groups_members.contacts_id = contacts.contacts_id) where jobinfo_id = 0 and description = 'Labor Managers' order by alphasort");
+	while ($lmanager=@mysql_fetch_object($labor_managers_list)) {
+	
+		$signoff=getoneb("select * from lam_labor_manager_signoff where lamchops_id = '$lamchop_info->lamchops_id' and contacts_id = '$lmanager->contacts_id' limit 1");
+		if ($signoff) {
+			$so_text="done";
+		} else {	
+			if ($shepherd_lam) {
+				if ($global_user_id==$lmanager->contacts_id) {
+					$so_text="<a href=$pagename?mode=$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id&sign_off_now=Y><font color=blue>Mark&nbsp;Done</font></a>";
+				} else { 
+					$so_text="in process";
+                }																																				
+			} else {
+			$so_text="N/A";
+			}
+		}
+	echo "<tr><td>$lmanager->display_name</td><td>$so_text</td></tr>";
+	}
+echo "
+</table>
+</td></tr>
+
+<tr><td>
+	<b>Status</b>
+</td><td bgcolor=$fd_color_3>
+	<b><font size=+2>$lamchop_info->status</font></b>
+</td></tr>
+
+";
+/*
+if ($default_jobinfo) {
+	echo "<tr><td>
+			<b>Showing job:</b>
+		</td><td>
+			$default_jobinfo->contract_num
+		</td></tr>";
+	}
+*/	
+echo "
+</table>";
+
+if (!($shepherd_lam)) {
+	$lamchop_info->status='N/A';
+	//die ("$week_info->last_week_end_mysql");
+	$last_week_locked=getoneb("select * from lamchops where week_ending = '$week_info->last_week_end_mysql' and ( status = 'locked' or status = 'complete' ) and prime_cut = 'Y'");
+	if ($last_week_locked) {
+		echo "<center><h2><a href=$pagename?mode=$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id&copy_week_down=Y><font color=blue>Start LAM for week ending $week_info->week_end</font></a></h2></center>";
+		} else {
+		echo "<center><h2>You must complete last week's ($week_info->last_week_end) LAM before starting this one.</h2></center>";
+		}
+	}
+?>

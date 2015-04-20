@@ -1,0 +1,93 @@
+<?
+require("timesheet_header.phtml");
+require("timesheet_footer.phtml");
+$noedit=1;
+$week_info=date_info($week_end);
+
+$starter_query="select * from timesheet_time where employee_id = '$current_user->contacts_id' and workday >= '$week_info->week_start_mysql' and workday <= '$week_info->week_end_mysql' group by job_num";
+
+echo "
+	<table border=0 cellpadding=4><tr><td>
+	<form name=togglesumview method=post action=$pagename>
+	<input type=hidden name=mode value=timesheet_edit>
+	<input type=hidden name=timesheet_mode_new value=timesheet_summary>
+	<input type=button onclick=submit(); value=\"Show By Day\">
+	</form></td>
+	";
+
+if ($timesheet_info->status=="new") {
+	echo "
+	
+	<td>
+	<form name=timesheet_confirm_form method=get action=$pagename>
+	<input type=hidden name=mode value=timesheet_submit>
+	<input type=hidden name=employee_num value=\"$current_user->employee_num\">
+	<input type=hidden name=week_ending value=$timesheet_info->week_ending>
+	<input type=button onclick=confirm_timesheet(); value=\"Submit Timesheet\">
+	</form></td>
+	
+	<script>
+	function confirm_timesheet() {
+	if (confirm('You\'re sure you\'re done?')) document.timesheet_confirm_form.submit();
+	}
+	
+	</script>
+	";
+	$noedit=0;
+	}
+
+echo "</tr></table>";
+
+//if ($timesheet_info->status=="new") $noedit=0;
+//	else $noedit=1;
+
+$total_weeks_hours=0;
+$total_st_hours=0;
+$total_ot_hours=0;
+$total_dt_hours=0;
+$total_v_hours=0;
+$total_s_hours=0;
+$total_h_hours=0;
+$total_subs=0;
+$total_park=0;
+$total_trav=0;
+$total_exps=0;
+
+$weeks_jobs_res=@mysql_query($starter_query);
+
+while ($row=@mysql_fetch_object($weeks_jobs_res)) {
+	$tmp=print_job2("$current_user->contacts_id",$row->job_num,$week_start,$week_end,"timesheet_summary_by_job",$noedit);
+	$total_weeks_hours=$tmp->total_hours + $total_weeks_hours;
+	$total_st_hours=$total_st_hours + $tmp->sum_st;
+	$total_ot_hours=$total_ot_hours + $tmp->sum_ot;
+	$total_dt_hours=$total_dt_hours + $tmp->sum_dt;
+	$total_v_hours=$total_v_hours + $tmp->sum_v;
+	$total_s_hours=$total_s_hours + $tmp->sum_s;
+	$total_h_hours=$total_h_hours + $tmp->sum_h;
+	$total_subs=$total_subs + $tmp->subs;
+	$total_park=$total_park + $tmp->park;
+	$total_trav=$total_trav + $tmp->trav;
+	$total_exps=$total_exps + $tmp->exps;
+	}
+echo "<table border=0>";
+
+$total_subs=sprintf('%.2f',$total_subs);
+$total_park=sprintf('%.2f',$total_park);
+$total_trav=sprintf('%.2f',$total_trav);
+$total_exps=sprintf('%.2f',$total_exps);
+
+if ($total_subs!=0) echo "<tr><td align=right>Subsistence</td><td align=right>\$$total_subs</td></tr>";
+if ($total_park!=0) echo "<tr><td align=right>Parking</td><td align=right>\$$total_park</td></tr>";
+if ($total_trav!=0) echo "<tr><td align=right>Travel</td><td align=right>\$$total_trav</td></tr>";
+if ($total_exps!=0) echo "<tr><td align=right>Total&nbsp;S/P/T</td><td align=right>&nbsp;&nbsp;\$$total_exps</td></tr>";
+
+if ($total_st_hours!=0) echo "<tr><td align=right>Straight&nbsp;Time&nbsp;Hours</td><td align=right>$total_st_hours</td></tr>";
+if ($total_ot_hours!=0) echo "<tr><td align=right>Overtime&nbsp;Hours</td><td align=right>$total_ot_hours</td></tr>";
+if ($total_dt_hours!=0) echo "<tr><td align=right>Doubletime&nbsp;Hours</td><td align=right>$total_dt_hours</td></tr>";
+if ($total_v_hours!=0) echo "<tr><td align=right>Vacation&nbsp;Hours</td><td align=right>$total_v_hours</td></tr>";
+if ($total_s_hours!=0) echo "<tr><td align=right>Sick&nbsp;Hours</td><td align=right>$total_s_hours</td></tr>";
+if ($total_h_hours!=0) echo "<tr><td align=right>Holiday&nbsp;Hours</td><td align=right>$total_h_hours</td></tr>";
+
+echo "<tr><td align=right>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Total Hours:</td><td align=right>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$total_weeks_hours</td></tr></table>";
+
+?>

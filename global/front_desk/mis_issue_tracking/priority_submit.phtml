@@ -1,0 +1,27 @@
+<?
+
+$priority=addslashes($priority);
+$priority_text=addslashes($priority_text);
+
+if ($priority_id!="") {
+	$priority_id=addslashes($priority_id);
+	$query="update mis_issue_priorities set
+		priority = '$priority',
+		priority_text = '$priority_text'
+		where
+		priority_id = '$priority_id'";
+	} else {
+	$query="insert into mis_issue_priorities set
+	priority = '$priority',
+	priority_text = '$priority_text'";
+	}
+
+
+$res=@mysql_query($query);
+
+if (!($res)) {
+	die("ERROR: The update you requested could not be completed. Please contact your system administrator.<hr>The query that had the error:<br>$query");
+	}
+
+forward('priorities');
+?>

@@ -1,0 +1,15 @@
+<?
+if ($task_id=="") die ("ERROR: Fatal application error. task_id is missing. Pleast contact your system administrator");
+$task_id=escapeshellcmd($task_id);
+
+require_once("pdf_lib2.inc");
+
+$pdf =& new Cezpdf('letter','portrait');
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+$pdf=pdf_task_list ($task_id,$pdf,1);
+$pdf->ezStream();
+
+
+
+
+?>

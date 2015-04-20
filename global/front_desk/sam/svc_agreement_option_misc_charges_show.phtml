@@ -1,0 +1,23 @@
+<?
+
+echo "<table border=1 cellpadding=2 cellspacing=0 width=90%><tr bgcolor=#eeeeee><td width=5%><a href=javascript:new_option('misc_charges');><font color=blue>Add</font></a></td><td width=100%><b>Misc Charges</b></td></tr></table>";
+$query="select * from svc_agreement_additional_options where agreement_id = '$agreement_info->agreement_id' and option_type = 'misc_charges' order by agreement_options_id";
+//tabledump($query);
+$res=@mysql_query($query);
+$count=@mysql_num_rows($res);
+if ($count > 0) {
+	echo "<table border=1 cellspacing=0 cellpadding=5><tr><td><b>Description</b></td><td><b>Cost</b></td><td><b>Markup</b></td></tr>";
+	while ($row=@mysql_fetch_object($res)) {
+		echo "<tr><td>
+				$row->option_description
+			</td><td>
+				$row->cost
+			</td><td>
+				$row->markup
+			</td></tr>";
+		}
+	echo "</table>";
+	}
+
+
+?>

@@ -1,0 +1,122 @@
+<?
+require_once("global_connect_rw.phtml");
+require_once('querylib.inc');
+
+function makemegs($size) {
+	$size=addslashes($size);
+	if (eregi("m",$size)) return (clean_text_out($size));
+
+	if (eregi("g",$size)) {
+		$tmp=clean_text_out($size);
+		$total=$tmp * 1024;
+		return($total);
+		}
+	
+	if (eregi("t",$size)) {
+		$tmp=clean_text_out($size);
+		$total=$tmp * 1024 * 1024;
+		return($total);
+		}
+	
+	if (eregi("b",$size)) {
+		$tmp=clean_text_out($size);
+		$total=$tmp / 1024;
+		return(clean_text_out($total));
+		}
+
+	// This is risky, but oh well.. If you're just given a number, 
+	// then assume that it was referring to megs.. probably should
+	// actually assume bytes, but I'm never dealing with bytes on this
+	// stuff, so I'm not going to bother..
+	return (clean_text_out($size));
+	}
+function clean_text_out($stuff) {
+	return(ereg_replace('\..*$','',ereg_replace("[^0-9.]","",$stuff)));
+	}
+
+if ($bu_stats_mode=="serverdescriptions") {
+	$query="select access_servers.name,access_servers_backup_styles.name as bu_method,report_backups,access_servers.description from access_servers left join access_servers_backup_styles on
+			(access_servers.backup_style_id = access_servers_backup_styles.backup_style_id)
+			where active = 'Y'
+			and in_production = 'Y'
+			order by access_servers.name
+			";
+	$list="";
+	$res=@mysql_query($query);
+	$servercount=@mysql_num_rows($res);
+	while ($row=@mysql_fetch_object($res)) {
+		$list=$list . sprintf("%16s	%s","$row->name","$row->description") . "\r\n";
+		}
+	echo "Server Descriptions:\r\n\r\n$list\r\nToday's total count: $servercount";
+	exit;
+	}
+
+if ($bu_stats_mode=="serverlist") {
+	$query="select access_servers.name,access_servers_backup_styles.name as bu_method,report_backups from access_servers left join access_servers_backup_styles on
+			(access_servers.backup_style_id = access_servers_backup_styles.backup_style_id)
+			where active = 'Y'
+			and in_production = 'Y'
+			order by access_servers.name
+			";
+	$list="";
+	$pad="";
+	$res=@mysql_query($query);
+	while ($row=@mysql_fetch_object($res)) {
+		$row->bu_method=ereg_replace(" ","",$row->bu_method);
+		$list=$list . $pad . "$row->name:$row->bu_method:$row->report_backups";
+		$pad=" ";
+		}
+	echo "$list";
+	exit;
+	}
+
+if ($bu_stats_mode=="server_report") {
+	$today_mysql=date('Y-m-d');
+	if ($servername=="") die("ERROR! No server specified. Can not continue.");
+	$servername=addslashes($servername);
+	$server_info=getone("select * from access_servers where name = '$servername'");
+	
+	$delta_megs=makemegs($delta_megs);
+	$modified_megs=makemegs($modified_megs);
+	$server_megs=makemegs($server_megs);
+	$backup_megs=makemegs($backup_megs);
+	
+	if (getoneb("select * from access_servers_backup_logs where server_id = '$server_info->server_id' and logdate = '$today_mysql'")) {
+		$query_start="update ";
+		$query_end="where server_id = '$server_info->server_id' and logdate = '$today_mysql'";
+		} else { 
+		$query_start="insert into ";
+		$query_end="";
+		}
+	$query_middle=" access_servers_backup_logs set
+	server_id = '$server_info->server_id',
+	delta_megs = '$delta_megs',
+	modified_megs = '$modified_megs',
+	server_megs = '$server_megs',
+	backup_megs = '$backup_megs', 
+	logdate = '$today_mysql'
+	";
+	
+	$query_full=$query_start . $query_middle . $query_end;
+	@mysql_query($query_full);
+	
+	exit;
+	}
+
+if ($bu_stats_mode=="media_report") {
+	$today_mysql=date('Y-m-d');
+	$tag=addslashes($tag);
+	$du=makemegs($du);
+	$df=makemegs($df);
+	
+	
+	@mysql_query("insert into access_servers_backup_media_logs set
+	media_tag = '$tag',
+	backup_date = '$today_mysql',
+	du_megs = '$du',
+	df_megs = '$df'
+	");
+	exit;
+	}
+exit;
+?>

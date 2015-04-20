@@ -1,0 +1,48 @@
+<?
+require("header.phtml");
+
+
+
+echo "
+<a href=$pagename><font color=blue>Main Menu</font></a<p>
+
+<form name=add_notification method=post action=$pagename>
+<input type=hidden name=mode value=close_notification_add>
+<table border=0 cellspacing=0 cellpadding=4>
+<tr><td>
+	<b>New Notification</b>
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'","","contacts_id");echo"
+</td><td>
+	<input type=submit value=Add>
+</td></tr>
+</table>
+
+</form>
+
+
+
+
+";
+//tabledump("select * from jobinfo_close_notifications,contacts where contacts.contacts_id = jobinfo_close_notifications.contacts_id order by alphasort");
+$query="select * from jobinfo_close_notifications,contacts where contacts.contacts_id = jobinfo_close_notifications.contacts_id order by alphasort";
+
+$res=@mysql_query($query);
+
+echo "<table border=1 cellspacing=0 cellpadding=4>
+
+<tr bgcolor=#dddddd><td colspan=2 align=center>
+	<b>Current Notifications</b>
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			$row->display_name
+		</td><td>
+			<a href=$pagename?mode=notification_delete&notify_id=$row->notify_id><font color=blue><i>Delete</i></font></a>
+		</td></tr>
+		";
+	}
+echo "</table>";
+?>

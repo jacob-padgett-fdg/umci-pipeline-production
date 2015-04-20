@@ -1,0 +1,128 @@
+<?
+//require_once('querylib.inc');
+$query="select * from contacts,svc_proposals where contacts.contacts_id = svc_proposals.sales_person ";
+
+function modfix($var) {
+	$var=escapeshellcmd($var);
+	$var=ereg_replace('\\\\<','<',$var);
+	$var=ereg_replace('\\\\>','>',$var);
+	return $var;
+	}
+	
+
+if ($sales_person != "") {
+	$sales_person=escapeshellcmd($sales_person);
+	$query=$query . " and sales_person = '$sales_person' ";
+	}
+
+if ($proposal_date != "") {
+	$proposal_date=vali_date($proposal_date);
+	$proposal_date_mod=modfix($proposal_date_mod);
+	$query=$query . " and proposal_date $proposal_date_mod '$proposal_date' ";
+	}
+
+if ($customer != "") {
+	$customer=escapeshellcmd($customer);
+	$query=$query . " and customer = '$customer' ";
+	}
+
+if ($description != "") {
+	$description=escapeshellcmd($description);
+	$query=$query . " and description like '%$description%' ";
+	}
+
+if ($type != "") {
+	$type=escapeshellcmd($type);
+	$query=$query . " and type = '$type' ";
+	}
+
+if ($proposal_amount != "") {
+	$proposal_amount=escapeshellcmd($proposal_amount);
+	$proposal_amount_mod=modfix($proposal_amount_mod);
+	$query=$query . " and proposal_amount $proposal_amount_mod '$proposal_amount' ";
+	}
+
+if ($projected_bill_date != "") {
+	$projected_bill_date=ereg_replace('[-/ ]','-01-',$projected_bill_date);
+	$projected_bill_date=vali_date($projected_bill_date);
+	$projected_bill_date_mod=modfix($projected_bill_date_mod);
+	$query=$query . " and projected_bill_date $projected_bill_date_mod '$projected_bill_date' ";
+	}
+
+//if ($probability != "") {
+//	$probability=escapeshellcmd($probability);
+//	$query=$query . " and probability = '$probability' ";
+//	}
+
+if ($probability != "") {
+	$probability=escapeshellcmd($probability);
+	$probability_mod=modfix($probability_mod);
+	$query=$query . " and probability $probability_mod '$probability' ";
+	}
+
+if ($estimated_hours != "") {
+	$estimated_hours=escapeshellcmd($estimated_hours);
+	$estimated_hours_mod=modfix($estimated_hours_mod);
+	$query=$query . " and estimated_hours $estimated_hours_mod '$estimated_hours' ";
+	}
+
+if ($estimated_margin_percent != "") {
+	$estimated_margin_percent=escapeshellcmd($estimated_margin_percent);
+	$estimated_margin_percent_mod=modfix($estimated_margin_percent_mod);
+	$query=$query . " and estimated_margin_percent $estimated_margin_percent_mod '$estimated_margin_percent' ";
+	}
+
+if ($status != "") {
+	$status=escapeshellcmd($status);
+	$query=$query . " and status = '$status' ";
+	}
+
+if ($workorder_num != "") {
+	$workorder_num=escapeshellcmd($workorder_num);
+	$workorder_num_mod=modfix($workorder_num_mod);
+	$query=$query . " and workorder_num $workorder_num_mod '$workorder_num' ";
+	}
+
+if ($beaten_by != "") {
+	$beaten_by=escapeshellcmd($beaten_by);
+	$query=$query . " and beaten_by = '$beaten_by' ";
+	}
+
+if ($order_by_1 != "") {
+	$order_by_1=escapeshellcmd($order_by_1);
+	$order_by_mod_1=escapeshellcmd($order_by_mod_1);
+	$query=$query . " order by $order_by_1 $order_by_mod_1 ";
+	
+	if ($order_by_2 != "") {
+		$order_by_2=escapeshellcmd($order_by_2);
+		$order_by_mod_2=escapeshellcmd($order_by_mod_2);
+		$query=$query . ",$order_by_2 $order_by_mod_2 ";
+		}
+	}
+
+
+
+
+
+
+
+session_register('last_svc_prop_query');
+$last_svc_prop_query=$query;
+
+echo "<html><head><title>Proposal log search results</title></head><body bgcolor=#ffffff>
+<a href=$pagname?mode=proposals_search><font color=blue>Return to Proposal Search</font></a>
+";
+
+
+
+
+
+
+
+
+
+
+proplist($query);
+
+
+?>

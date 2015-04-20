@@ -1,0 +1,65 @@
+<?
+if (!(($admin_check)||($billing_check))) die_security();
+
+require('header.phtml');
+
+echo "
+<a href=$pagename><font color=blue>Exit</font></a><p>
+
+<form name=job_timesheets method=post action=$pagename>
+<input type=hidden name=mode value=admin_reports_timesheets_by_contract>
+<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=#dddddd><td colspan=2 align=center>
+	<font size=+1><b>Timesheets by Contract</b></font>
+</td></tr>
+
+<tr><td>
+	<b>Contract Number:</b>
+</td><td>
+	<input type=text size=10 name=contract_num>
+</td></tr>
+
+<tr><td>
+	<b>Only timesheets with phase:</b>
+</td><td>
+	<input type=text size=10 name=phase_code>
+</td></tr>
+
+<tr><td>
+	<b>First or Only Week Ending Date</b>
+</td><td>
+	";datebox("","job_timesheets.fwe");echo"
+</td></tr>
+
+<tr><td>
+	<b>Last Week Ending Date</b>
+</td><td>
+	";datebox("","job_timesheets.lwe");echo"
+</td></tr>
+
+<tr><td>
+	<b>Job&nbsp;totals&nbsp;on&nbsp;sheet</b>
+</td><td>
+	<input type=checkbox name=\"job_totals\">
+</td></tr>
+
+<tr><td>
+	<b>Hide&nbsp;other&nbsp;Jobs</b>
+</td><td>
+	<input type=checkbox name=\"suppress_other_jobs\">
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit>
+</td></tr>
+</form>
+";
+
+
+
+
+
+
+
+
+?>

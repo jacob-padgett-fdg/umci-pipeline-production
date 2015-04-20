@@ -1,0 +1,106 @@
+<?
+require_once('application_edit_form_start.phtml');
+
+if ($education_history_id!="") {
+	$education_history_id=addslashes($education_history_id);
+	$education_info=getone("select * from hr_applications_education_history where education_history_id = '$education_history_id'");
+	}
+
+
+echo "
+<script>
+function form_verify(newmode) {
+	if (document.application_edit.school_name.value!='') { 
+		school_type=document.application_edit.school_type.options[document.application_edit.school_type.selectedIndex].value;
+		if (document.application_edit.school_type.options[document.application_edit.school_type.selectedIndex].value=='') { 
+		document.application_edit.school_type.focus(); 
+		alert('School type is a required field.'); 
+		return 0; }
+		if (document.application_edit.location.value=='') { alert('Location is a required field.'); return 0; }
+		if (document.application_edit.diploma.value=='') { 
+			document.application_edit.diploma.focus(); 
+			if (school_type=='High School') alert('Please indicate YES or NO in the Diploma/Degree field.'); 
+			else alert('Diploma/Degree is a required field. Please at least indicate YES or NO.'); 
+			return 0; 
+			}
+		}
+	document.application_edit.target_app_mode.value=newmode;
+	document.application_edit.submit();
+	}
+</script>
+<input type=hidden name=education_history_id value=\"$education_history_id\">
+
+<table border=0 cellspacing=4 cellpadding=0 width=100% bgcolor=$app_form_bg>
+<tr><td colspan=4 align=right width=100%>
+	
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr><td width=25%>&nbsp;
+	</td><td width=50% align=center>
+		<input type=button value=\"More Education History\" onclick=form_verify(\"education\")>
+	</td><td width=25% align=right>
+		<input type=button value=\"Next Section\" onclick=form_verify(\"job_references\")>
+	</td></tr>
+	</table>
+
+</td></tr>
+<tr><td colspan=4 align=center>
+<h3>Education</h3>
+</td></tr>
+
+<tr><td>
+	<b>School Type</b>
+</td><td>
+	<select name=school_type>
+	<option value=\"$education_info->school_type\">$education_info->school_type</option>
+	<option value=\"High School\">High School</option>
+	<option value=\"College\">College</option>
+	<option value=\"Graduate School\">Graduate School</option>
+	<option value=\"Training\">Training</option>
+	<option value=\"Vocational\">Vocational</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>School Name</b>
+</td><td>
+	<input type=text size=30 name=school_name value=\"$education_info->school_name\">
+</td><td colspan=2>
+	<b>Location</b><input type=text size=12 name=location value=\"$education_info->location\">
+</td></tr> 
+
+<tr><td>
+	<b>Diploma/Degree</b>
+</td><td>
+	<input type=text size=20 name=diploma value=\"$education_info->diploma\">
+</td><td>
+	<b>Major</b>
+</td><td>
+	<input type=text name=major value=\"$education_info->major\">
+</td></tr>
+";
+
+$res=@mysql_query("select * from hr_applications_education_history where application_id = '$application_id'");
+echo "<tr><td colspan=4>&nbsp;<hr></td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->education_history_id==$education_history_id) continue;
+	echo "<tr><td></td></tr>";
+	echo "<tr bgcolor=#eeeeee><td colspan=4>
+			<table border=1 cellspacing=0 cellpadding=2 width=100%>
+				<tr><td width=25%>
+					$row->school_type
+				</td><td width=50%>
+					<a href=javascript:form_verify(\"education&education_history_id=$row->education_history_id\")>$row->school_name</a>
+				</td><td width=25%>
+					$row->location
+				</td></tr>
+			</table>
+		</td></tr>";
+	
+	}
+
+
+
+echo"</table></center>";
+require_once('application_edit_form_end.phtml');
+
+?>

@@ -1,0 +1,27 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified!");
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=admin_settings><font color=blue>Return to admin settings</font></a>
+
+<center><h3>Maintenance Types</h3></center><hr>
+<form name=maintenance_types method=post action=$pagename>
+<input type=hidden name=mode value=lists_maintenance_type_edit>
+<input type=submit value=Add>
+</form>
+";
+
+//tabledump("select * from svc_maint_types");
+
+echo "<table border=1 cellspacing=0 cellpadding=3>
+<tr><td bgcolor=#eeeeee><b>Current Maintenance Types</b></td></tr>
+
+";
+
+$res=@mysql_query("select * from svc_maint_types");
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td><a href=$pagename?mode=lists_maintenance_type_edit&maint_type_id=$row->maint_type_id><font color=blue>$row->maint_type</font></a></td></tr>";
+	}
+echo "</table>";
+?>

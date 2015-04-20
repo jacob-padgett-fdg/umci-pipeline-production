@@ -1,0 +1,62 @@
+<?
+echo "<body bgcolor=white>
+<script>
+window.focus();
+</script>
+";
+
+if ($job_num=="") {
+	echo "Error: You must first specify a job number.<p>
+	<a href=javascript:self.close();><font color=blue>CLOSE</font></a>";
+	exit;
+	}
+
+switch ($job_num) {
+	case "Vacation":
+	case "Sick":
+	case "Holiday":
+	case "Training":
+		echo "<center><b><p><p>Note: The phase code for type \"$job_num\" is automatic. You don't need to specify anything here.</b><p><a href=javascript:self.close();><font color=blue>CLOSE</font></a>";
+		exit;
+		break;
+}
+
+
+
+$job_info=is_valid_viewpoint_job(escapeshellcmd($job_num));
+
+if (!($job_info)) {
+	echo "Error: Invalid job specified. Please change your job, and try again.<p>
+	<a href=javascript:self.close();><font color=blue>CLOSE</font></a>";
+	exit;
+	}
+	
+$phases_locked=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_info->job' and LockPhases = 'Y'");
+
+if ($phases_locked) {
+	$query="select * from JCJP with (NOLOCK) INNER JOIN JCCH with (NOLOCK) on JCJP.JCCo = JCCH.JCCo and JCJP.Job = JCCH.Job and JCJP.Phase = JCCH.Phase where JCJP.Job = '$job_info->job' and JCJP.JCCo = 1 and JCJP.ActiveYN = 'Y' and JCCH.CostType = '1'";
+	} else { 
+	$query="select * from JCPC with (NOLOCK),JCPM with (NOLOCK)  where JCPC.Phase = JCPM.Phase and JCPC.CostType = 1 and JCPC.PhaseGroup = 1 and JCPM.PhaseGroup = 1";
+	}
+
+echo "<table border=0>
+<script>
+function setvalue(phase) {
+	opener.document.add_time.phase.value=phase;
+	opener.document.add_time.hours.focus();
+	self.close();
+	}
+</script>
+";
+$res=@mssql_query($query);
+while($row=@mssql_fetch_object($res)) {
+	$row->Phase=ereg_replace(" *","",$row->Phase);
+	$row->Phase=ereg_replace("-*$","",$row->Phase);
+	echo "<tr><td>
+			<a href=javascript:setvalue('$row->Phase');><font color=blue>$row->Phase</a>
+		</td><td>
+			$row->Description
+		</td></tr>";
+	}
+echo "</table></body>";
+?>

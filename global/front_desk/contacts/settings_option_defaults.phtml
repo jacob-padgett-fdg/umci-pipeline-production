@@ -1,0 +1,31 @@
+<?
+$option_defaults=array(
+	'readonly'=>'N',
+	'locked'=>'N',
+	'hidden_image'=>'N',
+	'short_info'=>'N',  
+	'extra_info'=>'N', 
+	'hide_tabs'=>'N',   
+	'hidden_input'=>'N',
+	'input_size'=>'25',
+	'jobinfo_id'=>'',
+	'show_project_team'=>'Y',
+	'hide_everything_tab'=>'N',
+	'hide_employees_tab'=>'N');
+
+$options_encoded=urlencode(serialize($options));
+$options_form_encoded=htmlspecialchars(serialize($options));
+
+if ($options['readonly']=='') $options['readonly']=$option_defaults['readonly'];
+if ($options['hidden_image']=='') $options['hidden_image']=$option_defaults['hidden_image'];
+if ($options['short_info']=='') $options['short_info']=$option_defaults['short_info'];
+if ($options['extra_info']=='') $options['extra_info']=$option_defaults['extra_info'];
+if ($options['hide_tabs']=='') $options['hide_tabs']=$option_defaults['hide_tabs'];
+if ($options['hidden_input']=='') $options['hidden_input']=$option_defaults['hidden_input'];
+if ($options['input_size']=='') $options['input_size']=$option_defaults['input_size'];
+if ($options['jobinfo_id']=='') $options['jobinfo_id']=$option_defaults['jobinfo_id'];
+if ($options['show_project_team']=='') $options['show_project_team']=$option_defaults['show_project_team'];
+if ($options['hide_everything_tab']=='') $options['hide_everything_tab']=$option_defaults['hide_everything_tab'];
+if ($options['hide_employees_tab']=='') $options['hide_employees_tab']=$option_defaults['hide_employees_tab'];
+
+?>

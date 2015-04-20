@@ -1,0 +1,100 @@
+<?
+require_once('querylib.inc');
+
+$bid_result=escapeshellcmd($bid_result);
+$status=escapeshellcmd($status);
+$bid_date=vali_date($bid_date);
+$dwgs_ordered=checkfix($dwgs_ordered);
+$dwgs_received=checkfix($dwgs_received);
+$dwgs_returned=checkfix($dwgs_returned);
+//$bid_time=escapeshellcmd($bid_time);
+$bid_time=timefix($bid_time);
+$project=escapeshellcmd($project);
+$location=escapeshellcmd($location);
+$to_lead=escapeshellcmd($to_lead);
+$to_plm=escapeshellcmd($to_plm);
+$to_htg=escapeshellcmd($to_htg);
+$to_metal=escapeshellcmd($to_metal);
+$to_proc=escapeshellcmd($to_proc);
+$to_prop=escapeshellcmd($to_prop);
+$type=escapeshellcmd($type);
+$bid_bond=checkfix($bid_bond);
+$refundable=checkfix($refundable);
+$deposit=clean_int($deposit);
+
+if (!  ((eregi("^http://",$bid_url)) || (eregi("ftp://",$bid_url)))  )
+	$bid_url="http://$bid_url"; $bid_url=escapeshellcmd($bid_url);
+$bid_url=escapeshellcmd($bid_url);
+$comments=escapeshellcmd($comments);
+
+if ($bidlist_id == "") {
+	$new=1;
+	$command="insert into ";
+	$where_clause=",create_date = now()";
+	} else {
+	$new=0;
+	$command="update ";
+	$bidlist_id=escapeshellcmd($bidlist_id);
+	$where_clause=" where bidlist_id = '$bidlist_id'";
+	}
+
+$forward_back_to_item=0;
+if (($company!="") && ($bid_amount!="")) {
+	$company=escapeshellcmd($company);
+	$bid_amount=escapeshellcmd($bid_amount);
+	$bid_amount=ereg_replace("\..*$","",$bid_amount);
+	$bid_amount=ereg_replace('[^0-9]',"",$bid_amount);
+	
+	$tmpqry="insert into bidlist_results set bidlist_id = '$bidlist_id',company='$company',bid_amount='$bid_amount'";
+	@mysql_query($tmpqry);
+	
+	$forward_back_to_item=1;
+	}
+
+
+
+$querybase=" bidlist set
+status = '$status',
+show_in_bidlist = 'Y',
+creator = '$global_user_id',
+bid_date = '$bid_date',
+dwgs_ordered = '$dwgs_ordered',
+dwgs_received = '$dwgs_received',
+dwgs_returned = '$dwgs_returned',
+refundable = '$refundable',
+deposit = '$deposit',
+bid_time = $bid_time,
+project = '$project',
+location = '$location',
+to_lead = '$to_lead',
+to_plm = '$to_plm',
+to_htg = '$to_htg',
+to_metal = '$to_metal',
+to_proc = '$to_proc',
+to_prop = '$to_prop',
+type = '$type',
+bid_bond = '$bid_bond',
+bid_url = '$bid_url',
+comments = '$comments',
+bid_result = '$bid_result',
+bld_square_feet = '$bld_square_feet',
+notified = 'N'
+";
+
+
+$query="$command $querybase $where_clause";
+echo "<hr>$query<hr>";exit;
+
+$res=@mysql_query($query);
+
+if (!($res)) die("ERROR: Query failed. Please contact your system administrator.<p>Failed query:<hr>$query");
+
+if ($forward_back_to_item==1) {
+	forward("bidlist_edit&bidlist_id=$bidlist_id");
+	} else {
+	forward('bidlist_show');
+	}
+
+
+
+?>

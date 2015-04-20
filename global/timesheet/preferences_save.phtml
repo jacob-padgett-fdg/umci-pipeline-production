@@ -1,0 +1,22 @@
+<?
+$pref_paper_size=escapeshellcmd($pref_paper_size);
+$pref_timesheet_hrs_threshold=escapeshellcmd($pref_timesheet_hrs_threshold);
+$pref_timesheet_reminder_hour=escapeshellcmd($pref_timesheet_reminder_hour);
+$pref_timesheet_svl=escapeshellcmd($pref_timesheet_svl);
+$pref_timesheet_svemail=checkfix($pref_timesheet_svemail);
+
+$pref_timesheet_fab_phases_only=checkfix($pref_timesheet_fab_phases_only);
+$pref_timesheet_fab_phases_warn=checkfix($pref_timesheet_fab_phases_warn);
+
+session_register('force_timesheet_status_new');
+$force_timesheet_status_new='N';
+if ($global_user->pref_timesheet_always_new_toggle=='Y') {
+	//echo "$force_timesheet_status_new_set";exit;
+	if ($force_timesheet_status_new_set=="on") $force_timesheet_status_new='Y';
+	}
+
+$query="update contacts set pref_paper_size = '$pref_paper_size',pref_timesheet_hrs_threshold='$pref_timesheet_hrs_threshold',pref_timesheet_reminder_hour = '$pref_timesheet_reminder_hour',pref_timesheet_svl = '$pref_timesheet_svl', pref_timesheet_svemail = '$pref_timesheet_svemail',pref_timesheet_fab_phases_only = '$pref_timesheet_fab_phases_only',pref_timesheet_fab_phases_warn = '$pref_timesheet_fab_phases_warn'
+where contacts_id = '$global_user->contacts_id'";
+@mysql_query($query);
+forward('main');
+?>

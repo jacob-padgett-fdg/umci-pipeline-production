@@ -1,0 +1,72 @@
+<?
+//echo "$REQUEST_URI";
+//require_once('querylib.inc');
+require_once('header.phtml');
+if ($return_to!="") $return_to=addslashes($return_to);
+if ($company_id!="") $company_id=addslashes($company_id);
+
+
+if ($company_id!="") {
+
+	if ($company_id=='968') {
+		echo "Searching for new UMC Employees... Please wait...";
+		flush();
+		include("contact_maint_support_connect.phtml");
+		include("contact_maint_support_employees.phtml");
+		flush();
+		$done_url=base64_decode($return_to);
+		echo "Any missing UMC Employees should have been added now. If they
+			haven't shown up, please contact HR, Payroll, or Jeff Buck.<hr>
+			Click <a href=\"$done_url\"><font color=blue>here</font></a> to continue....
+			"; 
+		exit;
+		}
+	
+	$res=@mysql_query("select * from contacts where contact_type = 'contact' and company_id = '$company_id' order by alphasort");
+	$rowcount=@mysql_num_rows($res);
+	if ($rowcount==0) $confirm='Y';
+	
+	if ($confirm=='Y') {
+		forward("main&mode=contacts_edit&contact_type=contact&company_id=$company_id&return_to=$return_to");
+		exit;
+		}
+	
+	echo "<table border=1 cellspacing=0 cellpadding=4>";
+	while ($row=@mysql_fetch_object($res)) {
+		echo "<tr><td>$row->display_name</td><td>";
+		contact_edit_in_popup($row->contacts_id,"Edit",1);
+		echo "</td></tr>";
+		}
+	$abort_url=base64_decode($return_to);
+	echo "
+	</table>
+	Are you sure the person isn't listed above? 
+	<a href=$pagename?mode=$mode&company_id=$company_id&confirm=Y&return_to=$return_to><font color=blue>Yes</font></a>/
+	<a href=$abort_url><font color=blue>No</font></a>";
+} else {
+
+echo "
+<script>
+function apply_changes() {
+	document.contact_company_select.submit();
+	}
+</script>
+
+<form name=contact_company_select method=GET action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=return_to value=\"$return_to\">
+Please select the company this person works for:";
+
+contactsbox("select * from contacts where contact_type = 'company'","","company_id","opener.apply_changes()",0,"contact_wizard_popup");
+
+echo "</form>";
+
+
+
+}
+
+
+
+
+
+?>

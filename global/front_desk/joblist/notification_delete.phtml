@@ -1,0 +1,6 @@
+<?
+if ($notify_id=="") die("ERROR: Application error! Please contact your system administrator.");
+else $notify_id=addslashes($notify_id);
+@mysql_query("delete from jobinfo_close_notifications where notify_id = '$notify_id'");
+forward('close_notifications_list');
+?>

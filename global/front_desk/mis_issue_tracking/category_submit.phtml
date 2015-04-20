@@ -1,0 +1,28 @@
+<?
+require_once('querylib.inc');
+
+$category_name=addslashes($category_name);
+$category_description=addslashes($category_description);
+
+if ($it_category_id!="") {
+	$it_category_id=addslashes($it_category_id);
+	$query="update mis_issue_categories set
+		category_name = '$category_name',
+		category_description = '$category_description'
+		where
+		it_category_id = '$it_category_id'";
+	} else {
+	$query="insert into mis_issue_categories set
+	category_name = '$category_name',
+	category_description = '$category_description'";
+	}
+
+
+$res=@mysql_query($query);
+
+if (!($res)) {
+	die("ERROR: The update you requested could not be completed. Please contact your system administrator.<hr>The query that had the error:<br>$query");
+	}
+
+forward('categories');
+?>

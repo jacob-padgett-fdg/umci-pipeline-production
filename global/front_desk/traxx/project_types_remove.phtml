@@ -1,0 +1,10 @@
+<?
+$bidlist_id=escapeshellcmd($bidlist_id);
+$project_type_id=escapeshellcmd($project_type_id);
+$query="delete from bidlist_bid_projtypes where project_type_id = '$project_type_id' and bidlist_id = '$bidlist_id'";
+@mysql_query($query);
+forward("project_types_edit&bidlist_id=$bidlist_id");
+
+
+
+?>

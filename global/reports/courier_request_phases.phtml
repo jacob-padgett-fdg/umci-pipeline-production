@@ -1,0 +1,73 @@
+<?
+//require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+
+if ($job=="") die('none');
+$job=addslashes($job);
+$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$job'");
+
+
+function is_valid_viewpoint_job($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM with (NOLOCK) where JobStatus = 1 and JCCo = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from JCJM with (NOLOCK) where JobStatus = 1 and JCCo = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
+
+
+$vp_job_info=is_valid_viewpoint_job($jobinfo->contract_num);
+$phases_locked=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$vp_job_info->job' and LockPhases = 'Y'");
+
+if ($phases_locked) {
+	$query="select * from JCJP with (NOLOCK) INNER JOIN JCCH with (NOLOCK) on JCJP.JCCo = JCCH.JCCo and JCJP.Job = JCCH.Job and JCJP.Phase = JCCH.Phase where JCJP.Job = '$vp_job_info->job' and JCJP.JCCo = 1 and JCJP.ActiveYN = 'Y' and JCCH.CostType = '1'";
+	} else { 
+	$query="select * from JCPC with (NOLOCK),JCPM with (NOLOCK) where JCPC.Phase = JCPM.Phase and JCPC.CostType = 1 and JCPC.PhaseGroup = 1 and JCPM.PhaseGroup = 1";
+	}
+
+$res=@mssql_query($query);
+
+echo "
+<select name=phase>
+<option></option>
+";
+while ($row=@mssql_fetch_object($res)) {
+	$phase=ereg_replace("- *$","",$row->Phase);
+	$phase=ereg_replace("- *$","",$phase);
+	$row->Description=substr($row->Description,0,14);
+	echo "<option>$phase - $row->Description</option>";
+	}
+echo "</select>";
+?>

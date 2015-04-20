@@ -1,0 +1,483 @@
+<?
+require('mh_lib.inc');
+require('report_lib.inc');
+
+if ($action!="all_columns_output_csv") {
+	require("header.phtml");
+	mh_navs_header();
+	}
+
+include("viewpoint_libs.inc");
+include("viewpoint_connect_ro.phtml");
+//echo "hi";
+$today_start=date('Y-m-d 0:0:0');
+$today_now=date('Y-m-d G:i:s');
+
+
+
+$query="
+ SELECT HQCO.HQCo, PRCA.PRCo, PRCA.Craft, PRCA.Employee, PREH.SortName, PREH.LastName, PREH.FirstName, PREH.MidName, PREH.SSN, PRCA.EDLType, PRCA.Basis, PRCA.Amt, PRCA.PREndDate, PRCA.EDLCode, PRCA.Class
+  FROM   Viewpoint.dbo.PRCA PRCA with (NOLOCK) 
+  INNER JOIN HQCO with (NOLOCK) ON PRCA.PRCo=HQCO.HQCo
+  LEFT OUTER JOIN PREH with (NOLOCK) ON (PRCA.PRCo=PREH.PRCo) AND (PRCA.Employee=PREH.Employee)
+   
+   WHERE  HQCO.HQCo=1 AND (PRCA.PREndDate>={ts '2011-04-01 00:00:00'} AND PRCA.PREndDate<{ts '2011-05-02 00:00:00'}) AND (PRCA.Craft='242' OR PRCA.Craft='252' OR PRCA.Craft='292')
+    ORDER BY PRCA.PRCo
+";
+$query="
+ SELECT top 100 HQCO.HQCo, PRCA.PRCo, PRCA.Craft, PRCA.Employee, PREH.SortName, PREH.LastName, PREH.FirstName, PREH.MidName, PREH.SSN, PRCA.EDLType, PRCA.Basis, PRCA.Amt, PRCA.PREndDate, PRCA.EDLCode, PRCA.Class
+  FROM   Viewpoint.dbo.PRCA PRCA with (NOLOCK) 
+  INNER JOIN HQCO with (NOLOCK) ON PRCA.PRCo=HQCO.HQCo
+  LEFT OUTER JOIN PREH with (NOLOCK) ON (PRCA.PRCo=PREH.PRCo) AND (PRCA.Employee=PREH.Employee)
+   
+   WHERE  HQCO.HQCo=1 AND 
+   	(
+   	PRCA.PREndDate>={ts '2011-04-01 00:00:00'} AND 
+   	PRCA.PREndDate<{ts '2011-05-02 00:00:00'}) 
+   	AND 
+   	(PRCA.Craft='242' OR PRCA.Craft='252' OR PRCA.Craft='292')
+    ORDER BY PRCA.Craft desc, PRCA.PRCo
+";
+
+/*$query="
+ SELECT top 100 
+ 	HQCO.HQCo, 
+ 	PRCA.PRCo, PRCA.Craft, PRCA.Employee, PREH.SortName, PREH.LastName, PREH.FirstName, PREH.MidName, PREH.SSN, PRCA.EDLType, PRCA.Basis, PRCA.Amt, PRCA.PREndDate, PRCA.EDLCode, PRCA.Class
+  FROM   (Viewpoint.dbo.PRCA PRCA INNER JOIN Viewpoint.dbo.HQCO HQCO ON PRCA.PRCo=HQCO.HQCo) LEFT OUTER JOIN Viewpoint.dbo.PREH PREH ON (PRCA.PRCo=PREH.PRCo) AND (PRCA.Employee=PREH.Employee)
+   WHERE  
+   HQCO.HQCo=1 
+  AND (
+   PRCA.PREndDate>={ts '2011-04-01 00:00:00'} 
+   AND PRCA.PREndDate<{ts '2011-05-02 00:00:00'}
+   )
+   ORDER BY PRCA.PRCo
+";
+
+*/
+//ms_tabledump($query);die();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//ms_tabledump("select top 20 * from HQMA where TableName = 'bJCJM' order by DateTime desc");
+///////ms_tabledump("select * from HQMA where DateTime > '$today_start' order by DateTime desc");
+//ms_tabledump("select top 500 * from HQMA where TableName = 'bHRRM' order by DateTime desc");
+//ms_tabledump("select top 500 * from HQMA where TableName = 'bHRRM' and FieldName = 'LastName' order by DateTime desc");
+//ms_tabledump("select top 500 TableName from HQMA group by TableName order by TableName");
+//ms_tabledump("select top 20 * from HQMA where Tablename = 'bHRRM'");
+//ms_tabledump("select top 20 * from SMCI");
+
+//ms_tabledump("select * from sysobjects where xtype = 'U' and name like '%HQ%' order by name");
+
+//ms_tabledump("select * from sysobjects where xtype = 'U' order by name");
+//ms_tabledump("select top 20 * from DDTH");exit;
+
+if ($action=="") $action="table_list";
+
+if ($action=="all_columns_output_csv") {
+	header("Content-disposition: inline; filename=\"data_zones.csv\"");
+	header("Content-type: application/octet-stream; ");
+	header("Content-Transfer-Encoding: binary");
+	header("Expires: 0");
+	header("Cache-Control: private");
+	header("Pragma: cache");
+
+	$res=@mysql_query("select * from zone_data_tables left join zone_data_columns on (zone_data_tables.zone_data_tables_id = zone_data_columns.zone_data_tables_id) where zone_data_tables.active = 'Y' and zone_data_columns.active = 'Y' order by table_name,column_name");
+	echo "Column,Zone,Column Description\r\n";
+	$last_table_name="";
+	while ($row=@mysql_fetch_object($res)) {
+		if ($last_table_name!=$row->table_name) {
+			echo "$row->table_name - $row->table_description\r\n";
+			} 
+		echo "$row->column_name,$row->column_zone,$row->column_description\r\n";
+		$last_table_name=$row->table_name;
+		}
+	exit;
+	}
+
+if ($action=="all_columns_output") {
+	//tabledump("select * from zone_data_tables left join zone_data_columns on (zone_data_tables.zone_data_tables_id = zone_data_columns.zone_data_tables_id) where zone_data_tables.active = 'Y' and zone_data_columns.active = 'Y' order by table_name,column_name");
+	$res=@mysql_query("select * from zone_data_tables left join zone_data_columns on (zone_data_tables.zone_data_tables_id = zone_data_columns.zone_data_tables_id) where zone_data_tables.active = 'Y' and zone_data_columns.active = 'Y' order by table_name,column_name");
+	echo "
+	<a href=$pagename?mode=$mode&report_name=$report_name&action=all_columns_output_csv><font color=blue>Download CSV</font></a><br>
+	<table border=1 cellspacing=0 cellpadding=1>
+	<tr bgcolor=$fd_color_4><td colspan=5 align=center>
+		<b>Viewpoint/FD table columns</b>
+	</td></tr>
+	
+	<tr><td>
+		<i>Table</i>
+	</td><td>	
+		<i>Table Description</i>
+	</td><td>
+		<i>Column</i>
+	</td><td>
+		<i>Zone</i>
+	</td><td>
+		<i>Column Description</i>
+	</td></tr>
+	";
+	
+	while ($row=@mysql_fetch_object($res)) {
+		echo "<tr><Td>
+				<a href=$pagename?mode=$mode&report_name=$report_name&action=table_edit&zone_data_tables_id=$row->zone_data_tables_id><font color=blue>$row->table_name</font></a>
+			</td><td>
+				$row->table_description
+			</td><td>
+				<a href=$pagename?mode=$mode&report_name=$report_name&action=column_edit&zone_data_columns_id=$row->zone_data_columns_id><font color=blue>$row->column_name</font></a>
+				
+			</td><td>
+				$row->column_zone
+			</td><td>
+				$row->column_description
+			</td></tr>";
+		}
+	echo "</table>";	
+	mh_navs_footer();
+	exit;
+	}
+
+if ($action=="table_update") {
+	$table_info=getoneb("select * from zone_data_tables where zone_data_tables_id = '" . mysql_real_escape_string($_REQUEST['zone_data_tables_id']) . "'");
+	//if (!($table_info)) die("Shit");
+	$table_description=addslashes($table_description);
+	$table_zone_affinity=addslashes($table_zone_affinity);
+	$table_name=addslashes($table_name);
+	$active=checkfix($active);
+	if (!($table_info)) {
+		$query_start="insert into ";
+		$query_end="";
+		} else {
+		$query_start="update ";
+		$query_end=" where zone_data_tables_id = '$table_info->zone_data_tables_id'";
+		}
+	$query_middle="zone_data_tables set table_name = '$table_name', table_description = '$table_description', active = '$active', table_zone_affinity = '$table_zone_affinity'";
+	//$zone_data_tables_id=addslashes($zone_data_tables_id);
+	//$res=@mysql_query("$query_start zone_data_tables set table_name = '$table_name', table_description = '$table_description', active = '$active', table_zone_affinity = '$table_zone_affinity' where zone_data_tables_id = '$zone_data_tables_id' $query_end");
+	$res=@mysql_query($query_start . $query_middle . $query_end);
+	if (!($res)) die ("update error: failed query - update zone_data_tables set table_name = '$table_name', table_description = '$table_description', active = '$active', table_zone_affinity = '$table_zone_affinity' where zone_data_tables_id = '$zone_data_tables_id'");
+	$action="table_list";
+	}
+
+if ($action=="column_update") {
+	$column_info=getoneb("select * from zone_data_columns where zone_data_columns_id = '" . mysql_real_escape_string($_REQUEST['zone_data_columns_id']) . "'");
+	//die("select * from zone_data_columns where zone_data_columns_id = '" . mysql_real_escape_string($_REQUEST['zone_data_columns_id']) . "'");
+	//if (!($table_info)) die("Shit");
+	$column_name=addslashes($column_name);
+	$column_description=addslashes($column_description);
+	$column_zone=addslashes($column_zone);
+	$active=checkfix($active);
+	if (!($column_info)) {
+		$query_start="insert into ";
+		$query_end="";
+		} else {
+		$query_start="update ";
+		$query_end=" where zone_data_columns_id = '$column_info->zone_data_columns_id'";
+		}
+	$query_middle="zone_data_columns set column_name = '$column_name', column_description = '$column_description', active = '$active', column_zone = '$column_zone'";
+	//$zone_data_tables_id=addslashes($zone_data_tables_id);
+	//$res=@mysql_query("$query_start zone_data_tables set table_name = '$table_name', table_description = '$table_description', active = '$active', table_zone_affinity = '$table_zone_affinity' where zone_data_tables_id = '$zone_data_tables_id' $query_end");
+	//$res=@mysql_query("$query_start zone_data_tables set table_name = '$table_name', table_description = '$table_description', active = '$active', table_zone_affinity = '$table_zone_affinity' where zone_data_tables_id = '$zone_data_tables_id' $query_end");
+	$res=@mysql_query($query_start . $query_middle . $query_end);
+	//die($query_start . $query_middle . $query_end);
+	if (!($res)) die($query_start . $query_middle . $query_end);
+	$action="table_edit";
+	$zone_data_tables_id=$column_info->zone_data_tables_id;
+	}
+
+
+if ($action=="column_add") {
+	$zone_data_tables_id=mysql_real_escape_string($zone_data_tables_id);
+	$column_name=mysql_real_escape_string($column_name);
+	$column_type=mysql_real_escape_string($column_type . " (" . $length . ")");
+	$column_zone=mysql_real_escape_string($column_zone);
+	$query="insert into zone_data_columns set
+		zone_data_tables_id = '$zone_data_tables_id',
+		column_name = '$column_name',
+		column_type = '$column_type',
+		column_zone = '$column_zone'";
+	@mysql_query($query);
+	$action="table_edit";
+	$show_vp_columns="Y";
+	//mh_navs_footer();
+	//exit;
+	}
+
+
+if ($action=="table_edit") {
+	$table_info=getoneb("select * from zone_data_tables where zone_data_tables_id = '" . addslashes($zone_data_tables_id) . "'");
+	//if (!($table_info)) echo ("<font size=+1 color=red>Error loading table information!</font><br>");
+	$table_info->active=checkbreak($table_info->active);
+	if ($table_info) $print_table_name=$table_info->table_name;
+	else $print_table_name="Add New Table";
+	if ($print_table_name=="") $print_table_name="?????";
+	$vp_table_info=ms_getoneb("select * from DDTH with (NOLOCK) where TableName = '$table_info->table_name'");
+	//ms_tabledump("select * from DDTH where TableName = '$table_info->table_name'");
+	
+	echo "
+	<a href=$pagename?mode=$mode&report_name=$report_name><font color=blue>Cancel</font></a>
+	<form name=table_edit method=post action=$pagename>
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=$report_name>
+	<input type=hidden name=action value=table_update>
+	<input type=hidden name=zone_data_tables_id value=$table_info->zone_data_tables_id>
+	<table border=1 cellspacing=0 cellpadding=2>
+	<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+		<b>$print_table_name</b>
+	</td></tr>
+	
+	<tr><td colspan=2 align=center>
+		<i>$vp_table_info->Description</i>
+	</td></tr>
+	
+	<tr><td>
+		Name:
+	</td><td>
+		<input type=text name=table_name value=$table_info->table_name>
+	</td></tr>
+	
+	<tr><td>
+		Description
+	</td><td>
+		<input type=text name=table_description value=\"$table_info->table_description\">
+	</td></tr>
+	
+	<tr><td>
+		Zone Affinity
+	</td><td>
+		<select name=table_zone_affinity>
+		<option>$table_info->table_zone_affinity</option>
+		<option>orange</option>
+		<option>red</option>
+		</select>
+	</td></tr>
+	
+	<tr><td>
+		Active
+	</td><td>
+		<input type=checkbox name=active $table_info->active>
+	</td></tr>
+	
+	<tr><td colspan=2 align=center>
+		<a href=$pagename?mode=$mode&report_name=$report_name&action=table_edit&sample_data=Y&zone_data_tables_id=$table_info->zone_data_tables_id><font color=blue><i>Sample data</i></font></a><p>
+		<a href=$pagename?mode=$mode&report_name=$report_name&action=table_edit&show_vp_columns=Y&zone_data_tables_id=$table_info->zone_data_tables_id><font color=blue><i>Show VP Columns</i></font></a>
+	</td></tr>
+
+
+
+	<tr><td colspan=2 align=right>
+		<input type=submit value=Save>
+	</td></tr>
+	
+	</table>
+	</form>
+	";
+
+	//}
+	if ($show_vp_columns=="Y") {
+		//$sample_table=getone("select * from zone_data_tables where zone_data_tables_id = '" . addslashes($zone_data_tables_id) . "'");
+		////////$sample_table=$table_info;
+		$table_cols=@mssql_query("select top 1 * from $table_info->table_name");
+		//if (!($sample_table)) die("error - invalid sample table information");
+		$count=0;
+		echo "<table border=1 cellspacing=0 cellpadding=1><tr bgcolor=$fd_color_4><td align=center colspan=4><b>Viewpoint Columns</b></td></tr>
+		<tr><td>
+			<i>Name</i>
+		</td><td>
+			<i>Type</i>
+		</td><td>
+			<i>Length</i>
+		</td><td>
+			<i>action</i>
+		</td></tr>";
+		
+		while ($c_info=@mssql_fetch_field($table_cols,$count)) {
+			$count++;
+			$bgcolor="#ffffff";
+			//("select * from zone_data_columns where zone_data_tables_id = zone_data_tables_id = '$table_info->zone_data_tables_id'")) {
+			//die("select * from zone_data_columns where zone_data_tables_id = '$table_info->zone_data_tables_id' and column_name = '$c_info->name'");
+			if (!($current_mysql=getoneb("select * from zone_data_columns where zone_data_tables_id = '$table_info->zone_data_tables_id' and column_name = '$c_info->name'"))) {
+				$bgcolor="#bbbbbb";
+				}
+			echo "<tr bgcolor=\"$bgcolor\"><td>
+					$c_info->name
+				</td><td>
+					$c_info->type
+				</td><td>
+					$c_info->max_length
+				</td><td>
+					";
+					if (!($current_mysql)) {
+						echo "<a href=\"$pagename?mode=$mode&report_name=$report_name&action=column_add&column_name=$c_info->name&column_zone=$table_info->table_zone_affinity&column_type=$c_info->type&length=$c_info->max_length&zone_data_tables_id=$table_info->zone_data_tables_id\"><font color=blue><i>add</i></font></a>";
+						} else {
+						echo "<a href=\"$pagename?mode=$mode&report_name=$report_name&action=column_edit&zone_data_columns_id=$current_mysql->zone_data_columns_id\"><font color=blue><i>edit</i></font></a>";
+						}					
+					echo "
+				</td></tr>";
+			}
+		echo "</table>";
+		} else { 
+		
+		if ($table_info) { 
+		$query="select * from zone_data_columns where zone_data_tables_id = '$table_info->zone_data_tables_id'";
+		$res=@mysql_query($query);
+		echo "<table border=1 cellspacing=0 cellpadding=2>
+		<tr><td colspan=4 align=center bgcolor=$fd_color_4><b>$table_info->table_name columns</b></td></tr>
+		<tr bgcolor=$fd_color_2><td>
+			Name
+		</td><td>
+			Type
+		</td><td>
+			Zone
+		</td><td>
+			Description
+		</td></tr>
+		";
+		}
+		while ($row=@mysql_fetch_object($res)) {
+			echo "<tr><td>
+					<a href=\"$pagename?mode=$mode&report_name=$report_name&action=column_edit&zone_data_columns_id=$row->zone_data_columns_id\"><font color=blue> 
+					$row->column_name
+					</font></a>
+				</td><td>
+					$row->column_type
+				</td><td>
+					$row->column_zone
+				</td><td>
+					$row->column_description
+				</td></tr>";
+			}
+		echo "</table>";
+		}
+	if ($sample_data=="Y") {
+		if (!($table_info)) die("error - invalid table information");
+		echo "<b>Data for table - $table_info->table_name</b><br>";
+		//ms_tabledump("select top 500 * from $table_info->table_name where PRCo = 1");
+		ms_tabledump("select top 50 * from $table_info->table_name");
+		}
+	mh_navs_footer();
+	exit;
+	}
+
+if ($action=="column_edit") {
+	
+	$column_info=getoneb("select * from zone_data_columns where zone_data_columns_id = '" . mysql_real_escape_string($_REQUEST['zone_data_columns_id']) . "'");
+	if (!($column_info)) {
+		$table_info=getoneb("select * from zone_data_tables where zone_data_tables_id = '" . mysql_real_escape_string($_REQUEST['zone_data_tables_id']) . "'");
+		if (!($table_info)) die("What are you even trying to do?!?!?!?");
+		$column_info->zone_data_tables_id=$table_info->zone_data_tables_id;
+		$column_info->active='Y';
+		} else {
+		$table_info=getoneb("select * from zone_data_tables where zone_data_tables_id = '$column_info->zone_data_tables_id'");
+		}
+	if ($column_info->column_name=="") $column_info->column_name="?????";
+	$column_info->active=checkbreak($column_info->active);
+	
+	echo "
+	<form name=column_edit action=$pagename method=post>
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=report_name value=\"$report_name\">
+	<input type=hidden name=zone_data_columns_id value=\"$column_info->zone_data_columns_id\">
+	<input type=hidden name=zone_data_tables_id value=\"$column_info->zone_data_tables_id\">
+	<input type=hidden name=action value=column_update>
+	
+	<table border=1 cellspacing=0 cellpadding=2>
+	<tr><td align=center colspan=2 bgcolor=$fd_color_4><b>$table_info->table_name.$column_info->column_name</td></tr>
+	<tr><td>
+		<b>Name</b>
+	</td><td>
+		<input type=text size=10 name=column_name value=\"$column_info->column_name\">
+	</td></tr>
+	
+	<tr><td>
+		<b>Column Type</b>
+	</td><td>
+		<select name=column_type>
+			<option>$column_info->column_type</option>
+			<option>Char</option>
+			<option>Integer</option>
+			<option>String</option>
+			<option>Date</option>
+			<option>Float</option>
+			<option>GUID</option>
+		</select>
+	</td></tr>
+	
+	<tr><td>
+		<b>Column Zone</b>
+	</td><td>
+		<select name=column_zone>
+			<option>$column_info->column_zone</option>
+			<option>orange</option>
+			<option>red</option>
+			<option>yellow</option>
+		</select>
+	</td></tr>
+	
+	<tr><td>
+		<b>Column Description</b>
+	</td><td>
+		<input type=text name=column_description size=35value=\"$column_info->column_description\">
+	
+	<tr><td>
+		<b>Active</b>
+	</td><td>
+		<input type=checkbox name=active $column_info->active>
+	</td></tr>
+		
+	<tr><td colspan=2 align=right>
+		<input type=submit value=Save>
+	</td></tr>
+	</table></form>
+	";
+	mh_navs_footer();
+	exit;
+	}
+
+
+
+if ($action=="table_list") {
+	$res=@mysql_query("select * from zone_data_tables order by table_name");
+	echo "
+	<a href=$pagename?mode=$mode&report_name=$report_name&action=all_columns_output><font color=blue>List everything</font></a><br>
+	<table border=1 cellspacing=0 cellpadding=1>
+	<tr><td colspan=4 bgcolor=$fd_color_4 align=center><div style=\"float: right;\"><a href=$pagename?mode=$mode&report_name=$report_name&action=table_edit><font color=blue>Add</font></a></div>
+		<b>VP data tables used by Front Desk</b>
+	</td></tr>";
+		
+	while ($row=@mysql_fetch_object($res)) {
+		if ($row->table_name=="") $row->table_name="?????";
+		if ($row->active=='Y') $bgcolor="#ffffff";
+		else $bgcolor="#bbbbbb";
+		echo "
+		<tr bgcolor=\"$bgcolor\"><td>
+			<a href=$pagename?mode=$mode&report_name=$report_name&action=table_edit&zone_data_tables_id=$row->zone_data_tables_id><font color=blue>$row->table_name</font></a>
+		</td><td>
+			$row->table_description&nbsp;
+		</td><td>
+			$row->table_zone_affinity
+		</td></tr>";
+		}
+	echo "</table>";
+	mh_navs_footer();
+	exit;
+	}
+
+
+
+echo "Error, unable to determine your intentions. Please talk to the programmer and get this thing fixed!";
+
+
+
+mh_navs_footer();
+?>

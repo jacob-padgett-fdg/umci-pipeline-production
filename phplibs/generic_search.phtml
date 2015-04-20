@@ -1,0 +1,201 @@
+<?
+/*
+
+///////////////////////////////////////////////////////////////////////////
+//	Examples of how the search form on the previous page should look
+///////////////////////////////////////////////////////////////////////////
+echo "
+<form name=generic_search method=post action=$pagename>
+
+A normal text item:
+<input type=text name=description>
+
+A normal date input:
+";datebox('','generic_search.expected_completion_date');echo"
+<input type=hidden name=expected_completion_date_is_date value=1>
+
+<input type=radio name=expected_completion_date_radio value='>'>&gt;
+<input type=radio name=expected_completion_date_radio value='=' checked>=
+<input type=radio name=expected_completion_date_radio value='<'>&lt;
+
+A normal integer;
+
+<input type=text size=4 name=priority>
+
+<input type=radio name=priority_radio value='>'>&gt;
+<input type=radio name=priority_radio value='=' checked>=
+<input type=radio name=priority_radio value='<'>&lt;
+
+
+A field that needs to have the "." seperator in it..
+(aka, something with an ambiguous table field). This one
+also happens to be a multi-select box, which is also valid for
+searching:
+
+";dropbox("select contacts.contacts_id as
+'mis_issue_concerned_parties__contacts_id[]',last_name,',
+',first_name,' (',login_name,')'
+from contacts,mis_issue_concerned_parties
+where mis_issue_concerned_parties.contacts_id = contacts.contacts_id
+group by mis_issue_concerned_parties.contacts_id
+order by last_name,first_name","","7","","","multiple");echo"
+
+The order by section:
+
+Order By:
+<select name=query_order_by_1>
+<option value=''> </option>
+<option value='description'>Description</option>
+<option value='expected_completion_date'>Expected Completion Date</option>
+<option value='priority'>Priority</option>
+<option value='mis_issue_concerned_parties__contacts_id'>Contact ID</option>
+</select>
+
+A<input type=radio name=query_order_by_1_direction value='' checked>
+D<input type=radio name=query_order_by_1_direction value='desc'>
+
+Then By:
+
+<select name=query_order_by_2>
+<option value=''> </option>
+<option value='description'>Description</option>
+<option value='expected_completion_date'>Expected Completion Date</option>
+<option value='priority'>Priority</option>
+<option value='mis_issue_concerned_parties__contacts_id'>Contact ID</option>
+</select>
+
+A<input type=radio name=query_order_by_2_direction value='' checked>
+D<input type=radio name=query_order_by_2_direction value='desc'>
+
+
+</form>
+";
+
+
+
+///////////////////////////////////////////////////////////////////////////
+//	Automatic query builder settings:
+//	(these go in the actual program(s) search file.
+///////////////////////////////////////////////////////////////////////////
+$basequery="select mis_issue_index.issue_id,category_id,priority,name,mis_issue_index.status,creator,requested_completion,expected_completion from mis_issue_index,mis_issue_history,mis_issue_concerned_parties where mis_issue_index.category_id = '$category_id' and mis_issue_index.issue_id = mis_issue_history.issue_id and mis_issue_history.issue_history_id = mis_issue_concerned_parties.issue_history_id and current_hist_item = 'Y'";
+$basequery_group_by=" group by mis_issue_index.issue_id ";
+$basequery_order_by=""; // This order by will always be used, then whatever was requested
+$basequery_alt_order_by="expected_completion_date,expected_completion"; // This is the order by used if nothing else is requested
+
+
+$variables=array(
+			"description",
+			"expected_completion_date",
+			"priority",
+			"mis_issue_concerned_parties__contacts_id"
+			);
+
+
+require('generic_search.phtml');
+
+*/
+
+////////////////////////////////////////////////////////////////////
+//	Automatically build that query now
+////////////////////////////////////////////////////////////////////
+
+$query_order_by_1_direction=escapeshellcmd($query_order_by_1_direction);
+$query_order_by_2_direction=escapeshellcmd($query_order_by_2_direction);
+if ($query_order_by_1!="") {
+	$query_order_by_1=escapeshellcmd($query_order_by_1);
+	$query_order_by_1=ereg_replace("__",".",$query_order_by_1);
+	if ($basequery_order_by=="") $basequery_order_by=" order by $query_order_by_1 $query_order_by_1_direction ";
+	else $basequery_order_by="$basequery_order_by,$query_order_by_1 $query_order_by_1_direction";
+	if ($query_order_by_2!="") {
+		$query_order_by_1=escapeshellcmd($query_order_by_2);
+		$query_order_by_2=ereg_replace("__",".",$query_order_by_2);
+		$basequery_order_by="$basequery_order_by,$query_order_by_2 $query_order_by_2_direction";
+		}
+	} else { 
+		if ($basequery_order_by=="") $basequery_order_by="order by $basequery_alt_order_by";
+		else $basequery_order_by="$basequery_order_by,$basequery_alt_order_by";
+	}
+	
+
+
+
+foreach($variables as $variable) {
+
+if (${$variable}!="") {
+	//////////////////////////////////////////////////////////////////
+	///	Begin parsing for the multi-select boxen
+	//////////////////////////////////////////////////////////////////
+	if (is_array(${$variable})) {
+		//echo "Multi-select output found: ${$variable}";exit;
+		$basequery=$basequery . " and (";
+		$connector="";
+		foreach(${$variable} as $array_chunk) {
+			$array_chunk=escapeshellcmd($array_chunk);
+			$variable=ereg_replace("__",".",$variable);
+			$basequery=$basequery . " $connector $variable = '$array_chunk'";
+			$connector="or";
+			}
+		$basequery=$basequery . ")";
+	} 
+	//////////////////////////////////////////////////////////////////
+	///	End parsing for the multi-select boxen
+	//////////////////////////////////////////////////////////////////
+	else {
+		//echo "NON Multi-select output found: ${$variable}";exit;
+		$var_is_date=$variable . "_is_date";
+		//echo "$var_is_date<hr>";
+		if (${$var_is_date}!="") {
+			${$variable}=vali_date(${$variable});
+		} else {
+			${$variable}=escapeshellcmd(${$variable});
+		}
+
+
+		$column_name=ereg_replace("__",".",$variable);
+		$var_radio=$variable . "_radio";
+		$var_range_end=$variable . "_range_end";
+
+		if (${$var_radio}!="") {
+			$sign=${$var_radio};
+
+			if ($sign=="range") {
+				$range_end=${$var_range_end};
+				if ($range_end=="") $sign=">";
+				}
+
+			if (($sign!='>') && ($sign!='<') && ($sign!='=') && ($sign!='range')) {
+				${$var_radio}='=';
+				}
+			
+			if ($sign!="range") {
+				$basequery=$basequery . " and $column_name ${$var_radio} '${$variable}'";
+			} else {
+				if (${$var_is_date}!="") {
+					$range_end=vali_date($range_end);
+				} else {
+					$range_end=escapeshellcmd($range_end);
+				}
+				//// more goes here
+				//// please set basequery in here
+				$basequery=$basequery . " and ( $column_name >= '${$variable}' and $column_name <= '$range_end') ";
+			}
+			
+			
+			
+		} else {
+		$var_is_date=${$variable} . "_is_date";
+		
+			$basequery=$basequery . " and $column_name like '%${$variable}%'";
+		}
+		}
+	}
+}
+$basequery=$basequery . $basequery_group_by . $basequery_order_by;
+
+
+//////////////////////////////////////////////////////////////////
+//	End of Generic query builder.. Use your query below
+//	(use the query in the variable "$basequery" to execute)
+//////////////////////////////////////////////////////////////////
+
+?>

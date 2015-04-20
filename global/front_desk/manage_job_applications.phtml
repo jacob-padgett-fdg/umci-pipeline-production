@@ -1,0 +1,86 @@
+<?
+
+if ($jobinfo_id!="") {
+	$jobinfo_id=addslashes($jobinfo_id);
+	$global_jobinfo_id=$jobinfo_id;
+	$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+	} else {
+	die('Job information error!');
+	}
+
+$fd_manager=fd_manager($jobinfo_id,$global_user_id);
+if (!(($adminuser)||($fd_manager))) die_security();
+
+
+if ($add_fd_app_id!="") {
+	$add_fd_app_id=addslashes($add_fd_app_id);
+	@mysql_query("insert into front_desk_job_applications set fd_app_id = '$add_fd_app_id', jobinfo_id = '$jobinfo->jobinfo_id', current = 'Y'");
+	}
+
+if ($reenable_job_app_id!="") {
+	$reenable_job_app_id=addslashes($reenable_job_app_id);
+	@mysql_query("update front_desk_job_applications set current = 'Y' where job_app_id = '$reenable_job_app_id'");
+	}
+
+if ($disable_job_app_id!="") {
+	$disable_job_app_id=addslashes($disable_job_app_id);
+	//echo "<hr>update front_desk_job_applications set current = 'N' where job_app_id = '$disable_job_app_id'<hr>";
+	@mysql_query("update front_desk_job_applications set current = 'N' where job_app_id = '$disable_job_app_id'");
+	}
+
+
+
+
+echo "<table border=0 cellspacing=0 cellpadding=2>";
+
+
+$used="";
+$unused="";
+
+if ($devel=="") {
+	$appsres=@mysql_query("select * from front_desk_applications where current = 'Y' and devel_only = 'N' order by sort_priority,app_short_description");
+	} else {
+	$appsres=@mysql_query("select * from front_desk_applications where current = 'Y' order by sort_priority,app_short_description");
+	}
+
+$column=1;
+
+while ($appsrow=@mysql_fetch_object($appsres)) {
+	$thisapp=getoneb("select * from front_desk_job_applications 
+	where jobinfo_id = '$jobinfo->jobinfo_id' and fd_app_id = '$appsrow->fd_app_id'");
+	$bgcolor="#aaaaaa";
+	if ($thisapp) {
+		//echo "On:&nbsp;&nbsp;$appsrow->app_short_description<br>";
+		if ($thisapp->current=='Y') {
+			$bgcolor="#ffffff";
+			$toggle_link="<a href=javascript:disable_application($thisapp->job_app_id)>neutralize</a>";
+			} else {
+			$toggle_link="<a href=javascript:reenable_application($thisapp->job_app_id)>reanimate</a>";
+			
+			$bgcolor="#ff9999";
+			}
+			
+		if ($column==1) {
+			echo"<tr><td bgcolor=$bgcolor>$appsrow->app_short_description</td><td bgcolor=$bgcolor>$toggle_link</td>";
+			$column=2;
+			} else {
+			echo"<td bgcolor=$bgcolor>$appsrow->app_short_description</td><td bgcolor=$bgcolor>$toggle_link</td></tr>";
+			$column=1;
+			}
+		
+		
+		
+		} else {
+		//echo "Off:&nbsp;$appsrow->app_short_description<br>";
+		if ($column==1) {
+			echo "<tr><td bgcolor=$bgcolor>$appsrow->app_short_description</td><td bgcolor=$bgcolor><a href=javascript:enable_application($appsrow->fd_app_id)>Activate</a></td>";
+			$column=2;
+			} else {
+			echo "<td bgcolor=$bgcolor>$appsrow->app_short_description</td><td bgcolor=$bgcolor><a href=javascript:enable_application($appsrow->fd_app_id)>Activate</a></td></tr>";
+			$column=1;
+			}
+		}
+	}
+echo "</table>";
+
+?>

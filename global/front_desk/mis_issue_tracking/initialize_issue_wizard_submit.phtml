@@ -1,0 +1,49 @@
+<?
+require_once('querylib.inc');
+if ($issue_id=="") die("ERROR: Issue ID not submitted. Please contact your system administrator!<p>");
+$issue_id=addslashes($issue_id);
+$issue_information=getone("select * from mis_issue_index where issue_id = '$issue_id'");
+
+
+$status="active";
+
+$expected_completion_date=vali_date($expected_completion_date);
+$next_action_date=vali_date($next_action_date);
+
+$priority=addslashes($priority);
+$next_action=addslashes($next_action);
+$it_notes=addslashes($it_notes);
+$notes=addslashes($notes);
+$us_or_them=addslashes($us_or_them);
+
+
+$query_history="insert into mis_issue_history set issue_id = '$issue_id',action_required = '$next_action',notes = '$notes',it_notes = '$it_notes',status='current',expected_completion_date = '$next_action_date',us_or_them='$us_or_them'";
+$res=@mysql_query($query_history);
+if (!($res)) die("ERROR: Couldn't submit query. Please contact your system administrator.<p>Bad Query:<hr>$query_history");
+
+$history_id=mysql_insert_id($global_link_id);
+
+$query_index="update mis_issue_index set priority = '$priority',expected_completion = '$expected_completion_date',status='$status' where issue_id = '$issue_id'";
+$res=@mysql_query($query_index);
+if (!($res)) die("ERROR: Couldn't submit query. Please contact your system administrator.<p>Bad Query:<hr>$query_index");
+
+
+$count=0;
+while($user_id=@$us_ids[$count]) {
+	$user_id=addslashes($user_id);
+	$query="insert into mis_issue_concerned_parties set issue_history_id = '$history_id',contacts_id = '$user_id',us_or_them = 'us'";
+	$res=@mysql_query($query);
+	if (!($res)) echo "<P>ERROR: Unable to submit query. Please contact your system administrator.<br>Failed query:<hr>$query";
+	$count++;
+	}
+
+$query="insert into mis_issue_concerned_parties set issue_history_id = '$history_id',contacts_id = '$issue_information->creator',us_or_them = 'them'";
+$res=@mysql_query($query);
+if (!($res)) die("ERROR: Couldn't submit query. Please contact your system administrator.<p>Bad Query:<hr>$query");
+
+
+forward("issue_edit&issue_id=$issue_id");
+
+
+
+?>

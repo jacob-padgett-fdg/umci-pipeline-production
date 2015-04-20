@@ -1,0 +1,12 @@
+<?
+if (!($payroll_check)) die_security();
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/webfile/local.inc");
+delete_webfile_file(addslashes($files_id));
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+?>

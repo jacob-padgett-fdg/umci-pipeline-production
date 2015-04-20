@@ -1,0 +1,22 @@
+<?
+require("pageheader.phtml");
+
+//$query="select cdinfo_id,serial_num,' - ',project from $cdinfo order by cdinfo_id";
+$query="select cdinfo_id,serial_num,' - ',description from $cdinfo order by cdinfo_id";
+
+echo "
+<form name=foochicken method=post action=$pagename>
+<input type=hidden name=mode value=cdinfo_edit>
+";dropbox($query,"",15,"submit();");echo"
+</form>";
+
+
+
+
+
+
+
+?>
+
+
+

@@ -1,0 +1,36 @@
+<?
+require('header.phtml');
+
+if ($hr_openings_id!="") {
+	$hr_openings_id=addslashes($hr_openings_id);
+	$nextmode="opening_apply";
+	} else {
+	$nextmode="application_edit";
+	}
+
+if (($applicant_pin!="")&&($home_phone!="")) {
+	$applicant_pin=addslashes($applicant_pin);
+	$home_phone=addslashes($home_phone);
+	$home_phone=ereg_replace('[^0-9]*','',$home_phone);
+	$app_info=getoneb("select * from hr_applications where home_phone = '$home_phone' and applicant_pin = '$applicant_pin'");
+	
+	if (!($app_info)) {
+		echo "<font color=red>ERROR:</font> Could not locate your application. Please verify that the information is correct, and try again.<p>";
+		} else {
+		forward("$nextmode&hr_openings_id=$hr_openings_id&application_id=$app_info->application_id");
+		exit;
+		}
+	}
+echo "
+<form name=app_find method=post action=$pagename>
+<input type=hidden name=hr_openings_id value=\"$hr_openings_id\">
+<input type=hidden name=mode value=\"$mode\">
+Please enter your home phone: <input type=text name=home_phone><br>
+and your PIN <input type=text size=5 maxlength=5 name=applicant_pin><p>
+<input type=submit value=\"Search\">
+</form>
+<script>
+document.app_find.home_phone.focus();
+</script>
+";
+?>

@@ -1,0 +1,69 @@
+<?
+// $new_trans_array has the new transactions ready for creating a 
+// downlod file from them.. 
+// 
+// $batch_number has the number to use for this batch
+// 
+
+
+$count=0;
+$length=sizeof($new_trans_array);
+$total=0;
+$total_ap=0;
+$total_pr=0;
+$total_checks_ap=0;
+$total_checks_pr=0;
+$total_checks=0;
+$output_file="";
+$account_list=array();
+while ($count < $length) {
+	$check=$new_trans_array[$count];
+	
+	//////////////////////////////////////////////////
+	// Start building a line..
+	//////////////////////////////////////////////////
+	if ($check['void']=='Y') { $count++; continue; }
+	$total_checks++;
+	//$transaction_code="370";
+	//else $transaction_code="320";
+	
+	$account=str_pad($check['account_number'],17,"0",STR_PAD_LEFT);
+	$checknum=str_pad($check['check_number'],10,"0",STR_PAD_LEFT);
+	$date=date('Ymd',strtotime($check['checkdate']));
+	$amount=str_pad($check['pennies'],10,"0",STR_PAD_LEFT);
+	//$payee=$check['payee'];
+	
+	$output_file="$output_file$account$checknum$date$amount\r\n";
+
+	if ($check['pay_type']=='ap') { $account_list['ap']=$check['account_number']; $total_ap=round($total_ap + $check['pennies']); $total_checks_ap++; }
+	if ($check['pay_type']=='pr') { $account_list['pr']=$check['account_number']; $total_pr=round($total_pr + $check['pennies']); $total_checks_pr++; }
+	$total=round($total + $check['pennies']);
+	$count++;
+	}
+//$check_count_filled=str_pad($length,5,"0",STR_PAD_LEFT);
+//$total_filled=str_pad($total,10,"0",str_pad_left);
+//$header_record="$account_info->option_1\r\n$account_info->option_2\r\n";
+//$trailer_record="&              " . $check_count_filled . "   " . $total_filled . "\r\n";
+$full_output_file=$output_file;
+
+$db_output_file=addslashes($full_output_file);
+$res=@mysql_query("insert into positivepay_batch_history set
+batch_number = '$batch_number',
+output_plugin = '$output',
+output_file = '$db_output_file',
+output_date = now(),
+output_time = now(),
+batch_total = '$total',
+ap_total = '$total_ap',
+pr_total = '$total_pr',
+total_checks = '$total_checks',
+total_checks_ap = '$total_checks_ap',
+total_checks_pr = '$total_checks_pr',
+account_number_ap = '$account_list[ap]',
+account_number_pr = '$account_list[pr]'
+");
+if (!($res)) die("Application error. Query faild!");
+$batch_id=@mysql_insert_id();
+log_batch_activity($batch_id,"Batch # $batch_number created");
+forward("view_batch&batch_id=$batch_id");
+?>

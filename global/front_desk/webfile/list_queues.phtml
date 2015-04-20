@@ -1,0 +1,19 @@
+<?
+require('header.phtml');
+if (!($adminuser)) die_security();
+
+$list=$storage_queues;
+
+echo "<a href=$pagenem?mode=main><font color=blue>Main Menu</font></a><p>
+<h3>Available Raw Queues</h3>
+";
+while ($queue=array_pop($list)) {
+	$info=load_file_group_info($queue);
+	echo "<a href=$pagename?mode=manage_queue&qid=$queue><font color=blue>$info->description</font></a><p>";
+	}
+
+
+
+
+
+?>

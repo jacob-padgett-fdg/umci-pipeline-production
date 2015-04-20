@@ -1,0 +1,69 @@
+<?
+
+$set_application_name=addslashes($set_application_name);
+$contacts_id=addslashes($contacts_id);
+$group_id=addslashes($group_id);
+$type=addslashes($type);
+$rightsmode=addslashes($rightsmode);
+$access_id=addslashes($access_id);
+
+if ($access_id=="") {
+	$query="insert into access (
+	application_name,
+	contacts_id,
+	group_id,
+	type,
+	rightsmode
+	) values (
+	'$set_application_name',
+	'$contacts_id',
+	'$group_id',
+	'$type',
+	'$rightsmode'
+	)";
+	$user_info=getoneb("select * from contacts where contacts_id = '$contacts_id'");
+	$message="
+	$global_user->first_name $global_user->last_name changed permissions for $user_info->first_name $user_info->last_name
+	$rightsmode access to the $set_application_name application
+	";
+	security_log_email($contacts_id,$group_id,0,"added: " . $rightsmode . " " . $type,$set_application_name);
+	} else {
+	$query="update access set
+	application_name = '$set_application_name',
+	contacts_id = '$contacts_id',
+	group_id = '$group_id',
+	type = '$type',
+	rightsmode = '$rightsmode'
+	where access_id = '$access_id'";
+	security_log_email($contacts_id,$group_id,0,"updated to: " . $rightsmode . " " . $type,$set_application_name);
+	}
+
+//die("this is a test");
+$result=@mysql_query($query);
+
+if (!($result)) {
+	echo "Error running query: <hr> $query";
+	exit;
+	}
+
+if ($access_app_last_list_type=='application') {
+	$app_info=getoneb("select * from access_applications where application_name = '$set_application_name'");
+	forward("application_list_permissions&access_applications_id=$app_info->access_applications_id");
+	exit;
+	}
+
+
+
+
+die("unknown destination/exit mode.. Jeff: please fix! access_app_last_list_type: $access_app_last_list_type");
+
+
+/*
+if ($contacts_id>0) {
+	forward("user_list_permissions&access_contacts_id=$contacts_id");
+	} else {
+	$app_info=getone("select * from access_applications where application_name = '$set_application_name'");
+	forward("application_list_permissions&access_applications_id=$app_info->access_applications_id");
+	}
+*/
+?>

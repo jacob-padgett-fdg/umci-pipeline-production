@@ -1,0 +1,46 @@
+<?
+$bim_jobinfo_id=addslashes($bim_jobinfo_id);
+if ($area=='') $area='?????';
+else $area=addslashes($area);
+$add_in_issue_tracker=checkfix($add_in_issue_tracker);
+
+$sp=getoneb("select max(sort_priority) as max from front_desk_bim_areas where jobinfo_id = '$bim_jobinfo_id' group by jobinfo_id");
+if ($sp->max=="") $sp->max=0;
+$new_sort_priority=$sp->max + 1;
+
+$query="insert into front_desk_bim_areas set
+jobinfo_id = '$bim_jobinfo_id',
+name = '$area',
+sort_priority = '$new_sort_priority'
+";
+
+$res=@mysql_query($query);
+if (!($res)) die("failed query: <hr>$query");
+
+
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+// Add issue tracker category if needed
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+if ($add_in_issue_tracker=="Y") {
+	$mep_app=getoneb("select * from issue_res_application where jobinfo_id = '$bim_jobinfo_id' and issue_res_application_name = 'MEP Coordination' limit 1");
+	if (!($mep_app)) {
+		mysql_query("insert into issue_res_application set jobinfo_id = '$bim_jobinfo_id', issue_res_application_name = 'MEP Coordination', issue_res_application_description = 'Automatically created by BIM control panel', issue_res_application_active = 'Y'");
+		$mep_app=getoneb("select * from issue_res_application where jobinfo_id = '$bim_jobinfo_id' and issue_res_application_name = 'MEP Coordination' limit 1");
+		}
+	if (!($mep_app)) die("Application error: Couldn't creat MEP Coordination folder in issue tracker");
+	$category=getoneb("select * from issue_res_category where issue_res_application_id = '$mep_app->issue_res_application_id' and category_name = '$area' limit 1");
+	if (!($category)) {
+		@mysql_query("insert into issue_res_category set issue_res_application_id = '$mep_app->issue_res_application_id', category_name = '$area'");
+		$category=getoneb("select * from issue_res_category where issue_res_application_id = '$mep_app->issue_res_application_id' and category_name = '$area' limit 1");
+		}
+	if (!($category)) {
+		die("Application error: Couldn't create issue resolution category.");
+		}
+	}
+/////////////////////////////////////////////////////////
+
+forward("bim_schedule_update&jobinfo_id=$bim_jobinfo_id");
+
+?>

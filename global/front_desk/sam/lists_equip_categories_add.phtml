@@ -1,0 +1,14 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified!");
+if ($category=="") die("ERROR: You've asked me to add nothing.. I don't think I want to!");
+$category=escapeshellcmd($category);
+
+$query="insert into svc_equip_categories set category = '$category'";
+
+@mysql_query($query);
+forward('lists_equip_categories');
+
+
+
+
+?>

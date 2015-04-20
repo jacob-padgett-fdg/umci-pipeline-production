@@ -1,0 +1,17 @@
+<?
+require('header.phtml');
+$contacts_id=escapeshellcmd($contacts_id);
+
+echo "<a href=$pagename?mode=reports_output_6><font color=blue>Back</font></a><p>";
+
+//tabledump("select * from bidlist where status = 'Active' and bid_date < now() and ( creator = '$contacts_id' or to_lead = '$contacts_id') order by proposal_num");
+proposal_search_output_8("select * from bidlist where status = 'Active' and bid_date < now() and ( creator = '$contacts_id' or to_lead = '$contacts_id') order by proposal_num","",$contacts_id);
+
+
+
+
+
+
+
+
+?>

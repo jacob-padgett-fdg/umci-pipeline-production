@@ -1,0 +1,65 @@
+<?
+$el_ev_id=addslashes($el_ev_id);
+$el_ev_info=getone("select * from svc_agreement_equipment_events where el_ev_id = '$el_ev_id'");
+$el_ev_info->description=addslashes($el_ev_info->description);
+
+
+if ($delete=='now') {
+	echo "request to delete confirmed";
+	
+	$delete_query="delete from svc_agreement_equipment_events where el_id = '$el_ev_info->el_id' and description = '$el_ev_info->description'";
+	@mysql_query($delete_query);
+	echo "<script>
+	opener.document.location.reload();
+	self.close();
+	</script>
+	";
+	exit;
+	}
+
+$listquery="select * from svc_agreement_equipment_events where el_id = '$el_ev_info->el_id' and description = '$el_ev_info->description' order by event_date";
+//echo "<hr>$listquery<hr>";tabledump($listquery);exit;
+$evlist_res=@mysql_query($listquery);
+echo "<table border=1 cellspacing=0 cellpadding=4>
+<tr><td>
+	Description
+</td><td>
+	Date (est)
+</td><td>
+	Qty
+</td><td>
+	Cost
+</td><td>
+	Summary
+</td></tr>
+";
+while($row=@mysql_fetch_object($evlist_res)) {
+	$row->event_date=invali_date($row->event_date);
+	echo "<tr><td>
+			$row->description
+		</td><td>
+			$row->event_date
+		</td><td>
+			$row->qty
+		</td><td>
+			$row->cost
+		</td><td>
+			$row->show_in_summary
+		</td></tr>
+		";
+	}
+echo "</table>
+
+<script>
+function delete_events(el_ev_id) {
+	if (confirm('Are you sure you want to delete these events?')) 
+		document.location='$pagename?mode=svc_agreement_equipment_events_details&delete=now&el_ev_id=' + el_ev_id;
+	}
+</script>
+<a href=javascript:delete_events($el_ev_id);><font color=blue><i>Delete</i></a>
+
+";
+
+
+
+?>

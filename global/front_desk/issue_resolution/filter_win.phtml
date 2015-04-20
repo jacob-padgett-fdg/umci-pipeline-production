@@ -1,0 +1,41 @@
+<?
+require("header2.phtml");
+//$summary_filter="whoop, there it is";
+
+echo "
+<center>
+<font size=+2><b>Set $field filter</b></font><br>
+<hr>
+<form name=filter_info method=post onsubmit=filterset();>
+<input type=text name=$field onsubmit=donothing();><br>
+<input type=button name=blah value=Set onclick=filterset();>
+<input type=button name=blah2 value=Cancel onclick=self.close();>
+</form>
+
+</center>
+<script>
+document.filter_info.${field}.value=opener.document.problem_list.${field}_filter.value;
+
+function filterset () {
+	opener.document.problem_list.${field}_filter.value=document.filter_info.${field}.value;
+	opener.document.problem_list.submit();
+	self.close();
+	}
+
+function donothing() {
+	blah='blah';
+	}
+</script>
+
+
+<script>
+document.filter_info.${field}.focus();
+</script>
+
+";
+
+
+?>
+
+
+

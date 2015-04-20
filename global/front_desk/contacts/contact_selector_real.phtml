@@ -1,0 +1,182 @@
+<?
+////////////////////////////////////////////////////////////
+// Things that this gets passed:
+// $options: 	encoded array.. lots of toggle options with the possiblity of growing 
+//				as much as needed.. These things are static through the entire
+//				instance of the contact popup.. 
+// $display_mode:
+//				One of: project, normal, everything (so far.. more to come)
+// $id:			Where do we come from
+// $search_text:
+//              What do we search for...
+// $contacts_id:
+//				The current value passed to us from javascript in the parent page
+// 
+
+$uri_encode=base64_encode($REQUEST_URI);
+$options=unserialize($options);
+include("settings_option_defaults.phtml");
+$bgcolor=$fd_color_4;
+echo "<html><head><title>UMC Contacts</title></head><body bgcolor=\"$bgcolor\">";
+if ($global_user_id!="") {
+	$global_user_info=getoneb("select * from contacts where contacts_id = '$global_user_id'");
+	$global_user_id=addslashes($global_user_id);
+	}
+
+if ($search_text=="") $no_auto_select=TRUE;
+else $no_auto_select=FALSE;
+
+function color_print() {
+	global $shaded;
+	if ($shaded=="no") {
+		$shaded="yes";
+		echo " bgcolor=#ffffff ";
+		} else {
+		$shaded="no";
+		echo " bgcolor=#eeeeee ";
+		}
+	}
+
+$query=addslashes($query);
+$query_next=$query;
+$query=base64_decode($query);
+$onchange=addslashes($onchange);
+$onchange_next=$onchange;
+$onchange=base64_decode($onchange);
+$contacts_id=addslashes($contacts_id);
+$contacts_id_next=$contacts_id;
+$id=addslashes($id);
+
+if ($search_text!="") {
+	$search_text=addslashes($search_text);
+	$display_search=" and ( display_name like '%$search_text%' or login_name like '%$search_text%' ) ";
+	} else {
+	$display_search="";
+	}
+
+if (ereg("is_company",$query)) {
+	echo "Warning: Application uses an obsolete field (is_company). Please contact Jeff to fix. Things will work better as well!<hr>";
+	}
+
+$contact_info=getoneb("select * from contacts where contacts_id = '$contacts_id'");
+
+if ($contact_info) {
+	$cdisplay_name=ereg_replace(" ","&nbsp;",$contact_info->display_name);
+	$cdisplay_name=ereg_replace("'","&#039;",$cdisplay_name);
+	echo "<table border=1 cellspacing=0 cellpadding=0 width=100%><tr>
+	";
+	
+	if ($contact_info->photo_file_group_id > 0) {
+		$file=getoneb("select * from webfile_files where file_group_id = '$contact_info->photo_file_group_id'");
+		$picurl=webfile_medium_image_icon($file->files_id);
+		echo "<td align=center valign=top bgcolor=white><img border=0 src=\"$picurl\"></td>";
+		}
+	
+	echo"
+	<td valign=top bgcolor=#ffffff>
+	<table width=100% border=0 cellspacing=0 cellpadding=3>
+	
+	<tr><td colspan=2 align=center bgcolor=#dddddd><b>Currently Selected</b></td></tr>
+	<tr bgcolor=\"white\"><td colspan=2 width=100%>
+		<div style=\"float: right;\">
+		";
+		if ($global_user_info->umc_emp=="Y") contact_edit_in_popup($contact_info->contacts_id,"<i>Edit</i>");
+		else contact_view("<i>View</i>",$contact_info->contacts_id);
+		echo"</div>
+		<a href=javascript:set_contact('$contact_info->contacts_id','$cdisplay_name')><font color=blue>$cdisplay_name</font></a>
+	</td></tr>
+	";
+	
+	//////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////
+	// Print the basic details about a contact (if enabled)
+	//////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////
+	if ($options['short_info']!="Y") {
+		if ($contact_info->contact_type!="company") { echo "<tr ";color_print();echo"><td><b>Company:</b></td><td>$contact_info->company</td></tr>"; }
+		if ($contact_info->phone!="") { echo "<tr ";color_print();echo"><td><b>Phone:</b></td><td>$contact_info->phone&nbsp;"; if ($contact_info->umc_emp!='Y') echo "$contact_info->phone_ext";echo "</td></tr>"; }
+		if ($contact_info->phone_ext!=""&&$contact_info->umc_emp=='Y') { echo "<tr ";color_print();echo"><td><b>Extension:</b></td><td>$contact_info->phone_ext</td></tr>"; }
+		if ($contact_info->phone_fax!="") { echo "<tr ";color_print();echo"><td><b>Fax:</b></td><td>$contact_info->phone_fax</td></tr>"; }
+		if ($contact_info->phone_cell!="") { echo "<tr ";color_print();echo"><td><b>Cell:</b></td><td>$contact_info->phone_cell</td></tr>"; }
+		if ($contact_info->phone_page!="") { echo "<tr ";color_print();echo"><td><b>Page:</b></td><td>$contact_info->phone_page</td></tr>"; }
+		if ($contact_info->address_1!="") { echo "<tr ";color_print();echo"><td><b>Address:</b><br>";map_link_this_contact_here($contact_info->contacts_id);echo"</td><td><pre>$contact_info->address_1<br>$contact_info->address_city, $contact_info->address_state $contact_info->address_zip</pre></td></tr>"; }
+		}
+	echo "</table></td></tr></table>";
+	}
+
+	
+	// This has been moved to javascript in the parent window. 
+	// it will watch for the value change and then run the
+	// 'onchange' command
+	//";
+	//if ($onchange!="") echo "$onchange
+	//";echo "
+
+if ($display_mode=="") {
+	$display_mode="project";
+	} else {
+	$display_mode=addslashes($display_mode);
+	}
+$base_link="$pagename?id=$id&contacts_id=$contacts_id_next&search_text=$search_text&onchange=$onchange_next&options=$options_encoded&query=$query_next";
+
+echo "
+<script>
+function set_contact(contact_id,contact_name) {
+	opener.document.contact_changed_value=contact_id;
+	opener.document.contact_changed_id_last='$id';
+	opener.document.getElementById('$id').value=contact_id;
+	opener.document.getElementById('disp_$id').value=contact_name;
+	opener.document.getElementById('image_link_$id').title=contact_name;
+    opener.document.getElementById('image_link_$id').style.border='2px solid yellow';";
+	$pagename_fixed=ereg_replace("/[^/]*$","/",$pagename);echo "
+	document.location='$pagename_fixed?mode=register_history_and_close&contacts_id=' + contact_id;
+	//self.close();
+	}
+self.focus();
+</script>
+
+<form name=contact_selection_search action=\"$base_link_no_search\" method=post>
+<input type=hidden name=display_mode value=\"$display_mode\">
+Search:&nbsp;<input type=text name=search_text size=20 value=\"$search_text\">
+</form>
+";
+
+function print_mode_tab($mode,$text) {
+	global $display_mode,$base_link,$fd_color_2,$options;
+	if ($options['hide_tabs']=='Y') return TRUE;
+	if ($display_mode==$mode) 
+		echo "<td bgcolor=#eeeeee style=\"border: 1px solid black; border-bottom: 0px solid black; -moz-border-radius: 15px 15px 0px 0px;\">";
+		else echo "<td bgcolor=$fd_color_2 onclick=\"document.location='$base_link&display_mode=$mode'\" style=\"cursor: pointer; cursor: hand; border: 1px solid black; -moz-border-radius: 15px 15px 0px 0px;\">";
+		echo "$text</td>";
+	}
+
+if ($global_user_id<3) $devel="-devel";
+
+if (($display_mode=="project")&&($options['jobinfo_id']=="")) $display_mode="normal";
+
+echo "<table width=100% cellpadding=3 cellspacing=0 style=\"padding: 0px;\"><tr>";
+if (($options['show_project_team']=='Y')&&($options['jobinfo_id']!="")) print_mode_tab("project","Project&nbsp;Team");	
+print_mode_tab("normal","Custom/Smart");
+if ($options['hide_everything_tab']!='Y') print_mode_tab("everything","Everything");
+if ($options['hide_employees_tab']!='Y') print_mode_tab("employees","Current&nbsp;Employees");
+echo "<td width=100%>&nbsp;</td></tr></table>";
+
+switch ($display_mode) {
+	case "normal":		
+				include("display_mode_normal.phtml");
+				break;;
+	case "project":
+				include("display_mode_project.phtml");
+				break;;
+	case "everything":
+				include("display_mode_everything.phtml");
+				break;;
+	case "employees":
+				include("display_mode_employees.phtml");
+				break;;
+	default:
+				include("display_mode_normal.phtml");
+				break;;
+	}
+
+?>

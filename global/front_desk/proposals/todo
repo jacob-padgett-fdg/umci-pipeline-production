@@ -1,0 +1,23 @@
+*** Lead tracking information employee messup up ???
+
+Alternate UMC Contact below Primary UMC Contact in lead tracking -> tracking info
+
+Finish relocating fields that used to be in the lead tracking tab to the 
+jobinfo table, and complete the editing interface.
+
+Follow up report
+
+Canned Search/Report outputs with PDF output.
+	1. Total bid summary for past 45 days by group
+	2. Bids by month by group, set # of months variable
+	3. Master price index for HH pricing system, 30 days
+	4. Back Log - Props/bids w/ job#'s and month of work to be exec'd
+
+Sample queries for Robin: Caveat Emptor... Most of these queries are not actually
+based on Traxx Data. They must be be built into jobinfo. CEx2... Might actually 
+have to look at linking the table(s) (left join from hell) to look back ad various
+incarnations of the bid/proposal data in traxx, so that queries for things like 
+restaraunt/casino will work... Or, might have to allow triangular associations,
+as the left join from hell might kill reddwarf or his successor.
+
+Make 20 most recent items sort/filter by heading when the heading is clicked.

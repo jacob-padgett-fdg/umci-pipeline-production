@@ -1,0 +1,88 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+$today=date("m-d-Y");
+
+if ($show_week_ending_set!="") {
+	$show_week_ending_date=addslashes($show_week_ending_set);
+	}
+if ($show_week_ending_date=="") {
+	$dt_tmp=date_info($today);
+	if ($dt_tmp->day_of_week_num > 3) {
+		$dt_tmp=date_info($dt_tmp->next_week_start);
+		} else {
+		$dt_tmp=date_info($dt_tmp->week_start);
+		}
+	$show_week_ending=$dt_tmp->previous;
+	}
+$show_week_ending=date_info($show_week_ending_date);
+$show_week_ending_date=$show_week_ending->week_end;
+session_register('show_week_ending_date');
+
+
+echo "<html><head><title>Payroll Timesheet Safety Report</title></head>
+<body bgcolor=white>
+";
+
+if ($mode=="payroll_timesheet_safety_status_report") echo "<a href=$pagename?mode=main><font color=blue>Back to main</font></a><p>";
+
+echo "<table border=0 cellspacing=0 cellpadding=3>
+<tr bgcolor=#dddddd><td align=center>
+	<b><font size=+1>Missing Safety Info</font></b><br>
+	<b>
+	<a style=\"text-decoration: none;\" href=$pagename?mode=$mode&hide_complete=$hide_complete&show_week_ending_set=$show_week_ending->last_week_end><font color=blue>&lt;</font></a>
+	<b><i>$show_week_ending_date</i></b>
+	<a style=\"text-decoration: none;\" href=$pagename?mode=$mode&hide_complete=$hide_complete&show_week_ending_set=$show_week_ending->next_week_end><font color=blue>&gt;</font></a>
+	</b>
+</td></tr>
+
+
+<script>
+function select_ts(tsid) {
+	//alert (tsid);
+	document.location='$pagename?mode=payroll_signed_timesheet_submit&timesheet_id=' + tsid + '&files_id=$payroll_showing_files_id'
+	}
+</script>
+";
+
+$ts_info=getoneb("select * from timesheet_index 
+where employee_id = '$user_info->contacts_id' 
+and week_ending = '$show_week_ending->week_end_mysql'");
+
+$query="select * from timesheet_index,contacts where 
+week_ending = '$show_week_ending->week_end_mysql' and 
+timesheet_index.employee_group = '$current_employee_group' and 
+timesheet_index.employee_id = contacts.contacts_id and
+
+payroll_collected_data != 'Y' and 
+
+(time_is_accurate != 'Y' and
+(no_unreported_injuries != 'Y' and possible_injury != 'Y'))
+
+order by alphasort";
+
+$res=@mysql_query($query);
+
+while($ts_info=@mysql_fetch_object($res)) {
+		$safetyerrors="N";
+		
+		if ($ts_info->time_is_accurate!='Y') {
+			$safetyerrors='Y';
+			}
+		if ($ts_info->no_unreported_injuries!='Y') {
+			$safetyerrors='Y';
+			}
+		if ($ts_info->possible_injury=='Y') {
+			$safetyerrors='Y';
+			}
+		
+		if ($safetyerrors=='N') {
+			echo "<tr><td>ERROR $ts_info->timesheet_id</td></tr>";
+			continue;
+			}
+		
+		echo "<tr><td>
+				<a href=javascript:select_ts($ts_info->timesheet_id);><font color=blue>$ts_info->display_name ($ts_info->employee_num)</font></a>
+			</td></tr>";
+		}
+echo "</table>";
+?>

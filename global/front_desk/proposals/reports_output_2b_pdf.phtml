@@ -1,0 +1,69 @@
+<?
+set_time_limit(25);
+require_once('pdf_lib2.inc');
+$start_date=vali_date($start_date);
+$end_date=vali_date($end_date);
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+// Cook up the query
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+$title_add="";
+if ($umcgroups_id!="") {
+	$moregroups="";$sep="";$tsep="";
+	while ($item=array_pop($umcgroups_id)) {
+		$moregroups = $moregroups . $sep . "umcgroups_id = '$item'";
+		$ginfo=getoneb("select * from bidlist_umcgroups where umcgroups_id = '$item'");
+		$title_add=$title_add . $tsep . "$ginfo->name";
+		$sep=" or ";
+		$tsep=",";
+		}
+	$moregroups=" (" . $moregroups . ") and ";
+	} else {
+	$title_add="all groups";
+	}
+$title_add="for: " . $title_add;
+
+$title_add_2="";
+if ($proposal_type!="") {
+	$moretypes="";$sep="";$tsep="";
+	while ($item=array_pop($proposal_type)) {
+		$moretypes = $moretypes . $sep . "proposal_type = '$item'";
+		$title_add_2=$title_add_2 . $tsep . $item;
+		$sep=" or ";
+		$tsep=",";
+		}
+	$moretypes=" (" . $moretypes . ") and ";
+	} else {
+	$titla_add_2="all types";
+	}
+$title_add=$title_add . " showing: " . $title_add_2;
+
+//echo "$show_all_records";exit;
+$more_limits="and show_in_bid_total_calc = 'Y'";
+if ($show_all_records=="on") $more_limits="";
+
+
+$s=invali_date($start_date);
+$e=invali_date($end_date);
+$title_add=$title_add . " from: $s-$e";
+
+$query="select bidlist_id from bidlist where " . $moregroups . $moretypes . " bid_date >= '$start_date' and bid_date <= '$end_date' and status != 'No Bid' " . $more_limits . " order by bid_date,bid_time";
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+if ($paper_size=="") $paper_size="11x17";
+else $paper_size=addslashes($paper_size);
+
+$pdf=&new Cezpdf("$paper_size","landscape");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+$datetm=date('m/d/Y G:i');
+$title="Bid Activity $title_add";
+$pdf->ezSetMargins(85,36,36,36);
+
+$pdf->ez_umc_header_start("$title",16,$textopts=array('justification'=>'center'));
+proposal_search_output_5_pdf($query,$pdf);
+
+$pdf->ezStream();
+?>

@@ -1,0 +1,82 @@
+<?
+require('header.phtml');
+fd_navs_header();
+include("main_tabs.phtml");
+session_write_close();
+$width="width=315px";
+echo "
+<table border=1 cellspacing=0 cellpadding=0>
+<tr><td valign=top>
+	<div style=\"display: inline;\" id=foreman_report_inline></div>
+	<script>
+	ajaxManager('load_page','$pagename?mode=report_show&report_name=foreman&show_jobinfo_id=$global_jobinfo_id','foreman_report_inline');
+	</script>
+</td><td>
+	<img src='$pagename?mode=report_show&report_name=graph_plumbing_pipe_sheet_hours&show_jobinfo_id=$global_jobinfo_id'>
+</td></tr>
+
+<tr><td colspan=2>
+<img $width src='$pagename?mode=report_show&report_name=graph_plumbing_hours&show_jobinfo_id=$global_jobinfo_id'>
+<img $width src='$pagename?mode=report_show&report_name=graph_pipe_hours&show_jobinfo_id=$global_jobinfo_id'>
+<img $width src='$pagename?mode=report_show&report_name=graph_sheet_hours&show_jobinfo_id=$global_jobinfo_id'>
+</td></tr></table>
+
+
+<script src='/javascript/cal2.js'></script>
+
+<script>
+
+function validate_form() {
+	update_foreman();
+	return (FALSE);
+	}
+function foreman_both_dates() {
+	start_date='';
+	end_date=encodeURIComponent(document.select_we.week_ending.value);
+	ajaxManager('load_page','$pagename?mode=report_show&report_name=foreman&show_both=Y&week_starting=' + start_date + '&week_ending=' + end_date,'foreman_report_inline');
+	}
+
+function update_foreman() {
+	show_both='';
+	document.select_we.week_ending.style.background='yellow';
+	if (typeof(document.select_we.week_starting)!='undefined') {
+		start_date=encodeURIComponent(document.select_we.week_starting.value);
+		}
+	else start_date='';
+	if (start_date!='') show_both='Y';
+	end_date=encodeURIComponent(document.select_we.week_ending.value);
+	ajaxManager('load_page','$pagename?mode=report_show&report_name=foreman&show_both=' + show_both + '&week_starting=' + start_date + '&week_ending=' + end_date,'foreman_report_inline');
+	}
+
+function d(phase,job,ct,detailmode,start_date,end_date) {
+	phase=encodeURIComponent(phase);
+	job=encodeURIComponent(job);
+	ct=encodeURIComponent(ct);
+	detailmode=encodeURIComponent(detailmode);
+	start_date=encodeURIComponent(start_date);
+	end_date=encodeURIComponent(end_date);
+	open('$pagename?mode=report_show&report_name=foreman_details&phase=' + phase + '&job=' + job + '&detailmode=' + detailmode + '&start_date=' + start_date + '&end_date=' + end_date + '&ct=' + ct,'details_' + job,'width=900,height=600,scrollbars=yes,resizable=yes');
+	}
+            
+function open_aging_window(jobinfo_id) {
+	open('?mode=report_show&report_name=foreman_aging&jobinfo_id_set=' + jobinfo_id,'${global_jobinfo_id}>aging','width=1000,height=600,scrollbars=1,resizable=1');
+	}
+
+function open_change_orders(jobinfo_id) {
+	open('?mode=report_show&report_name=foreman_change_orders&jobinfo_id_set=' + jobinfo_id,'${global_jobinfo_id}>change_orders','width=500,height=400,scrollbars=1,resizable=1');
+	}
+
+function open_subcontracts(jobinfo_id) {
+	open('?mode=report_show&report_name=foreman_subcontracts&jobinfo_id_set=' + jobinfo_id,'${global_jobinfo_id}>change_orders','width=1000,height=400,scrollbars=1,resizable=1');
+	}
+</script>";
+
+
+
+
+
+
+
+fd_navs_footer();
+
+?>

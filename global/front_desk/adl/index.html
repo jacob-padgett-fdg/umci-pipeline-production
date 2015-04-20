@@ -1,0 +1,18 @@
+<?
+require("settings.cfg");
+require("global-auth.inc");
+require_once('viewpoint_connect_ro.phtml');
+require_once('viewpoint_libs.inc');
+
+if ($contacts_last_main_mode=="") {
+	session_register('contacts_last_main_mode');
+	$contacts_last_main_mode="main";
+	}
+
+if (isset($mode)) {
+	$err=include($mode . ".phtml");
+	if (!($err)) include("badmode.phtml");
+	} else {
+	include ("main.phtml");
+	}
+?>

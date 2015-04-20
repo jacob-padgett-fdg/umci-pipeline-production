@@ -1,0 +1,49 @@
+<?
+if (!($adminuser)) {
+	echo "ERROR: Security Violation Attempt! The authorities have been notified. 
+	Go away now. If you believe this is in error, then contact your system administrator.";
+	exit;
+	}
+
+//require_once("querylib.inc");
+echo "
+<html><head><title>Proposal Status Maintenance</title></head>
+
+<body bgcolor=white><center><h2>Proposal Status Maintenance</h2></center>
+<hr>
+
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+<a href=$pagename?mode=proposals_status_edit><font color=blue>Add a new status</font></a><p>
+<table border=0>
+";
+
+$query="select * from svc_proposals_status order by status";
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<a href=$pagename?mode=proposals_status_edit&svc_proposals_status_id=$row->svc_proposals_status_id><font color=blue><b><i>Edit</i></b></font></a>
+		</td><td>
+			$row->status
+		</td><td>
+			<a href=javascript:delete_status(\"$row->svc_proposals_status_id\");><font color=blue><i>Delete</i></font></a>
+		</td></tr>
+		
+		";
+	}
+echo "</table>
+
+
+<script>
+function delete_status(status_id) {
+	if (confirm(\"Are you sure you want to delete that?\"))
+	document.location=\"$pagename?mode=proposals_status_delete&svc_proposals_status_id=\" + status_id;
+	}
+</script>
+
+
+
+
+";
+
+?>

@@ -1,0 +1,27 @@
+<?
+
+if (!($inbound_info)) die("Application error (inbound info)");
+if (!($source_doc_info)) die("Application error (source doc info)");
+if (!($dest_doc_info)) die("Application error (dest doc info)");
+if (!($source_files_id)) die("Application error (source files id)");
+
+
+
+
+$dest_file_group_info=create_file_group("Filed via inbound","$app_info->app_name");
+$dest_file_group_id=$dest_file_group_info->file_group_id;
+
+$old_attachment_info=getoneb("select * from documents_attachments where doc_id = '$dest_doc_info->doc_id' order by sort_priority desc limit 1");
+$old_count=$old_attachment_info->sort_priority;
+$new_count=$old_count + 1;
+
+@mysql_query("insert into documents_attachments set
+	doc_id = '$dest_doc_info->doc_id',
+	contacts_id = '$global_user_id',
+	file_group_id = '$dest_file_group_info->file_group_id',
+	sort_priority = '$new_count',
+	upload_time = now()");
+@mysql_query("update webfile_files set file_group_id = '$dest_file_group_id' where files_id = '$source_files_id'");
+
+
+?>

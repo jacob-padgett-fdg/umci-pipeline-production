@@ -1,0 +1,10 @@
+<?
+//require('querylib.inc');
+require('header2.phtml');
+
+//$query="select * from contacts where umc_emp = 'Y' and current = 'Y' order by last_name,first_name";
+$query="select * from contacts where umc_emp != 'Y' and current = 'Y' and is_company != 'Y' order by alphasort";
+contact_table($query);
+
+require('footer.phtml');
+?>

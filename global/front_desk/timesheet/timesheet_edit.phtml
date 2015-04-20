@@ -1,0 +1,18 @@
+<?
+require_once("timesheet_include.inc");
+
+if ($timesheet_mode_new!="") $timesheet_mode=escapeshellcmd($timesheet_mode_new);
+
+if ($timesheet_mode=="") {
+	session_register('timesheet_mode');
+	$timesheet_mode="timesheet_today";
+	}
+
+ if (is_readable("$timesheet_mode.phtml")){
+	 include("$timesheet_mode.phtml");
+	 } else {
+	 echo "Error: Invalid timesheet view mode: \"$timesheet_mode\"";
+	 exit;
+	 }
+
+?>

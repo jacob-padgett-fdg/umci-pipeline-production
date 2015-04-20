@@ -1,0 +1,61 @@
+<?
+
+$employeescolor="blue";
+$companiescolor="blue";
+$peoplecolor="blue";
+$everythingcolor="blue";
+
+if ($mode == "employees") $employeescolor="black";
+if ($mode == "companies") $companiescolor="black";
+if ($mode == "people") $peoplecolor="black";
+if ($mode == "everything") $everythingcolor="black";
+
+echo "
+<html>
+<head>
+<title>UMC Contact Management Page</title>
+</head>
+<body bgcolor=white>
+
+
+<table border=0 cellpadding=5>
+<tr><td>
+Options:
+</td><td>
+<a href=$pagename?mode=main><font color=blue>
+Main
+</font></a>
+</td><td>
+<a href=$pagename?mode=employees><font color=$employeescolor>
+Employees
+</font></a>
+</td><td>
+<a href=$pagename?mode=companies><font color=$companiescolor>
+Companies
+</font></a>
+</td><td>
+<a href=$pagename?mode=people><font color=$peoplecolor>
+People
+</font></a>
+</td><td>
+<a href=$pagename?mode=everything><font color=$everythingcolor>
+EVERYTHING
+</font></a>
+</td></tr>
+</table>
+
+
+
+
+
+<hr>
+
+
+<a href=$pagename?mode=contacts_edit><font color=blue>Add A Contact</font><a><br>
+<a href=$pagename_up><font color=blue>Exit</font></a><br>
+
+
+";
+
+
+?>

@@ -1,0 +1,68 @@
+<?
+if (!($payroll_check)) die_security("Failed payroll check in payroll_manage_sequences");
+
+$payroll_seq_info=getoneb("select * from timesheet_payroll_sequences where seq = '$payroll_seq' and active = 'Y'");
+if (!($payroll_seq_info)) die ("Application Error: No payroll sequence specified currently! Please contact your system administrator!");
+
+echo "
+<script>
+function apply_changes() {
+	document.payroll_seq_member_add.submit();
+	}
+</script>
+
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+<b>Payroll sequence $payroll_seq_info->seq is configured for payroll group $payroll_seq_info->payroll_group employees only</b><hr>
+<form name=payroll_seq_member_add method=post action=$pagename>
+<b>Add Member:</b><p>
+
+<input type=hidden name=mode value=payroll_user_seq_change_submit>
+<input type=hidden name=timesheet_payroll_sequence_num value=\"$payroll_seq_info->seq\">
+<table border=0 cellspacing=0 cellpadding=4><tr><td>
+";contactsbox("select * from contacts where umc_emp='Y' and current='Y' and timesheet_payroll_sequence_num != '$payroll_seq_info->seq' and employee_group = '$payroll_seq_info->payroll_group'","",'payroll_seq_user_id','',6);echo"
+</td><td>
+<input type=submit value=Add>
+</td></tr></table>
+<p>
+<b>Current Members:</b><p>
+";
+
+$group_query="select contacts_id,employee_num,display_name,timesheet_payroll_sequence_num,employee_group,current from contacts where current = 'Y' and umc_emp = 'Y' and contact_type = 'contact' and timesheet_payroll_sequence_num = '$payroll_seq_info->seq' order by alphasort,employee_num";
+//tabledump($group_query);
+
+$group_res=@mysql_query($group_query);
+echo "<table border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$umc_standard_blue><td>
+	<b>Name</b>
+</td><td>
+	<b>Emp #</b>
+</td><td>
+	<b>Group #</b>
+</td><td>
+	&nbsp;
+</td><td>
+	&nbsp;
+</td></tr>
+";
+while ($row=@mysql_fetch_object($group_res)) {
+	if (($row->employee_group!=$payroll_seq_info->payroll_group)&&($payroll_seq_info->include_in_payroll=='Y')) {
+		$bgcolor="red";
+		} else {
+		$bgcolor="white";
+		}
+	echo "<tr bgcolor=\"$bgcolor\"><td>
+			$row->display_name
+		</td><td>
+			$row->employee_num
+		</td><td>
+			$row->employee_group
+		</td><td>
+			<a href=$pagename?mode=payroll_group_verify&fixcontact_id=$row->contacts_id><font color=blue>Verify Group</font></a>
+		</td><td>
+			<a href=$pagename?mode=payroll_user_seq_change&payroll_seq_user_id=$row->contacts_id><font color=blue>Change Seq #</font></a>
+		</td></tr>";
+	}
+
+echo "</table>";
+
+?>

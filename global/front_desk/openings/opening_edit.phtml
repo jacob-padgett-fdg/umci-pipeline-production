@@ -1,0 +1,128 @@
+<?
+require('header.phtml');
+require_once('querylib.inc');
+require_once('local.inc');
+
+if ($hr_openings_id!="") {
+	$hr_openings_id=addslashes($hr_openings_id);
+	$job_info=getone("select * from hr_openings where hr_openings_id = '$hr_openings_id'");
+	//echo "<hr>select * from hr_openings where hr_openings_id = '$hr_openings_id'<hr>";
+	} else {
+	$job_info->active='Y';
+	}
+
+
+$job_info->active=checkbreak($job_info->active);
+$job_info->salary_doe=checkbreak($job_info->salary_doe);
+$job_info->section_1_on=checkbreak($job_info->section_1_on);
+$job_info->section_2_on=checkbreak($job_info->section_2_on);
+$job_info->section_3_on=checkbreak($job_info->section_3_on);
+$job_info->section_4_on=checkbreak($job_info->section_4_on);
+$job_info->section_5_on=checkbreak($job_info->section_5_on);
+
+
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Cancel</font></a>
+<center><h2>Job Opening Edit</h2></center><hr>
+<form name=job_opening_edit method=post action=$pagename>
+<input type=hidden name=mode value=opening_submit>
+<input type=hidden name=hr_openings_id value=\"$job_info->hr_openings_id\">
+
+<table border=1 cellspacing=0 cellpadding=4>
+
+<tr><td>
+	<b>Active</b>
+</td><td>
+	<input type=checkbox name=active $job_info->active>
+</td></tr>
+
+<tr><td>
+	<b>Job Title</b>
+</td><td>
+	<input type=text size=30 name=job_title value=\"$job_info->job_title\">
+</td></tr>
+
+<tr><td>
+	<b>Position Type</b>
+</td><td>
+	<select name=position_type>
+	<option>$job_info->position_type</option>
+	<option>Full Time</option>
+	<option>Part Time</option>
+	<option>Temporary</option>
+	</select>
+<tr><td>
+	<b>Category</b>
+</td><td>
+	";dropbox("select * from hr_job_categories",$job_info->hr_job_categories_id,"","",1);echo "
+</td></tr>
+
+<tr><td>
+	<b>Location</b>
+</td><td>
+	";contactsbox("select * from contacts where ( company_id = '968' or contacts_id = '968') and (contact_type = 'site' or contact_type = 'company')",$job_info->site_id,"site_id");echo"
+</td></tr>
+
+<tr><td>
+	<b>Description</b>
+</td><td>
+	<textarea name=job_description_text rows=9 cols=40>$job_info->job_description_text</textarea>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Salary</b>
+</td><td valign=top>
+	DOE:&nbsp;<input type=checkbox name=salary_doe $job_info->salary_doe<br>
+	<input type=text name=salary size=7 value=\"$job_info->salary\">
+</td></tr>
+
+<tr><td>
+	<b>Application Deadline</b>
+</td><td>
+	";datebox(invali_date($job_info->deadline),"job_opening_edit.deadline");echo"
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit name=savemode value=Apply>";
+	if ($hr_openings_id!="") echo "<input type=submit name=savemode value=Save>";
+echo "</td></tr>
+
+</table>
+</form><p>
+";
+
+//if ($new==TRUE) exit;
+if ($hr_openings_id!="") {
+	bullets($job_info->hr_openings_id,"");
+	}
+
+//tabledump("select * from hr_application_submissions left join hr_applications using (application_id) where hr_openings_id = '$hr_openings_id'");
+$res=@mysql_query("select * from hr_application_submissions left join hr_applications using (application_id) where hr_openings_id = '$hr_openings_id' order by status,last_name,first_name,hr_openings_id");
+$count=@mysql_num_rows($res);
+
+if ($res>0) {
+	echo "<hr><table border=1 width=80% cellspacing=0 cellpadding=4>";
+	while($row=@mysql_fetch_object($res)) {
+		echo "<tr><td>
+			<a target=\"app_view_win_$row->application_id\" href=$pagename?mode=application_edit&application_id=$row->application_id><font color=blue>
+			$row->last_name, $row->first_name</font></a>
+		</td><td>
+			$row->status
+		</td><td>
+			$row->home_phone
+		</td><td>
+			$row->day_phone
+		</td><td>
+			$row->address_city, $row->address_state
+		</td><td>
+			<a href=$pagename?mode=application_download&application_id=$row->application_id><font color=blue><i>Download</i></font></a>
+		</td></tr>
+			
+		";
+		}
+	echo "</table>";
+	}
+
+
+?>

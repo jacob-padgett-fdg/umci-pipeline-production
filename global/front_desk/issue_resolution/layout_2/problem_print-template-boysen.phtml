@@ -1,0 +1,95 @@
+<?
+testrights("read_only");
+
+require("header-printjob.phtml");
+//require("querylib.inc");
+
+if ("$problem_id" != "") {
+	$problem=getone("select * from issue_res_issues where problem_id = '$problem_id'");
+	} else {
+	echo "Error.. No conflict specified!!!!!!!!!<p>";
+	exit;
+	}
+
+	$problem->due_date=invali_date("$problem->due_date");
+	$problem->last_action=invali_date("$problem->last_action");
+	$problem->completed=invali_date("$problem->completed");
+
+	$problem->summary=ereg_replace("M","<p>",$problem->summary);
+	$problem->solution=ereg_replace("M","<p>",$problem->solution);
+	$problem->actual_solution=ereg_replace("M","<p>",$problem->actual_solution);
+
+echo "
+<center>
+
+<h2>$jobinfo->job_name</h2>
+<table border=1>
+
+<tr><td>	
+	$category_template_text->conflict_id:
+</td><td>	
+	$problem->conflict_id&nbsp;
+</td><td>	
+	$category_template_text->bld_floor:
+</td><td>	
+	$problem->bld_floor&nbsp;
+</td></tr>
+
+<tr><td>	
+	$category_template_text->summary:
+</td><td colspan=3>
+	$problem->summary&nbsp;
+</td></tr>
+
+<tr><td>	
+	$category_template_text->solution:
+</td><td colspan=3>	
+	$problem->solution&nbsp;
+</td></tr>
+
+<tr><td>	
+	$category_template_text->actual_solution:	
+</td><td colspan=3>	
+	$problem->actual_solution&nbsp;
+</td></tr>
+
+<tr><td>	
+	$category_template_text->due_date:	
+</td><td>	
+	$problem->due_date&nbsp;
+</td><td>	
+	$category_template_text->last_action:
+</td><td>	
+	$problem->last_action&nbsp;
+</td></tr>
+
+<tr><td>	
+	<font color=red><b>$category_template_text->completed_by:</b></font>
+</td><td>	
+	$problem->completed_by&nbsp;
+</td><td>	
+	<font color=red><b>$category_template_text->completed:</b></font>
+</td><td>
+	$problem->completed&nbsp;
+</td></tr>
+
+
+<tr><td>	
+	$category_template_text->responsibility:
+</td><td>	
+	$problem->responsibility&nbsp;
+</td><td>
+	$category_template_text->approved:
+</td><td>	
+	$problem->approved&nbsp;
+</td></tr>
+</table>
+
+</center>
+
+<script>
+print();
+</script>
+";
+
+?>

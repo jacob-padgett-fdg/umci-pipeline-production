@@ -1,0 +1,73 @@
+<?
+require('header.phtml');
+$today=date('m-d-Y');
+$today_mysql=date('Y-m-d');
+
+require('main_selectbar.phtml');
+
+if (!(getoneb("select * from bidlist_leads_users where contacts_id = '$global_user_id'"))) {
+	die("ERROR: Invalid permissions! You don't have access to the lead tracking interface! How did you even try to get here!!! The authorities have been notified!");
+	}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// Leads sorting stuff
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+include("column_sorting.phtml");
+
+$traxx_main_menu_tab='main_leads';
+
+echo "
+
+<center>
+<table border=1 cellspacing=0 cellpadding=0 width=100%><tr><td>
+<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=100% bgcolor=#dddddd align=center colspan=4><table border=1 cellspacing=0 cellpadding=0 width=100%><tr><td align=center><b><font size=+2>$dbdescription Lead Tracking</font></b></td></tr></table></td></tr>
+<tr><td colspan=4 align=center><b><font size=+1>TRAXX Main Menu</font></b></td></tr>
+
+<script>
+function confirm_new_lead() {
+	if (confirm('Create new lead. Are you sure?'))
+		document.new_lead.submit();
+	}
+</script>
+
+<tr><td align=center colspan=1>
+	<form name=new_lead method=get action=$pagename>
+	<input type=hidden name=mode value=lead_edit>
+	<input type=button onclick=confirm_new_lead(); size=40 value=\"New Lead\">
+	</form>
+</td><td align=center colspan=1>
+	<form name=search_leads method=get action=$pagename>
+	<input type=hidden name=mode value=proposal_search>
+	<input type=submit size=40 value=\"Search Leads\">
+	</form>
+</td><td align=center colspan=1>
+	<form name=goto_reports method=get action=$pagename>
+	<input type=hidden name=mode value=reports_leads>
+	<input type=submit size=40 value=\"Reports\">
+	</form>
+</td><td align=center colspan=1>
+	<form name=load_bidlist_id method=get action=$pagename>
+	<input type=hidden name=mode value=lead_edit>
+	<input type=submit value=\"Load Lead ID #:\">
+	<input type=text name=bidlist_id size=5>
+	</form>
+</td></tr>
+
+
+</table>
+</td></tr>
+
+<tr><td align=center>";
+
+	if ($general_query_order_by=="") $lead_order=" order by lead_ranking, rom desc, create_date ";
+		else $lead_order=$general_query_order_by;
+	proposal_search_output_1("select * from bidlist_cache where status = 'Lead' $lead_order","Project Leads List","lead_edit");
+
+echo "
+</td></tr>
+</table>
+</center>
+";
+?>

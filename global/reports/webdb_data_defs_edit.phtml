@@ -1,0 +1,300 @@
+<?
+include("report_lib.inc");
+include("mh_lib.inc");
+$report_name="webdb_data_defs";
+check_report_permissions();
+$update='N';
+$table_id=addslashes($table_id);
+$table_info=getoneb("select * from zz_table_defs where table_id = '$table_id'");
+if (!($table_info)) die ("Application error: table info unavailable!");
+
+$is_view=getoneb("show create view $table_info->table_name");
+
+
+if ($update_field_description_id!="") {
+	$q=htmlspecialchars($update_field_description_value);
+	$update_field_description_id=addslashes($update_field_description_id);
+	$update_field_description_value=addslashes($update_field_description_value);
+	@mysql_query("update zz_field_defs set field_description = '$update_field_description_value' where field_id = '$update_field_description_id'");
+	echo "<input id=\"fdi_$update_field_description_id\" type=text size=20 name=field_description onchange=\"update_description_fast($update_field_description_id)\" value=\"$q\">";
+	exit;
+	}
+
+if ($action=="toggle_active") {
+	$update='Y';
+	if ($table_info->table_active=='Y' )
+		$new_table_active='N';
+		else 
+		$new_table_active='Y';
+	@mysql_query("update zz_table_defs set table_active = '$new_table_active' where table_id = '$table_info->table_id'");
+	}
+
+if ($action=="toggle_fd_app_main") {
+	$update='Y';
+	if ($table_info->fd_app_main=='Y' ){
+		//$new_app_main='N';
+		@mysql_query("update zz_table_defs set fd_app_main = 'N', fd_doc_type = '' where table_id = '$table_info->table_id'");
+		} else {
+		//$new_app_main='Y';
+		@mysql_query("update zz_table_defs set fd_app_main = 'Y' where table_id = '$table_info->table_id'");
+		}
+	}
+
+if ($action=="update_doc_type") {
+	$update='Y';
+	$fd_doc_type=addslashes($fd_doc_type);
+	@mysql_query("update zz_table_defs set fd_doc_type = '$fd_doc_type' where table_id = '$table_info->table_id'");
+	}
+
+if ($action=="update_field") {
+	//$update='Y';
+	//$fd_doc_type=addslashes($fd_doc_type);
+	$update_field_id=addslashes($update_field_id);
+	$fk_field=addslashes($fk_field);
+	$field_description=addslashes($field_description);
+	$currently_used=addslashes($currently_used);
+	$show_in_keys=addslashes($show_in_keys);
+	@mysql_query("update zz_field_defs set fk_field = '$fk_field', field_description = '$field_description', currently_used = '$currently_used', show_in_keys = '$show_in_keys' where field_id = '$update_field_id'");
+	}
+
+if ($action=="update_description") {
+	$update='Y';
+	$table_description=addslashes($table_description);
+	@mysql_query("update zz_table_defs set table_description = '$table_description' where table_id = '$table_info->table_id'");
+	}
+
+if ($update!='N') {
+	$table_info=getoneb("select * from zz_table_defs where table_id = '$table_info->table_id'");
+	}
+
+require('header.phtml');
+mh_navs_header();
+echo "
+<a href=$pagename?mode=$mode&report_name=$report_name><font color=blue>Table List</font></a>
+
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td colspan=2 align=center bgcolor=$fd_color_4>
+	<b>Table: $table_info->table_name</b>
+</td></tr>
+
+<tr><td>
+	Active:
+</td><td>
+	<a href=$pagename?mode=$mode&report_name=${report_name}_edit&table_id=$table_info->table_id&action=toggle_active><font color=blue>$table_info->table_active</font></a>
+</td></tr>
+
+<tr><td>
+	Front Desk App Main Table:
+</td><td>
+	<a href=$pagename?mode=$mode&report_name=${report_name}_edit&table_id=$table_info->table_id&action=toggle_fd_app_main><font color=blue>$table_info->fd_app_main</font></a>&nbsp;
+</td></tr>
+";
+
+if ($table_info->fd_app_main=="Y") {
+	echo "
+	<tr><td>
+		Front Desk Doc Type
+	</td><td>
+		<form name=foo method=post action=$pagename>
+		<input type=hidden name=mode value='$mode'>
+		<input type=hidden name=table_id value='$table_info->table_id'>
+		<input type=hidden name=report_name value='${report_name}_edit'>
+		<input type=hidden name=action value='update_doc_type'>
+		";dropbox("select doc_type as fd_doc_type, doc_type as fd_doc_type_name from documents group by doc_type order by doc_type",$table_info->fd_doc_type,1,"submit()",2);echo"
+		</form>
+	</td></tr>
+	";
+	}
+
+echo "
+<tr><td>
+	Description
+</td><td>
+	<form name=foo method=post action=$pagename>
+	<input type=hidden name=mode value='$mode'>
+	<input type=hidden name=table_id value='$table_info->table_id'>
+	<input type=hidden name=report_name value='${report_name}_edit'>
+	<input type=hidden name=action value='update_description'>
+	<textarea name=table_description onchange=submit() rows=5 cols=40>$table_info->table_description</textarea>
+	</form>
+</td></tr>
+
+</table>";
+
+if ($is_view) {
+	echo "<script>alert('This \"table\" is actually a view');</script>
+	<a href=\"javascript:display_create_view();\">Show create view command</a><div style=\"display: none;\" id='create_view'>
+	";
+	tabledump("show create view $table_info->table_name");
+	echo "</div>";
+	}
+
+
+$fields=@mysql_query("describe $table_info->table_name");
+while ($field=@mysql_fetch_object($fields)) {
+	$current=getoneb("select * from zz_field_defs where table_id = '$table_info->table_id' and field_name = '$field->Field' limit 1");
+	if (!($current)) {
+		//echo "Add field: $field->Field<br>";
+		$type=ereg_replace("[(].*$","",$field->Type);
+		$length=ereg_replace("^[^(]*","",$field->Type);
+		$length=ereg_replace("[()]","",$length);
+		if ($field->Null=='NO') $null='N';
+		else $null='Y';
+		
+		
+		mysql_query("insert into zz_field_defs set
+			table_id = '$table_info->table_id',
+			field_name = '$field->Field',
+			field_type = '$type',
+			field_length = '$length',
+			null_allowed = '$null',
+			key_type = '$field->Key',
+			default_value = '$field->Default',
+			extra_mysql = '$field->Extra'
+			");
+		}
+	}
+
+$res=@mysql_query("select * from zz_field_defs where table_id = '$table_info->table_id' order by field_id");
+$field_count=@mysql_num_rows($field_count);
+echo "<table border=1 cellspacing=0 cellpadding=3>
+<tr><td colspan=11 align=center bgcolor=$fd_color_4>
+	<b>Fields</b>&nbsp;<i>$field_count</i>
+</td></tr>
+
+<tr bgcolor=$fd_color_3><td>
+	Name
+</td><td>
+	Type
+</td><td>
+	Length
+</td><td>
+	Null
+</td><td>
+	Key Type
+</td><td>
+	Default
+</td><td>
+	Extra
+</td><td>
+	FK
+</td><td>
+	Description
+</td><td>
+	Current
+</td><td>
+	List as key
+</td></tr>
+	
+";
+$ti=199;
+while ($row=@mysql_fetch_object($res)) {
+	$ti++;
+	if ($row->null_allowed=='Y') $row->null_allowed="X";
+	else $row->null_allowed="&nbsp;";
+	
+	//echo ("<hr>select * from contacts_fk_list where db_table = '$table_info->table_name' and table_field = '$row->field_name' and is_contact = 'Y'<hr>");
+	$is_contact=getoneb("select * from contacts_fk_list where db_table = '$table_info->table_name' and table_field = '$row->field_name' and is_contact = 'Y'");
+	if ($row->currently_used=='Y') $bgcolor="#ffffff";
+	else $bgcolor=$fd_color_2;
+	
+	if ($is_contact) {
+		$fk="contacts.contacts_id";
+		@mysql_query("update zz_field_defs set fk_field = '$fk' where field_id = '$row->field_id'");
+		$row->fk_field=$fk;
+		$bgcolor=$fd_color_6;
+		}
+	//if ($is_contact) $bgcolor=$fd_color_4;
+	echo "<tr bgcolor=$bgcolor><td>
+			$row->field_name
+		</td><td>
+			$row->field_type
+		</td><td>
+			$row->field_length
+		</td><td>
+			$row->null_allowed
+		</td><td>
+			$row->key_type&nbsp;
+		</td><td>
+			$row->default_value&nbsp;
+		</td><td>
+			$row->extra_mysql&nbsp;
+		</td><form method=post action=$pagename><td>
+			<input type=hidden name=mode value=$mode>
+			<input type=hidden name=report_name value=${report_name}_edit>
+			<input type=hidden name=table_id value=$table_info->table_id>
+			<input type=hidden name=action value=update_field>
+			<input type=hidden name=update_field_id value=$row->field_id>
+			";dropbox("select concat(table_name,'.',field_name) as fk_field,table_name,'.',field_name from zz_field_defs left join zz_table_defs on (zz_field_defs.table_id = zz_table_defs.table_id) where zz_field_defs.table_id != '$table_info->table_id' and ((extra_mysql like '%auto_increment%' and fd_app_main = 'Y') or show_in_keys = 'Y')",$row->fk_field,1,"submit()",2);echo "
+		</td><td id=\"td_$row->field_id\">
+			<input tabindex=$ti id=\"fdi_$row->field_id\" type=text size=40 name=field_description onchange=\"update_description_fast($row->field_id)\" value=\"" . htmlspecialchars($row->field_description) . "\">
+		</td><td>
+			<select name=currently_used onchange=\"submit()\">
+			<option>$row->currently_used</option>
+			<option>Y</option>
+			<option>N</option>
+			</select>
+		</td><td>
+			<select name=show_in_keys onchange=\"submit()\">
+			<option>$row->show_in_keys</option>
+			<option>Y</option>
+			<option>N</option>
+			</select>
+		</td></form></tr>
+		";
+			
+	}
+
+echo "
+</table>
+<script>
+function update_description_fast(field_id) {
+	value=document.getElementById('fdi_' + field_id).value;
+	document.getElementById('fdi_' + field_id).style.background='$fd_color_3';
+	ajaxManager('load_page','$pagename?mode=$mode&report_name=${report_name}_edit&table_id=$table_info->table_id&update_field_description_id=' + field_id + '&update_field_description_value=' + value,'td_' + field_id);
+	}
+
+function display_create_view() {
+	document.getElementById('create_view').style.display='block';
+	}
+
+function display_description() {
+	document.getElementById('table_description').style.display='block';
+	}
+	
+function display_create() {
+	document.getElementById('table_create').style.display='block';
+	}
+
+</script>
+<a href=\"javascript:display_description();\">Display Table Description</a><br>
+<a href=\"javascript:display_create();\">Display Table (re)Create Command</a>
+
+
+<div id=table_description style=\"display: none;\">";
+tabledump("describe $table_info->table_name");
+echo "</div>
+
+<div id=table_create style=\"display: none;\">";
+tabledump("show create table $table_info->table_name");
+echo "</div>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mh_navs_footer();
+
+exit;
+
+?>

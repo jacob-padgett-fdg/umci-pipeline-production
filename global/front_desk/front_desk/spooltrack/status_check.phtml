@@ -1,0 +1,45 @@
+<?
+echo "
+<html>
+<head>
+<title>UMC Contact Management Page</title>
+</head>
+<body bgcolor=white>
+";
+
+if ($current_job_id_set != "") {
+	$current_job_id_set=escapeshellcmd($current_job_id_set);
+	$current_system_id="";
+	$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$current_job_id_set'");
+	if ($jobinfo) {
+		$current_job_id=$current_job_id_set;
+		$current_job_num=$jobinfo->contract_num;
+		} else {
+		echo "Error selecting requested job. Please try again or contact your system administrator.<p>";
+		exit;
+		}
+	}
+
+
+
+//////////////////////////////////////////////////////////////
+//  Acquire Job information or select job
+//////////////////////////////////////////////////////////////
+if ($mode!="select_job"){
+	if ($current_job_id=="") { include("select_job.phtml"); exit; }
+	$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$current_job_id'");
+	if (!($jobinfo)) { include("select_job.phtml"); exit; }
+
+echo "<b><i>Spool Fabricaton Tracking:</b></i> $jobinfo->contract_num - $jobinfo->job_name<hr>";
+
+
+session_register('current_system_id');
+$system_information=getoneb("select * from spool_fab_systems where spool_fab_systems_id = '$current_system_id'");
+if (!($system_information)){
+	include("system_selection.phtml");
+	exit;
+	}
+}
+
+
+?>

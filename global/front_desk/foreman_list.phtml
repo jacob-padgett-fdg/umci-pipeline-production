@@ -1,0 +1,74 @@
+<?
+if ($jobinfo_id!="") $jobinfo_id=addslashes($jobinfo_id);
+else die("Job information error! Please contact your system administrator.");
+
+
+if ($del_foreman!="") {
+	$del_foreman=addslashes($del_foreman);
+	@mysql_query("delete from front_desk_job_foreman where jobinfo_id = '$jobinfo_id' and foreman_id = '$del_foreman'");
+	}
+if ($add_foreman!="") {
+	$add_foreman=addslashes($add_foreman);
+	@mysql_query("delete from front_desk_job_foreman where jobinfo_id = '$jobinfo_id' and foreman_id = '$add_foreman'");
+	$general=checkfix($general);
+	$plumb=checkfix($plumb);
+	$pipe=checkfix($pipe);
+	$sheet=checkfix($sheet);
+	$industrial=checkfix($industrial);
+	@mysql_query("insert into front_desk_job_foreman set jobinfo_id = '$jobinfo_id', foreman_id = '$add_foreman', general = '$general', plumb = '$plumb', pipe = '$pipe', sheet = '$sheet', industrial = '$industrial'");
+	//tabledump("insert into front_desk_job_foreman set jobinfo_id = '$jobinfo_id', foreman_id = '$add_foreman', general = '$general', plumb = '$plumb', pipe = '$pipe', sheet = '$sheet', industrial = '$industrial'");
+	}
+
+//tabledump("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo_id'");
+$listres=@mysql_query("select * from front_desk_job_foreman left join contacts on (contacts.contacts_id = front_desk_job_foreman.foreman_id) where jobinfo_id = '$jobinfo_id' order by alphasort");
+//tabledump("select * from front_desk_job_foreman left join contacts on (contacts.contacts_id = front_desk_job_foreman.foreman_id) where jobinfo_id = '$jobinfo_id' order by alphasort");
+
+echo "<table width=100% border=0 cellspacing=0 cellpadding=2 style=\"border: 1px solid black;\">
+<tr><td><b>Foreman</b></td><td bgcolor=\"$fd_color_1\"><b>Gen</b></td><td><b>Plumb</b></td><td bgcolor=\"$fd_color_1\"><b>Pipe</b></td><td><b>Sheet</b></td><td bgcolor=\"$fd_color_1\"><b>Indust</b></td></tr>";
+while ($row=@mysql_fetch_object($listres)) {
+	//$foreman_info=getoneb("select * from contacts where contacts_id = '$row->foreman_id'");
+	echo "<tr><td>
+			$row->display_name
+		</td><td align=center bgcolor=\"$fd_color_1\">
+			$row->general
+		</td><td align=center>
+			$row->plumb
+		</td><td align=center bgcolor=\"$fd_color_1\">
+			$row->pipe
+		</td><td align=center>
+			$row->sheet
+		</td><td align=center bgcolor=\"$fd_color_1\">
+			$row->industrial
+		</td><td>
+			<a href=\"javascript:remove_a_foreman($row->foreman_id);\"><font color=blue><i>Del</i></font></a>
+		</td></tr>";
+	
+	}
+
+echo "</table>";
+echo "
+<form name=foreman_add>
+
+<table border=0 style=\"border: 1px solid black; background: $fd_color_1;\">
+<tr><td>
+";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'",'','add_foreman');
+echo"
+</td><td width=100% align=center>
+<a href=\"javascript:add_a_foreman(document.foreman_add.add_foreman.value)\"><font color=blue>Add</font></a>
+</td></tr>
+
+<tr><td colspan=2>
+General<input type=checkbox name=general onchange=foreman_toggle_all()>
+Plumb<input type=checkbox name=plumb>
+Pipe<input type=checkbox name=pipe>
+Sheet<input type=checkbox name=sheet>
+Indust<input type=checkbox name=industrial>
+</td></tr></table>
+</form>
+
+
+";
+//echo "foreman list goes here";
+
+
+?>

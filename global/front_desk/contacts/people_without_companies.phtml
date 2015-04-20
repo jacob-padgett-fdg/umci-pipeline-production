@@ -1,0 +1,8 @@
+<?
+//require('querylib.inc');
+require('header2.phtml');
+
+$query="select * from contacts where is_company != 'Y' and company_id <= 0 order by alphasort";
+contact_table($query);
+require('footer.phtml');
+?>

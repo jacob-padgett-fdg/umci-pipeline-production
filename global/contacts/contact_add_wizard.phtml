@@ -1,0 +1,48 @@
+<?
+require("header.phtml");
+//require('querylib.inc');
+if ($type!="") $type=addslashes($type);
+if ($return_to!="") $return_to=addslashes($return_to);
+if ($company_id!="") $company_id=addslashes($company_id);
+
+if ($company_id!="") {
+	$company_info=getoneb("select * from contacts where contacts_id = '$company_id'");
+	$adding_to_text=" to $company_info->display_name";
+	$adding_to_link_site="&company_id=$company_info->contacts_id";
+	$adding_to_link_contact="&company_id=$company_info->contacts_id";
+	}
+echo "<center><h3>Contact Add Options</h3>";
+switch ($type) {
+	case "company":
+					echo "<a href=$pagename?mode=wizard_company_add&return_to=$return_to><font color=blue size=+1><b>Add A Company</b></font></a>";
+					break;;
+	case "site":
+					echo "<a href=$pagename?mode=wizard_site_add$adding_to_link_site&return_to=$return_to><font color=blue size=+1><b>Add A Site$adding_to_text</b></font></a>";
+					break;;
+	case "contact":
+					echo "<a href=$pagename?mode=wizard_contact_add$adding_to_link_contact&return_to=$return_to><font color=blue size=+1><b>Add A Person$adding_to_text</b></font></a>";
+					break;;
+	default:
+					echo "";
+					break;;	
+	}
+
+echo "<hr>
+<h4>Other Options</h4>
+<a href=$pagename?mode=wizard_company_add&return_to=$return_to><font color=blue size=+1><b>Add A Company</b></font></a><p>
+<a href=$pagename?mode=wizard_site_add&return_to=$return_to><font color=blue size=+1><b>Add A Site</b></font></a><p>
+<a href=$pagename?mode=wizard_contact_add&return_to=$return_to><font color=blue size=+1><b>Add A Person</b></font></a><p>
+";
+
+
+
+
+
+
+
+
+
+
+
+
+?>

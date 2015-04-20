@@ -1,0 +1,73 @@
+<?
+$columns=4;
+$dbdescription="UMC Cell Phones";
+if ($application_name=="front_desk") {
+	include('mh_lib.inc');
+	include("header.phtml");
+	mh_navs_header();
+	} else {
+	include("settings.cfg");
+	$dbdescription="UMC Cell Phones";
+	include("global-auth.inc");
+	include("global_connect_rw.phtml");
+	include("header.phtml");
+	$application_name="intra";
+	}
+$query="select * from contacts where umc_emp = 'Y' and current = 'Y' and phone_cell != '' order by first_name,last_name,employee_num";
+$res=@mysql_query($query);
+$total=@mysql_num_rows($res);
+$per_column=ceil($total/$columns);
+$today=date('m/d/Y');
+$header_columns=$columns * 2;
+echo "
+<style>
+@media print{
+	td { font-size: 8pt; }
+	th { font-size: 8pt; }
+	}
+</style>
+
+<center><table  border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_4><td align=center colspan=$header_columns><div style=\"float: right;\"><i><font size=-1>$today</font></i></div><font size=+1><b>Cell List</b></font></td></tr>
+
+<tr bgcolor=$fd_color_1>";
+$current_column=1;
+while ($current_column<=$columns) {
+	$current_column++;
+	echo "<th><b>Name</b></th><th><b>Cell #</b></th>";
+	}
+echo "</tr>";
+
+$record_count=0;
+while ($row=@mysql_fetch_object($res)) {
+	// Clean up the data in $row a little bit..
+		if ($row->employee_num=="4637") $row->last_name=$row->last_name . " Sr";
+		if ($row->employee_num=="5644") $row->last_name=$row->last_name . " Jr";
+		$phone=ereg_replace("[^0-9]*","",$row->phone_cell);
+		$phone=	"(" . $phone[0] . $phone[1] . $phone[2] . ") " .  $phone[3] . $phone[4] . $phone[5] . "-" .  $phone[6] .$phone[7] . $phone[8] . $phone[9] ;
+	$record_count++;
+	$current_column=round(floor(($record_count - 1 + $per_column)/$per_column));
+	$current_row=$record_count - (($current_column-1) * $per_column);
+	$contact[$current_column][$current_row]['name']="$row->first_name&nbsp;$row->last_name";
+	$contact[$current_column][$current_row]['phone']="$phone";
+	$row="";
+	}
+$current_row=1;
+while ($current_row<=($per_column)) {
+	$current_column=1;
+	echo "<tr>";
+	while ($current_column<=$columns) {
+		echo "
+		<td style=\"border-right: 0px solid black;\">
+			<b>" . $contact[$current_column][$current_row]['name'] . "</b>
+		</td><td style=\"border-left: 0px solid black;\">
+			" . $contact[$current_column][$current_row]['phone'] . "	
+		</td>";
+		$current_column++;
+		}
+	echo "</tr>";
+	$current_row++;
+	}
+echo "</table></center>";
+if ($application_name=="front_desk") { mh_navs_footer(); }
+?>

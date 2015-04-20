@@ -1,0 +1,85 @@
+<?
+require("header.phtml");
+require("mh_lib.inc");
+mh_navs_header();
+
+if ($my_log_id!="") {
+	$my_log_id=addslashes($my_log_id);
+	$my_log_info=getoneb("select * from front_desk_my_log where my_log_id = '$my_log_id' and contacts_id = '$global_user_id'");
+	if (!($my_log_info)) die("Application error! Unable to load old record.");
+	}
+
+echo "<form name=my_log_edit method=post action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=report_name value=my_log_submit>
+<input type=hidden name=my_log_id value=\"$my_log_info->my_log_id\">
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=2 align=center bgcolor=$fd_color_4>
+	<b>Edit Log Entry</b>
+</td></tr>
+
+<tr><td>
+	Log Entry
+</td><td>
+	<textarea rows=4 cols=30 name=log_entry>$my_log_info->log_entry</textarea>
+</td></tr>
+
+<tr><td>
+	Created
+</td><td>
+	$my_log_info->log_timestamp_create
+</td></tr>
+
+<tr><td>
+	Last Edit Time
+</td><td>
+	$my_log_info->log_timestamp
+</td></tr>
+
+<tr><td>
+	Start Date
+</td><td>
+	";datebox2($my_log_info->start_date,"my_log_edit.start_date");echo"
+</td></tr>
+
+<tr><td>
+	Start Time
+</td><td>
+	<input type=text size=20 name=start_time value=\"$my_log_info->start_time\">
+</td></tr>
+
+<tr><td>
+	Duration
+</td><td>
+	<input type=text size=7 name=duration value=\"$my_log_info->duration\">
+</td></tr>
+
+<tr><td>
+	Notes
+</td><td>
+	<textarea name=notes rows=8 cols=30>$my_log_info->notes</textarea>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+</td></tr>
+
+
+</form>
+</table>
+";
+
+
+if ($my_log_info) echo "<a href=$pagename?mode=$mode&report_name=my_log_delete&my_log_id=$my_log_info->my_log_id><font color=blue>Delete this record</font></a>";
+
+
+
+
+
+
+
+
+
+mh_navs_footer();
+
+?>

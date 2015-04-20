@@ -1,0 +1,28 @@
+<?
+if ($global_user->timesheet_group_one_foreman!='Y')
+	die ("ERROR: Access Violation! The authorities have been notified.");
+
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to Main Menu</font></a>
+<br>
+<center><h2>My Groups</h2></center><hr>
+<b>Current Groups:</b><br>
+";
+$group_list_query="select * from timesheet_foreman_groups where foreman_id = '$global_user->contacts_id' order by group_name";
+$group_list=@mysql_query($group_list_query);
+
+while($grow=@mysql_fetch_object($group_list)) {
+	echo "<ul><li>
+			<a href=$pagename?mode=foreman_group_edit&group_id=$grow->group_id><font color=blue>$grow->group_name</font></a>
+		</li></ul>
+		";
+	}
+echo "<a href=$pagename?mode=foreman_group_edit><font color=blue>New Group</font></a><br>";
+
+
+
+
+
+?>

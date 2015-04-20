@@ -1,0 +1,16 @@
+<?
+require_once('querylib.inc');
+
+$bid=addslashes($hr_opening_bullets_id);
+$bullet_info=getone("select * from hr_opening_bullets where hr_opening_bullets_id = '$bid'");
+
+$query="delete from hr_opening_bullets where hr_opening_bullets_id = '$bullet_info->hr_opening_bullets_id'";
+
+
+//echo "<hr>$query<hr>";
+$res=@mysql_query($query);
+if (!($res)) die("Error: The damn query failed. Please contact your system administrator.<br>Failed query: $query");
+
+forward("opening_edit&hr_openings_id=$bullet_info->hr_openings_id");
+
+?>

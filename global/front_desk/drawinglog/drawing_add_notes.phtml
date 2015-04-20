@@ -1,0 +1,26 @@
+<?
+
+if ($drawing_id=="") die("Application error: no drawing specified for note");
+else $drawing_id=addslashes($drawing_id);
+
+
+$creator=$global_user_id;
+$notes=addslashes($notes);
+$query="insert into drawinglog_notes set
+drawing_id = '$drawing_id',
+creator = '$creator',
+note_date = now(),
+notes = '$notes'";
+
+//echo "<hr>$query<hr>";exit;
+@mysql_query($query);
+forward("drawinglog_edit&drawing_id=$drawing_id");
+
+
+
+
+
+
+
+
+?>

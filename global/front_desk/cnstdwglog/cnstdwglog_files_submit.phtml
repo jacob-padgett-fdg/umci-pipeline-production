@@ -1,0 +1,15 @@
+<?
+if (!($write)) die_security("mode: $mode");
+
+if ($files_id=="") die("Application error!");
+
+$files_id=addslashes($files_id);
+$scope_change=checkfix($scope_change);
+$revision=addslashes($revision);
+
+$file_group_id=addslashes($file_group_id);
+@mysql_query("update cnstdwglog_files set file_group_id = '$file_group_id', scope_change = '$scope_change', revision = '$revision' where files_id = '$files_id'");
+$file_info=getoneb("select * from cnstdwglog_files where files_id = '$files_id'");
+forward("cnstdwglog_edit&cnstdwglog_id=$file_info->cnstdwglog_id");
+
+?>

@@ -1,0 +1,74 @@
+<?
+require('querylib.inc');
+$access_applications_id=escapeshellcmd($access_applications_id);
+
+
+//$access_user_info=getone("select * from contacts where contacts_id = '$access_contacts_id'");
+$app_info=getone("select * from access_applications where access_applications_id = '$access_applications_id'");
+
+echo "
+<html><body bgcolor=white>
+<center><h2>Access Settings for $app_info->application_name ($app_info->application_description)</h2></center><hr>
+
+<a href=$pagename?mode=application_list><font color=blue>Done</font></a><br>
+<a href=$pagename?mode=access_edit&access_applications_id=$access_applications_id><font color=green>ADD ACCESS ENTRY</font></a><p>";
+//$query="select * from access,contacts where contacts.contacts_id = access.contacts_id and application_name = '$app_info->application_name' order by last_name,first_name,employee_num";
+$query="select * from access left join contacts on (contacts.contacts_id = access.contacts_id ) left join contacts_groups on (contacts_groups.group_id = access.group_id) where application_name = '$app_info->application_name' and (contacts_groups.jobinfo_id < 1 or contacts_groups.jobinfo_id is null) order by last_name,first_name,employee_num,description";
+//tabledump($query);
+//echo $query;
+//tabledump($query);
+//exit;
+
+$result=@mysql_query($query);
+if (!($result)) {
+	echo "Error in lookup query: <hr>$query";
+	exit;
+	}
+
+echo "<table border=1 cellpadding=7>
+	
+	<tr><td colspan=3 align=center bgcolor=$fd_color_4>
+		<b>Permission Settings for '$app_info->application_description'</b>
+	</td></tr>
+	
+	<tr bgcolor=#eeeeee><td>
+		<font color=black>
+		Name
+		</font>
+	</td><td>
+		<font color=black>
+		Access Type
+		</font>
+	</td><td>
+		<font color=black>
+		Access Mode
+		</font>
+	</td></tr>";
+
+while ($row=@mysql_fetch_object($result)) {
+	echo "<tr><td>";
+		if ($row->contacts_id > 0) {
+		echo "<a href=$pagename?mode=access_edit&access_id=$row->access_id><font color=blue>
+		$row->last_name, $row->first_name</font></a>";
+		} else {
+		if ($row->description=="") $row->description="?unknown?";
+		echo "<a href=$pagename?mode=access_edit&access_id=$row->access_id><font color=blue>
+		<b>$row->description</b></font></a>";
+		}
+	echo "
+	</td><td>
+		$row->type
+	</td><td>
+		$row->rightsmode
+	</td></tr>";
+	}
+	
+echo "</table>";
+
+
+
+
+
+
+require('footer.phtml');
+?>

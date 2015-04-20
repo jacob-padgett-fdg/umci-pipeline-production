@@ -1,0 +1,215 @@
+<?  tabledump(" select category,type from svc_equip_categories right join svc_equip_types on svc_equip_categories.category_id = svc_equip_types.category_id order by category,type ");
+exit;
+require('header.phtml');
+/*
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+// This short procedure deletes all standard materials off all 
+// equipment on an agreement.. In this case for agreement_id 749
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+$res=@mysql_query("select * from svc_agreement_equip_list where agreement_id = 749");
+while ($row=@mysql_fetch_object($res)) {
+	echo "$row->el_id<ul>";
+	$si_res=@mysql_query("select * from svc_equip_sched_index where el_id = '$row->el_id'");
+	while ($si_row=@mysql_fetch_object($si_res)) {
+		echo "$si_row->sched_index_id<ul>";
+		$mat_res=@mysql_query("select * from svc_agreement_materials where sched_index_id = '$si_row->sched_index_id'");
+		while ($mat_row=@mysql_fetch_object($mat_res)) {
+			echo "$mat_row->materials_id<br>";
+			@mysql_query("delete from svc_agreement_materials where materials_id = '$mat_row->materials_id'");
+			}
+		echo "</ul>";
+		}
+	echo "</ul>";
+	}
+exit;
+*/
+if ($user_to_show=="") {
+	session_register('user_to_show');
+	$user_to_show=$global_user_id;
+	}
+if ($adminuser) {
+	if ($user_to_show_set!="") $user_to_show=addslashes($user_to_show_set);
+	
+	echo "<a href=$pagename?mode=admin_settings><font color=blue>Admin Settings</font></a>";
+	$show_other_users_qry="select contacts_id as user_to_show_set,display_name from svc_agreement_index left join contacts on (creator = contacts_id) group by creator order by alphasort";
+	echo "
+	<form name=select_user_for method=post action=$pagename>
+	<input type=hidden name=mode value=main>
+	Show&nbsp;User:&nbsp;";
+	dropbox($show_other_users_qry,$user_to_show,1,"submit()",2);
+	echo"
+	</form><hr>
+	";
+	//tabledump($show_other_users_qry);
+	} else {
+	$user_to_show=$global_user_id;
+	}
+
+
+if ($show_old_agreements=="") {
+	session_register('show_old_agreements');
+	$show_old_agreements='N';
+	}
+if ($show_old_agreements_set!="") {
+	$show_old_agreements=escapeshellcmd($show_old_agreements_set);
+	}
+
+$show_old=checkbreak($show_old);
+
+echo "
+<a href=$pagename_up><font color=blue>EXIT</font></a><p>
+<a href=$pagename?mode=document_create_1><font color=blue>Create New Service Agreement</font></a><br>
+
+<b>My Recent Agreements</b><hr>";
+//tabledump("select * from svc_agreement_index where creator = '$global_user_id' order by agreement_id desc limit 5");
+
+echo "
+<form name=agreement_search method=post action=\"$pagename\">
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td>
+	Agreement Name
+</td><td>
+	<input type=text name=agreement_name value=\"$agreement_name\" size=30>
+</td></tr>
+
+<tr><td>
+	Agreement type
+</td><td>
+	";dropbox("select agreement_type_id,agreement_type  from svc_agreement_types",$agreement_type_id,1,"",2);echo "
+</td></tr>
+
+<tr><td>
+	Status
+</td><td>
+	<select name=status>
+	<option>$status</option>
+	<option>New</option>
+	<option>Finishing</option>
+	<option>Complete</option>
+	<option>Presenting</option>
+	<option>Won</option>
+	<option>Dead</option>
+	<option></option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Company
+</td><td>
+	";contactsbox("select * from contacts where contact_type = 'company'",$company_id,'company_id');echo "
+</td></tr>
+
+<tr><td>
+	First / Last Expected Start
+</td><td>";
+	datebox2("$start_date_start",'agreement_search.start_date_start');
+	echo " / ";
+	datebox2("$start_date_end",'agreement_search.start_date_end');
+	echo "
+</td></tr>
+
+<tr><td colspan=2>
+	<input type=button onclick=\"submit()\"	value=\"Search\">
+</td></tr>
+
+</table>
+
+
+
+</form>
+
+
+
+
+";
+
+$query_add="";
+
+
+if ($status!="") {
+	$status=addslashes($status);
+	$query_add=$query_add . " and status = '$status' ";
+	}
+if ($agreement_type_id!="") {
+	$agreement_type_id=addslashes($agreement_type_id);
+	$query_add=$query_add . " and agreement_type_id = '$agreement_type_id' ";
+	}
+if ($agreement_name!="") {
+	$agreement_name=addslashes($agreement_name);
+	$query_add=$query_add . " and agreement_name like '%$agreement_name%' ";
+	}
+if ($company_id!="") {
+	$company_id=addslashes($company_id);
+	$query_add=$query_add . " and company_id = '$company_id' ";
+	}
+if ($start_date_start!="") {
+	$start_date_start=vali_date($start_date_start);
+	$query_add=$query_add . " and expected_start_date >= '$start_date_start' ";
+	}
+if ($start_date_end!="") {
+	$start_date_end=vali_date($start_date_end);
+	$query_add=$query_add . " and expected_start_date <= '$start_date_end' ";
+	}
+
+
+
+//$mylast25="select agreement_id from svc_agreement_index where creator = '$user_to_show' and status != 'Dead' and status != 'Won' and Status != 'Lost' order by agreement_id desc limit 250";
+$mylast25="select agreement_id from svc_agreement_index where creator = '$user_to_show' $query_add order by agreement_id desc limit 250";
+
+/*
+if ($show_old_agreements=='N') {
+	$mylast25="select agreement_id from svc_agreement_index where creator = '$user_to_show' and status != 'Dead' and status != 'Won' and Status != 'Lost' order by agreement_id desc limit 250";
+	} else {
+	$mylast25="select agreement_id from svc_agreement_index where creator = '$user_to_show' order by agreement_id desc limit 250";
+	}
+*/
+
+
+
+
+echo "<table border=1 cellspacing=0 cellpadding=4>";
+$res=@mysql_query($mylast25);
+while ($row=@mysql_fetch_object($res)) {
+	print_agreement_line($row->agreement_id);
+	}
+
+ajax_load();
+
+echo "</table>
+
+
+<script>
+function load_note_editor(agreement_id) {
+	cell=document.getElementById('agreement_notes_' + agreement_id);
+	cell.onclick_old=cell.onclick;
+	cell.onclick='';
+	ajaxManager('load_page','$pagename?mode=agreement_note_editor&agreement_id=' + agreement_id,'agreement_notes_' + agreement_id);
+	}
+
+function save_notes(agreement_id) {
+	obj=document.getElementById('agreement_notes_textarea_' + agreement_id);
+	cell=document.getElementById('agreement_notes_' + agreement_id);
+	newval=encodeURIComponent(obj.value);
+	//cell.onclick='load_note_editor(' + agreement_id + ')';
+	cell.onclick=cell.onclick_old;
+	ajaxManager('load_page','$pagename?mode=agreement_note_editor_save&agreement_id=' + agreement_id + '&agreement_notes=' + newval,'agreement_notes_' + agreement_id);
+	}
+
+</script>
+
+
+
+
+
+
+
+
+";
+
+if ($show_old_agreements=='N') echo "<a href=$pagename?mode=main&show_old_agreements_set=Y><font color=blue>Show Old Agreements</font></a><br>";
+if ($show_old_agreements=='Y') echo "<a href=$pagename?mode=main&show_old_agreements_set=N><font color=blue>Show Only Active Agreements</font></a><br>";
+
+
+?>

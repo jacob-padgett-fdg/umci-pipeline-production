@@ -1,0 +1,10 @@
+<?
+$pal_id=addslashes($pal_id);
+$pal_info=getoneb("select * from pal where pal_id = '$pal_id'");
+if (!($pal_info)) die("Application error!");
+if ($pal_info->creator_id!=$global_user_id) die_security("Pal violation: pal_id $pal_info->pal_id.");
+@mysql_query("delete from pal where pal_id = '$pal_info->pal_id'");
+@mysql_query("delete from pal_assignments where pal_id = '$pal_info->pal_id'");
+@mysql_query("delete from pal_log where pal_id = '$pal_info->pal_id'");
+echo "<font size=-1><i>PAL item #$pal_info->pal_num  deleted</i></font>";
+?>

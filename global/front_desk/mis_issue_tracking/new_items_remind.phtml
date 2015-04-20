@@ -1,0 +1,30 @@
+<?
+$mailsubject="**NEW ISSUE** IT Issue Tracker";
+$message="
+<center><font size=+2>IT Issue Tracking</font></center><p>
+
+There is one or more new issue. Do something about it, or I'll mail you again in about an hour or so.
+<ul><a href=https://pipeline.umci.com/global/mis_issue_tracking/>Go here to fix it </a></ul>
+<hr>
+
+Summary of new issues waiting to be accepted:<p>";
+
+
+
+$query="select * from mis_issue_index,contacts where creator = contacts_id and status = 'initialized'";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$message=$message . "<li> (<a href=https://pipeline.umci.com/global/mis_issue_tracking/index.html?mode=issue_edit&issue_id=$row->issue_id>$row->issue_id</a>) By: $row->display_name $row->name</li>";
+	}
+
+
+$uslist_res=@mysql_query("select * from mis_issue_uslist,contacts where mis_issue_uslist.contacts_id = contacts.contacts_id");
+while ($usrow=@mysql_fetch_object($uslist_res)) {
+	if ($usrow->pref_uslist_exclude!='Y') queue_email($usrow->contacts_id,$mailsubject,$message,'Y');
+	}
+
+
+
+
+
+?>

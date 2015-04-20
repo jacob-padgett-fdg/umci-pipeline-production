@@ -1,0 +1,53 @@
+<?
+require("header.phtml");
+
+echo "
+<center><h2>Order Form</h2></center><br>
+
+
+<form method=post action=$PHP_SELF>
+<input type=hidden name=mode value=order_form_submit>
+<table border=0>
+
+<tr><td>
+	US Office Products Item Number
+</td><td>
+	<input type=text name=vendorcode>
+</td></tr>
+
+<tr><td>
+	Quantity
+</td><td>
+	<input type=text name=quantity>
+</td></tr>
+
+<tr><td>
+	Description
+</td><td>
+	<input type=text name=description>
+</td></tr>
+
+<tr><td>
+	Job
+</td><td>
+	";dropbox("select contract_num as jobnum,contract_num from jobinfo where active = 'Y' order by length(contract_num),contract_num");echo "
+</td></tr>
+
+<tr><td>
+</td><td>
+	<input type=button value=\"Submit\" onclick=submit();>
+</td></tr>
+
+</table></form>
+
+
+
+
+
+
+";
+
+
+
+
+?>

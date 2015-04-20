@@ -1,0 +1,254 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+$today=date("m-d-Y");
+$seq_info=getone("select max(seq_num) as seq_num from timesheet_sequence");
+
+if (($payroll_seq=="") || ($payroll_seq<0)) {
+	die("Application error: No payroll sequence selected/detected. Aborting. Please contact your system administrator.");
+	}
+
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to Main</font></a>
+<hr>
+<script>
+function tl(timesheet_id) {
+	document.location='$pagename?mode=timesheet_load&come_back_to=$mode&ts_id=' + timesheet_id;
+	}
+function mark_to_process(timesheet_id) {
+	document.location='$pagename?mode=payroll_mark_to_process&ts_id=' + timesheet_id;
+	}
+function mark_as_deleted(timesheet_id) {
+	if(confirm(\"Are you sure?\"))
+	if(confirm(\"Are you Really Sure?\"))
+	if(confirm(\"Are you Really Really Sure?\"))
+	if(confirm(\"Are you Really Really Really Sure?\"))
+	document.location='$pagename?mode=payroll_mark_as_deleted&ts_id=' + timesheet_id;
+	}
+function mark_as_new(timesheet_id) {
+	document.location='$pagename?mode=payroll_mark_as_new&ts_id=' + timesheet_id;
+	}
+function mark_as_completed(timesheet_id) {
+	document.location='$pagename?mode=payroll_mark_as_completed&ts_id=' + timesheet_id;
+	}
+function mark_all_completed_as_processing() {
+	document.location='$pagename?mode=payroll_mark_all_completed_as_processing';
+	}
+function mark_completed_as_processing(week_ending) {
+	document.location='$pagename?mode=payroll_mark_completed_as_processing&mark_week_ending=' + week_ending;
+	}
+function process_timesheets() {
+	if (confirm('Are you sure you\'re ready to process the timesheets?'))
+		document.location='$pagename?mode=payroll_verify_timesheet_data';
+	}
+
+function mark_timesheets_posted() {
+	if (confirm(\"You're sure you want to post these?\"))
+		if (confirm(\"It's really a pain to undo!?!?\"))
+			document.location='$pagename?mode=payroll_mark_as_posted';
+	}
+
+
+</script>
+<body bgcolor=white>
+<table border=0 width=100%>
+<tr valign=top><td>
+	";
+	$listweeks_query="select week_ending from timesheet_index,contacts where contacts.contacts_id = timesheet_index.employee_id and status = 'complete' and timesheet_payroll_sequence_num = '$payroll_seq' group by week_ending order by week_ending";
+	$listweeks_res=@mysql_query($listweeks_query);
+	while($eachweek=@mysql_fetch_object($listweeks_res)) {
+		$week_text=invali_date($eachweek->week_ending);
+		echo "<a href=javascript:mark_completed_as_processing('$week_text');><font color=green>$week_text completed to process</font></a><br>";
+		}
+	
+echo "
+</td><td>
+	<a href=javascript:process_timesheets();><font color=blue>Download Timesheet Data</font></a>
+</td><td>
+	<a href=\"$pagename?mode=payroll_download_processing_as_pdf&blah=blah/timesheet_download-$seq_info->seq_num.pdf\"><font color=blue>Download PDF of Processing</font></a>
+</td><td>
+	<a href=javascript:mark_timesheets_posted();><font color=red>Mark \"Processing\" timesheets as posted</font></a>
+</td></tr>";
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////                         "Completed" timesheets
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$query="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and 
+status = 'complete' and contacts.timesheet_payroll_sequence_num = '$payroll_seq' order by week_ending,last_name";
+$week_end_last="";
+$res=@mysql_query($query);
+echo "
+	<table border=0 width=100%><tr><td align=center bgcolor=#dddddd><h2>Completed Timesheets</h2></td></tr></table><table border=0 cellpadding=3>
+	<tr><td></td><td>Name</td><td>ST</td><td>OT</td><td>DT</td><td>V</td><td>S</td><td>H</td><td>Total</td><td>Status</td><td>Week&nbsp;Ending</td></tr>";
+while($row=@mysql_fetch_object($res)) {
+	$week_end=invali_date($row->week_ending);
+	if ($row->reviewed=="Y") {
+		$highlight_color="green";
+		$review_text="Approved";
+		} else {
+		$highlight_color="#aaaaaa";
+		$review_text="Unapproved";
+		}
+
+	
+
+	if (($week_end_last!=$week_end)&&($week_end_last!="")) echo "<tr><td colspan=13 bgcolor=red>&nbsp</td></tr>";
+	$week_end_last=$week_end;		
+
+	$ts_info=timesheet_summary_info($row->timesheet_id);
+
+	if (($ts_info->st > 40) && ($row->overtime_exempt=='N')) $highlight_color="red";
+	
+
+		$warn_text_vac="";
+		$warn_text_sick="";
+		if ($ts_info->v > $ts_info->avail_vacation) {
+			$vac_fg_color1="<font color=#11ffff>";
+			$vac_fg_color2="</font>";
+			$vac_bg_color=" bgcolor=#ff1111";
+			$warn_text_vac="<br>Warning! Vacation hours exceed current available balance";
+			} else {
+			$vac_fg_color1="";
+			$vac_fg_color2="";
+			$vac_bg_color="";
+			}
+
+		if ($ts_info->s > $ts_info->avail_sick) {
+			$sick_fg_color1="<font color=#11ffff>";
+			$sick_fg_color2="</font>";
+			$sick_bg_color=" bgcolor=#ff1111";
+			$warn_text_sick="<br>Warning! Sick hours exceed current available balance";
+			} else {
+			$sick_fg_color1="";
+			$sick_fg_color2="";
+			$sick_bg_color="";
+			}
+
+
+	echo "<tr><td>
+		$ts_info->shift_tag
+		</td><td>
+			<a href=javascript:tl($row->timesheet_id);><font color=$highlight_color>$row->last_name,&nbsp;$row->first_name</font></a>
+		</td><td>
+			$ts_info->st
+		</td><td>
+			$ts_info->ot
+		</td><td>
+			$ts_info->dt
+		</td><td$vac_bg_color>
+			$vac_fg_color1$ts_info->v$vac_fg_color2
+		</td><td$sick_bg_color>
+			$sick_fg_color1$ts_info->s$sick_fg_color2
+		</td><td>
+			$ts_info->h
+		</td><td>
+			$ts_info->hours
+		</td><td>
+			$row->status/$review_text
+		</td><td>
+			$week_end
+		</td><td>
+			<a href=javascript:mark_to_process('$row->timesheet_id');><font color=green>Mark&nbsp;to&nbsp;process</font></a>
+		</td><td>
+			<a href=javascript:mark_as_new('$row->timesheet_id');>Return&nbsp;to&nbsp;user(new)</a>$warn_text_vac$warn_text_sick
+		</td></tr>";
+	}
+echo "</table>";
+if ((mysql_num_rows($res)==0)) echo "<b>No Records Found...</b><p>";
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////            Ready to process already...
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$query="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and status = 'processing' and contacts.timesheet_payroll_sequence_num = '$payroll_seq' order by week_ending desc,last_name";
+$week_end_last="";
+$res=@mysql_query($query);
+echo "<table border=0 width=100%><tr><td align=center bgcolor=#dddddd><h2>Timesheets Ready To Process"; 
+
+/*$cfn_qry="
+select comments,earnings_code from contacts,timesheet_index
+left join timesheet_time on (timesheet_index.timesheet_id = timesheet_time.timesheet_id)  
+where 
+timesheet_index.employee_id = contacts.contacts_id and
+status = 'processing' and comments != '' and 
+(earnings_code = '1' or earnings_code = '2' 
+or earnings_code = '3' 
+or earnings_code = '6') 
+and contacts.timesheet_payroll_sequence_num = '$payroll_seq' limit 1";
+*/
+$cfn_qry="
+select comments,earnings_code from contacts,timesheet_index
+left join timesheet_time on (timesheet_index.timesheet_id = timesheet_time.timesheet_id)  
+where 
+timesheet_index.employee_id = contacts.contacts_id and
+status = 'processing' and comments != '' and 
+contacts.timesheet_payroll_sequence_num = '$payroll_seq' limit 1";
+
+$check_for_notes=getoneb($cfn_qry);
+if ($check_for_notes) {
+	echo "&nbsp;&nbsp;&nbsp;<a href=$pagename?mode=payroll_show_processing_notes target=processing_timesheet_notes><font color=red><i>View Notes</i></font></a>";
+	}
+
+
+echo "</h2></td></tr></table><table border=0 cellpadding=3>";
+while($row=@mysql_fetch_object($res)) {
+	$week_end=invali_date($row->week_ending);
+	if ($row->reviewed=="Y") {
+		$highlight_color="blue";
+		$review_text="Approved";
+		} else {
+		$highlight_color="red";
+		$review_text="Unapproved";
+		}
+	if (($week_end_last!=$week_end)&&($week_end_last!="")) echo "<tr><td colspan=13 bgcolor=red>&nbsp</td></tr>";
+	$week_end_last=$week_end;		
+	echo "<tr><td>
+			<a href=javascript:tl($row->timesheet_id);><font color=$highlight_color>$row->last_name, $row->first_name</font></a>
+		</td><td>
+			$row->status/$review_text
+		</td><td>
+			$week_end
+		</td><td>
+			<a href=javascript:mark_as_completed('$row->timesheet_id');>Mark as completed</a>
+		</td><td>
+			<a href=javascript:mark_as_new('$row->timesheet_id');>Return to user(new)</a>
+		</td></tr>";
+	}
+echo "</table>";
+if ((mysql_num_rows($res)==0)) echo "<b>No Records Found...</b><p>";
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////            Incomplete Timesheets...
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$query="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and status = 'new' and contacts.timesheet_payroll_sequence_num = '$payroll_seq' order by week_ending desc,last_name";
+$res=@mysql_query($query);
+echo "<table border=0 width=100%><tr><td align=center bgcolor=#dddddd><h2>Incomplete Timesheets</h2></td></tr></table><table border=0 cellpadding=3>";
+while($row=@mysql_fetch_object($res)) {
+	$week_end=invali_date($row->week_ending);
+	if ($row->reviewed=="Y") {
+		$review_text="Approved";
+		} else {
+		$review_text="Unapproved";
+		}
+	echo "<tr><td>
+			<a href=javascript:tl($row->timesheet_id);>$row->last_name, $row->first_name</a>
+		</td><td>
+			$row->status/$review_text
+		</td><td>
+			$week_end
+		</td><td>
+			<a href=javascript:mark_as_completed('$row->timesheet_id');>Mark as completed</a>
+		</td><td>
+			<a href=javascript:mark_to_process('$row->timesheet_id');>Mark to process</a>
+		</td><td>
+			<a href=javascript:mark_as_deleted('$row->timesheet_id');><font color=red>Delete</font></a>
+		</td></tr>";
+	}
+echo "</table>";
+if ((mysql_num_rows($res)==0)) echo "<b>No Records Found...</b><p>";
+
+
+echo "<hr><a href=$pagename?mode=main><font color=blue>Return to Main</font></a>";
+?>

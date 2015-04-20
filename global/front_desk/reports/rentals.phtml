@@ -1,0 +1,192 @@
+<?
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+fd_navs_header();
+$page_length="30";
+$return_to_url=base64_encode($REQUEST_URI);
+$po_status_list=array('0'=>'Open','1'=>'Complete','2'=>'Closed','3'=>'Pending');
+
+
+
+
+if ($unabridged!="") {
+	$filter="";
+	$filter_text="<p><font style=\"color: red; font-weight: bold;\">To show the filtered version of this list</font> <a href=$pagename?mode=report_show&report_name=rentals><font color=blue>click here</font></a>.";
+	} else {
+	$filter="
+	and POIT.POItem != 98
+	and POIT.POItem != 99
+	and POIT.Description not like '%REPLACE%'
+	and POIT.Description not like '%RELOCATE%'
+	and POIT.Description not like '%INSTALL%'
+	and POIT.Description not like '%SERVICE%'
+	and POIT.Description not like '% FEE %'
+	and POIT.Description not like '% FEE'
+	and POIT.UM != 'LBS'
+	";
+	$filter_text="<p><font style=\"color: red; font-weight: bold;\">This list has been filtered in an attempt to only show actual equipment.<br>To see the unabridged list of items charged to this phase code </font><a href=$pagename?mode=report_show&report_name=rentals&unabridged=TRUE><font color=blue>click here</font></a>.";
+	}
+
+
+$query="select * from POIT with (NOLOCK) left join POHD with (NOLOCK) on (POIT.PO = POHD.PO and POIT.POCo = POHD.POCo) 
+where 
+POIT.POCo = 1 and 
+POIT.Job like '0$global_jobinfo->contract_num%'
+and POIT.Phase like '33800%'
+
+$filter
+
+
+order by POIT.ReqDate desc
+";
+$res=@mssql_query($query);
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a>
+
+$filter_text
+
+<table style=\"float: right;\" border=1 cellspacing=0 cellpadding=3>
+
+<tr><td>
+	<font size=-1>Unknown Duration</font>
+</td><td bgcolor=#ffffff>
+	<font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+</td></tr>
+
+<tr><td>
+	<font size=-1>Not expected yet</font>
+</td><td bgcolor=#dddd99>
+	<font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+</td></tr>
+
+<tr><td>
+	<font size=-1>Expected</font>
+</td><td bgcolor=#99dd99>
+	<font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+</td></tr>
+
+<tr><td>
+	<font size=-1>Expected Return</font>
+</td><td bgcolor=#dd9999>
+	<font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+</td></tr>
+
+<tr><td>
+	<font size=-1>PO Closed/Done</font>
+</td><td bgcolor=#999999>
+	<font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+</td></tr>
+
+<tr><td>
+	<font size=-1>Bad Expected Date</font>
+</td><td bgcolor=red>
+	<font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+</td></tr>
+
+
+</table>
+
+
+<table border=1 cellspacing=0 cellpadding=4>
+
+<tr><td colspan=8 align=center>
+	<font size=+2><b>Rental Information</b></font>
+</td></tr>	
+
+
+<tr bgcolor=$fd_color_4><td>
+	<b>PO #</b>
+</td><td>
+	<b>Required</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	<b>UM</b>
+</td><td>
+	<b>Orig Units</b>
+</td><td>
+	<b>Req by</b>
+</td><td>
+	<b>Return Date</b>
+</td><td>
+	&nbsp;
+</td></tr>
+";
+$po_last="";
+while ($row=@mssql_fetch_object($res)) {
+	if ($po_last==$row->PO) continue;
+	$po_last=$row->PO;
+	$row->ReqDate_nice=date('m/d/y',strtotime($row->ReqDate));
+	
+	$bgcolor="#ffffff";
+	if (($row->UM != 'EA') and
+		($row->UM != 'LS') and 
+		($row->ReqDate!="")
+		) {
+		$unit="";
+		if ($row->UM=='WKS') $unit='weeks';
+		if ($row->UM=='MOS') $unit='months';
+		if ($row->UM=='DAY') $unit='days';
+		//if ($row->UM=='') $unit='';
+		$return_string="$row->ReqDate + $row->OrigUnits $unit";
+		$return_date=date('m/d/y',strtotime($return_string));
+		
+		/////////////////////////////////////////////////////////////
+		// Colors.. 
+		/////////////////////////////////////////////////////////////
+		$return_date_mysql=date('Y/m/d',strtotime($return_string));
+		$request_date_mysql=date('Y/m/d',strtotime($row->ReqDate));
+		$today_mysql=date('Y/m/d');
+		if ($request_date_mysql>=$today_mysql) $bgcolor="#dddd99";
+		if ($request_date_mysql<=$today_mysql) $bgcolor="#99dd99";
+		if ($return_date_mysql<=$today_mysql) $bgcolor="#dd9999";
+		} else {
+		if ($row->ReqDate=="") {
+			$row->ReqDate_nice="";
+			$bgcolor="red";
+			}
+		
+		$return_date="&nbsp;";
+		}
+	if (($row->Status=="1") || ($row->Status=="2")) $bgcolor="#999999";
+	echo "<tr bgcolor=$bgcolor><td>
+			<a href=$pagename?mode=report_show&report_name=po_show&return_to_url=$return_to_url&po_number=$row->PO><font color=blue>$row->PO</font></a>
+		</td><td> 
+			$row->ReqDate_nice
+		</td><td>
+			$row->Description
+		</td><td>
+			$row->UM
+		</td><td>
+			$row->OrigUnits
+		</td><td>
+			$row->udrequisitioner
+		</td><td>
+			$return_date";
+		
+		if (FALSE) echo "
+			</td><td>
+				$row->ReqDate<br>
+				$return_date_mysql / $today_mysql<br>
+				$row->Status";
+		
+		
+		echo"
+		<td style=\"padding: 0px;\">";
+		calendar_add_button($global_jobinfo_id,"Rentals","$return_date_mysql","$global_jobinfo->contract_num/rentals/$row->PO/$row->POItem","&is_a_task=checked&title=" . urlencode("$row->Description&category=Rentals"));
+		echo "
+		</td</tr>";
+		
+		//</td><td>
+		//	$return_date_mysql / $today_mysql<br>
+		//	$row->Status
+		//$return_string
+	}
+
+
+echo "</table>";
+
+fd_navs_footer();
+
+?>

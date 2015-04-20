@@ -1,0 +1,7 @@
+<?
+if (!($admin_check)) die("ERROR: not an admin!");
+if ($contacts_id=="") die("Application error: No contact specified!!!");
+$contacts_id=addslashes($contacts_id);
+@mysql_query("delete from timesheet_safety_recipients where contacts_id = '$contacts_id'");
+forward('admin_safety_recipients_list');
+?>

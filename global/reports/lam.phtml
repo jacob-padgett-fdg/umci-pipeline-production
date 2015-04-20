@@ -1,0 +1,27 @@
+<?
+require('mh_lib.inc');
+require('report_lib.inc');
+include('lam_lib.inc');
+require_once("viewpoint_libs.inc");
+require_once("viewpoint_connect_ro.phtml");
+
+
+include("header.phtml");
+check_report_permissions();
+if ($printable!=1) mh_navs_header(array('background'=>"url(/global/front_desk$devel/lam_chop.jpg)"));
+
+require('lam_header.phtml');
+
+if ($lam_mode=="") $lam_mode="main";
+else $lam_mode=addslashes(ereg_replace('[^a-zA-Z.\-_]','',$lam_mode));
+include("lam_${lam_mode}.phtml");
+if ($printable!=1) mh_navs_footer();
+
+if ($printable==1) {
+	echo "<script>
+	print();
+	history.go(-1);
+	</script>";
+	}
+
+?>

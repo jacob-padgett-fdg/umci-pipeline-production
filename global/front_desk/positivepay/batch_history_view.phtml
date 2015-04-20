@@ -1,0 +1,28 @@
+<?
+$batch_id=addslashes($batch_id);
+log_batch_activity($batch_id,"Batch history viewed");
+$query="select * from positivepay_batch_activity where batch_id = '$batch_id'";
+$res=@mysql_query($query);
+echo "<table border=1 cellspacing=0 cellpadding=4>
+<tr><td colspan=4 align=center bgcolor=\"$umc_standard_blue\"><b>Batch History</b></td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$date=invali_date($row->action_date);
+	$user_info=getoneb("select * from contacts where contacts_id = '$row->action_user'");
+	echo "<tr><td>
+			$row->activity
+		</td><td>
+			$user_info->display_name
+		</td><td>
+			$date
+		</td><td>
+			$row->action_time
+		</td></tr>
+		";
+			
+	}
+echo "</table>";
+
+
+?>

@@ -1,0 +1,82 @@
+<?
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+else die("ERROR: Missing agreement_id. Please contact your system administrator!");
+$agreement_info=load_agreement_info($agreement_id);
+
+if ($probability=="") {
+	include('header.phtml');
+	echo "
+	<b>Please select a probability</b>
+	<form name=prob_check method=post action=$pagename>
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=agreement_id value=\"$agreement_info->agreement_id\">
+	<select name=probability>
+	<option>$agreement_info->probability</option>
+	<option>25</option>
+	<option>50</option>
+	<option>75</option>
+	<option>100</option>
+	</select>
+	<input type=submit value=Continue>
+	</form>
+	";
+	exit;
+	} else {
+	$probability=addslashes($probability);
+	}
+
+$update_query="update svc_agreement_index set status = 'Presenting',probability = '$probability' where agreement_id = '$agreement_info->agreement_id'";
+//echo "<hr>$update_query<hr>";
+@mysql_query($update_query);
+sync_with_proplog($agreement_info->agreement_id);
+
+
+$message="
+One of <b>$agreement_info->creator_name</b>'s service agreements has been<br>
+marked with a status of \"Presenting\". The agreement stats have been copied<br>
+into the service proposal log.<p>
+<a href=https://pipeline.umci.com$pagename?mode=svc_agreement_edit&agreement_id=$agreement_info->agreement_id><font color=blue>
+Click here</font></a> to review this agreement.
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td colspan=2 align=center><b>$agreement_info->agreement_name</b></td></tr>
+
+<tr><td>
+	Salesperson:
+</td><td>
+	$agreement_info->creator_name
+</td></tr>
+
+<tr><td>
+	Type:
+</td><td>
+	$agreement_info->agreement_type
+</td></tr>
+
+<tr><td>
+	Term:
+</td><td>
+	$agreement_info->years
+</td></tr>
+
+<tr><td>
+	Contract Total Value:
+</td><td>
+	$agreement_info->total_value
+</td></tr>
+
+<tr><td>
+	Start Date:
+</td><td>
+	$agreement_info->expected_start_date
+</td></tr>
+
+</table>
+
+";
+
+queue_email($completion_email_id,"SAM AGREEMENT MARKED AS PRESENTING",$message,"Y");
+//queue_email(2,"SAM AGREEMENT MARKED AS PRESENTING",$message,"Y");
+
+forward("svc_agreement_edit&agreement_id=$agreement_info->agreement_id");
+
+?>

@@ -1,0 +1,35 @@
+<?
+require_once('timesheet_libs_pdf.inc');
+require_once('pdf_lib2.inc');
+
+//require_once('pdf_lib2.inc');
+
+$week_ending=vali_date($week_ending);
+
+//-----------------------------------------------------------------------------------
+//	Document Setup...
+//-----------------------------------------------------------------------------------
+//$page_info=pdf_page_info_create($global_user->pref_paper_size);
+//$page_info=pdf_start($page_info);
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+
+
+//-----------------------------------------------------------------------------------
+//	Page Printing
+//-----------------------------------------------------------------------------------
+
+//$query="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and status = 'posted' and timesheet_index.employee_group = '$current_employee_group' and week_ending = '$show_week_last_mysql' order by last_name";
+
+$query="select timesheet_id from timesheet_index,timesheet_group_members,contacts where timesheet_index.employee_id = timesheet_group_members.employee_id and group_id = '$group_id' and week_ending = '$week_ending' and timesheet_index.employee_id = contacts.contacts_id order by contacts.alphasort,contacts.employee_num,contacts.contacts_id";
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	//$page_info=pdf_timesheet_1($page_info,$row->timesheet_id);
+	$pdf=pdf_timesheet_2($pdf,$row->timesheet_id);
+	}
+$pdf->ezStream();
+//pdf_end($page_info);
+
+?>

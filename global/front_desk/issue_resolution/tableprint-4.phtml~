@@ -1,0 +1,432 @@
+<?
+$normal_cell_color="#ffffff";
+$overdue_cell_color="#bf3434";
+$complete_cell_color="779966";
+$approved_cell_color="bbbbbb";
+$parent_cell_color="#dddd99";
+$parent_cell_completed_color="#ddddcc";
+
+if (!($tableprint_subissues)){
+	$tableprint_subissue=1;
+	function subissue_show($issue_id,$rev) {
+		global $normal_cell_color,$overdue_cell_color,$complete_cell_color,$approved_cell_color,$parent_cell_color;
+		if ($issue_id <= 0) return 0;
+		$issue_id=escapeshellcmd($issue_id);	
+		$problem=getone("select * from issue_res_issues,contacts where problem_id = '$issue_id' and contacts_id = c_parent");
+		$parent_problem=getone("select * from issue_res_issues where problem_id = '$problem->issue_parent'");
+		if ($parent_problem->conflict_id!=$problem->conflict_id) {
+			@mysql_query("update issue_res_issues set conflict_id = '$parent_problem->conflict_id' where problem_id = '$problem->problem_id'");
+			$problem->conflict_id=$parent_problem->conflict_id;
+			}
+		$rev++;
+		$this_second=mktime();
+	
+		$problem->due_date=invali_date($problem->due_date);
+		$cellbgcolor=$normal_cell_color;
+		
+		if($problem->completed!="0000-00-00")
+			$cellbgcolor=$complete_cell_color;;
+			
+		if($problem->approved!="")
+			$cellbgcolor=$approved_cell_color;
+			
+		$problem->completed=invali_date($problem->completed);
+		
+		if ($problem->due_date != "") {
+			$due_year=ereg_replace("^.*-","",$problem->due_date);	
+			$due_month=ereg_replace("-.*$","",$problem->due_date);	
+			$due_day_tmp=ereg_replace("^[^-]*-","",$problem->due_date);	
+			$due_day=ereg_replace("-[^-]*$","",$due_day_tmp);	
+			$due_second=mktime(0,0,0,$due_month,$due_day,$due_year);
+			if (($due_second < $this_second)&& ($problem->completed==""))
+				$cellbgcolor=$overdue_cell_color;
+			} else {
+			$due_second="";
+			}
+		if ($problem->issue_child>0) {
+			if ($problem->completed!="0000-00-00") {
+				//$cellbgcolor=$parent_cell_completed_color;
+				} else {
+				$cellbgcolor=$parent_cell_color;
+				}
+			}
+			//else {
+			//$cellbgcolor="orange";
+			//}
+			
+	    
+		$problem->summary=ereg_replace("
+","<p>",$problem->summary);
+		$problem->solution=ereg_replace("
+","<p>",$problem->solution);
+		$problem->actual_solution=ereg_replace("
+","<p>",$problem->actual_solution);
+		echo "
+		<tr bgcolor=$cellbgcolor><td valign=top>
+			<form method=get>
+			<a href=$pagename?mode=problem_edit&problem_id=$problem->problem_id>
+			<font color=blue>
+			$problem->conflict_id ($rev)</font></a> &nbsp;
+		</td><td valign=top>
+			$problem->bld_floor &nbsp;
+		</td><td valign=top>
+			$problem->grid &nbsp;
+		</td><td valign=top>
+			$problem->summary &nbsp;
+		</td><td valign=top>
+			$problem->solution &nbsp;
+		</td><td valign=top>
+			$problem->actual_solution &nbsp;
+		</td><td valign=top>
+			$problem->responsibility &nbsp;
+		</td><td valign=top>
+			$problem->completed_by &nbsp;
+		</td><td valign=top>
+			$problem->due_date &nbsp;
+		</td><td valign=top>
+			$problem->completed &nbsp;
+		</td><td valign=top>
+			$problem->login_name
+		</td></tr>
+		";
+		subissue_show($problem->issue_child,$rev);
+	}
+
+}
+
+
+$result=mysql_query($query);
+$total_showing=mysql_num_rows($result);
+
+$ndresult=mysql_query("select completed from issue_res_issues where issue_res_category_id = '$issue_res_category_id' and completed = ''");
+$notdone=mysql_num_rows($ndresult);
+$naresult=mysql_query("select completed from issue_res_issues where issue_res_category_id = '$issue_res_category_id' and approved = ''");
+$notapproved=mysql_num_rows($naresult);
+
+$tr_result=mysql_query("select problem_id from issue_res_issues where issue_res_category_id = '$issue_res_category_id' and issue_parent = '0'");
+$total_records=mysql_num_rows($tr_result);
+
+
+echo"
+<script>
+function set_sort(column) {
+	document.problem_list.sort_order_filter.value=column;
+	document.problem_list.submit();
+	}
+
+function login_name_editbox(field) {
+	alert('Note: Please only filter here using the user number (in parenthesis next to name)');
+	}
+function editbox(field) {
+	open(\"$pagename?mode=filter_win&field=\"+field,\"filter_win\",\"height=200,width=300\");
+	}
+
+function showprintable() {
+	var filter_query='';
+	if (document.problem_list.conflict_id_filter.value)
+		filter_query=filter_query + '&conflict_id_filter=' + document.problem_list.conflict_id_filter.value;
+	if (document.problem_list.bld_floor_filter.value)
+		filter_query=filter_query + '&bld_floor_filter=' + document.problem_list.bld_floor_filter.value;
+	if (document.problem_list.grid_filter.value)
+		filter_query=filter_query + '&grid_filter=' + document.problem_list.grid_filter.value;
+	if (document.problem_list.summary_filter.value)
+		filter_query=filter_query + '&summary_filter=' + document.problem_list.summary_filter.value;
+	if (document.problem_list.solution_filter.value)
+		filter_query=filter_query + '&solution_filter=' + document.problem_list.solution_filter.value;
+	if (document.problem_list.actual_solution_filter.value)
+		filter_query=filter_query + '&actual_solution_filter=' + document.problem_list.actual_solution_filter.value;
+	if (document.problem_list.responsibility_filter.value)
+		filter_query=filter_query + '&responsibility_filter=' + document.problem_list.responsibility_filter.value;
+	if (document.problem_list.completed_by_filter.value)
+		filter_query=filter_query + '&completed_by_filter=' + document.problem_list.completed_by_filter.value;
+	if (document.problem_list.due_date_filter.value)
+		filter_query=filter_query + '&due_date_filter=' + document.problem_list.due_date_filter.value;
+	if (document.problem_list.completed_filter.value)
+		filter_query=filter_query + '&completed_filter=' + document.problem_list.completed_filter.value;
+	if (document.problem_list.login_name_filter.value)
+		filter_query=filter_query + '&login_name_filter=' + document.problem_list.login_name_filter.value;
+
+	//alert(filter_query);
+	open(\"$pagename?mode=printable\" + filter_query,\"printable_window\");
+	}
+
+</script>
+
+
+<table width=100% border=1>
+
+<tr bgcolor=$tableheadbgcolor><td colspan=12>
+<table border=0 width=100% cellpadding=1 cellspacing=0>
+<tr><td valign=baseline>
+	<form name=new_problem action=$pagename method=post>
+	<input type=hidden name=mode value=problem_edit>
+	<input type=button value=\"Add Entry\" onclick=submit();>
+	</form>  
+</td><td valign=baseline>
+	<form name=quickload method=get action=$pagename>
+	<input type=hidden name=mode value=problem_quickload>
+	<input type=button value='Load' onclick=submit();>
+	<input type=text size=5 name=conflict_id>
+	</form>
+</td><td align=right>
+	Header every
+</td><td valign=baseline align=center>
+	<form name=hdrset method=post action=$pagename><input type=text size=3 value=\"$issue_res_header_period\" name=header_period_set onchange=submit()></form>
+</td><td align=left>
+	rows
+</td><td valign=baseline>
+	<form><input type=button value=\"Print\" onclick=showprintable()></form>
+</td><td align=center>
+	Not Complete:
+</td><td align=center>
+	$notdone
+</td><td align=center>
+	Not Approved:
+</td><td align=center>
+	$notapproved
+</td><td align=center>
+	Showing:
+</td><td align=center>
+	$total_showing / $total_records
+</td></tr>
+</table>
+
+</tr></td>
+
+<form name=problem_list method=get><input type=hidden name=mode value=$mode>
+<input type=hidden name=sort_order_filter value=\"$sort_order_filter\">
+
+<tr bgcolor=$tableheadbgcolor><td valign=top align=center>
+
+	<a href=javascript:set_sort('conflict_id');>
+	<font color=$tableheadtext>$category_template_text->conflict_id</font>
+	</a><p>
+	
+	<a href=javascript:editbox('conflict_id');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_conflict_id(Search)$nb_conflict_id</i></font></a><br>
+	<input type=hidden name=conflict_id_filter value=\"$conflict_id_filter\" onchange=submit();>
+
+</td><td valign=top align=center>
+
+	<a href=javascript:set_sort('bld_floor');>
+	<font color=$tableheadtext>$category_template_text->bld_floor_short</font>
+	</a><p>
+
+	<a href=javascript:editbox('bld_floor');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_bld_floor(Search)$nb_bld_floor</i></font></a><br>
+	<input type=hidden name=bld_floor_filter value=\"$bld_floor_filter\" onchange=submit();>
+
+</td><td valign=top align=center>
+
+	<a href=javascript:set_sort('grid');>
+	<font color=$tableheadtext>$category_template_text->grid_short</font>
+	</a><p>
+
+	<a href=javascript:editbox('grid');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_grid(Search)$nb_grid</i></font></a><br>
+	<input type=hidden name=grid_filter value=\"$grid_filter\" onchange=submit();>
+
+</td><td valign=top align=center width=20%>
+
+	<a href=javascript:set_sort('summary');>
+	<font color=$tableheadtext>$category_template_text->summary</font>
+	</a><p>
+
+	<a href=javascript:editbox('summary')>
+	<font size=-1 color=$tableheadsearchtext><i>$b_summary(Search)$nb_summary</i></font></a><br>
+	<input type=hidden name=summary_filter value=\"$summary_filter\" onchange=submit();>
+
+</td><td valign=top align=center width=20%>
+
+	<a href=javascript:set_sort('solution');>
+	<font color=$tableheadtext>$category_template_text->solution</font>
+	</a><p>
+
+	<a href=javascript:editbox('solution');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_solution(Search)$nb_solution</i></font></a><br>
+	<input type=hidden name=solution_filter value=\"$solution_filter\" onchange=submit();>
+
+</td><td valign=top align=center width=20%>
+
+	<a href=javascript:set_sort('actual_solution');>
+	<font color=$tableheadtext>$category_template_text->actual_solution</font>
+	</a><p>
+
+	<a href=javascript:editbox('actual_solution');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_actual_solution(Search)$nb_actual_solution</i></font></a><br>
+	<input type=hidden name=actual_solution_filter value=\"$actual_solution_filter\" onchange=submit();>
+
+</td><td valign=top align=center>
+
+	<a href=javascript:set_sort('responsibility');>
+	<font color=$tableheadtext>$category_template_text->responsibility</font>
+	</a><p>
+
+	<a href=javascript:editbox('responsibility');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_responsibility(Search)$nb_responsibility</i></font></a><br>
+	<input type=hidden name=responsibility_filter value=\"$responsibility_filter\" onchange=submit();>
+
+</td><td valign=top align=center>
+
+	<a href=javascript:set_sort('due_date');>
+	<font color=$tableheadtext>$category_template_text->due_date</font>
+	</a><p>
+
+	<a href=javascript:editbox('due_date');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_due_date(Search)$nb_due_date</i></font></a><br>
+	<input type=hidden name=due_date_filter value=\"$due_date_filter\" onchange=submit();>
+
+</td><td valign=top align=center>
+
+	<a href=javascript:set_sort('completed_by');>
+	<font color=$tableheadtext>$category_template_text->completed_by</font>
+	</a><p>
+
+	<a href=javascript:editbox('completed_by');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_completed_by(Search)$nb_completed_by</i></font></a><br>
+	<input type=hidden name=completed_by_filter value=\"$completed_by_filter\" onchange=submit();>
+
+</td><td valign=top align=center>
+
+	<a href=javascript:set_sort('completed');>
+	<font color=$tableheadtext>$category_template_text->completed</font>
+	</a><p>
+
+	<a href=javascript:editbox('completed');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_completed(Search)$nb_completed</i></font></a><br>
+	<input type=hidden name=completed_filter value=\"$completed_filter\" onchange=submit();>
+
+</td><td valign=top align=center>
+
+	<a href=javascript:set_sort('login_name');>
+	<font color=$tableheadtext>Initiated By</font>
+	</a><p>
+
+	<a href=javascript:editbox('login_name');>
+	<font size=-1 color=$tableheadsearchtext><i>$b_login_name(Search)$nb_login_name</i></font></a><br>
+	<input type=hidden name=login_name_filter value=\"$login_name_filter\" onchange=submit();>
+
+</td></tr>
+</form>
+
+";
+
+
+function printhdr() {
+	global $tableheadtext,$tableheadbgcolor;
+	echo "
+	<tr bgcolor=$tableheadbgcolor><td valign=top align=center>
+		<font color=$tableheadtext>Conflict ID</font>
+	</td><td valign=top align=center>
+		<font color=$tableheadtext>Bldg/flr</font>
+	</td><td valign=top align=center>
+		<font color=$tableheadtext>Grid</font>
+	</td><td valign=top align=center width=20%>
+		<font color=$tableheadtext>Summary</font>
+	</td><td valign=top align=center width=20%>
+		<font color=$tableheadtext>Proposed Solution</font>
+	</td><td valign=top align=center width=20%>
+		<font color=$tableheadtext>Actual Solution</font>
+	</td><td valign=top align=center>
+		<font color=$tableheadtext>Responsibility</font>
+	</td><td valign=top align=center>
+		<font color=$tableheadtext>Due Date</font>
+	</td><td valign=top align=center>
+		<font color=$tableheadtext>Completed By</font>
+	</td><td valign=top align=center>
+		<font color=$tableheadtext>Completed</font>
+	</td><td valign=top align=center>
+		<font color=$tableheadtext>Initiated By</font>
+	</td></tr>
+	";
+}
+
+
+$hdrcount=1;
+
+while ($problem=mysql_fetch_object($result)) {
+
+	$this_second=mktime();
+
+	$problem->due_date=invali_date($problem->due_date);
+	$cellbgcolor=$normal_cell_color;
+	
+	if ($problem->issue_child>0) $cellbgcolor=$parent_cell_color;
+	if($problem->completed!="0000-00-00")
+		if ($problem->issue_child>0)
+			$cellbgcolor=$parent_cell_completed_color;
+		else
+			$cellbgcolor=$complete_cell_color;
+				
+	if($problem->approved!="")
+		$cellbgcolor=$approved_cell_color;
+		
+	$problem->completed=invali_date($problem->completed);
+
+	if ($problem->due_date != "") {
+		$due_year=ereg_replace("^.*-","",$problem->due_date);	
+		$due_month=ereg_replace("-.*$","",$problem->due_date);	
+		$due_day_tmp=ereg_replace("^[^-]*-","",$problem->due_date);	
+		$due_day=ereg_replace("-[^-]*$","",$due_day_tmp);	
+		$due_second=mktime(0,0,0,$due_month,$due_day,$due_year);
+		if (($due_second < $this_second)&& ($problem->completed==""))
+			$cellbgcolor=$overdue_cell_color;
+		} else {
+		$due_second="";
+		}
+
+	$problem->summary=ereg_replace("
+","<p>",$problem->summary);
+	$problem->solution=ereg_replace("
+","<p>",$problem->solution);
+	$problem->actual_solution=ereg_replace("
+","<p>",$problem->actual_solution);
+	echo "
+	<tr bgcolor=$cellbgcolor><td valign=top>	
+		<form method=get>
+		<a href=$pagename?mode=problem_edit&problem_id=$problem->problem_id>
+		<font color=blue>
+		$problem->conflict_id</font></a> &nbsp;<br>
+		";if ($problem->attached_files>0){
+			$file_group_info=load_file_group_info($problem->attached_files);
+			$view_link=webfile_possible_view_link($problem->attached_files);
+			if ($file_group_info->small_icon_image!="") {
+				echo"<a href=\"$view_link\"><img border=0 src=$file_group_info->small_icon_image></a>";
+				} else {
+				if ($file_group_info->tiny_icon_image!="") echo"<img src=$file_group_info->tiny_icon_image>";
+				}
+			}
+		echo"
+	</td><td valign=top>
+		$problem->bld_floor &nbsp;
+	</td><td valign=top>
+		$problem->grid &nbsp;
+	</td><td valign=top>
+		$problem->summary &nbsp;
+	</td><td valign=top>
+		$problem->solution &nbsp;
+	</td><td valign=top>
+		$problem->actual_solution &nbsp;
+	</td><td valign=top>
+		$problem->responsibility &nbsp;
+	</td><td valign=top>
+		$problem->due_date &nbsp;
+	</td><td valign=top>
+		$problem->completed_by &nbsp;
+	</td><td valign=top>
+		$problem->completed &nbsp;
+	</td><td valign=top>
+		$problem->login_name&nbsp;<font size=-1></font>
+	</td></tr>
+	";
+	subissue_show($problem->issue_child,"a");
+
+	if ($hdrcount == ($issue_res_header_period)) {    
+		$hdrcount=0;
+		printhdr(); 
+		}
+	$hdrcount++;
+	}
+echo "</table>";
+
+?>

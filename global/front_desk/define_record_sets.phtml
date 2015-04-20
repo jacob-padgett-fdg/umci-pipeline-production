@@ -1,0 +1,72 @@
+<?
+if ($jobinfo_id=="") die("Application error! No job information found!");
+$jobinfo_id=addslashes($jobinfo_id);
+
+if ($record_set_name_update!="") {
+	$record_set_name_update=addslashes($record_set_name_update);
+	$sort_priority=addslashes($sort_priority);
+	$record_set_description_update=addslashes($record_set_description_update);
+	//echo "rsi: $record_set_id<br>";
+	if ($record_set_id!="undefined") {
+		$record_set_id=addslashes($record_set_id);
+		@mysql_query("update front_desk_record_sets set jobinfo_id = '$jobinfo_id', record_set_name = '$record_set_name_update', record_set_description = '$record_set_description_update', sort_priority = '$sort_priority' where record_set_id = '$record_set_id'");
+		} else {
+		@mysql_query("insert into front_desk_record_sets set jobinfo_id = '$jobinfo_id', record_set_name = '$record_set_name_update', record_set_description = '$record_set_description_update', sort_priority = '$sort_priority'");
+		}
+	}
+
+$query="select * from front_desk_record_sets where jobinfo_id = '$jobinfo_id' order by sort_priority, record_set_name";
+$res=@mysql_query($query);
+$count=@mysql_num_rows($res);
+if ($count<1) {
+	@mysql_query("insert into front_desk_record_sets set jobinfo_id = '$jobinfo_id', record_set_name = 'default'");
+	$res=@mysql_query($query);
+	}
+
+echo "
+<form onsubmit=\"record_set_update();\" name=rs_update>
+<table border=0 cellspacing=0 cellpadding=1>
+<tr><td>
+	<b>Name:</b>
+</td><td>
+	<b>Description:</b>
+</td><td>
+	<b>Sort:</b>
+</td><td>&nbsp;
+</td></tr>";
+
+while($row=@mysql_fetch_object($res)) {
+	//if ($row->record_set_description=="") $row->record_set_description="<i>none</i>";
+	echo "<tr><td>
+			<input type=text size=15 value=\"$row->record_set_name\" id=\"record_set_name_$row->record_set_id\">
+		</td><td>
+			<input type=text size=35 value=\"$row->record_set_description\" id=\"record_set_description_$row->record_set_id\">
+		</td><td>
+			<input type=text size=3 value=\"$row->sort_priority\" id=\"record_set_sort_priority_$row->record_set_id\">
+		</td><td>
+			<input type=button onclick=\"update_record_set($row->record_set_id);\" value=\"Update\">
+		</td></tr>";
+	}
+echo "
+
+
+<tr><td>
+	<input type=text name=record_set_name size=15>
+</td><td>
+	<input name=record_set_description_update size=35>
+</td><td align=center>
+	<input name=record_set_sort_priority_update size=3 value=10>
+</td><td align=center>
+	<input type=button onclick=\"record_set_add();\" value=\"Add\">
+</td></tr>
+
+
+
+
+
+
+
+
+</table></form>";
+
+?>

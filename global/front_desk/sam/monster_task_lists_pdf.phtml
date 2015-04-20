@@ -1,0 +1,29 @@
+<?
+require_once("pdf_lib2.inc");
+$pdf =& new Cezpdf('letter','portrait');
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+
+
+
+
+$no_new_page=1;
+$query="select task_id from svc_task_lists group by task_id order by task_id";
+$res=@mysql_query($query);
+
+
+While ($row=@mysql_fetch_object($res)) {
+	$pdf=pdf_task_list($row->task_id,$pdf,$new_new_page);
+	
+	
+	
+	$no_new_page=0;
+	
+	}
+
+
+$pdf->ezStream();
+
+
+
+?>

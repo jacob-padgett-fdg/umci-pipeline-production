@@ -1,0 +1,103 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+$today=date("m-d-Y");
+
+//if ($payroll_seq=="")  {
+//	die("Application error: No active payroll sequence. Can not continue. Please contact your system administrator!");
+//	}
+
+if ($hide_complete!="") $hide_complete="checked";
+
+if ($show_week_ending_set!="") {
+	$show_week_ending_date=addslashes($show_week_ending_set);
+	}
+
+if ($show_week_ending_date=="") {
+	$dt_tmp=date_info($today);
+	if ($dt_tmp->day_of_week_num > 3) {
+		$dt_tmp=date_info($dt_tmp->next_week_start);
+		} else {
+		$dt_tmp=date_info($dt_tmp->week_start);
+		}
+	$show_week_ending=$dt_tmp->previous;
+	}
+$show_week_ending=date_info($show_week_ending_date);
+$show_week_ending_date=$show_week_ending->week_end;
+session_register('show_week_ending_date');
+
+echo "<html><head><title>Payroll Timesheet Completion Report</title></head>
+<body bgcolor=white>
+<a href=$pagename?mode=main><font color=blue>Back to main</font></a><p>
+<form name=completion_week method=post action=$pagename>
+<input type=hidden name=mode value=payroll_timesheet_completion_report>
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr><td>
+	<b>Week&nbsp;of:</b>&nbsp;
+</td><td>
+	";datebox($show_week_ending_date,"completion_week.show_week_ending_set");echo"
+</td></tr>
+
+<tr><td>
+	<b>Hide&nbsp;Complete:</b>&nbsp;
+</td><td>
+	<input type=checkbox name=hide_complete $hide_complete>
+</td></tr>
+
+<tr><td colspan=2>
+	<input type=submit value=Search>
+	<input type=button value=\"Current Period\" onclick=\"show_week_ending_set.value='$today';submit();\">
+</td></tr>
+</table>
+</form>
+
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr bgcolor=#dddddd><td colspan=2 align=center>
+	<b><font size=+1>Completion report</font></b><br>
+	<b>
+	<a style=\"text-decoration: none;\" href=$pagename?mode=$mode&hide_complete=$hide_complete&show_week_ending_set=$show_week_ending->last_week_end><font color=blue>&lt;</font></a>
+	<b><i>$show_week_ending_date</i></b>
+	<a style=\"text-decoration: none;\" href=$pagename?mode=$mode&hide_complete=$hide_complete&show_week_ending_set=$show_week_ending->next_week_end><font color=blue>&gt;</font></a>
+	</b>
+</td></tr>
+
+<tr bgcolor=#dddddd><td>
+	<b>User</b>
+</td><td>
+	<b>Status</b>
+</td></tr>
+";
+
+
+//$query="select * from contacts where timesheet_payroll_sequence_num = '$payroll_seq' and current = 'Y' and umc_emp = 'Y' and contact_type = 'contact' order by alphasort";
+$query="select * from contacts left join timesheet_payroll_sequences on (timesheet_payroll_sequences.seq = contacts.timesheet_payroll_sequence_num) where current = 'Y' and umc_emp = 'Y' and contact_type = 'contact' and timesheet_payroll_sequences.include_in_payroll = 'Y' order by alphasort";
+$res=@mysql_query($query);
+while($user_info=@mysql_fetch_object($res)) {
+	$ts_info=getoneb("select status from timesheet_index where employee_id = '$user_info->contacts_id' and week_ending = '$show_week_ending->week_end_mysql'");
+	$color="#ffffff";
+	if ($ts_info->status=="complete") {
+		$color="#88dd88";
+		if ($hide_complete=="checked") continue;
+		}
+	if ($ts_info->status=="new") $color="#dd8888";
+	if ($ts_info->status=="deleted") $color="#dd8888";
+	if ($ts_info->status=="posted") {
+		$color="#dddddd";
+		if ($hide_complete=="checked") continue;
+		}
+	if (!($ts_info)) {
+		$ts_info->status="MISSING";
+		$color="#dd8888";
+		}
+	
+	echo "<tr bgcolor=$color><td>
+			$user_info->display_name ($user_info->employee_num)
+		</td><td>
+			$ts_info->status
+		</td></tr>
+		";
+		}
+echo "</table>";
+
+?>

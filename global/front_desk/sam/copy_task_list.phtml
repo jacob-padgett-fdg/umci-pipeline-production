@@ -1,0 +1,16 @@
+<?
+if ($task_id=="") die("ERROR: Could not copy!");
+
+session_register('task_list_copy_task_id');
+$task_list_copy_task_id=addslashes($task_id);
+
+echo "
+<html>
+<body bgcolor=green>
+<script>
+self.close();
+</script>
+</body></html>
+";
+
+?>

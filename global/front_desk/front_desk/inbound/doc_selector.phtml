@@ -1,0 +1,151 @@
+<?
+
+$today=date('m-d-Y');
+$qid="4321";
+$queue_info=load_file_group_info($qid);
+
+if ($delete_files_id!="") {
+	$delete_files_id=addslashes($delete_files_id);
+	$file_info=getoneb("select * from webfile_files where files_id = '$delete_files_id'");
+	if ($file_info->file_group_id==$qid) {
+        // GPH MARK - absolute path
+		include("/data/web/pipeline/global/webfile$devel/local.inc");
+		delete_webfile_file($file_info->files_id);
+		}
+	}
+
+
+if ($file_document_id!="") {
+    // GPH MARK - absolute path
+	include("/data/web/pipeline/global$devel/front_desk$devel/fd_document_file.phtml");
+	}
+
+$today=date('m-d-Y'); $qid="4321";
+$queue_info=load_file_group_info($qid);
+
+
+
+if ($current_files_id=="") {
+	$contract_num=$global_jobinfo->contract_num;
+	$first_file=getoneb("select * from webfile_files where file_group_id = '$queue_info->file_group_id' and ( file_name like '%-$contract_num-%' or file_name like '%-${contract_num}_%' ) order by files_id limit 1");
+	$current_files_id=$first_file->files_id;
+	} else {
+	$current_files_id=addslashes($current_files_id);
+	}
+
+if ($current_files_id!="") {
+$current_files_id=addslashes($current_files_id);
+$current_info=getoneb("select * from webfile_files where files_id = '$current_files_id'");
+$contract_num=$global_jobinfo->contract_num;
+
+$last_file_info=getoneb("select * from webfile_files where file_group_id = '$queue_info->file_group_id' and (file_name like '%-$contract_num-%' or file_name like '%-${contract_num}_%' ) order by files_id desc limit 1");
+$first_file_info=getoneb("select * from webfile_files where file_group_id = '$queue_info->file_group_id' and (file_name like '%-$contract_num-%' or file_name like '%-${contract_num}_%' ) order by files_id limit 1");
+
+$previous_file=getoneb("select * from webfile_files where file_group_id = '$queue_info->file_group_id' and files_id < '$current_files_id' and ( file_name like '%-$contract_num-%' or file_name like '%-${contract_num}_%' ) order by files_id desc limit 1");
+if (!($previous_file)) $previous_file=$last_file_info;
+$previous_files_id=$previous_file->files_id;
+
+$next_file=getoneb("select * from webfile_files where file_group_id = '$queue_info->file_group_id' and files_id > '$current_files_id' and ( file_name like '%-$contract_num-%' or file_name like '%-${contract_num}_%' ) order by files_id limit 1");
+if (!($next_file)) $next_file=$first_file_info;
+$next_files_id=$next_file->files_id;
+
+$scan_count=scan_count($global_jobinfo->jobinfo_id);
+$position=getoneb("select sum(1) as num from webfile_files where file_group_id = '$queue_info->file_group_id' and files_id < '$current_files_id' and file_name like '%-$global_jobinfo->contract_num-%' order by files_id desc limit 1");
+
+//$previous_img=webfile_small_image_icon($previous_files_id);
+$previous_img=webfile_image_icon($previous_files_id,array('width'=>'39'));
+//$current_img=webfile_medium_image_icon($current_files_id);
+$current_img=webfile_image_icon($current_files_id,array('width'=>'110'));
+$next_img=webfile_image_icon($next_files_id,array('width'=>'39'));
+
+$current_link=webfile_view_link($current_files_id);
+$pos=$position->num + 1;
+
+$page="pages";
+if ($current_info->page_count==1) $page="page";
+
+
+$inbound_info=getoneb("select * from inbound where files_id = '$current_info->files_id'");
+if (!($inbound_info)) {
+	$current_info->file_name=addslashes($current_info->file_name);
+	
+	$inbound_next=getoneb("select max(scan_sequence) as scan_sequence from inbound where jobinfo_id = '$global_jobinfo_id'");
+	$inbound_next->scan_sequence=$inbound_next->scan_sequence + 1;
+	$short_description=ereg_replace('application/','',$current_info->mime_type);
+	$description = invali_date($current_info->upload_date,'/') . " $short_description initially reviewed by $global_user->display_name";
+	$insert_query="insert into inbound set 
+		jobinfo_id = '$global_jobinfo_id',
+		files_id = '$current_info->files_id',
+		scan_sequence = '$inbound_next->scan_sequence',
+		description = '$description',
+		indexed_by = '$global_user->contacts_id',
+		traverse_readfile = 'Y',
+		receive_time = now(),
+		scan_date = '$file_info->upload_date'";
+	@mysql_query($insert_query);
+	$inbound_info=getoneb("select * from inbound where files_id = '$current_info->files_id'");
+	}
+if (!($inbound_info)) die("Fatal Error! Could not correctly seed document data. Please contact your system administrator!<hr>$insert_query/select * from inbound where files_id = '$current_info->files_id'");
+$doc_id=fd_get_doc_id($inbound_info->inbound_id);
+
+$buttonstyle="width: 140px; padding: 0px; font-size: 9px;";
+//<div style=\"display: none;\" onload=\"inbound_conditional_load('$current_link')\"></div>
+//<div style=\"display: none;\" onload=\"inbound_conditional_load('$current_link')\"></div>
+echo "
+<input type=hidden name=cdidv_hidden id=current_document_id value=\"$doc_id\">
+<table cellspacing=0 cellpadding=2 style=\"border: 2px solid black ; border-bottom: 0px solid black; background: $fd_color_4;\" border=0 cellspacing=0 cellpadding=0>
+<tr><td valign=middle>
+	<div style=\"max-height: 150px; overflow: hidden;\"><img src=$previous_img></div>
+</td><td>
+	<div style=\"middle; width: 110px; height: 150px; overflow: hidden;\"><a href=\"$current_link\" target='viewport'><img border=0 src=$current_img></a></div>
+</td><td valign=middle>
+	<div style=\"max-height: 150px; overflow: hidden;\"><img src=$next_img></div>
+</td></tr>
+
+<tr><td>
+	<img class=normnav onclick=\"dsel($previous_files_id)\" src=prev_button.png>
+</td><td align=center>
+	<font size=-2><i>$current_info->page_count $page</i></font><br>Doc $pos of $scan_count
+</td><td>
+	<img class=normnav onclick=\"dsel($next_files_id)\" src=next_button.png>
+</td></tr>
+</table>
+
+<div align=center style=\"border: 1px solid black; background: $fd_color_3;\">
+";fd_document_box(array('one_selection_only'=>'Y','div_min_height'=>'250','div_max_height'=>'350','border_width'=>'1','width'=>'200px'));echo"
+<input type=hidden name=hidden_doc_selector_file_id id=\"hdsfi\" value=\"$current_info->files_id\">
+<input style=\"$buttonstyle\" type=button onclick=\"file_document($doc_id)\" value='File Document'><br>
+<input style=\"$buttonstyle\" type=button onclick=\"file_attachment($doc_id)\" value='File Attachment'><br>
+<input style=\"$buttonstyle\" type=button onclick=\"delete_document($current_info->files_id)\" value=\"Delete Image\">
+</div>
+
+";
+
+
+/*
+
+echo "
+<tr><td colspan=3>
+	";fd_document_box(array('one_selection_only'=>'Y','div_max_height'=>'350'));echo"
+</td></tr>
+
+<tr><td colspan=3 align=center>
+	<input style=\"$buttonstyle\" type=button onclick=\"file_attachment($doc_id)\" value='File Attachment'><br>
+	<input style=\"$buttonstyle\" type=button onclick=\"file_document($doc_id)\" value='File Document'><br>
+	<input style=\"$buttonstyle\" type=button onclick=\"delete_document($current_info->files_id)\" value=\"Delete Image\">
+</td></tr>
+
+</table>
+
+
+
+";
+
+*/
+
+} else {
+	echo "Error: no document to find
+	<div onload=\"document.location='$pagename'\"></div>";
+	forward("main");
+}
+?>

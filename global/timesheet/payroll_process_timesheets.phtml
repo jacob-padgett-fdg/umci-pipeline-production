@@ -1,0 +1,46 @@
+<?
+// These allow the same timesheet import to be used for
+// both groups under viewpoint.. 
+
+$seq_info=getone("select max(seq_num) as seq_num from timesheet_sequence");
+$seq_info->seq_num++;
+@mysql_query("insert into timesheet_sequence (seq_num) values ('$seq_info->seq_num')");
+
+header("Content-Type: x-application/octet-stream");
+
+$vp_seq_sb="1";
+if ($current_employee_group==1) $vp_seq_sb="2";
+
+///////////////////////////////////////////////////////////////////////////////////
+//////        Loop through the timesheets
+///////////////////////////////////////////////////////////////////////////////////
+$query1="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and status = 'processing' and contacts.timesheet_payroll_sequence_num = '$payroll_seq' order by timesheet_index.employee_num";
+$res1=@mysql_query($query1);
+while($row1=@mysql_fetch_object($res1)) {
+
+///////////////////////////////////////////////////////////////////////////////////
+///////       Print an individual timesheet
+///////////////////////////////////////////////////////////////////////////////////
+
+$query2="select * from timesheet_time where employee_num = '$row1->employee_num' and timesheet_status = 'processing'";
+$res2=@mysql_query($query2);
+while($row2=@mysql_fetch_object($res2)) {
+	$workday=invali_date($row2->workday);
+	$workweek=invali_date($row2->week_ending);
+	if ($row2->hours=="") $row2->hours=0;
+	if ($row2->dollars==0) $row2->dollars="";
+	$linefeedchar=chr(10);
+	$returnchar=chr(13);
+	$row2->comments=ereg_replace($linefeedchar," ",$row2->comments);
+	$row2->comments=ereg_replace($returnchar," ",$row2->comments);
+	$row2->comments=ereg_replace("'","",$row2->comments);
+	$row2->comments=ereg_replace(',',";",$row2->comments);
+	$row2->comments=substr($row2->comments,0,58);
+	//echo "$row2->employee_num,$row2->job_num,$row2->phase,$workday,$workweek,$row2->shift,$row2->earnings_code,$row2->hours,$row2->dollars,$vp_seq_sb,$row2->comments\r\n";
+	$emp_info=getone("select timesheet_payroll_sequence_num as seq_num from contacts where contacts_id = '$row2->employee_id'");
+	echo "$row2->employee_num,$row2->job_num,$row2->phase,$workday,$workweek,$row2->shift,$row2->earnings_code,$row2->hours,$row2->dollars,$emp_info->seq_num,$row2->comments\r\n";
+	
+	}
+}
+
+?>

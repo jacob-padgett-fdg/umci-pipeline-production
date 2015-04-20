@@ -1,0 +1,23 @@
+<?
+$text=escapeshellcmd($text);
+$text=ereg_replace('\\\#','#',$text);
+if ($size=="") $size=18;
+else $size=escapeshellcmd($size);
+
+if ($bgcolor=="") $bgcolor="white";
+else {
+	$bgcolor=escapeshellcmd($bgcolor);
+	$bgcolor=ereg_replace("\\\#","#",$bgcolor);
+	}
+if ($textcolor=="") $textcolor="black";
+else {
+	$textcolor=escapeshellcmd($textcolor);
+	$textcolor=ereg_replace("\\\#","#",$textcolor);
+	}
+
+
+header('Content-type: image/png');
+//passthru("convert -background white -transparent white -pointsize 18 -rotate -90 \"label:$text\" png:-");
+//passthru("convert -background grey -transparent grey -pointsize 18 -rotate -90 \"label:$text\" png:-");
+passthru("convert -fill $textcolor -background \"$bgcolor\" -pointsize $size -rotate -90 \"label:$text\" png:-");
+?>

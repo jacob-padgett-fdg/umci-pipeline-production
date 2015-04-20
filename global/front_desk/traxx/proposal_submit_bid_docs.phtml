@@ -1,0 +1,32 @@
+<?
+
+$bid_docs=addslashes($bid_docs);
+$reprographics_company_id=addslashes($reprographics_company_id);
+$dwgs_url=addslashes($dwgs_url);
+$deposit_required=addslashes($deposit_required);
+$deposit_returned=addslashes($deposit_returned);
+$deposit=clean_int($deposit);
+$refundable=addslashes($refundable);
+$dwgs_ordered=addslashes($dwgs_ordered);
+$dwgs_printed_in_house=addslashes($dwgs_printed_in_house);
+$dwgs_received=addslashes($dwgs_received);
+$dwgs_returned=addslashes($dwgs_returned);
+$addenda=addslashes($addenda);
+
+$query_data=$query_data . "$data_seperator
+bid_docs = '$bid_docs',
+addenda = '$addenda',
+reprographics_company_id = '$reprographics_company_id',
+dwgs_url = '$dwgs_url',
+deposit_required = '$deposit_required',
+deposit_returned = '$deposit_returned',
+deposit = '$deposit',
+refundable = '$refundable',
+dwgs_ordered = '$dwgs_ordered',
+dwgs_printed_in_house = '$dwgs_printed_in_house',
+dwgs_received = '$dwgs_received',
+dwgs_returned = '$dwgs_returned'";
+
+$data_seperator=",";
+
+?>

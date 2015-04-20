@@ -1,0 +1,19 @@
+<?
+
+$address_id=addslashes($address_id);
+$show_jobinfo_id=addslashes($show_jobinfo_id);
+
+$this_address_info=getoneb("select * from jobinfo_addresses where address_id = '$address_id'");
+$up_address_info=getoneb("select * from jobinfo_addresses where 
+	jobinfo_id = '$this_address_info->jobinfo_id' and
+	sort_priority < '$this_address_info->sort_priority' 
+	order by sort_priority desc 
+	limit 1");
+
+if ($up_address_info) {
+	@mysql_query("update jobinfo_addresses set sort_priority = '$up_address_info->sort_priority' where address_id = '$this_address_info->address_id'");
+	@mysql_query("update jobinfo_addresses set sort_priority = '$this_address_info->sort_priority' where address_id = '$up_address_info->address_id'");
+	}
+//mysql_query("delete from jobinfo_addresses where address_id = '$address_id'");
+include("other_addresses.phtml");
+?>

@@ -1,0 +1,323 @@
+<?
+if ($hide_headers!='Y') {
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+}
+$report_name="baldwin";
+$vpjob=get_vp_contract_num();
+$contract_info=ms_getoneb("select * from JCCM with (NOLOCK) where JCCo = 1 and Contract = '$vpjob'");
+$customer_info=ms_getoneb("select * from ARCM with (NOLOCK) where CustGroup = '$contract_info->CustGroup' and Customer = '$contract_info->Customer'");
+//echo "<pre>"; print_r($contract_info); print_r($customer_info);echo "</pre>";
+//$query_add=" and ( Retainage != 0 or TotalAged != 0 or TaxAmount != 0) ";
+//$query_add=" and ( Retainage != 0 or TotalAged != 0 ) and TaxBasis != 0";
+//$query_add=" and ( Retainage != 0 or TotalAged != 0 ) ";
+
+
+//if ($show_all_invoices=='Y') $query_add="";
+
+
+
+//$query="select * from Z_UMC_AR_AGING_MADE_EASY with (NOLOCK) where Contract = '$vpjob' $query_add";
+//$query="select * from Z_UMC_AR_AGING_MADE_EASY2 with (NOLOCK) where Contract = '$vpjob' $query_add";
+
+
+//ms_tabledump("select top 5 * from ARCN ");
+//ms_tabledump($query);
+//ms_tabledump("select * from ARTH left join ARTL on (ARTH.ARCo = ARTL.ARCo and ARTH.Mth = ARTL.Mth and ARTH.ARTrans = ARTL.ARTrans) where ARTH.Contract = '$vpjob' order by ARTH.Invoice");
+
+function get_aging($invoice_info) {
+$aging_info_query="select 
+	max(ARTH.Contract) as Contract, 
+	min(ARTH.TransDate) as TransDate,
+	max(ARTH.Description) as Description,
+	min(ARTH.Customer) as Customer,
+	sum(ARTL.Amount-ARTL.Retainage) as TotalAged,
+	SUM(ARTL.Retainage) as Retainage,
+	ARTH.Invoice as Invoice,
+	SUM(ARTL.Amount) as Amount,
+	SUM(ARTL.TaxBasis) as TaxBasis,
+	SUM(ARTL.TaxAmount) as TaxAmount,
+	
+	datediff(day,min(ARTH.TransDate),getdate()) as days_ago,
+	
+	(CASE when datediff(day,min(ARTH.TransDate),getdate()) < 31 then (sum(ARTL.Amount - ARTL.Retainage)) else 0 END ) as current_due,
+	(CASE when (datediff(day,min(ARTH.TransDate),getdate()) < 61) and (datediff(day,min(ARTH.TransDate),getdate()) >= 31) then (sum(ARTL.Amount - ARTL.Retainage)) else 0 END ) as over_30,
+	(CASE when datediff(day,min(ARTH.TransDate),getdate()) >= 61  and datediff(day,min(ARTH.TransDate),getdate()) < 91 then (sum(ARTL.Amount - ARTL.Retainage)) else 0 END ) as over_60,
+	(CASE when datediff(day,min(ARTH.TransDate),getdate()) >= 91 then (sum(ARTL.Amount - ARTL.Retainage)) else 0 END ) as over_90,
+	max(substring(ARCN.Notes,0,200)) as Notes	
+	
+from ARTH with (NOLOCK) 
+	
+left join ARTL with (NOLOCK) on 
+	(
+	ARTL.ARCo = ARTH.ARCo and 
+	ARTL.ApplyMth = ARTH.Mth and 
+	ARTL.ApplyTrans = ARTH.ARTrans
+	)
+
+left JOIN ARCN with (NOLOCK) on 
+	(ARTH.Customer = ARCN.Customer) and 
+	(ARTH.CustGroup = ARCN.CustGroup) and 
+	(ARTH.Invoice = ARCN.Invoice) and 
+	ARCN.KeyID = (	select MAX(ARCN.KeyID) from ARCN where (ARTH.Customer = ARCN.Customer) and (ARTH.CustGroup = ARCN.CustGroup) and (ARTH.Invoice = ARCN.Invoice))
+
+where 
+	ARTH.Contract = '$invoice_info->Contract' and 
+	ARTH.Invoice = '$invoice_info->Invoice'
+group by 
+	ARTH.Invoice
+";
+	
+	//echo "<tr><td colspan=10>$aging_info_query</td></tr>";
+	//echo "<tr><td colspan=10>";	
+//ms_tabledump($aging_info_query);
+//ms_tabledump($invoice_info_query);
+	//echo "</td></tr>";
+	//echo "<tr><td colspan=10>$aging_info_query</td></tr>";
+	
+	//ms_tabledump($aging_info_query);
+	$aging_info=ms_getoneb($aging_info_query);
+	$invoice_info->days_ago=$aging_info->days_ago;
+	$invoice_info->current_due=$aging_info->current_due;
+	//$invoice_info->TaxAmount=$aging_info->TaxAmount;
+	$invoice_info->over_30=$aging_info->over_30;
+	$invoice_info->over_60=$aging_info->over_60;
+	$invoice_info->over_90=$aging_info->over_90;
+	//$invoice_info->TaxAmount=999999;
+	$invoice_info->amount_owed=$aging_info->TotalAged;
+	return ($invoice_info);
+	}
+/*
+$aging_info_query="select 
+	max(ARTH.Contract) as Contract, 
+	min(ARTH.TransDate) as TransDate,
+	max(ARTH.Description) as Description,
+	min(ARTH.Customer) as Customer,
+	sum(ARTL.Amount-ARTL.Retainage) as TotalAged,
+	SUM(ARTL.Retainage) as Retainage,
+	ARTH.Invoice as Invoice,
+	SUM(ARTL.Amount) as Amount,
+	SUM(ARTL.TaxBasis) as TaxBasis,
+	SUM(ARTL.TaxAmount) as TaxAmount,
+	
+	datediff(day,min(ARTH.TransDate),getdate()) as days_ago,
+	
+	(CASE when datediff(day,min(ARTH.TransDate),getdate()) < 31 then (sum(ARTL.Amount - ARTL.Retainage)) else 0 END ) as current_due,
+	(CASE when (datediff(day,min(ARTH.TransDate),getdate()) < 61) and (datediff(day,min(ARTH.TransDate),getdate()) >= 31) then (sum(ARTL.Amount - ARTL.Retainage)) else 0 END ) as over_30,
+	(CASE when datediff(day,min(ARTH.TransDate),getdate()) >= 61  and datediff(day,min(ARTH.TransDate),getdate()) < 91 then (sum(ARTL.Amount - ARTL.Retainage)) else 0 END ) as over_60,
+	(CASE when datediff(day,min(ARTH.TransDate),getdate()) >= 91 then (sum(ARTL.Amount - ARTL.Retainage)) else 0 END ) as over_90,
+	max(substring(ARCN.Notes,0,200)) as Notes	
+	
+from ARTH with (NOLOCK) 
+	
+left join ARTL with (NOLOCK) on 
+	(
+	ARTL.ARCo = ARTH.ARCo and 
+	ARTL.ApplyMth = ARTH.Mth and 
+	ARTL.ApplyTrans = ARTH.ARTrans
+	)
+
+left JOIN ARCN with (NOLOCK) on 
+	(ARTH.Customer = ARCN.Customer) and 
+	(ARTH.CustGroup = ARCN.CustGroup) and 
+	(ARTH.Invoice = ARCN.Invoice) and 
+	ARCN.KeyID = (	select MAX(ARCN.KeyID) from ARCN where (ARTH.Customer = ARCN.Customer) and (ARTH.CustGroup = ARCN.CustGroup) and (ARTH.Invoice = ARCN.Invoice))
+
+where 
+	ARTH.Contract = '$vpjob'
+group by 
+	ARTH.Invoice
+	
+";
+
+*/
+$invoice_info_query="select 
+	max(ARTH.Contract) as Contract, 
+	min(ARTH.TransDate) as TransDate,
+	max(ARTH.Description) as Description,
+	min(ARTH.Customer) as Customer,
+	sum(ARTL.Amount-ARTL.Retainage) as TotalAged,
+	SUM(ARTL.Retainage) as Retainage,
+	ARTH.Invoice as Invoice,
+	SUM(ARTL.Amount) as Amount,
+	SUM(ARTL.TaxBasis) as TaxBasis,
+	SUM(ARTL.TaxAmount) as TaxAmount,
+	
+	max(substring(ARCN.Notes,0,200)) as Notes	
+	
+from ARTH with (NOLOCK)
+	
+left join ARTL with (NOLOCK) on 
+	(
+	ARTL.ARCo = ARTH.ARCo and 
+	ARTL.Mth = ARTH.Mth and 
+	ARTL.ARTrans = ARTH.ARTrans
+	)
+
+left JOIN ARCN with (NOLOCK) on 
+	(ARTH.Customer = ARCN.Customer) and 
+	(ARTH.CustGroup = ARCN.CustGroup) and 
+	(ARTH.Invoice = ARCN.Invoice) and 
+	ARCN.KeyID = (	select MAX(ARCN.KeyID) from ARCN where (ARTH.Customer = ARCN.Customer) and (ARTH.CustGroup = ARCN.CustGroup) and (ARTH.Invoice = ARCN.Invoice))
+
+where 
+	ARTH.Contract = '$vpjob' 
+group by 
+	ARTH.Invoice
+";
+
+
+
+//ms_tabledump($aging_info_query);
+//ms_tabledump($invoice_info_query);
+
+
+
+
+
+
+
+
+
+
+
+
+
+//ms_tabledump("select * from ARTL with (NOLOCK) where Contract = '$vpjob'");
+
+//exit;
+//if ($show_all_invoices!='Y') {
+//	$res=@mssql_query($aging_info_query);
+//	} else {
+	$res=@mssql_query($invoice_info_query);
+//	}
+
+
+echo "
+<font size=-2>
+<table border=1 cellspacing=0 cellpadding=5 style=\"width: 1100px;\">
+<tr><td colspan=13 align=center>
+<div class=noprint style=\"float: left;\"><i><a href=javascript:print()><font color=blue>Print</font></a></i></div>";
+if ($show_all_invoices!='Y') echo "<div class=noprint style=\"float: right;\"><i><a href=$pagename?mode=$mode&report_name=baldwin_aging&show_all_invoices=Y><font color=blue>Show all</font></a></i></div>";
+else echo "<div class=noprint style=\"float: right;\"><i><a href=$pagename?mode=$mode&report_name=baldwin_aging&show_all_invoices=N><font color=blue>Show aged</font></a></i></div>";
+echo"
+	<b>$global_jobinfo->contract_num - $global_jobinfo->job_name</b><br>
+	$customer_info->Name (Ref: $contract_info->CustomerReference)<br>
+	<i>Contact: $customer_info->Contact Phone: $customer_info->Phone Fax: $customer_info->Fax</i>	
+
+</td></tr>
+
+<tr bgcolor=$fd_color_4><td>
+	<b>Invoice</b>
+</td><td>
+	<b>Date</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	<b>Net</b>
+</td><td>
+	<b>Tax</b>
+</td><td>
+	<b>Gross</b>
+</td><td>
+	<b>Amount Owed</b>
+</td><td>
+	<b>Current</b>
+</td><td>
+	<b>31-60</b>
+</td><td>
+	<b>61-90</b>
+</td><td>
+	<b>Over 90</b>
+</td><td>
+	<b>Retainage</b>
+</td><td>
+	<b>Notes</b>
+</td></tr>";
+$total_aged=0;
+$total_due_30=0;
+$total_due_60=0;
+$total_due_90=0;
+$total_due_91=0;
+$total_retainage=0;
+while ($row=@mssql_fetch_object($res)) {
+	$row=get_aging($row);
+	if ($show_all_invoices=='Y') {
+		
+		} else {
+		if ($row->amount_owed==0 and $row->Retainage==0) continue;
+		//$taxes=get_aging($row);
+		}
+	
+	//echo "<pre>";print_r($row);echo "</pre>";
+	$date_pretty=date('m/d/y',strtotime($row->TransDate));
+	echo "<tr><td>
+			$row->Invoice
+		</td><td>
+			$date_pretty
+		</td><td>
+			$row->Description
+		</td><td>
+			" . format_long_decimal($row->TaxBasis,2) . "
+		</td><td>
+			" . format_long_decimal($row->TaxAmount,2) . "
+		</td><td>
+			" . format_long_decimal($row->TaxAmount + $row->TaxBasis) . "
+		</td><td>
+			" . format_long_decimal($row->amount_owed,2) . "
+		</td><td>
+			" . format_long_decimal($row->current_due,2) . "
+		</td><td>
+			" . format_long_decimal($row->over_30,2) . "
+		</td><td>
+			" . format_long_decimal($row->over_60,2) . "
+		</td><td>
+			" . format_long_decimal($row->over_90,2) . "
+		</td><td>
+			" . format_long_decimal($row->Retainage,2) . "
+		</td><td>
+			$row->Notes
+		</td></tr>";
+	$total_aged=$total_aged + $row->amount_owed;
+	$total_due_30=$total_due_30 + $row->current_due;
+	$total_due_60=$total_due_60 + $row->over_30;
+	$total_due_90=$total_due_90 + $row->over_60;
+	$total_due_91=$total_due_91 + $row->over_90;
+	$total_retainage=$total_retainage + $row->Retainage;
+	}
+echo "
+<tr bgcolor=$fd_color_1 valign=top><td colspan=3>
+	<b>Total aged & ret: </b>
+		" . format_long_decimal($total_retainage + $total_aged,2) . "<br>
+	<b>Total Contract: </b>
+		" . gap_num($contract_info->ContractAmt) . "<br>
+	<b>Total Billed: </b>
+		" . gap_num($contract_info->BilledAmt) . "
+	</td><td>
+		&nbsp;
+	</td><td>
+		&nbsp;
+	</td><td>
+		&nbsp;
+	</td><td>
+		" . format_long_decimal($total_aged,2) . "
+	</td><td>
+		" . format_long_decimal($total_due_30,2) . "
+	</td><td>
+		" . format_long_decimal($total_due_60,2) . "
+	</td><td>
+		" . format_long_decimal($total_due_90,2) . "
+	</td><td>
+		" . format_long_decimal($total_due_91,2) . "
+	</td><td>
+		" . format_long_decimal($total_retainage,2) . "
+	</td><td>
+		&nbsp;
+	</td></tr>
+</table></font>";
+?>

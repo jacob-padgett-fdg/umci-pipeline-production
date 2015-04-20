@@ -1,0 +1,95 @@
+<?
+//require("querylib.inc");
+
+//$return_to_url="";
+//if ($return_to!="") {
+//	$return_to=addslashes($return_to);
+//	$return_to_url=base64_decode($return_to);
+//	}
+
+if ($new==1) {
+	$c_info=getone("select * from contacts where contacts_id = '" . escapeshellcmd($company_id) . "'");
+	$query_command="insert into contacts set ";
+	$query_where="";
+	} else {
+	$query_command="update contacts set ";
+	$query_where=" where contacts_id = '$contacts_id' ";
+	}
+
+$company=addslashes($company);
+$email=addslashes($email);
+$address_1=addslashes($address_1);
+$address_city=addslashes($address_city);
+$address_state=addslashes($address_state);
+$address_zip=addslashes($address_zip);
+$phone=addslashes($phone);
+$phone_ext=addslashes($phone_ext);
+$phone_fax=addslashes($phone_fax);
+$current=checkfix($current);
+$owner=checkfix($owner);
+$consultant=checkfix($consultant);
+$mechanical_contractor=checkfix($mechanical_contractor);
+$manufacturer=checkfix($manufacturer);
+$is_general=checkfix($is_general);
+$is_reprographics_firm=checkfix($is_reprographics_firm);
+
+
+
+$display_name=addslashes($c_info->company) . " - " . $company;
+$alphasort=addslashes($c_info->company) . $company;
+
+$query_base="
+	company = '$company',
+	email = '$email',
+	address_1 = '$address_1',
+	address_city = '$address_city',
+	address_state = '$address_state',
+	address_zip = '$address_zip',
+	phone = '$phone',
+	phone_ext = '$phone_ext',
+	phone_fax = '$phone_fax',
+	current = '$current',
+	owner = '$owner',
+	mechanical_contractor = '$mechanical_contractor',
+	manufacturer = '$manufacturer',
+	consultant = '$consultant',
+	is_general = '$is_general',
+	is_reprographics_firm = '$is_reprographics_firm',
+	display_name = '$display_name',
+	alphasort = '$alphasort',
+	record_creator = '$global_user_id'
+	";
+
+if ($realnew=="1") {
+	$query_base="
+	contact_type = 'site',
+	company_id = '$company_id'," . $query_base;
+	}
+
+$query=$query_command . $query_base . $query_where;
+$result=mysql_query($query);
+if ($contacts_id=="") $contacts_id=mysql_insert_id();
+	
+if(!($result)) die("Error.. the stupid query is broke.... Please contact your system administrator! <hr>Query: $query");
+
+require("contact_maint_quick.phtml");
+
+follow_return_to($return_to);
+//if ($return_to_url!="") {
+//	echo "<script>
+//	document.location=\"$return_to_url\";
+//	</script>";
+//	exit;
+//	}
+
+if ($exit_target=='main') {
+	forward('main');
+	exit;
+	}
+
+if ($exit_target=='contact_edit') {
+	forward("contacts_edit&contacts_id=$contacts_id");
+	exit;
+	}
+
+?>

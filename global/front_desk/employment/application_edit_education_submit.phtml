@@ -1,0 +1,36 @@
+<?
+
+if ($education_history_id!="") {
+	$education_history_id=addslashes($education_history_id);
+	$query_start="update ";
+	$query_end=" where education_history_id = '$education_history_id'";
+	} else {
+	$query_start="insert into ";
+	$query_end="";
+	}
+
+if ($school_name!="") {
+
+	$application_id=addslashes($application_id);
+	$school_type=addslashes($school_type);
+	$school_name=addslashes($school_name);
+	$location=addslashes($location);
+	$diploma=addslashes($diploma);
+	$major=addslashes($major);
+
+	$query_middle="
+	hr_applications_education_history set 
+	application_id = '$application_id',
+	school_type = '$school_type',
+	school_name = '$school_name',
+	location = '$location',
+	diploma = '$diploma',
+	major = '$major'
+	";
+
+	$query_full=$query_start . $query_middle . $query_end;
+	$res=@mysql_query($query_full);
+	if (!($res)) die("ERROR: Query failed.<br>Failed query:<hr>$query_full");
+	}
+include("app_forward_mode.phtml");
+?>

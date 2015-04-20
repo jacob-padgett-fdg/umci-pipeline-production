@@ -1,0 +1,74 @@
+<?
+require("../front_desk/mh_lib.inc");
+require("header.phtml");
+mh_navs_header();
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Contacts Main Menu</font></a>
+
+<center><h2>Contacts - Advanced Search</h2>
+<table border=0 cellspacing=0 cellpadding=5>
+<form name=contact_search method=post action=$pagename>
+<input type=hidden name=mode value=search_submit>
+
+<tr><td>
+	<b>Company</b>
+</td><td>
+	<input type=text name=company>
+</td></tr>
+
+<tr><td>
+	<b>First Name</b>
+</td><td>
+	<input type=text name=first_name>
+</td></tr>
+
+<tr><td>
+	<b>Last Name</b>
+</td><td>
+	<input type=text name=last_name>
+</td></tr>
+
+<tr><td>
+	<b>Search</b>
+</td><td>
+	<select name=is_company>
+	<option value=''>Both</option>
+	<option value='Y'>Companies Only</option>
+	<option value='N'>People Only</option>
+</td></tr>
+
+<tr><td>
+	<b>UMC Employees</b>
+</td><td>
+	Employees<input type=radio name=umc_emp value='Y'>&nbsp;
+	Non Employees<input type=radio name=umc_emp value='N'>&nbsp;
+	Either<input type=radio name=umc_emp value='' checked >&nbsp;
+</td></tr>
+
+<tr><td>
+	<b>Current Contact</b>
+</td><td>
+	Y<input type=radio name=current value='Y'>&nbsp;
+	N<input type=radio name=current value='N'>&nbsp;
+	?<input type=radio name=current value='' checked >&nbsp;
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=search>
+</td></tr>
+
+</table>
+
+
+
+</form>
+</center>
+
+";
+
+
+
+mh_navs_footer();
+
+?>

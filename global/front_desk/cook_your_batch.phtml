@@ -1,0 +1,138 @@
+<?
+require("header.phtml");
+fd_navs_header();
+
+
+if ($global_jobinfo_id=="") die();
+$global_jobinfo_id=addslashes($global_jobinfo_id);
+
+$job=getoneb("select * from jobinfo where jobinfo_id = '$global_jobinfo_id'");
+
+$directory="/tmp/front_desk/cook_a_batch/$global_user->login_name/$job->contract_num";
+@chdir($directory);
+$actual=getcwd(); 
+if ($actual==$directory) {
+	@exec("rm *"); 
+	}
+
+
+$res=@mysql_query("select * from front_desk_doc_queue where contacts_id = '$global_user_id' and jobinfo_id = '$global_jobinfo_id' order by sort_priority,queue_id");
+$count=@mysql_num_rows($res);
+if ($count < 1) die();
+
+echo "<table border=1 cellspacing=0 cellpadding=2 bgcolor=$fd_color_3>
+<tr bgcolor=$fd_color_4><td align=center colspan=2><b>Preparing Your Batch</b></td></tr>";
+
+$seq=1;
+
+while($row=@mysql_fetch_object($res)) {
+	$description="";
+	$doc_info=getoneb("select * from documents where doc_id = '$row->doc_id'");
+	switch ($doc_info->doc_type) {
+		case "gcrfi":   $application="gcrfilog" . $devel;break;;;
+		case "rfi":   $application="rfilog" . $devel;break;;;
+		case "transmittal":   $application="transmittals" . $devel;break;;;
+		default:	$application=$doc_info->doc_type . $devel;
+		}
+	if ($row->doc_id>0) {
+		//$cookie=batch_this_document($row->doc_id);
+		$info=getoneb("select * from documents where doc_id = '$row->doc_id'");
+		$description=$info->doc_type . " " . $info->app_reference . " - " . $info->description;
+		}
+	echo "<tr><td title=\"$row->description\"><a href=\"$pagename?mode=open_doc&doc_id=$row->doc_id\" style=\"color: black;\" target=_blank>$description</a></td><td id=\"batch_prep_$row->doc_id\"></tr>";
+	$script=$script . "ajaxManager('load_page','/global/front_desk$devel/$application/?mode=pdf_produce_file&doc_id=$row->doc_id&sequence=$seq','batch_prep_$row->doc_id');";
+	
+	$script2=$script2 . "check('batch_prep_$row->doc_id');";
+	$seq++;
+	}
+echo "
+
+<tr bgcolor=$fd_color_1><td colspan=2 align=center style=\"display: none;\" id=\"dlpdf\">
+	<a href=$pagename?mode=eat_your_pdf_batch target=_blank><font color=blue>Download a PDF File</font></a>
+</td></tr>
+	
+<tr bgcolor=$fd_color_1><td colspan=2 align=center style=\"display: none;\" id=\"dlzip\">
+	<a href=$pagename?mode=eat_your_zip_batch><font color=blue>Download a ZIP File</font></a>
+</td></tr>
+
+<tr bgcolor=$fd_color_1><td colspan=2 align=center style=\"display: none;\" id=\"stxmit\">
+	<i>Start a transmittal</i>
+</td></tr>
+	
+<tr bgcolor=$fd_color_1><td colspan=2 align=center><a href=$pagename?mode=clear_doc_queue&goto=main><font color=blue>Hurl your cookies</font></a></td></tr>
+</table>
+
+<script>
+$script
+
+document.incomplete='no';
+document.errors='no';
+document.errorcount=0;
+document.complete_failure='yes';
+document.rounds=0;
+
+function check(id) {
+	obj=document.getElementById(id);
+	contents=obj.innerHTML;
+	if (contents=='') {
+		obj.style.background='$fd_color_3';
+		document.incomplete='yes';
+		}
+	if (contents=='OK') {
+		document.complete_failure='no';
+		obj.style.background='#aaddaa';
+		return('');
+		}
+	if (contents!='') {
+		obj.style.background='#bb2222';
+		obj.style.color='#ffffff';
+		}
+	document.errors='yes';
+	document.errorcount=document.errorcount + 1;
+	}
+
+function checkall() {
+	document.rounds=document.rounds + 1;
+	document.incomplete='no';
+	document.errors='no';
+	document.errorcount=0;
+	
+	$script2
+	
+	
+	if (document.incomplete!='no') {
+		setTimeout('checkall()',500);
+		return ('');
+		}
+	
+	if (document.complete_failure!='no') {
+		alert('Your document could not be generated. Please review the output above for more information! complete_failure: '
+		+ document.complete_failure);
+		return('');
+		}
+	
+	if (document.errors!='no') {
+		alert('There were ' + document.errorcount + ' errors producing your document. Please review before continuing!');
+		}
+	
+	
+	document.getElementById('dlpdf').style.display='table-cell';
+	document.getElementById('dlzip').style.display='table-cell';
+	//document.getElementById('stxmit').style.display='table-cell';
+	//alert(document.rounds);
+	}
+
+
+
+
+checkall();
+</script>
+
+
+
+";
+
+$hide_the_cookie_sheet='Y';
+fd_navs_footer();
+
+?>

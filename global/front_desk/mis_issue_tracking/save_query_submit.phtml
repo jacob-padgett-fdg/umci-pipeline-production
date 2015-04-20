@@ -1,0 +1,27 @@
+<?
+$default_query=checkfix($default_query);
+$query_id=addslashes($query_id);
+$query_name=addslashes($query_name);
+$priority=addslashes($priority);
+
+$query_info=getone("select * from mis_issue_query_history where query_id = '$query_id'");
+
+$query_info->query=addslashes($query_info->query);
+
+$save_query_query="insert into mis_issue_saved_queries set
+contacts_id = '$global_user_id',
+query_name = '$query_name',
+priority = '$priority',
+query = '$query_info->query',
+default_query = '$default_query'";
+
+
+$res=@mysql_query($save_query_query);
+
+if (!($res)) {
+	echo "Error: Query saving query failed. <br>Failed Query:<hr>$save_query_query";
+	exit;
+	}
+forward('main');
+
+?>

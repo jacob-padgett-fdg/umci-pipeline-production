@@ -1,0 +1,31 @@
+<?
+
+//echo "$bidlist_id<br>$description";
+$bidlist_id=addslashes($bidlist_id);
+$bid_info=load_proposal_info($bidlist_id);
+
+mysql_query("delete from bidlist_associations where bidlist_id = '$bid_info->bidlist_id'");
+
+if ($bid_info->proposal_num > 0) {
+	$res=@mysql_query("select * from bidlist where proposal_num = '$bid_info->proposal_num'");
+	while($row=@mysql_fetch_object($res)) {
+		@mysql_query("delete from bidlist_associations where bidlist_id = '$row->bidlist_id'");
+		echo "<hr>delete from bidlist_associations where bidlist_id = '$row->bidlist_id'<hr>";
+		}
+	$res=@mysql_query("select * from bidlist where proposal_num = '$bid_info->proposal_num'");
+	$rowcount=@mysql_num_rows($res);
+	if ($rowcount>1) {
+		while ($row=@mysql_fetch_object($res)) {
+			associate_bidlist_items($bid_info->bidlist_id,$row->bidlist_id);
+			}
+		}
+	}
+
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+?>

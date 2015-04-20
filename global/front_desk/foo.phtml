@@ -1,0 +1,41 @@
+<?
+///$res=@mysql_query("select jobinfo.jobinfo_id,contract_num,display_name,(sum(1) - 1) as extra_pms from jobinfo 
+$res=@mysql_query("select jobinfo.jobinfo_id,contract_num,display_name,sum(1) as extra_pms,project_manager_id from jobinfo 
+left join front_desk_job_pms on 
+	(jobinfo.jobinfo_id = front_desk_job_pms.jobinfo_id) where active = 'Y' group by jobinfo.jobinfo_id order by sum(1) desc,pm_guest_id desc");
+
+echo "<table border=1 cellspacing=0 cellpadding=3>";
+
+$last_job=0;
+while ($row=@mysql_fetch_object($res)) {
+	if ($last_job!=$row->jobinfo_id) {
+	$pm=getoneb("select * from contacts where contacts_id = '$row->project_manager_id'");
+	echo "<tr bgcolor=$fd_color_4><td colspan=2 align=center>
+			$row->contract_num - $row->display_name
+		</td></tr>
+		
+		<tr><td>
+			$pm->display_name
+		</td><td>
+			*
+		</td></tr>";
+		}
+	$guest_res=@mysql_query("select * from front_desk_job_pms where jobinfo_id = '$row->jobinfo_id'");
+	//tabledump("select * from front_desk_job_pms where jobinfo_id = '$row->jobinfo_id'");
+	while ($grow=@mysql_fetch_object($guest_res)) {
+		$alt_pm=getoneb("select * from contacts where contacts_id = '$grow->contacts_id'");
+		if ($alt_pm) {
+			echo "<tr><td>
+					$alt_pm->display_name
+					</td><td>
+					&nbsp;
+				</td></tr>";
+			}
+		}
+	$last_job=$row->jobinfo_id;
+	}
+echo "</table>";
+
+
+
+?>

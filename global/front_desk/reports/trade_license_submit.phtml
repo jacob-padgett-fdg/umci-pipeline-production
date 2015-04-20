@@ -1,0 +1,43 @@
+<?
+require("header.phtml");
+$report_name="trade_license_manager";
+check_report_permissions();
+require("mh_lib.inc");
+require("report_lib.inc");
+require("trade_licenses_lib.inc");
+//mh_navs_header();
+check_for_missing_licenses();
+
+
+if ($license_id!="") {
+	$license_id=addslashes($license_id);
+	$query_start="update front_desk_trade_licenses";
+	$query_end="where license_id = '$license_id'";
+	} else {
+	$query_start="insert into front_desk_trade_licenses";
+	$query_end=",creator = '$global_user_id'";
+	}
+
+
+$license_type_id=addslashes($license_type_id);
+$license_num=addslashes($license_num);
+$employee_id=addslashes($employee_id);
+$expiration_date=vali_date($expiration_date);
+
+$query_middle="
+set 
+license_type_id = '$license_type_id',
+license_num = '$license_num',
+employee_id = '$employee_id',
+expiration_date = '$expiration_date'
+";
+
+
+$query_full="$query_start $query_middle $query_end";
+$res=@mysql_query($query_full);
+
+if (!($res)) die("Error with query:<hr>$query_full");
+forward("$mode&report_name=$report_name");
+exit;
+
+?>

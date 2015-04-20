@@ -1,0 +1,37 @@
+<?
+
+
+//if ($material_list_parent=="") die ("ERROR: \$material_list_parent missing. Please contact your system administrator!");
+if ($name=="") die ("ERROR: \$name not specified!");
+if ($qty_name=="") $qty_name="Qty";
+
+if ($material_list_parent!="") $material_list_parent=escapeshellcmd($material_list_parent);
+$name=escapeshellcmd($name);
+$qty_name=escapeshellcmd($qty_name);
+$ss_name=checkfix($ss_name);
+$ss_cost=checkfix($ss_cost);
+$cost=float_clean($cost);
+
+
+$query="insert into svc_materials_list set
+material_list_parent = '$material_list_parent',
+type = 'item',
+name = '$name',
+qty_name = '$qty_name',
+ss_name = '$ss_name',
+ss_cost = '$ss_cost',
+cost = '$cost'";
+
+//echo "<hr>$query<hr>";exit;
+
+$res=@mysql_query($query);
+
+if ($material_list_parent=="") {
+	$mid=mysql_insert_id();
+	$query="update svc_materials_list set material_list_parent = '$mid' where material_list_id = '$mid'";
+	
+	@mysql_query($query);
+	}
+forward("lists_material_types&material_list_id=$material_list_parent");
+
+?>

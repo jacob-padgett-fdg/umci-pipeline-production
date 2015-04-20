@@ -1,0 +1,8 @@
+<?
+
+$task_lists_shorted_id=addslashes($task_lists_shorted_id);
+$info=getone("select * from svc_task_lists_shorted where task_lists_shorted_id = '$task_lists_shorted_id'");
+@mysql_query("delete from svc_task_lists_shorted where task_lists_shorted_id = '$task_lists_shorted_id'");
+forward("lists_agreement_type_edit&agreement_type_id=$info->agreement_type_id");
+
+?>

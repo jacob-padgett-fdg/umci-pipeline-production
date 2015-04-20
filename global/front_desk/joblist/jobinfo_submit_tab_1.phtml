@@ -1,0 +1,103 @@
+<?
+$job_name=addslashes($job_name);
+$contract_admin=addslashes($contract_admin);
+$project_manager_id=addslashes($project_manager_id);
+$project_sponsor_id=addslashes($project_sponsor_id);
+$job_site_address=addslashes($job_site_address);
+$active=checkfix($active);
+$design_build=addslashes($design_build);
+$general_id=addslashes($general_id);
+$owner_id=addslashes($owner_id);
+$contract_or_po=addslashes($contract_or_po);
+$contract_amount_orig=addslashes($contract_amount_orig);
+$contract_amount_final=addslashes($contract_amount_final);
+$contract_amount_current=addslashes($contract_amount_current);
+$contract_amount_billed=addslashes($contract_amount_billed);
+$contract_type=addslashes($contract_type);
+$job_cost=addslashes($job_cost);
+$start_date=vali_date($start_date);
+$complete_date=vali_date($complete_date);
+$job_type=addslashes($job_type);
+if ($fed_pub == "") $fed_pub="(n/a)";
+$fed_pub=addslashes($fed_pub);
+$architect_id=addslashes($architect_id);
+$confidential=checkfix($confidential);
+
+
+
+$query_middle="
+job_name = '$job_name',
+contract_admin = '$contract_admin',
+project_manager_id = '$project_manager_id',
+project_sponsor_id = '$project_sponsor_id',
+job_site_address = '$job_site_address',
+active = '$active',
+general_id = '$general_id',
+owner_id = '$owner_id',
+contract_or_po = '$contract_or_po',
+contract_amount_orig = '$contract_amount_orig',
+contract_amount_final = '$contract_amount_final',
+contract_amount_current = '$contract_amount_current',
+contract_amount_billed = '$contract_amount_billed',
+contract_type = '$contract_type',
+job_cost = '$job_cost',
+start_date = '$start_date',
+complete_date = '$complete_date',
+job_type = '$job_type',
+fed_pub = '$fed_pub',
+design_build = '$design_build',
+architect_id = '$architect_id',
+confidential = '$confidential'
+";
+
+
+
+
+if ($jobinfo_id=="") {
+	$new=1;
+	$contract_num=addslashes($contract_num);
+	$query_start="insert into jobinfo set contract_num = '$contract_num',";
+	$query_end="";
+	} else {
+	$new=0;
+	$query_start="update jobinfo set ";
+	$query_end=" where jobinfo_id = '$jobinfo_id'";
+	$old_info=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+		////////////////////////////////////////////////////
+		// Send out some annoying little emails if needed.. 
+		////////////////////////////////////////////////////
+		if (($old_info->active=='Y') && ( "$active" == 'N')) {
+			$mailres=@mysql_query("select * from jobinfo_close_notifications");
+			while ($mailrow=@mysql_fetch_object($mailres)) {
+				queue_email($mailrow->contacts_id,"Closed Job: $old_info->contract_num","Job number $old_info->contract_num has been closed on the web page..");
+				}
+			//queue_email('2993',"Closed Job: $old_info->contract_num","Job number $old_info->contract_num as been closed on the web page..");
+			//queue_email('1685',"Closed Job: $old_info->contract_num","Job number $old_info->contract_num as been closed on the web page..");
+			//queue_email('124',"Closed Job: $old_info->contract_num","Job number $old_info->contract_num as been closed on the web page..");
+			//queue_email('133',"Closed Job: $old_info->contract_num","Job number $old_info->contract_num as been closed on the web page..");
+			//queue_email('2',"Closed Job: $old_info->contract_num","Job number $old_info->contract_num as been closed on the web page..");
+			//queue_email('199',"Closed Job: $old_info->contract_num","Job number $old_info->contract_num as been closed on the web page..");
+			//queue_email('198',"Closed Job: $old_info->contract_num","Job number $old_info->contract_num as been closed on the web page..");
+			//queue_email('2620',"Closed Job: $old_info->contract_num","Job number $old_info->contract_num as been closed on the web page..");
+			}
+	}
+
+$full_query=$query_start . $query_middle . $query_end;
+//echo "<hr>$full_query<hr>";exit;
+@mysql_query($full_query);
+if (($target_tab=="exit")||($target_tab=="")) forward('main');
+else {
+	if ($jobinfo_id=="") $jobinfo_id=@mysql_insert_id();
+	$target_tab=addslashes($target_tab);
+	forward("jobinfo_edit&target_tab=$target_tab&jobinfo_id=$jobinfo_id");
+	}
+exit;
+$result=mysql_query($query);
+
+if (!($result)) {
+	echo "Error with query:<br>$query";
+	exit;
+	} else {
+	forward("main");
+	}
+?>

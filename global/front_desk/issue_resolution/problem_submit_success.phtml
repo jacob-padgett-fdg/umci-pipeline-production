@@ -1,0 +1,66 @@
+<?
+
+
+switch ($save_action) {
+	case "save_and_clone":
+		$problem_id="";
+		$save_action="just_save";
+		$cfidtemp=getoneb("select max(conflict_id) as conflict_id from issue_res_issues where issue_res_category_id = '$issue_res_category_id'");
+		$cfidtemp->conflict_id++;
+		$conflict_id=$cfidtemp->conflict_id;
+		$issue_res_skip_all_escapes=1;
+		include("problem_submit.phtml");
+		exit;
+		break;
+	case "just_save":
+		echo "
+		<body bgcolor=#ffffff>
+		<script>
+		document.location=\"$pagename?mode=problem_edit&problem_id=$problem_id\";
+		</script></body>";
+		exit;
+		break;
+
+	case "save_and_new":
+		echo "
+		<body bgcolor=#ffffff>
+		<script>
+		document.location=\"$pagename?mode=problem_edit\";
+		</script></body>";
+		exit;
+		break;
+
+	case "save_and_show_log":
+		echo "
+		<body bgcolor=#ffffff>
+		<script>
+		document.location=\"$pagename?mode=main\";
+		</script></body>";
+		exit;
+		break;
+
+	case "save_and_load_conflict":
+		echo "
+		<body bgcolor=#ffffff>
+		<script>
+		document.location=\"$pagename?mode=problem_quickload&conflict_id=$load_conflict_id\";
+		</script></body>";
+		exit;
+		break;
+
+	case "save_and_next":
+		include("problem_load_next.phtml");
+		exit;
+		break;
+
+	case "save_and_prev":
+		include("problem_load_prev.phtml");
+		exit;
+		break;
+
+	default:
+		echo "$save_action";exit;
+		break;
+	}
+
+?>

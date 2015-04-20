@@ -1,0 +1,68 @@
+<?
+require('querylib.inc');
+$jobinfo_id=escapeshellcmd($jobinfo_id);
+$width=escapeshellcmd($width);
+$height=escapeshellcmd($height);
+$scanmode=escapeshellcmd($scanmode);
+$sheets=escapeshellcmd($total_sheets);
+$sets=escapeshellcmd($sets);
+$media=escapeshellcmd($media);
+$sqfcost=escapeshellcmd($sqfcost);
+$amtb=escapeshellcmd($amtb);
+$user=escapeshellcmd($user);
+$notes=escapeshellcmd($notes);
+$plotter=escapeshellcmd($plotter);
+$color=checkfix($color);
+$area=escapeshellcmd($area);
+
+$query="insert into $current (
+	jobinfo_id,
+	width,
+	height,
+	scanmode,
+	sheets,
+	sets,
+	media,
+	sqfcost,
+	amtb,
+	user,
+	notes,
+	color,
+	area,
+	entrydate,
+	plotter
+	) values (
+	'$jobinfo_id',
+	'$width',
+	'$height',
+	'$scanmode',
+	'$sheets',
+	'$sets',
+	'$media',
+	'$sqfcost',
+	'$amtb',
+	'$user',
+	'$notes',
+	'$color',
+	'$area',
+	now(),
+	'$plotter'
+
+	)";
+
+//echo "$query";exit;
+
+$result=@mysql_query("$query");
+
+if (!($result)) {
+	echo "Error: database query failed... The query listed below failed, 
+		please contact your system administrator, or try your request again.<p>";
+	echo "<hr>$query";
+	} else { 
+	$lastuser="$user";
+	$lastjob="$jobinfo_id";
+	echo "<meta http-equiv=\"refresh\" content=\"0; url=index.html?mode=main\">";
+	echo "Update Successful...";
+	}
+
+?>

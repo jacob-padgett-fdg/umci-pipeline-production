@@ -1,0 +1,82 @@
+<?
+
+//echo "<center><h2>You have submitted an application for the following positions</h2></center>";
+//echo "<center><h2>You have applied for:</h2></center>";
+//echo "<h2>You have applied for:</h2>";
+//echo "<center><font size=+1><b>Thank you for applying. You have successfully applied for all of the positions listed below. You may continue by answering any optional questions listed with the listings below (if they exist), or select another position to apply for by clicking on the \"Back to Listings\" link on the left.</b></font></center>";
+echo "<center><font size=+1><b>Thank you for applying. You have successfully applied for all of the positions listed below. If there are any questions listed below the job title(s) below, you may continue with these optional questions, or select another position to apply for by clicking on the \"Back to Listings\" link on the left.</b></font></center>";
+//tabledump("select * from hr_application_submissions left join hr_openings using (hr_openings_id) where application_id = '$application_id' order by deadline");
+$res=@mysql_query("select * from hr_application_submissions left join hr_openings using (hr_openings_id) where application_id = '$application_id' order by deadline");
+
+echo "
+<script>
+function form_verify(newmode) {
+	document.application_edit.target_app_mode.value=newmode;
+	document.application_edit.submit();
+	}
+</script>
+
+
+";
+//<table border=0 width=100%><tr><td width=85%>&nbsp;</td><td width=15% align=center><b>Expires</b></td></tr></table>
+
+
+while ($row=@mysql_fetch_object($res)) {
+	$row->position_type=ereg_replace(" ","&nbsp;",$row->position_type);
+	$row->deadline=invali_date($row->deadline);
+	//$row->job_title="z";
+	echo "
+	
+	<table border=3 style=\"border-style: groove\" cellspacing=0 cellpadding=0 width=100%><tr><td width=100%>
+	
+	<table width=100% border=0 cellspacing=0 cellpadding=1>
+	
+	<tr bgcolor=#dddddd><td width=100% colspan=3>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr><td width=85%>
+				<b>$row->job_title</b>
+			</td><td width=15% align=right>
+				<b>Open&nbsp;Until&nbsp;$row->deadline</b>
+			</td></tr>
+		</table>
+	</td></tr>";
+	
+	$res2=@mysql_query("select * from hr_opening_bullets where bullet_category = 'questions' and hr_openings_id = '$row->hr_openings_id' order by sort_priority");	
+	$rescount=@mysql_num_rows($res2);
+	if ($rescount>0) echo "<tr><td width=5%>&nbsp;</td><td colspan=2 width=95%>
+							<table border=1 width=100% cellspacing=0 cellpadding=2><tr><td width=100% bgcolor=white>
+								<font size=-1><i>These are optional questions for the <b>$row->job_title</b> position. Please respond if possible.</i></font>
+							</td></tr></table>
+							</td></tr>
+							";
+	while ($row2=@mysql_fetch_object($res2)) {
+		$response=getoneb("select * from hr_opening_bullet_responses where hr_opening_bullets_id = '$row2->hr_opening_bullets_id' and application_id = '$application_id'");
+		if ($response) {
+			$link="<a href=javascript:form_verify('question_response&hr_opening_bullets_id=$row2->hr_opening_bullets_id')><font color=blue>Edit&nbsp;Response</font></a>";
+			} else {
+			$link="<a href=javascript:form_verify('question_response&hr_opening_bullets_id=$row2->hr_opening_bullets_id')><font color=blue>Respond</font></a>";
+			}
+		echo "<tr><td width=5%>&nbsp;
+				</td><td colspan=2 width=95%>
+					<table border=0 cellspacing=0 cellpaddin=0 width=100%>
+						<tr><td width=90%>
+							$row2->bullet_text
+						</td><td width=90% valign=top>
+							$link
+						</td></tr>
+						</table>
+				</td></tr>";
+		}
+	
+	echo "</table></table>";
+	echo "&nbsp;";
+	}
+
+
+
+
+
+
+
+
+?>

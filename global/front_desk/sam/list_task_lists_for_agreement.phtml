@@ -1,0 +1,11 @@
+<?
+
+$query="
+select * from 
+svc_equip_sched_index 
+left join svc_agreement_equip_list using (el_id)
+left join svc_equip_categories using (category_id)
+left join svc_equip_types on (svc_agreement_equip_list.equip_type_id = svc_equip_types.equip_type_id) 
+ where agreement_id = '$agreement_id' group by task_id order by category,type";
+
+?>

@@ -1,0 +1,100 @@
+<?
+//if ($issue_res_application_id==0) $issue_res_application_id=FALSE;
+//if ($issue_res_category_id==0) $issue_res_category_id=FALSE;
+
+if ($glad1!="") $issue_res_category_id_set=escapeshellcmd($glad1);
+if ($glad2!="") {
+	$problem_id=escapeshellcmd($glad2);
+	if ($issue_res_category_id_set) {
+		session_register("issue_res_category_id");
+		$issue_res_category_id=escapeshellcmd($issue_res_category_id_set);
+		/////////////////////////////
+		$global_jobinfo_id="";
+		$issue_res_application_id="";
+		/////////////////////////////
+		forward("problem_edit&problem_id=$problem_id");exit;
+	} else {
+		forward("problem_edit&problem_id=$problem_id");exit;
+		}
+	}
+
+if ($problem_id!="") {
+	$problem_id=addslashes($problem_id);
+	$problem_info_tmp=getone("select * from issue_res_issues where problem_id = '$problem_id'");
+	$issue_res_category_id_set="";
+	session_register("issue_res_category_id");
+	$issue_res_category_id=$problem_info_tmp->issue_res_category_id;
+	$cat_info=getoneb("select * from issue_res_category where issue_res_category_id = '$issue_res_category_id'");
+	$app_info=getoneb("select * from issue_res_application where issue_res_application_id = '$cat_info->issue_res_application_id'");
+	$global_jobinfo_id=$app_info->jobinfo_id;
+	$global_jobinfo_id_set="";
+	}
+
+if ($issue_res_category_id_set!="") {
+	session_register("issue_res_category_id");
+	$issue_res_category_id=addslashes($issue_res_category_id_set);
+	/////////////////////////////
+	$global_jobinfo_id="";
+	$issue_res_application_id="";
+	//$issue_res_category_id="";
+	$problem_id="";
+	/////////////////////////////
+	forward('main');exit;
+	}
+
+if ($issue_res_application_id_set!="") {
+	session_register("issue_res_application_id");
+	$issue_res_application_id=escapeshellcmd($issue_res_application_id_set);
+	/////////////////////////////
+	$global_jobinfo_id="";
+	//$issue_res_application_id="";
+	$issue_res_category_id="";
+	$problem_id="";
+	/////////////////////////////
+	forward('main');exit;
+	}
+
+//if ($issue_res_application_id==0) $issue_res_application_id=FALSE;
+//if ($global_jobinfo_id_set!="") {
+//	/////////////////////////////
+//	//$global_jobinfo_id="";
+//	$issue_res_application_id="";
+//	$issue_res_category_id="";
+//	$problem_id="";
+//	//////////////////////////////
+//	forward('main');exit;
+//	}
+	
+if ($issue_res_category_id != "") {
+	$issue_res_category_id=addslashes($issue_res_category_id);
+	$issue_res_category_info=getoneb("select * from issue_res_category where issue_res_category_id = '$issue_res_category_id'");
+	if ($issue_res_category_info) $issue_res_application_id=$issue_res_category_info->issue_res_application_id;
+	
+	include('category_settings.phtml');
+
+	}
+
+if ($issue_res_application_id!="") {
+	//die("<hr>$issue_res_application_id<hr>");
+	$issue_res_application_id=addslashes($issue_res_application_id);
+	$issue_res_application_info=getoneb("select * from issue_res_application where issue_res_application_id = '$issue_res_application_id'");
+	if ($issue_res_application_info) $issue_res_jobinfo_temp=$issue_res_application_info->jobinfo_id;
+	//if ($issue_res_application_info) {
+	//	echo "<hr>app info<hr>";
+	//	echo "<pre>";
+	//	print_r($issue_res_application_info);
+	//	echo "</pre>";
+	//	}
+	}
+
+if ($global_jobinfo_id != $issue_res_jobinfo_temp) {
+	if ($global_jobinfo_id=="") {
+		$global_jobinfo_id=$issue_res_jobinfo_temp;
+		$global_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$global_jobinfo_id'");
+	} else {
+		if ($issue_res_jobinfo_temp!="") forward("main&global_jobinfo_id_set=$global_jobinfo_id");
+	}
+
+}
+
+?>

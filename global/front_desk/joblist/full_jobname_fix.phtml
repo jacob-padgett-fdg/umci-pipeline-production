@@ -1,0 +1,35 @@
+#!/usr/local/bin/php
+<?
+require_once('global_connect_rw.phtml');
+require_once('viewpoint_connect_ro.phtml');
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/timesheet/timesheet_libs.inc");
+
+
+
+$no_output=1;
+$shell_script=1;
+$vpjobs_query="select * from JCCM with (NOLOCK) where (Contract like '0%-') and (ContractStatus = 1) and (Contract <> '00000-') and (JCCo = 1) order by Contract";
+
+$vpjoblistres=@mssql_query($vpjobs_query);
+$count=mssql_num_rows($vpjoblistres);
+
+$newfound=0;
+while ($vp_joblist_row=@mssql_fetch_object($vpjoblistres)) {
+	$vp_contract_num=ereg_replace("^0*","",$vp_joblist_row->Contract);
+	$vp_contract_num=ereg_replace("[ -]*$","",$vp_contract_num);
+	$existing_info=getoneb("select * from jobinfo where contract_num = '$vp_contract_num' limit 1");
+	if (!($existing_info)) {
+		@mysql_query("insert into jobinfo set contract_num = '$vp_contract_num'");
+		$newfound++;
+		}
+	$job_num=$vp_contract_num;
+	require("fix_fd_job_name_info.phtml");
+	}
+//require("sync_active_jobs.phtml");
+//queue_email(133,'Full Sync Executed','The web server just ran a full sync of job information from Viewpoint to Front Desk. All information should be up to date on Front Desk now','Y');
+//queue_email(2,'Full Sync Executed','The web server just ran a full sync of job information from Viewpoint to Front Desk. All information should be up to date on Front Desk now','Y');
+exit;
+?>

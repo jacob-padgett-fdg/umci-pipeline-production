@@ -1,0 +1,15 @@
+<?
+if ($jobinfo_id=="") die("ERROR: Application error. Please contact your system administrator!");
+
+$jobinfo_id=addslashes($jobinfo_id);
+$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+
+//echo "target tab: $target_tab<p><hr>$query<hr>";exit;
+
+@mysql_query($query);
+if (($target_tab=="exit")||($target_tab=="")) forward('main');
+else {
+	$target_tab=addslashes($target_tab);
+	forward("jobinfo_edit&target_tab=$target_tab&jobinfo_id=$jobinfo->jobinfo_id");
+	}
+?>

@@ -1,0 +1,11 @@
+<?
+$query="select * from access_servers,access_servers_backup_styles where access_servers.backup_style_id = access_servers_backup_styles.backup_style_id
+and report_backups = 'Y' and in_production = 'Y' and active = 'Y' order by access_servers.name";
+//tabledump($query);
+echo "<a href=$pagename?mode=backup_summaries><font color=blue>Back to backup summary info</font></a><p>";
+$res=@mysql_query($query);
+require("header.phtml");
+while($row=@mysql_fetch_object($res)) {
+	echo "<img src=$pagename?mode=graph_server_bu_size&server_id=$row->server_id><br>";
+	}
+?>

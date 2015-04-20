@@ -1,0 +1,26 @@
+<?
+
+if (!($inbound_info)) die("Application error (inbound info)");
+if (!($source_doc_info)) die("Application error (source doc info)");
+if (!($dest_doc_info)) die("Application error (dest doc info)");
+if (!($source_files_id)) die("Application error (source files id)");
+
+
+$gcrfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$dest_doc_info->app_record_id'");
+
+if (!($gcrfi_info)) die("Application error (gcrfi info)");
+
+$dest_file_group_id=$gcrfi_info->gcrfi_image_id;
+
+if ($dest_file_group_id==0) {
+	$dest_file_group_info=create_file_group("Filed via inbound","$app_info->app_name");
+	$dest_file_group_id=$dest_file_group_info->file_group_id;
+	mysql_query("update $app_info->app_name set gcrfi_image_id = '$dest_file_group_id' where gcrfi_id = '$dest_doc_info->app_record_id'");
+	//echo "no death";
+	}
+if ($dest_file_group_id<1) die("Application error (dest file group not created!)");
+
+@mysql_query("update webfile_files set file_group_id = '$dest_file_group_id' where files_id = '$source_files_id'");
+
+
+?>

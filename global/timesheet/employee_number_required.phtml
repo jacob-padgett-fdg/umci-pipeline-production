@@ -1,0 +1,37 @@
+<?
+
+
+echo "<h2><center>Welcome $current_user->first_name $current_user->last_name</center></h2><hr>
+
+I'm sorry, but your account is not correctly configured. I could not determine the employee
+number for the requested account.<p>
+
+Please contact the payroll departement to have this problem corrected.<hr>
+
+
+Information about your account they might need to know to correct the problem:<hr>
+
+username: $current_user->login_name<br>
+first name: $current_user->first_name<br>
+last name: $current_user->last_name<br>
+employee number: $current_user->employee_num<p>
+
+logged in as: $global_user->login_name<br>
+
+";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

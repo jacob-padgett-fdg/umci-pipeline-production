@@ -1,0 +1,22 @@
+<?
+require('querylib.inc');
+
+$query="select spool_fab_systems_id as new_system_id,system_name,' (',system_abbreviation,')' from spool_fab_systems where jobinfo_id = '$current_job_id'";
+
+echo "
+<form name=system_selector method=post action=\"$pagename\">
+<input type=hidden name=mode value=\"system_selection_submit\">
+
+";dropbox($query,"","10","submit()");echo"
+
+
+
+
+
+
+
+
+</form>";
+
+
+?>

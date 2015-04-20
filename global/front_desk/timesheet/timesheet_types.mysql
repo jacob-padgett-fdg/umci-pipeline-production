@@ -1,0 +1,7 @@
+create table timesheet_types (
+timesheet_type_id int not null auto_increment,
+contacts_id int,
+contact_type char(20),
+primary key (timesheet_type_id),
+index (contact_type)
+);

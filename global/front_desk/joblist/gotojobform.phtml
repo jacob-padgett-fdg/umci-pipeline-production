@@ -1,0 +1,16 @@
+<?
+require("header.phtml");
+echo "<form name=gotojobform action=$pagename method=post>
+
+<center><h2>Enter Contract Number:</h2>
+<input type=hidden name=mode value=gotojob>
+<input type=text size=10 name=contract_num onchange=submit()>
+<input type=button value=\"Search/Load\" onclick=submit();>
+</center>
+</form>
+<script>
+document.gotojobform.contract_num.focus();
+</script>
+";
+
+?>

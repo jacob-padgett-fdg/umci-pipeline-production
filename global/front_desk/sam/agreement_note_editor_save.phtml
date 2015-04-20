@@ -1,0 +1,17 @@
+<?
+
+if ($agreement_id=="") die("Application error with agreement_id");
+
+
+$agreement_id=addslashes($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+
+$agreement_notes=addslashes($agreement_notes);
+@mysql_query("update svc_agreement_index set agreement_notes = '$agreement_notes' where agreement_id = '$agreement_info->agreement_id'");
+
+$agreement_info=load_agreement_info($agreement_info->agreement_id);
+
+$agreement_notes=ereg_replace("[\r\n]",'<br>',$agreement_info->agreement_notes);
+echo "$agreement_notes";
+
+?>

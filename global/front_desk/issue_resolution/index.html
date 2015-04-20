@@ -1,0 +1,29 @@
+<?
+require("settings.cfg");
+require('global-auth.inc');
+if ($global_job_just_changed) {
+	$issue_res_category_id="";
+	$issue_res_application_id="";
+	}
+require("category_resolution.phtml");
+	
+if (($mode!="csv_download")&&($mode!="filter_win")) {
+    // GPH Modified - phplibs should already be in the include directories, so absolute is unnecessary.
+	// require('/data/web/phplibs/header.phtml');
+	require('header.phtml');
+	fd_navs_header();
+	}
+
+include("user_permissions_resolution.phtml");
+
+//if (($mode!="printable")&&($mode!="csv_download")) echo "$auth_session_toggle_link";
+
+if ($mode!="") {
+	if (is_readable("$mode.phtml")) { 
+		include("$mode.phtml");  } else { include ("badmode.phtml"); }
+	} else {
+	$mode="main";
+	include ("main.phtml");
+	}
+if (($mode!="csv_download")&&($mode!="filter_win")) fd_navs_footer();
+?>

@@ -1,0 +1,23 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////            List Weeks that we have posted timesheets for
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$query="select * from timesheet_index where status = 'posted' and employee_group = '$current_employee_group' group by week_ending order by week_ending desc";
+
+$res=@mysql_query($query);
+echo "
+<body bgcolor=#ffffff>
+<table cellpadding=4 cellspacing=0 border=1 width=100%><tr><td align=center bgcolor=#dddddd><h2>Weeks With Posted Timesheets</h2></td></tr></table><table border=0 cellpadding=3>";
+while($row=@mysql_fetch_object($res)) {
+	$week_end=invali_date($row->week_ending);
+	echo "	<tr><td>
+			<a href=$pagename?mode=payroll_timesheet_archive_show_week&show_week=$week_end><font color=blue>$week_end</font></a>
+		</td></tr>";
+	}
+echo "</table>";
+
+
+echo "<hr><a href=$pagename?mode=main><font color=blue>Return to Main</font></a>";
+?>

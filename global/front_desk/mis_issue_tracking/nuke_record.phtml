@@ -1,0 +1,18 @@
+<?
+if ($issue_id=="") die ("ERROR, No issue_id specified.. WTF!?!?");
+$issue_id=addslashes($issue_id);
+$issue_info=getoneb("select * from mis_issue_index where issue_id = '$issue_id'");
+
+if (!($issue_info)) die("ERROR, Bad issue..");
+
+//echo "nacho";
+
+$query_1="delete from mis_issue_history where issue_id = '$issue_info->issue_id'";
+$query_2="delete from mis_issue_index where issue_id = '$issue_info->issue_id'";
+//echo "$query_1<hr>$query_2";
+@mysql_query($query_1);
+@mysql_query($query_2);
+
+
+forward('main');
+?>

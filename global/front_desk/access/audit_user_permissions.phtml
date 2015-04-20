@@ -1,0 +1,68 @@
+<?
+if ($contacts_id!="") $contacts_id=addslashes($contacts_id);
+else die("Error: No contacts specified!");
+$server_info=getone("select * from access_servers where name = 'jupiter'");
+$contact_info=getone("select * from contacts where contacts_id = '$contacts_id'");
+
+if ($verbose!="") $verbose=TRUE;
+else $verbose=FALSE;
+if ($noisy!="") $squelch_default=FALSE;
+else $squelch_default=TRUE;
+
+require('header.phtml');
+echo "<h2>Permissions summary for $contact_info->display_name</h2>";
+
+$shareres=@mysql_query("select * from access_jupiter_sharelist order by share_path");
+while ($sharerow=@mysql_fetch_object($shareres)) {
+	$squelch=$squelch_default;
+	$share_message="";
+	echo "<h3>$sharerow->share_path</h3>";
+	//tabledump("select * from access_jupiter_permissions where active = 'Y' and sharelist_id = '$sharerow->sharelist_id'");
+	$permsres=@mysql_query("select * from access_jupiter_permissions where active = 'Y' and sharelist_id = '$sharerow->sharelist_id' order by path");
+	
+	while ($permrow=@mysql_fetch_object($permsres)) {
+		//$ISMEMBER=FALSE;
+		if ($permrow->user_or_group=="user") {
+				//echo "this one is a user rule....<br>";
+				if ($permrow->uid==$contact_info->contacts_id) {
+					$ISMEMBER=TRUE;
+					//echo "HI, $permrow->uid is for tom abbot?";
+					}
+				else $ISMEMBER=FALSE;
+			} else {
+				if (getoneb("select * from access_servers_group_members where server_id = '$server_info->server_id' and group_name = '$permrow->group_name' and user_id = '$contact_info->contacts_id'")) $ISMEMBER=TRUE;
+				//tabledump("select * from access_servers_group_members where server_id = '$server_info->server_id' and group_name = '$permrow->group_name' and user_id = '$contact_info->contacts_id'");
+				else $ISMEMBER=FALSE;
+			}
+
+		if ($permrow->for_who=="everyone in") {
+			if ($ISMEMBER) $APPLIES=TRUE;
+			else $APPLIES=FALSE;
+			} else {
+			if ($ISMEMBER) $APPLIES=FALSE;
+			else $APPLIES=TRUE;
+			}
+		
+		
+		//if ($ISMEMBER) echo "is member<br>";
+		//if ($APPLIES) echo "applies $permrow->path<br>";
+		if ($APPLIES==TRUE) {
+			if ($permrow->user_or_group=="user") {
+				$target="$contact_info->display_name";
+				} else {
+				$target="$permrow->group_name";
+				}
+			if ($permrow->this_dir_only=='Y') $recursive=" <i>(Not recursive)</i> ";
+			else $recursive="";
+			if ($permrow->path=="") $permrow->path="/";
+			//if (($permrow->path=="/") && ($APPLIES==true) && ($permrow->access_action=="grant")) $squelch=FALSE;
+			if (($APPLIES==true) && ($permrow->access_action=="grant")) $squelch=FALSE;
+			if ($verbose) $share_message=$share_message . "<li>$permrow->access_action $permrow->access_type for $permrow->for_who $permrow->user_or_group $target to: $permrow->path$recursive</li>";
+			else $share_message=$share_message . "<li>$permrow->access_action $permrow->access_type to: $permrow->path$recursive</li>";
+			}
+		
+		}
+	if (!($squelch)) echo "<ul>$share_message</ul>";
+	else echo "<ul><li>deny read + write to :/</li></ul>";
+	}
+?>

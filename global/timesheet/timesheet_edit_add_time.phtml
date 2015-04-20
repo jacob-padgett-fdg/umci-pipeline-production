@@ -1,0 +1,142 @@
+<?
+require("timesheet_header.phtml");
+require("timesheet_include.inc");
+
+$submit_text="Add";
+if ($timesheet_time_id=="") {
+	$timesheet_time=new bsclass;
+	$timesheet_time->workday=escapeshellcmd($workday);
+	$new=1;
+	}else{
+	$new=0;
+	if ($timesheet_time_id!="reentry") {
+		$timesheet_time_id=escapeshellcmd($timesheet_time_id);
+		$timesheet_time=getone("select * from timesheet_time where timesheet_time_id = '$timesheet_time_id'");
+		$timesheet_time->workday=invali_date($timesheet_time->workday);
+		$submit_text="Change";
+		} else {
+		$timesheet_time_id="";
+		}
+	$earnings_code=$timesheet_time->earnings_code;
+	}
+
+if ($earnings_code=="") $ec_checked_st="checked";
+if ($earnings_code=="1") $ec_checked_st="checked";
+if ($earnings_code=="2") $ec_checked_ot="checked";
+if ($earnings_code=="3") $ec_checked_dt="checked";
+
+
+if ($timesheet_time_id=="") {
+	echo "<a href=javascript:expenses();><font color=blue>Mileage/Subsistence/Parking/Travel</font></a><br>";
+	if ($current_user->timesheet_allow_ap_entry=='Y') {
+		echo "
+		<a href=$pagename?mode=timesheet_edit&timesheet_mode_new=timesheet_generate_ap_time><font color=blue>Generate AP Time Entries</font></a><br>
+		";
+		}
+	}
+	
+echo"
+<form name=add_time method=post action=$pagename>
+<input type=hidden name=mode value=timesheet_edit_add_time_verify>
+<input type=hidden name=timesheet_time_id value=\"$timesheet_time_id\">
+<input type=hidden name=return_to value=\"$return_to\">
+
+<table border=1>
+	<tr><td colspan=3 bgcolor=#dddddd align=center>
+		<b>$submit_text time for $timesheet_time->workday
+		<input type=hidden name=workday value=\"$timesheet_time->workday\">
+		for $current_user->first_name&nbsp;$current_user->last_name
+</b></td></tr>
+
+<tr><td colspan=3>
+	Employee&nbsp;Number:&nbsp;$current_user->employee_num
+	<input type=hidden name=employee_num value=\"$current_user->employee_num\">
+
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shift:&nbsp;
+	<select name=shift tabindex=1>
+	$timesheet_time->shift_last
+	";if ($timesheet_time_id!="") echo "<option>$timesheet_time->shift</option>";echo"
+	<option>1</option>
+	<option>2</option>
+	<option>3</option>
+	</select>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type=submit value=\"$submit_text\" tabindex=5>
+</td></tr>
+
+<tr><td valign=top>
+<a href=javascript:job_help();><font color=black>
+Job&nbsp;Number:</font></a><br>
+<input type=text size=13 name=job_num value=\"$timesheet_time->job_num\" tabindex=2><br>
+";recent_jobs($current_user->contacts_id);echo"
+</td><td valign=top>
+<a href=javascript:phase_help();><font color=black>Phase:</font></a><br>
+<input type=text size=13 name=phase value=\"$timesheet_time->phase\" tabindex=3><br>
+";recent_phases($current_user->contacts_id);echo"
+</td><td valign=top>
+Hours:<br>
+<input type=text size=5 name=hours value=\"$timesheet_time->hours\" tabindex=4><br>
+ST <input type=radio name=earnings_code value=1 $ec_checked_st><br>
+OT <input type=radio name=earnings_code value=2 $ec_checked_ot><br>
+DT <input type=radio name=earnings_code value=3 $ec_checked_dt><br>
+
+</td></tr>
+
+<tr><td colspan=3>
+	Notes: <br>
+	<textarea name=comments cols=40 rows=5 scrollbars=no tabindex=6>$timesheet_time->comments</textarea>
+</td></tr>
+
+<tr><td colspan=2>";
+	$tmp=date_info($timesheet_time->workday);
+	if (($tmp->day_of_week_num==1)&&($timesheet_time_id=="")) echo "Add entry for entire week: <input type=checkbox name=full_week>";echo "
+</td><td align=right>
+	<input type=submit value=\"$submit_text\">
+</td></tr>
+
+</form>
+</table>
+
+<script>
+
+function phase_help() {
+	if (document.add_time.job_num.value=='') {
+		alert('Error: Please enter a job number first');
+		} else {
+		open ('$pagename?mode=timesheet_phase_popup&job_num=' + document.add_time.job_num.value,'timesheet_popup','height=400,width=500,scrollbars=yes,resizable=yes');
+		}
+	}
+
+function job_help() {
+	open('$pagename?mode=timesheet_job_popup','timesheet_popup',
+	'height=400,width=400,scrollbars=yes,resizable=yes');
+	}
+
+function expenses() {
+	open('$pagename?mode=timesheet_edit_expenses_popup&workday=$timesheet_time->workday','spt_popup','height=400,width=400,scrollbars=yes,resizable=yes');
+	}
+function spt() {
+	open('$pagename?mode=timesheet_edit_add_spt_popup&workday=$timesheet_time->workday','spt_popup','height=400,width=400,scrollbars=yes,resizable=yes');
+	}
+
+function mileage() {
+	open('$pagename?mode=timesheet_edit_add_mileage_popup&workday=$timesheet_time->workday','spt_popup','height=400,width=400,scrollbars=yes,resizable=yes');
+	}
+document.add_time.job_num.focus();
+</script>
+";
+
+if ($timesheet_time_id!="") {
+	echo "
+	<script>
+	function dte(ts_id) {
+	if (confirm('Are you sure you want to delete this entry?')) document.location='$pagename?mode=timesheet_edit_time_remove&timesheet_time_id=' + ts_id;
+	}
+	</script>
+	<a href=javascript:dte($timesheet_time_id);><b>DELETE THIS ENTRY</b></a>
+	";
+	
+	
+	}
+
+?>

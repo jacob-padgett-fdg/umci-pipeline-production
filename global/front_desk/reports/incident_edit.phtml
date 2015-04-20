@@ -1,0 +1,96 @@
+<?
+set_time_limit("900");
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+include("lam_lib.inc");
+mh_navs_header();
+
+if ($incident_id!="") $incident_id=addslashes($incident_id);
+
+$incident_info=getoneb("select * from front_desk_reports_safety_incidents where incident_id = '$incident_id'");
+//echo "<hr>select * front_desk_reports_safety_incidents where incident_id = '$incident_id'<hr>";
+
+echo "
+
+
+<a href=$pagename?mode=$mode&report_name=incidents_list><font color=blue>Back to incident list</font></a><br>
+
+
+<form name=incident_edit method=post action=\"$pagename\">
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=report_name value=\"incident_submit\">
+<input type=hidden name=incident_id value=\"$incident_id\">
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td>
+	Employee
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y'",$incident_info->employee_id,"employee_id");echo "
+</td></tr>
+
+<tr><td>
+	Incident Type
+</td><td>
+	<select name=incident_type>
+	<option>$incident_info->incident_type</option>
+	<option>First Aid UMC</option>
+	<option>First Aid Reportable</option>
+	<option>Recordable Time Loss</option>
+	<option>Recordable Light Duty</option>
+	<option>Recordable Medical Only</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Date
+</td><td>
+	";datebox2($incident_info->work_day,'incident_edit.work_day');echo"
+</td></tr>
+
+<tr><td valign=top>
+	Description
+</td><td>
+	<textarea rows=5 cols=40 name=description>$incident_info->description</textarea>
+</td></tr>
+
+<tr><td valign=top>
+	Direct Foreman
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y'",$incident_info->foreman_id,"foreman_id");echo "
+</td></tr>
+</form>
+
+<tr><td colspan=2 align=center>
+	<input type=submit value=Save>
+</td></tr>
+
+<tr><td valign=top>
+	Add Foreman
+</td><td>
+	<form name=add_foreman method=post action=$pagename>
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=incident_foreman_add>
+	<input type=hidden name=main_incident_id value=\"$incident_info->incident_id\">
+	";contactsbox("select * from contacts where umc_emp = 'Y'","","new_foreman","opener.document.add_foreman.submit()");echo "
+	</form>
+	<table border=0 cellspacing=0 cellpadding=5>";
+	$fmnres=@mysql_query("select * from front_desk_reports_safety_incidents where 
+		employee_id = '$incident_info->employee_id' and 
+		foreman_id != '$incident_info->foreman_id' and
+		incident_type = '$incident_info->incident_type' and
+		work_day = '$incident_info->work_day' and 
+		week_ending = '$incident_info->week_ending' and 
+		description = '" . addslashes($incident_info->description) . "'");
+	while ($fres=@mysql_fetch_object($fmnres)) {
+		$f=getoneb("select * from contacts where contacts_id = '$fres->foreman_id'");
+		echo "<tr><td>$f->display_name</td><td><a href=$pagename?mode=$mode&report_name=incident_delete&incident_id=$fres->incident_id&came_from=$incident_info->incident_id><font color=blue><i>delete</i></font></a></td></tr>";
+		}
+	echo "
+</td></tr>
+
+
+</table>
+";
+mh_navs_footer();
+?>

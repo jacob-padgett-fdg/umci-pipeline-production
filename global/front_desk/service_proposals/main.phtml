@@ -1,0 +1,37 @@
+<?
+//require_once("querylib.inc");
+echo "
+<html>
+<head><title>Service Proposals Log</title></head>
+<body bgcolor=white>
+<center><h2>Service Proposals</h2></center><hr>
+
+<a href=$pagename?mode=proposal_lists><font color=blue>Proposal Lists</a></font><p>
+
+<a href=$pagename?mode=proposal_edit><font color=blue>Create New Proposal</a></font><p>
+";
+if ($adminuser) {
+	echo "
+	<hr>
+	<a href=$pagename?mode=initials_edit_list><font color=blue>Initials Maintenance</font></a><p>
+	<a href=$pagename?mode=proposals_status_maint><font color=blue>Proposal Status List Maintenance</font></a><p>
+	<a href=$pagename?mode=proposals_type_maint><font color=blue>Proposal Types List Maintenance</font></a><p>
+	<a href=$pagename?mode=fx_customer_list><font color=blue>Download FX Customer List</font></a><p>
+	";
+	
+	}
+	
+
+
+
+
+
+
+echo"
+<a href=$pagename?mode=main&kill_session_info=1><font color=blue>LOG OUT</font></a><br>
+<a href=$pagename_up><font color=blue>Exit</font></a><br>
+
+</body></html>
+";
+require("footer.phtml");
+?>

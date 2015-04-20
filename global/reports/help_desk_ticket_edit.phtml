@@ -1,0 +1,85 @@
+<?
+$ticket_info=getoneb("select * from front_desk_help_desk_tickets where ticket_id = '" . mysql_real_escape_string($ticket_id) . "'");
+if ($ticket_info->ticket_root_id=="") $ticket_info->ticket_root_id=$ticket_root_id;
+if ($ticket_info->parent_ticket_id=="") {
+	if ($parent_ticket_id=="") $ticket_info->parent_ticket_id=$ticket_root_id;
+	else $ticket_info->parent_ticket_id=mysql_real_escape_string($parent_ticket_id);
+	$parent_ticket_id=$ticket_info->parent_ticket_id;
+	}
+echo "
+<form name=ticket_edit method=post action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=report_name value=$report_name>
+<input type=hidden name=report_mode value=ticket_submit>
+<input type=hidden name=ticket_root_id value=\"$ticket_info->ticket_root_id\">
+<input type=hidden name=parent_ticket_id value=\"$ticket_info->parent_ticket_id\">
+
+<table class=ticklist border=1 cellspacing=0 cellpadding=1>
+<tr bgcolor=$fd_color_4><td colspan=2 align=center>
+	<font size=+2><b>Edit ticket</b></font>
+</td></tr>
+
+<tr><td>
+	Ticket ID
+</td><td>
+	";
+	if ($ticket_info->duplicate_count!="") echo "<div style=\"float: right;\">Duplicated $ticket_info->duplicate_count times.</div>";
+	echo "$ticket_info->ticket_id
+</td></tr>
+
+<tr><td>
+	Subject
+</td><td>
+	<input type=text name=subject value=\"$ticket_info->subject\">
+</td></tr>
+
+<tr><td>
+	Details
+</td><td>
+	<textarea name=description rows=5 cols=50>$ticket_info->description</textarea>
+</td></tr>
+	
+<tr><td>
+	Requested Due Date
+</td><td>
+	";
+	datebox($ticket_info->due_date_requested,"due_date_requested");
+	echo "
+</td></tr>
+
+<tr><td>
+	Due date
+</td><td>";
+if ($adminuser) {
+	datebox($ticket_info->due_date,"due_date");
+	} else { 
+	echo invali_date($ticket_info->due_date);
+	}
+echo "</td></tr>";
+
+
+if ($ticket_info->ticket_id>0) {
+echo "
+<tr><td>
+	Urgent
+</td><td>";
+if ($adminuser) {
+	 echo "<input type=checkbox name=urgent " . checkbreak($ticket_info->urgent) . ">";
+	} else { 
+	echo "$ticket_info->urgent";
+	}
+echo "</td></tr>";
+}
+
+
+
+echo "
+<tr><td colspan=2>
+	<div style=\"float: left;\"><a href=$pagename?mode=$mode&report_name=$report_name><font color=blue>Cancel</font></a></div>
+	<div style=\"float: right;\"><font onclick=\"document.ticket_edit.submit()\" color=blue style=\"text-decoration: underline; cursor: hand; cursor: pointer;\">Save</font></div>
+</td></tr>
+	
+
+
+</form>";
+?>

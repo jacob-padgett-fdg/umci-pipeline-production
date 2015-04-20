@@ -1,0 +1,14 @@
+<?
+
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+
+$query="update svc_agreement_index set status = 'Dead' where agreement_id = '$agreement_info->agreement_id'";
+@mysql_query($query);
+if ($agreement_info->svc_proposals_id > 0) {
+	sync_with_proplog($agreement_info->agreement_id);
+	//die ("just ran sync");
+	}
+forward("svc_agreement_edit&agreement_id=$agreement_info->agreement_id");
+
+?>

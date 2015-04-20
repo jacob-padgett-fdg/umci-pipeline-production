@@ -1,0 +1,73 @@
+<?
+
+if ($show_posted_batches=='Y') {
+	$posted_qry=" ";
+	$title_text="Showing All Batches";
+	$show_posted_link="<a href=$pagename?mode=$mode><font color=blue><i>Hide Posted</i></font></a>";
+	} else {
+	$posted_qry=" and status = 'sent' ";
+	$title_text="Unposted Batches";
+	$show_posted_link="<a href=$pagename?mode=$mode&show_posted_batches=Y><font color=blue><i>Show Posted Batches</i></font></a>";
+	}
+
+
+$query="select *,sum(1) as check_count from positivepay_trans_history left join positivepay_accounts on (positivepay_accounts.account_number = positivepay_trans_history.account_number) where 1 = 1 $posted_qry group by batch_number order by batch_number";
+//tabledump($query);
+echo "
+<a href=$pagename><font color=blue>Main Menu</font></a><p>
+$show_posted_link
+<table border=1 cellspacing=0 cellpadding=3>
+<tr><td colspan=9 bgcolor=$umc_standard_blue align=center><b>$title_text</b></td></tr>
+
+<tr><td>
+	<b>Batch #</b>
+</td><td>
+	<b>Output</b>
+</td><td>
+	<b>Status</b>
+</td><td>
+	<b>Items</b>
+</td><td>
+	<b>Run Date</b>
+</td><td>
+	<b>Post Date</b>
+</td><td colspan=3 align=center>
+	<b>Actions</b>
+</td></tr>
+";
+
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$row->run_date=invali_date($row->run_date);
+	$row->post_date=invali_date($row->post_date);
+	echo "<tr><td>
+			$row->batch_number&nbsp;
+		</td><td>
+			$row->account_output_plugin
+		</td><td>
+			$row->status
+		</td><td>
+			$row->check_count
+		</td><td>
+			$row->run_date&nbsp;
+		</td><td>
+			$row->post_date&nbsp;
+		</td><td>";
+			if ($row->status=='sent') 
+				echo "<a href=$pagename?mode=batch_post&batch_number=$row->batch_number><font color=blue><i>Post</i></font></a>";
+			else echo "&nbsp;";
+		echo "
+		</td><td>";
+			if ($row->status!='posted') 
+				echo "<a href=$pagename?mode=batch_delete&batch_number=$row->batch_number><font color=blue><i>Delete</i></font></a>";
+			else echo "&nbsp;";
+		echo "
+		</td><td>
+			";
+			$batch_hist_info=getoneb("select * from positivepay_batch_history where batch_number = '$row->batch_number'");
+			if ($batch_hist_info) echo "<a href=$pagename?mode=view_batch&batch_id=$batch_hist_info->batch_id><font color=blue><i>View</i></font></a>";
+			echo"
+		</td></tr>";
+	}
+echo "</table>";
+?>

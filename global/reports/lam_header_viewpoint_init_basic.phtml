@@ -1,0 +1,57 @@
+<?
+	
+	//@mysql_query("delete from lam where lam_id != '$shepherd_lam->lam_id' and  lamchops_id = '$lamchop_info->lamchops_id'");
+	$employee_group=1;
+	//include("viewpoint_connect_ro.phtml");
+	//include_once("viewpoint_libs.inc");
+
+	$payroll_closed=ms_getoneb("select * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = $employee_group and PREndDate = '$week_info->week_end_slashes' and Status = 1");
+
+	if (!($payroll_closed)) {
+		echo "<h3><font color=red>Warning! It looks like payroll for this week is still open and subject to change!!!! This list may be incomplete</font></h3>";
+		}
+	// Cycle through the list of whatever viewpoint has for the week...
+	$query="select Employee,sum(Hours) as JobHours, Job from PRTH with (NOLOCK)
+	where (PREndDate = '$week_info->week_end_slashes') and 
+	(Job is not null) and (PRCo =1) and Hours > 0
+	group by Employee,Job
+	order by Employee,sum(Hours) desc";
+
+
+	$last_emp='0';
+	$res=@mssql_query($query);
+	while ($row=@mssql_fetch_object($res)) {
+		if ($last_emp==$row->Employee) continue;
+		//if ($row->JobHours <2) continue;
+		$emp_info=getoneb("select * from contacts where employee_num = '$row->Employee'");
+		$last_emp=$row->Employee;
+		$job=substr($row->Job,0,5);
+		$hours=round($row->JobHours);
+		$craft=$emp_info->employee_trade;
+		$class_text=$emp_info->employee_class;
+		$insqry="insert into vp_locator_cache set
+						employee_num = '$row->Employee',
+						hours = '$hours',
+						job = '$job',
+						week_ending = '$week_info->week_end_mysql',
+						craft_text = '$craft', 
+						class_text = '$class_text'";
+		$insres=@mysql_query($insqry);
+		if (!($insres)) die("foo inserting data");
+		
+		$job=ereg_replace("^0","",$job);
+		$jobinfo=getoneb("select * from jobinfo where contract_num = '$job'");
+		
+		if ($emp_info->employee_group!=$employee_group) continue;
+		//if (!($jobinfo)) $jobinfo->jobinfo_id=999999;
+		if (!($jobinfo)) $jobinfo->jobinfo_id="251";
+		if ($emp_info->contacts_id!=$lamchop_info->shepherd_id) {
+			$res2=@mysql_query("insert into lam set parent_lam_id = '$shepherd_lam->lam_id', jobinfo_id = '$jobinfo->jobinfo_id',employee_id = '$emp_info->contacts_id',lamchops_id ='$lamchop_info->lamchops_id'");
+			//if (!($res2)) echo "ERROR:<br>";
+			//echo ("<hr>insert into lam set parent_lam_id = '$shepherd_lam->lam_id', jobinfo_id = '$jobinfo->jobinfo_id',employee_id = '$emp_info->contacts_id',lamchops_id ='$lamchop_info->lamchops_id'");
+			}
+		
+		}
+	forward("$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id");
+	exit;
+?>

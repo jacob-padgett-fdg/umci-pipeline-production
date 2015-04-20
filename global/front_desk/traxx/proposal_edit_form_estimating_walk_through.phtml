@@ -1,0 +1,56 @@
+<?
+echo "
+
+<script>
+function focus_walk_through_check(reset_field) {
+	if(!(document.bidlist_edit.walk_through.checked)) {
+		document.bidlist_edit.walk_through.focus();
+		if (reset_field!=\"\") setTimeout(\"document.bidlist_edit.\" + reset_field + \".checked=false\",120);
+		}
+	}
+
+function walk_through_check(reset_field) {
+	if(document.bidlist_edit.walk_through.value!='Y') {
+		document.bidlist_edit.walk_through_remind_lead.disabled=true;
+		document.bidlist_edit.walk_through_employee.disabled=true;
+		} else { 
+		document.bidlist_edit.walk_through_remind_lead.disabled=false;
+		document.bidlist_edit.walk_through_employee.disabled=false;
+		}
+	}
+</script>
+
+<input type=hidden name=proposal_form_estimating_walk_through value=true>
+<table border=1 width=100% cellpadding=1 cellspacing=0 class=\"tableobj\">
+<tr><td bgcolor=$table_dark colspan=2>
+	<b>Job Walk Required</b>&nbsp;";ynmselect("walk_through",$bid_info->walk_through,"?","walk_through_check();");echo"
+</td></tr>
+
+<tr><th>
+	<font size=-2>Remind<br>Lead</font></th><td>";ynmselect("walk_through_remind_lead",$bid_info->walk_through_remind_lead,"?","walk_through_check();");echo"
+</td></tr>
+
+<tr><th>
+	Who:
+</th><td>
+	";contactbox("select contacts_id as walk_through_employee,left(display_name,15) as display_name from contacts where umc_emp = 'Y' and current = 'Y' and employee_group = '3' order by alphasort",$bid_info->walk_through_employee,"","\" onfocus=\"walk_through_check()");echo "
+</td></tr>
+
+<tr><th>
+	Date:&nbsp;
+</th><td>
+	";datebox($bid_info->walk_through_date,"bidlist_edit.walk_through_date","","");echo"
+</td></tr>
+
+<tr><th>
+	Time:&nbsp;
+</th><td>
+	<input type=text name=walk_through_time value=\"$bid_info->walk_through_time\" size=10>
+</td></tr>
+
+</table>
+<script>
+walk_through_check();
+</script>
+";
+?>

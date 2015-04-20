@@ -1,0 +1,46 @@
+<?
+
+$description=addslashes($description);
+$file_group_id=addslashes($file_group_id);
+
+if ($file_cabinet_id!="") {
+  $file_cabinet_id=addslashes($file_cabinet_id);
+  $file_cabinet_info=getoneb("select * from file_cabinet where file_cabinet_id = '$file_cabinet_id'");
+  $tree_id=$file_cabinet_info->tree_id;
+
+  $tree_info=getoneb("select * from file_cabinet_tree where tree_id = '$tree_id'");
+  $query="update file_cabinet set 
+  description = '$description',
+  file_group_id = '$file_group_id'
+  where file_cabinet_id = '$file_cabinet_info->file_cabinet_id'
+  ";
+  } else {
+  $tree_id=addslashes($tree_id);
+  $tree_info=getoneb("select * from file_cabinet_tree where tree_id = '$tree_id'");
+  $file_num=getoneb("select max(file_num) as largest from file_cabinet where tree_id = '$tree_info->tree_id' limit 1");
+ // echo "<hr>" . print_r($file_num) . "<hr>";die();
+  if ($file_num->largest=="") {
+    $new_file_num=1;
+    } else {
+    $new_file_num=$file_num->largest + 1;
+    }
+  $query="insert into file_cabinet set 
+  description = '$description',
+  file_group_id = '$file_group_id',
+  folder_name = '$tree_info->folder_name',
+  tree_id = '$tree_info->tree_id',
+  jobinfo_id = '$tree_info->jobinfo_id',
+  file_num = '$new_file_num',
+  create_date = now(),
+  creator = '$global_user_id',
+  inbound_attached = 'Y'";
+  }
+
+
+$res=mysql_query($query);
+if (!($res)) die("application error: query failed<hr>$query");
+
+update_directory_counts($tree_info->tree_id);
+forward("main&current_folder=$tree_id");
+
+?>

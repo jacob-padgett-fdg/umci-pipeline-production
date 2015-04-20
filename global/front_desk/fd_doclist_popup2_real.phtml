@@ -1,0 +1,130 @@
+<?
+include("../oiclog-devel/local.inc");
+ajax_load();
+$options=unserialize(base64_decode($options_encoded));
+$doc_info=getoneb("select * from documents where doc_id = '" . $options['doc_id'] . "'");
+$doc_id=$doc_info->doc_id;
+
+//$query="select * from documents where jobinfo_id = '$doc_info->jobinfo_id' order by section,doc_type,sort_rank,app_reference + 0 ASC,app_reference";
+$where_add=fd_doc_box_default_where($options);
+$query="select * from documents where jobinfo_id = '$doc_info->jobinfo_id' $where_add order by doc_type,section,sort_rank,app_reference + 0 ASC,app_reference";
+$res=@mysql_query($query);
+
+//tabledump($query);
+require('header.phtml');
+echo "
+<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td align=right><a href=javascript:self.close();><font color=blue>Done</font></a></td></tr></table>
+
+<style>
+tr {
+  cursor: hand;
+  cursor: pointer;
+  background-color: white;
+  h: expression(	onmouseover=new Function(\"this.style.backgroundColor='#dddddd';\"),
+					onmouseout=new Function(\"this.style.backgroundColor='#ffffff';\"));
+  }
+tr:hover {
+  background-color: #dddddd;
+  cursor: hand;
+  cursor: pointer;
+  }
+</style>
+
+<script>
+var update_required=0;
+";
+
+if ($options['onchange']!='') {
+	/*echo "
+	function ajax_trigger() {
+		if (update_required==0) {
+			opener.document.getElementById('" . $options['list_id'] . "').innerHTML=document.getElementById('doc_list_object').innerHTML;
+			return 0;
+			} else {
+			update_required=0;
+			ajaxManager('load_page','$pagename?mode=short_doc_list_with_attachments&options_encoded=$options_encoded','doc_list_object');
+			}
+		}
+	";
+	*/
+	echo "
+	function ajax_trigger() {
+		obj=opener.document.getElementById('" . $options['list_id'] . "');
+		obj.value=obj.value + 1;
+		}
+	";
+	} else {
+	echo "
+	function ajax_trigger() {
+		if (update_required==0) {
+			opener.document.getElementById('" . $options['list_id'] . "').innerHTML=document.getElementById('doc_list_object').innerHTML;
+			return 0;
+			} else {
+			update_required=0;
+			ajaxManager('load_page','$pagename?mode=short_doc_list_with_attachments&options_encoded=$options_encoded','doc_list_object');
+			}
+		}
+	";
+	
+	}
+
+if ($global_browser=='IE') {
+	/////////////////////////////////////////////////
+	/////////////////////////////////////////////////
+	// IE Version (Sucks donkey nuts)
+	/////////////////////////////////////////////////
+	/////////////////////////////////////////////////
+	echo "
+	function t (obj) {
+		row_id=obj.id;
+		row_id='1_' + row_id;
+		document.getElementById(row_id).innerHTML='<i><font size=-1>Updating...</font></i>';
+		update_required=1;
+		ajaxManager('load_page','$pagename?mode=fd_doclist2_doc_row&toggle=Y&options_encoded=$options_encoded&row_doc_id=' + obj.id,row_id);
+		}";
+	} else {
+	/////////////////////////////////////////////////
+	/////////////////////////////////////////////////
+	// Firefox & non-sucky browsers version
+	/////////////////////////////////////////////////
+	/////////////////////////////////////////////////
+	echo "
+	function t (obj) {
+		row_id=obj.id;
+		document.getElementById(row_id).innerHTML='<td bgcolor=yellow colspan=2>&nbsp;</td>';
+		update_required=1;
+		ajaxManager('load_page','$pagename?mode=fd_doclist2_doc_row&toggle=Y&options_encoded=$options_encoded&row_doc_id=' + row_id,row_id);
+		}";
+	}
+echo "</script>
+
+<div style=\"display: none;\" id=\"doc_list_object\"></div>
+";
+
+$last_section="";
+$last_type=="";
+$first_table='Y';
+while ($row=@mysql_fetch_object($res)) {
+	if (($last_section != $row->section)||($last_type != $row->doc_type)) {
+		$section_text=$row->section;
+		$last_section=$row->section;
+		$last_type=$row->doc_type;
+		if ($section_text=='default') $section_text='';
+		if ($first_table=='Y') $first_table='N';
+		else echo "</table>";
+		
+		$print_doc_type=$row->doc_type;
+		if ($print_doc_type=='rfi') $print_doc_type='umcrfi';
+
+		echo "<table width=100% id=\"$row->section$row->doc_type\" cellspacing=0 cellpadding=2>
+		<tr><td colspan=2 align=center bgcolor=\"$fd_color_3\"><font size=+1><b>$print_doc_type&nbsp;$section_text</td></tr>";
+		}
+	//$row_doc_id=$row->doc_id;
+	echo "<tr onclick=\"t(this);\" id=\"$row->doc_id\"'>";
+	fd_doclist_doc_row($options,$row);
+	//include("fd_doclist_doc_row.phtml");
+	echo "</tr>";
+	}
+echo "</table>";
+
+?>

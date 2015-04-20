@@ -1,0 +1,204 @@
+<?
+require('header.phtml');
+require_once('viewpoint_libs.inc');
+fd_navs_header();
+
+include("main_tabs.phtml");
+
+echo "
+
+<style>
+
+td.calday {
+	width: 150px;
+	height: 150px;
+	vertical-align: top;
+	}
+a.calday:link {
+	color: black;
+	font-weight: bold;
+	text-decoration: none;
+	}
+div.cev {
+	cursor: hand;
+	cursor: pointer;
+	background: $fd_color_4;
+	border: .5px solid black;
+	line-height: 1;
+	font-size: x-small;
+	}
+</style>
+
+<script>
+function ec(calendar_id,jobinfo_id) {
+	open('$pagename?mode=calendar_edit&calendar_id=' + calendar_id + 'cal_jobinfo_id=' + jobinfo_id,'cal_edit' + calendar_id,'width=500,height=400');
+	}
+
+function nc(caldate,jobinfo_id) {
+	open('$pagename?mode=calendar_edit&cal_jobinfo_id=' + jobinfo_id + '&start_date=' + caldate,'cal_edit_new','width=500,height=400');
+	}
+
+
+
+</script>
+
+
+
+
+
+
+";
+
+
+function print_date_contents($date_mysql,$m) {
+	global $fd_color_1,$fd_color_2,$fd_color_3,$fd_color_4,$global_jobinfo_id,$global_user_id;
+	$ds=strtotime($date_mysql);
+	$month=date('m',$ds);
+	$today=date('Y/m/d');
+	if ($month==$m) {
+		$bgcolor="#ffffff";
+		} else {
+		$bgcolor=$fd_color_2;
+		}
+	$dom_bg_color=$fd_color_1;
+	if ($date_mysql==$today) {
+		$dom_bg_color=$fd_color_3;
+		}
+	$dom=date("d",$ds);
+	echo "<td bgcolor=\"$bgcolor\" class=\"calday\"><span style=\"border-right: 1px solid black; border-bottom: 1px solid black; background: $dom_bg_color;\"><a class=calday href=javascript:nc('$date_mysql',$global_jobinfo_id)>$dom</a></span>
+	<div style=\"height: 120px; overflow: auto; padding: 2px;\">";
+	
+	$events_query="
+	select * from front_desk_calendar where
+	
+	( 
+	(start_date = '$date_mysql' or end_date = '$date_mysql' or (start_date < '$date_mysql' and end_date > '$date_mysql')) and 
+	(jobinfo_id = '$global_jobinfo_id' and shared = 'Y')
+	) 
+	
+	or 
+	
+	(
+	(start_date = '$date_mysql' or end_date = '$date_mysql' or (start_date < '$date_mysql' and end_date > '$date_mysql')) and 
+	shared = 'N' and owner_id = '$global_user_id' and (jobinfo_id = '$global_jobinfo_id' or jobinfo_id = 0)
+	)
+	order by start_date, start_time, calendar_id
+	";
+	
+	
+	$events_res=@mysql_query($events_query);
+	$event_count=@mysql_num_rows($events_res);
+	while ($event=@mysql_fetch_object($events_res)) {
+		$sstrting="";
+		if (($event->start_time!="00:00:00")&&((eregi_replace("-","/",$event->start_date))==$date_mysql)) {
+			$st=explode(":",$event->start_time);
+			$h=$st[0];
+			$m=$st[1];
+			$sstring="$h";
+			if ($m>0) $sstring=$sstring . ":$m";
+			if (($event->end_time!="00:00:00")&&((eregi_replace("-","/",$event->end_date))==$date_mysql)||($event->end_date=="0000-00-00")) {
+				//die("shit");
+				$et=explode(":",$event->end_time);
+				$h=$et[0];
+				$m=$et[1];
+				$sstring="$sstring-$h";
+				if ($m>0) $sstring=$sstring . ":$m";
+				
+				}
+			
+			$sstring=$sstring . "<br>";
+			}
+		$category_text="";
+		if ($event->category!="") $category_text=$event->category . ":&nbsp;";
+		echo "<div class=cev onclick=\"ec($event->calendar_id,$global_jobinfo_id)\">$category_text$sstring$event->title</div>";
+		}
+	
+	
+	
+	//echo "<p>$event_count</font></div>
+	
+	
+	
+	echo "</td>";
+	
+	
+	
+	}
+
+
+if ($project_calendar_month=="") {
+	session_register('project_calendar_month');
+	$project_calendar_month=date('Y-m');
+	}
+if ($project_calendar_month_set!="") $project_calendar_month=$project_calendar_month_set;
+if ($project_calendar_show_date!="") $project_calendar_month=date('Y-m',strtotime(invali_date($project_calendar_show_date)));
+if ($project_calendar_month=="") die("huh.. how the heck did we get here without a month set!?!?!?!?!");
+
+
+$month_parts=split("[-/]",$project_calendar_month);
+//echo "<pre>";print_r($month_parts);echo "</pre>";
+
+$year=$month_parts[0];
+$month=$month_parts[1];
+if (($year > 2050) ||($year < 1980)) $year=date('Y');
+if (($month > 12) ||($month < 1)) $month=date('m');
+
+// Work out first day on calendar
+$fdom=strtotime("$month/01/$year"); // First day of month (timestamp)
+$fdom_down=date('w',$fdom); // first day of month, day of week number
+$fdoc_mysql=date('Y/m/d',strtotime("-$fdom_down days",$fdom)); // first day of calendar, mysql
+// Work out last day on calendar
+//$ldom=strtotime("-1 day",strtotime("+1 month",strtotime("$month/01/$year")));
+$ldom=strtotime("-1 day",strtotime("+1 month",$fdom));
+$ldom_down=date('w',$ldom); // last day of month, day of week number
+$extra=6 - $ldom_down;
+$ldoc_mysql=date('Y/m/d',strtotime("+$extra days",$ldom));
+// Other date stuff
+$month_name=date('F',$fdom);
+$next_month=date('Y/m',strtotime("next month",$fdom));
+$last_month=date('Y/m',strtotime("last month",$fdom));
+
+//echo "fdom: $fdom<br>ldom: $ldom<br>fdoc_mysql: $fdoc_mysql<br>ldoc_mysql: $ldoc_mysql<br>";
+
+
+
+$now_mysql=$fdoc_mysql;
+echo "<table border=1 cellspacing=0 cellpadding=0>
+<tr bgcolor=$fd_color_4><td colspan=7 align=center>
+<div onclick=\"document.location='$pagename?mode=$mode&project_calendar_month_set=$last_month'\" style=\"cursor: hand; cursor: pointer; padding: 5px; float: left; background: $fd_color_3;\">&lt;</div>
+<div onclick=\"document.location='$pagename?mode=$mode&project_calendar_month_set=$next_month'\" style=\"cursor: hand; cursor: pointer; padding: 5px; float: right; background: $fd_color_3;\">&gt;</div>
+<b>$month_name $year</b></td></tr>
+";
+while ("$now_mysql"<="$ldoc_mysql") {
+	$now=strtotime($now_mysql);
+	$dow_num=date('w',$now);
+	if ($dow_num==0) echo "<tr>";
+	
+	print_date_contents($now_mysql,$month);
+	
+	if ($dow_num==6) echo "</tr>";
+	$now_mysql=date('Y/m/d',strtotime("+1 days",$now));
+	}
+
+
+
+/*
+echo "
+fdom_dow: $fdom_dow<br>
+ldom_dow: $ldom_dow<br>
+ldom_num: $ldom_num<br>
+fdoc_mysql: $fdoc_mysql<br>
+";
+*/
+
+
+
+
+
+
+
+
+
+fd_navs_footer();
+
+?>

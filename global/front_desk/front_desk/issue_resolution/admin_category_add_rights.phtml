@@ -1,0 +1,30 @@
+<?
+if (!($issue_res_admin))
+	die("Error: you don't have permission to be here, so go away!!");
+
+if ( ($issue_res_user_type=="") || ($issue_res_contacts_id=="") )
+	die("Error: Invalid information passed to this function. Please contact your system administrator");
+
+
+$issue_res_user_type=escapeshellcmd($issue_res_user_type);
+$issue_res_contacts_id=escapeshellcmd($issue_res_contacts_id);
+
+$query="insert into issue_res_category_rights
+	(contacts_id,issue_res_category_id,user_type)
+	values
+	('$issue_res_contacts_id','$issue_res_category_id','$issue_res_user_type')";
+//echo "<hr>$query<hr>";exit;
+$res=@mysql_query($query);
+
+if (!($res))
+	die("Error: Insert into database failed! Please contact your system administrator!!!!!");
+
+forward('admin_category');	
+
+
+
+
+
+
+
+?>

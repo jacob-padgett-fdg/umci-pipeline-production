@@ -1,0 +1,88 @@
+<?
+require_once('querylib.inc');
+echo "<html><head><title>MIS Issues - Us vs them Maintenance</title></head>
+<body bgcolor=#ffffff>
+
+<a href=$pagename?mode=maintenance><font color=blue>Return to maintenance menus</font></a><p>
+
+<center><h2>MIS Issues - Us vs them Maintenance</h2></center>
+<hr>
+";
+
+$query="select * from contacts where current = 'Y' and umc_emp = 'Y' order by last_name,first_name";
+$res=@mysql_query($query);
+
+$us_select="<select name=us_id[] size=15 multiple onclick=clickus()>
+";
+
+$them_select="<select name=them_id[] size=15 multiple onclick=clickthem()>
+";
+
+
+while($row=@mysql_fetch_object($res)) {
+	
+	
+	if (getoneb("select * from mis_issue_uslist where contacts_id = '$row->contacts_id'")) {
+			$us_select="${us_select}<option value='$row->contacts_id'>$row->last_name, $row->first_name";
+		} else {
+			$them_select="${them_select}<option value='$row->contacts_id'>$row->last_name, $row->first_name";
+		}
+	}
+$us_select="$us_select </select>";
+$them_select="$them_select </select>";
+
+echo "
+<form name=usvsthem method=post action=$pagename>
+<input type=hidden name=mode value='uslist_submit'>
+<input type=hidden name=direction value=''>
+<input type=hidden name=usclicked value='N'>
+<input type=hidden name=themclicked value='N'>
+<table border=0 cellpadding=10 cellspacing=0>
+<tr bgcolor=#dddddd><td align=center>
+	US
+</td><td>
+	&nbsp;
+</td><td align=center>
+	THEM
+</td></tr>
+
+<tr><td>
+	$us_select
+</td><td valign=center>
+	<input type=button onclick=move_to_them(); value='-->'><br>
+	<input type=button onclick=move_to_us(); value='<--'>
+</td><td>
+	$them_select
+</td></tr>
+</table>
+<script>
+function clickus() {
+	document.usvsthem.usclicked.value='Y';
+	}
+function clickthem() {
+	document.usvsthem.themclicked.value='Y';
+	}
+function move_to_us() {
+	if (document.usvsthem.themclicked.value=='Y') {
+		document.usvsthem.direction.value='us';
+		document.usvsthem.submit();
+		} else {
+		alert('You have to pick someone first!');
+		}
+	}
+function move_to_them() {
+	if (document.usvsthem.usclicked.value=='Y') {
+		document.usvsthem.direction.value='them';
+		document.usvsthem.submit();
+		} else {
+		alert('You have to pick someone first!');
+		}
+	}
+</script>
+
+";
+
+
+
+
+?>

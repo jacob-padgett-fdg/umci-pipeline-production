@@ -1,0 +1,26 @@
+<?
+$tstid=escapeshellcmd($tstid);
+$query="select timesheet_time_id,employee_id,comments from timesheet_time where timesheet_time_id = '$tstid'";
+//tabledump($query);
+$note_info=getone($query);
+
+$note_info->comments=ereg_replace('',"<p>",$note_info->comments);
+
+if ($current_user_id != $note_info->employee_id) {
+	echo "Error: wrong user id! Are you trying to view someone else's comments! <p> OK, you're
+		probably just trying to have two different users' timesheets open at the same time. Don't do that.<p>
+		<a href=javascript:self.close();>CLOSE</a>";
+	echo "<hr>$current_user->contact_id / $note_info->employee_id <hr>";
+		exit;
+		}
+
+echo "<body bgcolor=white><a href=javascript:self.close();>CLOSE</a>
+<hr>$note_info->comments";
+
+
+
+
+
+
+
+?>

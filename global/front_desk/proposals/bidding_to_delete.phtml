@@ -1,0 +1,13 @@
+<?
+$bidding_to_id=escapeshellcmd($bidding_to_id);
+$query="delete from bidlist_bidding_to where bidding_to_id = '$bidding_to_id'";
+//echo "$query";
+@mysql_query($query);
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+?>

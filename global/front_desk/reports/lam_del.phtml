@@ -1,0 +1,6 @@
+<?
+include("lam_lib.inc");
+$lam_id=addslashes($lam_id);
+$lam_info=getoneb("select * from lam where lam_id = '$lam_id'");
+delete_lam($lam_id,$lam_info->lamchops_id);
+?>

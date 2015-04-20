@@ -1,0 +1,13 @@
+<?
+if ($batch_id=="") die("Application error. Invalid batch id (do not use batch number).");
+else $batch_id=addslashes($batch_id);
+$batch_info=getoneb("select * from positivepay_batch_history where batch_id = '$batch_id'");
+if (!($batch_info)) die("Application error. Invalid batch id (do not use batch number).");
+
+
+log_batch_activity($batch_info->batch_id,"File downloaded to browser");
+
+header('Content-Type: x-application/octet-stream');
+header("Content-Disposition: attachment; filename=\"positive_pay_batch_$batch_info->batch_number.txt\"");
+echo $batch_info->output_file;
+?>

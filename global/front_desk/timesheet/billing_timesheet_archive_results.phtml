@@ -1,0 +1,40 @@
+<?
+set_time_limit(600);
+
+require_once('timesheet_libs_pdf.inc');
+require_once('pdf_lib2.inc');
+if (!($billing_check)) die("ERROR: Security Violation! The authorities are being notified!");
+
+$week_ending=vali_date($week_ending);
+$job_info=is_viewpoint_job($job_num);
+if ($suppress_other_jobs=='on') $hide_others="true";
+else $hide_others="false";
+
+function print_billing_batch_job ($pdf,$job_info,$week_ending,$hide_others) {
+	$query="select * from timesheet_time,timesheet_index where timesheet_time.timesheet_id = timesheet_index.timesheet_id and timesheet_time.week_ending = '$week_ending' and job_num like '$job_info->job%' and status = 'posted' group by timesheet_time.timesheet_id order by timesheet_index.employee_num";
+	$res=@mysql_query($query);
+	$rowcount=@mysql_num_rows($res);
+	if ($rowcount==0) return $pdf;
+	$pdf=pdf_cover_page($pdf,ereg_replace('-','',$job_info->job));
+	while($row=@mysql_fetch_object($res)) {
+		$pdf=pdf_timesheet_2($pdf,$row->timesheet_id,$job_info->job,$hide_others);
+		}
+	return $pdf;
+	}
+
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+if (!($job_info)) {
+	$query1="select contract_num from jobinfo where contract_type != 'Fixed Price' and contract_type != '' order by contract_num";
+	$res1=@mysql_query($query1);
+	while($row1=@mysql_fetch_object($res1)) {
+		$job_info=is_viewpoint_job($row1->contract_num);
+		if ($job_info) $pdf=print_billing_batch_job ($pdf, $job_info, $week_ending, $hide_others);
+		
+		}
+	} else {
+	$pdf=print_billing_batch_job($pdf, $job_info, $week_ending, $hide_others);
+	}
+$pdf->ezStream();
+?>

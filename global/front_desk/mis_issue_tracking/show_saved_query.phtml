@@ -1,0 +1,26 @@
+<?
+require_once('querylib.inc');
+
+$query_id=addslashes($query_id);
+$query_info=getone("select * from mis_issue_saved_queries where query_id = '$query_id'");
+
+
+session_register('mis_issue_last_main_action');
+session_register('mis_issue_last_action_name');
+$mis_issue_last_main_action="show_saved_query&query_id=$query_id";
+$mis_issue_last_action_name="Saved Search";
+
+echo "<html><head><title>MIS Issue - Saved Query - $query_info->query_name</title></head>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+";
+
+echo "<body bgcolor=#ffffff>";
+//$query="select * from mis_issue_index where it_category_id = '$it_category_id'";
+
+category_show($query_info->query,"Saved Query: $query_info->query_name",0,"1",10);
+echo "</center>";
+
+
+
+
+?>

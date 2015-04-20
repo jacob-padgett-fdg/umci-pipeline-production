@@ -1,0 +1,226 @@
+<?
+////////////////////////////////////////////////////////////////////////////////
+// Use access_rights2 to look things up for huge performance gains over
+// just "access_rights". You have to use the contact_id instead of names/logins
+// etc., but the gain is worth it.. A 6.03 second query was reduced to 0.00 by
+// making the switch. There is surely a way to get access_rights to be as optimized,
+// but I don't have much time today to mess with things.. The "OR" in the final
+// join of the contacts table is what screws everything up. Finding a way to 
+// eliminate that would be fantastic.. maybe it can be done with a case, or 
+// maybe we can join on the sum of the two fields instead of the (since only 1 will 
+// ever be filled in) but we have to deal with the nulls nicely.
+////////////////////////////////////////////////////////////////////////////////
+
+//tabledump("select access_rights2.*,display_name,login_name, web_password,employee_num as enum,umc_emp as emp,current as cur from access_rights2 left join contacts on (access_rights2.contacts_id = contacts.contacts_id) where login_name = 'lchan' order by umc_emp desc,current desc, display_name,type, groupname");
+//tabledump("select access_rights2.*,display_name,current from access_rights2 right left contacts on (access_rights2.contacts_id = contacts.contacts_id) where application_name = 'proposals' order by current desc, display_name,type, groupname");
+//exit;
+
+
+
+
+
+
+
+
+
+
+
+/*require("viewpoint_libs.inc");
+require("viewpoint_connect_ro.phtml");
+require("../front_desk$devel/reports/report_lib.inc");
+
+
+function is_valid_viewpoint_job($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM where JCCo = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from bJCJM where JCCo = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
+
+
+$res=@mysql_query("select * from jobinfo where jobinfo.active != 'Y' order by contract_num desc");
+if (!($res)) die("query failed: <hr>select jobinfo_id,contract_num,jobinfo.display_name as job_name,contacts.display_name,employee_num from jobinfo left join contacts on contacts.contacts_id = jobinfo.project_manager_id where jobinfo.active != 'Y' order by contract_num");
+
+//tabledump("select jobinfo_id,contract_num,jobinfo.display_name as job_name,contacts.display_name,employee_num from jobinfo left join contacts on contacts.contacts_id = jobinfo.project_manager_id where jobinfo.active != 'Y' order by contract_num");exit;
+
+
+echo "<table border=1 cellspacing=0 cellpadding=3>
+
+<tr bgcolor=$fd_color_1><td>
+	<b>Contract #</b>
+</td><td>
+	<b>Job name</b>
+</td><td>
+	<b>PM</b>
+</td><td>
+	<b>Emp #</b>
+</td><td>
+	<b>VP</b>
+</td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	$pm=getoneb("select * from contacts where contacts_id = '$row->project_manager_id'");
+	$vp_num_info=is_valid_viewpoint_job($row->contract_num);
+	if ($vp_num_info) $vp_display="*";
+	else $vp_display="&nbsp;";
+	
+	if ($row->job_disp=="") $row->job_disp=$row->job_name;
+	echo "
+	<tr><td>
+		$row->contract_num
+	</td><td>
+		$row->job_disp
+	</td><td>
+		$pm->display_name&nbsp;
+	</td><td>
+		$pm->employee_num&nbsp;
+	</td><td>
+		$vp_display
+	</td></tr>
+	";
+	}
+	
+echo "</table>";
+
+
+
+
+
+
+
+
+
+*/
+
+//tabledump("select contract_num,jobinfo.display_name,jobinfo.active,contacts.display_name,employee_num from front_desk_job_pms left join contacts on contacts.contacts_id = front_desk_job_pms.contacts_id left join jobinfo on front_desk_job_pms.jobinfo_id = jobinfo.jobinfo_id order by contract_num");exit;
+
+
+/*
+//<a href=$pagename?mode=list_by_user><font color=blue>List by user</font</a><p>
+
+require('querylib.inc');
+
+$app_list_query="select * from access_applications where application_active = 'Y' order by application_name";
+$csvrow="last_name,first_name,employee_num,employee";
+$res=@mysql_query($app_list_query);
+while ($row=@mysql_fetch_object($res)) {
+	$csvrow=$csvrow . ",$row->application_name";
+	}
+$csvdump=$csvdump . $csvrow . "\r\n";
+
+//$ulist_res=@mysql_query("select * from access_rights group by contacts_id order by last_name,first_name");
+$ulist_res=@mysql_query("select * from access_rights where jobinfo_id < 1 or jobinfo_id is null group by contacts_id order by last_name,first_name");
+//              tabledump("select * from access_rights where jobinfo_id < 1 or jobinfo_id is null group by contacts_id order by last_name,first_name");
+//tabledump("select * from access_rights group by contacts_id order by last_name,first_name");
+while ($ulist_row=@mysql_fetch_object($ulist_res)) {
+	$res=@mysql_query($app_list_query);
+	$csvrow="$ulist_row->last_name,$ulist_row->first_name,$ulist_row->employee_num,$ulist_row->employee";
+	while ($row=@mysql_fetch_object($res)) {
+		$rights=getoneb("select * from access_rights where application_name = '$row->application_name' and contacts_id = '$ulist_row->contacts_id' and (jobinfo_id < 1 or jobinfo_id is null) order by type limit 1");
+		$csvrow=$csvrow . ",$rights->type";
+		//$csvrow=$csvrow . ",$row->application_name";
+		}
+	$csvdump=$csvdump . $csvrow . "\r\n";
+	}
+
+
+echo "$csvdump";
+
+exit;
+
+
+
+
+*/
+
+
+
+/*
+<a href=$pagename?mode=user_list_global><font color=blue>User List - Global</font></a><br>
+<a href=$pagename?mode=user_list_job><font color=blue>User List - Job</font></a><br>
+<a href=$pagename?mode=user_list_all><font color=blue>User List - All</font></a><br>
+
+
+<a href=$pagename?mode=group_list_global><font color=blue>Group List - Global</font></a><br>
+<a href=$pagename?mode=group_list_global><font color=blue>Group List - Job</font></a><br>
+<a href=$pagename?mode=group_list_global><font color=blue>Group List - All</font></a><br>
+
+*/
+
+session_register('access_app_last_list_type');
+session_register('access_app_last_list_subtype');
+
+
+
+echo "
+<html><body bgcolor=white>
+<center><h2>Global Database Access Control</h2></center><hr>
+
+<a href=$pagename?mode=user_lists><font color=blue>Users</font></a><br>
+<a href=$pagename?mode=group_lists><font color=blue>Groups</font></a><br>
+<a href=$pagename?mode=application_lists><font color=blue>Applications</font></a><p>
+";
+
+
+/*
+if (($global_user_id<3)||($global_user_id== "4743")) {
+
+echo "
+<table border=1 cellspacing=0 cellpadding=4><tr><td align=center bgcolor=#dddddd>
+<form name=authinfo method=post action=$pagename>
+<input type=hidden name=mode value=main>
+<b>Auth&nbsp;Info&nbsp;Lookup:</b><br>
+";contactsbox("select * from contacts where contact_type = 'contact' and umc_emp = 'Y'and current = 'Y'","submit()","userid");echo"<input type=submit>
+</form>
+</td></tr></table>
+";
+
+
+if ($userid!="") {
+	$userid=addslashes($userid);
+	$uinfo=getoneb("select * from contacts where contacts_id = '$userid'");
+	if ($uinfo) {
+		$last_pass_decoded=ereg_replace('\0*$','',@mcrypt_decrypt(MCRYPT_RIJNDAEL_256,'zed',$uinfo->last_pass,"cbc"));
+		//$last_pass_decoded=mcrypt_decrypt(MCRYPT_RIJNDAEL_256,'zed',$uinfo->last_pass,"cbc");
+		//<b>Pass:</b>&nbsp;$uinfo->last_pass<br>
+		echo "<b>User:</b>&nbsp;$uinfo->login_name&nbsp;($uinfo->contacts_id)<br>
+		<b>Real:</b>&nbsp;$uinfo->display_name<br>
+		<b>Pass Decoded:</b>&nbsp;$last_pass_decoded<br>
+		<b>Pass:</b>&nbsp;$uinfo->web_password<br>
+		";
+		}
+	}
+}
+*/
+require('footer.phtml');
+
+?>

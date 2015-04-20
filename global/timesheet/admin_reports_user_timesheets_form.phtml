@@ -1,0 +1,56 @@
+<?
+if (!($admin_check)) die_security();
+
+require('header.phtml');
+
+echo "
+<form name=user_timesheets method=post action=$pagename>
+<input type=hidden name=mode value=admin_reports_user_timesheets_results>
+<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=#dddddd><td colspan=2 align=center>
+	<font size=+1><b>Timesheet report for user</b></font>
+</td></tr>
+
+<tr><td>
+	<b>User:</b>
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and employee_num > 0","","employee_id");echo"
+</td></tr>
+
+<tr><td>
+	<b>First Week Ending Date</b>
+</td><td>
+	";datebox("","user_timesheets.fwe");echo"
+</td></tr>
+
+<tr><td>
+	<b>Last Week Ending Date</b>
+</td><td>
+	";datebox("","user_timesheets.lwe");echo"
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit>
+</td></tr>
+
+
+
+
+
+
+
+
+
+
+
+</form>
+";
+
+
+
+
+
+
+
+
+?>

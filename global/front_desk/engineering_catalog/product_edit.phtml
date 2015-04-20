@@ -1,0 +1,90 @@
+
+<?require("header.phtml");?>
+<?require("querylib.inc");?>
+<?
+$new=0;
+
+if ("$product_id" != "") {
+	$product=getone("select * from engineering_products where product_id = '$product_id'");
+	}
+if ("$product_id" == "") {
+	$new=1;
+	$product=new bsclass;
+	}
+
+echo "
+<center><font size=+2><b>Product Information</b></font></center><hr>
+<form name=product_edit method=post action=$pagename>
+<input type=hidden name=mode value=product_submit>
+<input type=hidden name=product_id value=$product_id>
+<table border=0>
+<tr><td>
+Product or Trade Name	</td><td><input type=text name=name value=\"$product->name\"><br>
+</td></tr>
+<tr><td>
+Manufacturer			</td><td><input type=text name=mfg_name value=\"$product->mfg_name\"><br>
+</td></tr>
+<tr><td>
+Factory Website			</td><td><input type=text name=mfg_url value=\"$product->mfg_url\"><br>
+</td></tr>
+<tr><td>
+MFG Rep Company			</td><td><input type=text name=rep_company value=\"$product->rep_company\"><br>
+</td></tr>
+<tr><td>
+MFG Rep Contact			</td><td><input type=text name=rep_contact value=\"$product->rep_contact\"><br>
+</td></tr>
+<tr><td valign=top>
+MFG Rep Other Contacts	</td><td><textarea rows=3 cols=18 name=rep_other_contacts>$product->rep_other_contacts</textarea>
+</td></tr>
+<tr><td>
+Rep Address	1			</td><td><input type=text name=rep_address value=\"$product->rep_address\"><br>
+</td></tr>
+<tr><td>
+Rep Address	2			</td><td><input type=text name=rep_address2 value=\"$product->rep_address2\"><br>
+</td></tr>
+<tr><td>
+Rep City				</td><td><input type=text name=rep_city value=\"$product->rep_city\"><br>
+</td></tr>
+<tr><td>
+Rep State				</td><td><input type=text name=rep_state value=\"$product->rep_state\" size=3><br>
+</td></tr>
+<tr><td>
+Rep Zip					</td><td><input type=text name=rep_zip value=\"$product->rep_zip\"><br>
+</td></tr>
+<tr><td>
+Rep Phone				</td><td><input type=text name=rep_phone value=\"$product->rep_phone\"><br>
+</td></tr>
+<tr><td>
+Rep Fax					</td><td><input type=text name=rep_fax value=\"$product->rep_fax\"><br>
+</td></tr>
+<tr><td>
+Rep Website				</td><td><input type=text name=rep_url value=\"$product->rep_url\"><br>
+</td></tr>
+<tr><td>
+Date Catalog Updated	</td><td><input type=text name=update_date value=\"$product->update_date\"><br>
+</td></tr>
+
+</table>
+<input type=button value=Save onclick=submit();>
+</form>
+";
+
+if ($new != 1) {
+	echo "
+<form method=post action=$pagename name=product_delete>
+<input type=hidden name=mode value=product_delete>
+<input type=hidden name=product_id value=$product_id>
+<input type=button value=Delete onclick=areyousure();>
+</form>
+
+<script> 
+function areyousure () {
+    if (confirm(\"You sure? This will destroy this record!\")) {
+        document.product_delete.submit();
+        }
+}
+</script>	
+";
+}
+require("footer.phtml");
+?>

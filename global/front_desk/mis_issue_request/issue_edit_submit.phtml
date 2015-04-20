@@ -1,0 +1,59 @@
+<?
+
+if ($issue_approved=='Y') {
+	include('issue_edit_approved.phtml');
+	exit;
+	}
+
+if ($issue_not_approved=='Y') {
+	include('issue_edit_not_approved.phtml');
+	exit;
+	}
+
+$today=date('Y-m-d');
+
+$priority=addslashes($priority);
+$issue_id=addslashes($issue_id);
+$last_hist_info=getoneb("select * from mis_issue_history where issue_id = '$issue_id' and status = 'current'");
+$notes=addslashes($notes);
+$next_action_date=$last_hist_info->expected_completion_date;
+if ($next_action=="") $next_action=$last_hist_info->action_required;
+$next_action=addslashes($next_action);
+$issue_history_id=addslashes($issue_history_id);
+$us_or_them=addslashes($us_or_them);
+
+if ($current_project=="on") $project_status="current"; else $project_status="active";
+
+$query="update mis_issue_history set status = 'updated', current_hist_item = 'N', actual_completion_date = '$today' where issue_history_id = '$issue_history_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query");
+$query="update mis_issue_history set status = 'updated',current_hist_item = 'N' where status = 'current' and issue_id = '$issue_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+$query="update mis_issue_history set current_hist_item = 'N' where issue_id = '$issue_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+$query="update mis_issue_index set status = '$project_status' where issue_id = '$issue_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+$query="insert into mis_issue_history set issue_id = '$issue_id',action_required = '$next_action', notes = '$notes', it_notes = '$it_notes', status = 'current', expected_completion_date = '$next_action_date',us_or_them = '$us_or_them',entered_by='$global_user_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+
+///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+//	Copy forward concerned parties
+///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+$last_insert_id=@mysql_insert_id($global_link_id);
+
+$query="select * from mis_issue_concerned_parties where issue_history_id = '$issue_history_id'";
+$res_concerned=@mysql_query($query);
+while($row=@mysql_fetch_object($res_concerned)){
+	$query="insert into mis_issue_concerned_parties set contacts_id = '$row->contacts_id',issue_history_id='$last_insert_id',us_or_them = '$row->us_or_them'";
+	$res=@mysql_query($query);
+	if (!($res)) die ("ERROR: Query failed. Contact your sys admin.<p>Failed Query<hr>$query");
+	}
+
+
+//exec("/home/web/umci.com/php/global/mis_issue_tracking/mail_for_changes.py $issue_id");
+exec("/home/web/umci.com/php/global/mis_issue_tracking/mail_for_changes.php $issue_id $global_user_id");
+
+forward("main");
+
+?>

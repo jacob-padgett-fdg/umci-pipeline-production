@@ -1,0 +1,64 @@
+<?
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/webfile/local.inc");
+if (!($payroll_check)) die_security();
+
+$timesheet_id=addslashes($timesheet_id);
+$files_id=addslashes($files_id);
+if ($possible_injury!="") {
+	$possible_injury=checkfix($possible_injury);
+	}
+
+$ts_info=getone("select * from timesheet_index where timesheet_id = '$timesheet_id'");
+
+
+$error="N";
+if ($ts_info->payroll_collected_data=='Y') $error='Y';
+if (($ts_info->time_is_accurate=='Y') && ($ts_info->no_unreported_injuries=='Y')) $error='Y';
+
+
+if (($error!='N')&&($are_you_sure!='Y')) {
+	include('header.phtml');
+	echo "
+	<form name=double_check_update_again>
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=are_you_sure value='Y'>
+	<b>This record seems OK already? Should I update anyway?
+	<input type=hidden name=timesheet_id value=\"$timesheet_id\">
+	<input type=hidden name=files_id value=\"$files_id\">
+	<input type=hidden name=possible_injury value=\"$possible_injury\">
+	<input type=button onclick=history.go(-1) value=Cancel>
+	<input type=submit value=Continue>
+	</form>
+	";
+	exit;
+	}
+
+
+if ($ts_info->signed_timesheet_file_group_id < 1) {
+	$file_group_info=create_file_group("Signed Timesheet");
+	@mysql_query("update timesheet_index set 
+	signed_timesheet_file_group_id = '$file_group_info->file_group_id' 
+	where timesheet_id = '$ts_info->timesheet_id'");
+	} else {
+	$file_group_info=load_file_group_info($ts_info->signed_timesheet_file_group_id);
+	}
+
+$qry_add="";
+if ($possible_injury!="") $qry_add=", possible_injury = '$possible_injury' ";
+
+$query="update webfile_files set file_group_id = '$file_group_info->file_group_id', file_name = 'signed_ts.pdf' where files_id = '$files_id'";
+@mysql_query($query);
+
+$query="update timesheet_index set 
+	payroll_collected_data = 'Y'
+	 $qry_add  
+	where timesheet_id = '$ts_info->timesheet_id'";
+@mysql_query($query);
+
+forward('payroll_manage_signed_sheets_queue');
+
+
+
+
+?>

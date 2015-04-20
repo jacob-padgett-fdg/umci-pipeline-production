@@ -1,0 +1,38 @@
+<?
+$contacts_id=addslashes($contacts_id);
+$directory=addslashes($directory);
+$active=checkfix($active);
+$filter_folder=addslashes($filter_folder);
+$filter_umc_folder=checkfix($filter_umc_folder);
+$filter_umc_folder="N"; // Comment to allow filtering UMC stuff again.. 
+
+$query_middle="
+contacts_id = '$contacts_id',
+directory = '$directory',
+active = '$active',
+filter_folder = '$filter_folder',
+filter_umc_folder = '$filter_umc_folder'
+";
+
+
+
+if ($notify_id!="") {
+	$notify_id=addslashes($notify_id);
+	$query_start="update filewatch_notify set ";
+	$query_end=" where notify_id = '$notify_id' ";
+	} else {
+	$query_start="insert into filewatch_notify set ";
+	$query_end=" ";
+	}
+
+
+$query_full=$query_start . $query_middle . $query_end;
+
+echo "<hr>$query_full<hr>";
+$res=@mysql_query($query_full);
+
+if (!($res)) die("ERROR! Query failed:<hr>$query_full");
+
+forward('main');
+
+?>

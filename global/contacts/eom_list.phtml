@@ -1,0 +1,106 @@
+<?
+//require_once('querylib.inc');
+if (!($adminuser)) die_security();
+echo "<a href=$pagename?mode=main><font color=blue>Back to Contacts</font></a><p>";
+
+$query="select * from contacts_eom left join contacts using (contacts_id) order by starting_date desc,eom_id desc";
+//tabledump($query);
+
+$eom_mode_title="New Emp-o-Month Entry";
+
+if ($eom_id!="") {
+	$eom_id=addslashes($eom_id);
+	$eom_mode_title="Update Emp-o-Month Entry";
+	$eom_info=getone("select * from contacts_eom where eom_id = '$eom_id'");
+	$start_date=invali_date($eom_info->starting_date);
+	}
+eom_blurb($eom_id);
+
+echo "
+<form name=new_eom method=post action=$pagename>
+<input type=hidden name=mode value=eom_list_submit>
+<input type=hidden name=eom_id value=$eom_info->eom_id>
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td colspan=2 bgcolor=#eeeeee align=center><b>$eom_mode_title</b></td></tr>
+
+<tr><td>
+	<b>Employee</b>
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y'",$eom_info->contacts_id,"contacts_id");echo"
+</td></tr>
+
+<tr><td>
+	<b>Start Date</b>
+</td><td>
+	";datebox($start_date,"new_eom.starting_date");echo "
+</td></tr>
+	
+<tr><td>
+	<b>Additional Picture</b>
+</td><td>
+	";webfilebox($eom_info->additional_picture,'additional_picture',"",1);echo"
+</td></tr>
+
+<tr><td>
+	<b>Text Blurb</b>
+</td><td>
+	<textarea name=text_blurb rows=5 cols=40>$eom_info->text_blurb</textarea>
+</td></tr>
+
+<tr><td>
+	<b>Long Text</b>
+</td><td>
+	<textarea name=text_long rows=5 cols=40>$eom_info->text_long</textarea>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+<input type=button value=Clear onclick=document.location='$pagename?mode=eom_list'>
+</td></tr>
+
+</table>
+</form>
+";
+$res=@mysql_query($query);
+echo "<table border=0>";
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->display_name=="") $row->display_name='????';
+	echo "<tr><td>
+			<a href=$pagename?mode=eom_list&eom_id=$row->eom_id><font color=blue>$row->display_name</font></a>
+		</td><td>
+			$row->starting_date
+		</td></tr>
+		";
+	}
+echo "</table>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$output="
+<img align=left src=http://www.umci.com/images_umc/page_umcLogo.gif>
+This month’s featured STAR performer is Bill Laughlin.  Four years ago we set out to purposely “Build our Bench Strength”.  The Contract Manager position that Bill accepted was the first position for which we consciously increased the skill requirements when the position became available.  Bill, as many others in other positions since, has done an incredible job by proving the brilliance of our initiative to “Build our Bench Strength!”  Bills accomplishments are too numerous to list, but the key qualities I would like to highlight that Bill demonstrates daily include:
+<ul>
+(1)Bill promotes clear communications by keeping all of his many “constituents” … project managers, staff, subcontractors, insurance and bonding professionals, 
+et al. “in the loop” of the status of the many projects he performs and facilitates so that his TEAM knows what is going on and trusts everything will be accomplished as promised;
+(2)Bill takes responsibility for new areas and takes them to a much higher level than we have experienced in the past.  I am confidant profitability and productivity have increased based on Bill’s insightful contributions.  I am especially impressed and appreciative of Bill’s PERFORMANCE analyzing owner/GC contracts and managing our insurance program.  
+(3)Bill holds himself ACCOUNTABLE, as well as holds others on his team ACCOUNTABLE to “get the job done, well, when promised”.
+(4)Bill’s personal Core Values are grounded by integrity, dedication, mutual respect, and safe work practices. 
+</ul>
+";
+$output=ereg_replace("\n","<p>",$output);
+
+//echo $output;
+
+?>

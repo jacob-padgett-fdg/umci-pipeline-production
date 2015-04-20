@@ -1,0 +1,28 @@
+#!/usr/local/bin/php
+<?
+require_once('global_connect_rw.phtml');
+require_once('viewpoint_connect_ro.phtml');
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/timesheet/timesheet_libs.inc");
+$no_output=1;
+$shell_script=1;
+$vpjobs_query="select * from JCCM with (NOLOCK) where (Contract like '0%-') and (ContractStatus = 1) and (Contract <> '00000-') and (JCCo = 1) order by Contract";
+
+$vpjoblistres=@mssql_query($vpjobs_query);
+$count=mssql_num_rows($vpjoblistres);
+
+$newfound=0;
+
+$oldjoblist=@mysql_query("select jobinfo_id,contract_num,job_name,contract_amount_final,active from jobinfo where contract_amount_final < 100 and active = 'N' and jobinfo_id > 2500 order by jobinfo_id");
+
+
+while ($oldjoblist_row=@mysql_fetch_object($oldjoblist)) {
+	$job_num=$oldjoblist_row->contract_num;
+	//echo "jn: $job_num<br>";
+	require("get_vp_job_info.phtml");
+	}
+//require("sync_active_jobs.phtml");
+exit;
+?>

@@ -1,0 +1,67 @@
+<?
+if ($jobinfo_id!="") $jobinfo_id=addslashes($jobinfo_id);
+else die("Application error: no job specified!");
+
+$temp_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+
+$fd_manager=fd_manager($jobinfo_id,$global_user_id);
+if (!(($adminuser)||($fd_manager))) die_security();
+//$display_name=addslashes($display_name);
+$fd_forced_job_name=addslashes($fd_forced_job_name);
+$ups_ok=addslashes($ups_ok);
+//////////////////////////////////////////////
+$show_in_phone_list=checkfix($show_in_phone_list);
+
+$fd_site_picture=addslashes($fd_site_picture);
+
+if ($job_site_address_ups_type=="") $job_site_address_ups_type='UPS Address';
+if ($job_site_address_2_type=="") $job_site_address_2_type='Address 2';
+if ($job_site_address_3_type=="") $job_site_address_3_type='Address 3';
+$job_letterhead_address_site=addslashes($job_letterhead_address_site);
+$job_site_address_ups_type=addslashes($job_site_address_ups_type);
+$job_site_address_2_type=addslashes($job_site_address_2_type);
+$job_site_address_3_type=addslashes($job_site_address_3_type);
+$job_site_address_ups=addslashes($job_site_address_ups);
+$job_site_address_2=addslashes($job_site_address_2);
+$job_site_address_3=addslashes($job_site_address_3);
+$job_site_address_ups_notes=addslashes($job_site_address_ups_notes);
+$job_site_address_2_notes=addslashes($job_site_address_2_notes);
+$job_site_address_3_notes=addslashes($job_site_address_3_notes);
+$default_gc_recipient=addslashes($default_gc_recipient);
+$weather_station_code=strtoupper(addslashes($weather_station_code));
+//$bim_budget_log=checkfix($bim_budget_log);
+//$bim_estimated_pipe_sheets=addslashes($bim_estimated_pipe_sheets);
+//$bim_estimated_sheet_sheets=addslashes($bim_estimated_sheet_sheets);
+if ($fd_forced_job_name!="") {
+	$display_name=$fd_forced_job_name;
+	} else {
+	$display_name=addslashes($temp_jobinfo->job_name);
+	}
+
+$query="update jobinfo set
+	show_in_phone_list = '$show_in_phone_list',
+	display_name = '$display_name',
+	fd_forced_job_name = '$fd_forced_job_name',
+	job_letterhead_address_site = '$job_letterhead_address_site',
+	job_site_address_ups = '$job_site_address_ups',
+	job_site_address_ups_type = '$job_site_address_ups_type',
+	job_site_address_ups_notes = '$job_site_address_ups_notes',
+	job_site_address_2_type = '$job_site_address_2_type',
+	job_site_address_2 = '$job_site_address_2',
+	job_site_address_2_notes = '$job_site_address_2_notes',
+	job_site_address_3_type = '$job_site_address_3_type',
+	job_site_address_3 = '$job_site_address_3',
+	job_site_address_3_notes = '$job_site_address_3_notes',
+	default_gc_recipient = '$default_gc_recipient',
+	fd_site_picture = '$fd_site_picture',
+	weather_station_code = '$weather_station_code'
+
+	where jobinfo_id = '$jobinfo_id'
+	";
+
+$res=@mysql_query($query);
+if (!($res)) die("Application error: Update failed... Please contact your system administrator.<p>Failed query:<hr>$query");
+
+forward('main');
+
+?>

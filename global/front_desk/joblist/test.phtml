@@ -1,0 +1,51 @@
+<?
+//if ($been_here_done_that!=1) {
+//$been_here_done_that=1;
+require_once('viewpoint_connect_ro.phtml');
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/timesheet/timesheet_libs.inc");
+$query="select * from JCJM with (NOLOCK) , JCCM with (NOLOCK) where JCJM.JCCo = 1 and 
+JCCM.JCCo = 1 and JCJM.Job = '$job_res->job' and JCJM.Contract = JCCM.Contract";
+ms_tabledump($query);
+
+$job_num=addslashes($job_num);
+$job_res=is_viewpoint_job($job_num);
+
+$webjobnum=ereg_replace("^0*","",$job_res->job);
+$webjobnum=ereg_replace("[- ]*$","",$webjobnum);
+$jobinfo=getoneb("select * from jobinfo where contract_num = '$webjobnum'");
+$query="select * from JCJM with (NOLOCK) , JCCM with (NOLOCK) where JCJM.JCCo = 1 and 
+JCCM.JCCo = 1 and JCJM.Job = '$job_res->job' and JCJM.Contract = JCCM.Contract";
+$vp_jobinfo=ms_getoneb($query);
+$vp_custinfo=ms_getoneb("select * from ARCM with (NOLOCK) where CustGroup = 1 and Customer = '$vp_jobinfo->Customer'");
+
+
+$query_start="update jobinfo set ";
+$query_end="where jobinfo_id = '$jobinfo->jobinfo_id'";
+
+
+
+$fd_forced_job_name="";
+
+if ($jobinfo->display_name!="") {
+	if ($vp_jobinfo->Description!=$jobinfo->display_name) {
+		$fd_forced_job_name="$jobinfo->display_name";
+		}
+	}
+	
+if ($fd_forced_job_name!="") $display_name=addslashes($fd_forced_job_name);
+else $display_name=addslashes($vp_jobinfo->Description);
+$query_middle=" 
+job_name = '" . addslashes($vp_jobinfo->Description) . "',
+fd_forced_job_name = '" . addslashes($fd_forced_job_name) . "',
+display_name = '$display_name'
+";
+
+
+$query_full=$query_start . $query_middle . $query_end;
+echo "<hr>$jobinfo->contract_num<p>$query_full";
+@mysql_query($query_full);
+
+?>

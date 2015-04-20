@@ -1,0 +1,34 @@
+<?
+if ($group_id=="") {
+	$group_id=$foreman_last_group;
+	if ($group_id!="") forward("foreman_show_group&group_id=$group_id");
+	}
+if ($group_id!="") $group_id=escapeshellcmd($group_id);
+	else die("ERROR: Missing group_id. Contact your system administrator, or try again (start over)");
+session_register('foreman_last_group');
+$foreman_last_group=$group_id;
+$group_info=getone("select * from timesheet_foreman_groups where group_id = '$group_id'");
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=foreman_timesheets_by_group><font color=blue>Return to timesheet entry by group</font></a>
+<br>
+<center><h2>Timesheet entry for $group_info->group_name</h2></center><hr>
+<i>$group_info->group_description</i><p>
+<a href=$pagename?mode=foreman_show_group_timesheets_current&group_id=$group_info->group_id><font color=blue>List all current group timesheets</font></a><br>
+<p>
+<a href=$pagename?mode=foreman_timesheet_new_by_group&group_id=$group_info->group_id><font color=blue>New timesheets for entire group</font></a><br>
+<a href=$pagename?mode=foreman_timesheet_submit_by_group&group_id=$group_info->group_id><font color=blue>Submit timesheets for entire group</font></a><br>
+<a href=$pagename?mode=foreman_timesheet_history_by_group&group_id=$group_info->group_id><font color=blue>History by group</font></a><br>
+";
+
+
+
+	
+
+
+
+
+
+
+?>

@@ -1,0 +1,21 @@
+<?
+echo "<html><head><title>Issue name changing dialog</title></head>
+<body bgcolor=#ffffff>
+<form name=temp>
+<b>Type in the new name for this item. To prevent confusion, this should not be done very frequently.</b><hr>
+<input type=text name=newname>
+<input type=button value=\"Change\" onclick=changename()>
+</form>
+<script>
+function changename() {
+	opener.document.issue_edit.next_action.value=\" *issue rename* - was \" + opener.document.issue_edit.name.value;
+	opener.document.issue_edit.name.value=document.temp.newname.value;
+	opener.document.issue_edit.submit();
+	self.close();
+	}
+document.temp.newname.value=opener.document.issue_edit.name.value;
+</script>
+</body>
+";
+
+?>

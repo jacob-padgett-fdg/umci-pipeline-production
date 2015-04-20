@@ -1,0 +1,218 @@
+<? 
+if (!(member_of_global_group_named("BIM Admins"))) die_security();
+require('header.phtml');
+fd_navs_header();
+if ($jobinfo_id!="") {
+	$jobinfo_id=addslashes($jobinfo_id);
+	$global_jobinfo_id=$jobinfo_id;
+	$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+	$jobinfo->bim_budget_log=checkbreak($jobinfo->bim_budget_log);
+	} else {
+	die('Job information error!');
+	}
+
+include("main_tabs.phtml");
+
+
+function switch_date_div($date_input,$date_calc,$javapath,$area_id,$show_sign_off_widget=0) {
+	$divwidth="155";
+	if ($date_input=="0000-00-00") {
+		$di_show="none";
+		$dc_show="block";
+		} else {
+		$di_show="block";
+		$dc_show="none";
+		}
+	$date_calc=invali_date($date_calc,'/');
+	if ($date_input=="0000-00-00") $date_input=$date_calc;
+	
+	$area_info=getoneb("select * from front_desk_bim_areas where area_id = '$area_id'");
+	eval("\$sign_off_user=\$area_info->${javapath}_signoff;");
+	if ($sign_off_user>0) {
+		$so="<img src=/images/gc.png onclick=\"so('$area_id','$javapath');\">";
+		} else {
+		$so="<img src=/images/rc.png onclick=\"so('$area_id','$javapath');\">";
+		}
+	
+	echo "<div id=\"di_div_${area_id}_${javapath}\" style=\"width: ${divwidth}px; display: $di_show;\">";
+	datebox($date_input,$javapath . "_" . $area_id,'',"uf(this.value,'$area_id','$javapath')");
+	echo "&nbsp;$so</div>
+	<div id=\"dc_div_${area_id}_${javapath}\" style=\"width: ${divwidth}px; display: $dc_show;\"><table cellspacing=0 cellpadding=0><tr><td width=100% onclick=\"divswitch('$area_id','$javapath')\">$date_calc&nbsp;</td><td>$so</td></tr></table></div>
+	";
+	}
+
+echo "
+
+<script>
+function divswitch(area_id,javapath) {
+	obj1=document.getElementById('di_div_' + area_id + '_' + javapath);
+	obj2=document.getElementById('dc_div_' + area_id + '_' + javapath);
+
+	if (obj1.style.display=='none') obj1.style.display='block';
+	else obj1.style.display='none';
+
+	if (obj2.style.display=='none') obj2.style.display='block';
+	else obj2.style.display='none';
+	}
+
+function uf(value,area_id,field) {
+	//alert(field);
+	document.location='$pagename?jobinfo_id=$jobinfo->jobinfo_id&mode=bim_schedule_update&area_id=' + area_id + '&value=' + value + '&field=' + field;
+	}
+
+function so (area,field_prefix) {
+	open ('$pagename?mode=bim_area_signoff&area=' + area + '&field_prefix=' + field_prefix,'','width=400,height=400'); 
+	}
+</script>
+
+
+<table border=1 cellspacing=0 cellpadding=3>
+<form name=bim_setup method=post action=$pagename>
+<input type=hidden name=mode value=bim_setup_submit>
+<input type=hidden name=jobinfo_id value=\"$jobinfo->jobinfo_id\">
+<tr><td>
+	<b>Bim Lead:</b>
+</td><td>";
+	contact("select * from contacts where umc_emp = 'Y' and current = 'Y'",$jobinfo->detailing_lead_id,'detailing_lead_id');echo"
+	Budget Tracking: <input type=checkbox name=bim_budget_log $jobinfo->bim_budget_log>
+	<input type=submit value=Save>
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	<b>Bim Services</b>&nbsp;&nbsp;&nbsp;
+
+	S/M Sheets: <input readonly type=text size=2 name=bim_estimated_sheet_sheets value=\"$jobinfo->bim_estimated_sheet_sheets\">
+	Pipe Sheets: <input readonly type=text size=2 name=bim_estimated_pipe_sheets value=\"$jobinfo->bim_estimated_pipe_sheets\">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hour Adjustment: <input type=text size=4 name=bim_hours_correction value=\"$jobinfo->bim_hours_correction\">
+</td></tr>
+</table>
+</form>
+<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=$fd_color_4><td colspan=6 align=center>
+	<b>Project Information</b>
+</td><td colspan=4>
+	<b>Drawing Information</b>
+</td><td colspan=4>
+	<b>MEP Coordination Dates</b>
+</td></tr>
+
+
+<tr style=\"font-size: 10px;\"><td rowspan=2>
+	&nbsp;
+</td><td rowspan=2>
+	Area
+</td><td rowspan=2>
+	S/M Fabrication Due
+</td><td rowspan=2>
+	Sleeving/Decking
+</td><td rowspan=2>
+	S/M MEP
+</td><td rowspan=2>
+	Plumbing MEP
+</td><td colspan=2>
+	S/M Sheets
+</td><td colspan=2>
+	Plumb Sheets
+</td><td rowspan=2>
+	First Pass
+</td><td rowspan=2>
+	Second Pass
+</td><td rowspan=2>
+	Third Pass
+</td><td rowspan=2>
+	Sign-off
+</td></tr>
+
+<tr style=\"font-size: 10px; text-align: center;\"><td>
+	1st
+</td><td>
+	now
+</td><td>
+	1st
+</td><td>
+	now
+</td></tr>
+
+<form name=fooberry action=$pagename>
+";
+
+//tabledump("select * from front_desk_bim_areas where jobinfo_id = '$jobinfo->joinfo_id' order by sort_priority");
+$res=@mysql_query("select * from front_desk_bim_areas where jobinfo_id = '$jobinfo->jobinfo_id' order by sort_priority");
+$first=TRUE;
+while ($row=@mysql_fetch_object($res)) {
+	echo "	<tr><td>";
+				if ($first!=TRUE) {
+					echo "<a href=$pagename?mode=bim_move_area_up&area_id=$row->area_id><font color=blue>Move Up</font></a>&nbsp;/&nbsp;";
+					} else {
+					$first=FALSE;
+					echo "&nbsp;";
+					}
+			echo "<font style=\"cursor: hand; cursor: pointer;\" color=blue onclick=\"if(confirm('Delete this area?')) document.location='$pagename?mode=bim_schedule_update&delete_area_id=$row->area_id&jobinfo_id=$jobinfo->jobinfo_id'\"><i>del</i></font>";
+			echo "&nbsp;/&nbsp;<font style=\"cursor: hand; cursor: pointer;\" color=blue onclick=\"if(confirm('Rename this area? It may desynchronize from issue tracker!')) document.location='$pagename?mode=bim_schedule_rename&rename_area_id=$row->area_id&jobinfo_id=$jobinfo->jobinfo_id'\"><i>ren</i></font>";
+			//echo "<a href=$pagename?mode=bim_schedule_update&delete_area_id=$row->area_id&jobinfo_id=$jobinfo->jobinfo_id><font color=blue><i>del</i></font></a>
+			echo "
+			</td><td>
+				$row->name
+			</td><td>
+				";switch_date_div($row->sm_fab_due_input,$row->sm_fab_due,"sm_fab_due",$row->area_id); echo "
+			</td><td>
+				";datebox($row->sleeving_decking,"fooberry.sleeving_decking$row->area_id", '',"uf(this.value,'$row->area_id','sleeving_decking')"); echo "
+			</td><td>
+				";contact("select * from contacts where current = 'Y' and detailer = 'Y' and umc_emp = 'Y'",$row->sm_mep_id,"sm_mep_id_$row->area_id","uf(document.fooberry.sm_mep_id_$row->area_id.value,'$row->area_id','sm_mep_id')");echo "
+			</td><td>
+				";contact("select * from contacts where current = 'Y' and detailer = 'Y' and umc_emp = 'Y'",$row->plumb_mep_id,"plumb_mep_id_$row->area_id","uf(document.fooberry.plumb_mep_id_$row->area_id.value,'$row->area_id','plumb_mep_id')");echo "
+			</td><td>
+				<input type=text size=2 name=\"sm_sheets_orig_$row->area_id\" value=\"$row->sm_sheets_orig\" onchange=\"uf(this.value,'$row->area_id','sm_sheets_orig')\">
+			</td><td>
+				<input type=text size=2 name=\"sm_sheets_$row->area_id\" value=\"$row->sm_sheets\" onchange=\"uf(this.value,'$row->area_id','sm_sheets')\">
+			</td><td>
+				<input type=text size=2 name=\"plumb_sheets_orig_$row->area_id\" value=\"$row->plumb_sheets_orig\" onchange=\"uf(this.value,'$row->area_id','plumb_sheets_orig')\">
+			</td><td>
+				<input type=text size=2 name=\"plumb_sheets_$row->area_id\" value=\"$row->plumb_sheets\" onchange=\"uf(this.value,'$row->area_id','plumb_sheets')\">
+			</td><td>
+				";switch_date_div($row->first_pass_input,$row->first_pass,"first_pass",$row->area_id); echo "
+			</td><td>
+				";switch_date_div($row->second_pass_input,$row->second_pass,"second_pass",$row->area_id); echo "
+			</td><td>
+				";switch_date_div($row->third_pass_input,$row->third_pass,"third_pass",$row->area_id); echo "
+			</td><td>
+				";switch_date_div($row->sign_off_input,$row->sign_off,"sign_off",$row->area_id); echo "
+			</td></tr>";
+		
+	}
+
+
+
+
+
+
+
+
+echo "
+</form>
+<tr><td colspan=5>
+	<form name=new_area method=post action=$pagename>
+	<input type=hidden name=mode value=bim_area_add>
+	<input type=hidden name=bim_jobinfo_id value=\"$jobinfo->jobinfo_id\">
+	<input type=text name=area method=post>
+	&nbsp;Add&nbsp;to&nbsp;Issue&nbsp;Tracker&nbsp;<input type=checkbox name=add_in_issue_tracker checked>
+	<input type=submit value=Add></form>
+</table>
+";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fd_navs_footer();
+
+?>

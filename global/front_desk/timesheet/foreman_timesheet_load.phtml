@@ -1,0 +1,34 @@
+<?
+if ($global_user->timesheet_group_one_foreman!='Y') die ("ERROR: Security Violation! The authorities have been notified!!");
+
+$timesheet_id=escapeshellcmd($ts_id);
+$timesheet_info=getone("select * from timesheet_index where timesheet_id = '$timesheet_id'");
+$employee_info=getoneb("select * from contacts where contacts_id = '$timesheet_info->employee_id'");
+
+if ($employee_info->employee_group!=1) die("Application error! Employee information invalid..");
+
+
+
+# SUID to the user's login ID.
+$current_user_id=$timesheet_info->employee_id;
+
+# Register a variable so we know where we came from
+session_register('timesheet_escape_sheet');
+//$timesheet_escape_sheet="foreman_show_group_timesheets_current&group_id=$group_id";
+//$timesheet_escape_sheet="booyah!!!!!";
+$come_back_to="foreman_group_edit&group_id=$group_id";
+
+if ($come_back_to!="") $timesheet_escape_sheet=addslashes($come_back_to);
+
+
+//echo "$come_back_to / $timesheet_escape_sheet";die();
+//echo "$come_back_to";exit;
+
+forward("timesheet_edit&timesheet_id_new=$timesheet_id");
+
+
+
+
+
+
+?>

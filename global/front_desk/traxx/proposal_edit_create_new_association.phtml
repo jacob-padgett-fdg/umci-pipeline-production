@@ -1,0 +1,94 @@
+<?
+if ($current_bidlist_id=="") die("ERROR: Missing bidlist_id. Can not continue!");
+else $current_bidlist_id=addslashes($current_bidlist_id);
+
+if ($associate_proposal_num=="") die("ERROR: No proposal number or lead number specified!");
+else $associate_proposal_num=addslashes($associate_proposal_num);
+
+$bl_id=getoneb("select bidlist_id from bidlist where bidlist_id = '$associate_proposal_num'");
+$pn_id=getoneb("select bidlist_id from bidlist where proposal_num = '$associate_proposal_num' and revision = '' limit 1");
+
+if (($bl_id)&&($pn_id)) die ("ERROR: The impossible (unlikely) happened, and there is a proposal number identicle to a lead number (bidlist_id)!<hr>Please contact a system administrator immediately!!!!!!!<p>I'd say to contact me, but I was probably dead before this happened..<br>-Jeff (jeffb@umci.com)");
+
+
+
+
+
+
+if ($bl_id) $ud_id=$bl_id;
+if ($pn_id) $ud_id=$pn_id;
+
+if (!($ud_id)) die("ERROR: The proposal or lead number you specified can not be found!");
+
+$target_ass_info=getoneb("select * from bidlist_associations where bidlist_id = '$ud_id->bidlist_id'");
+if ($target_ass_info) $association_description_2=$target_ass_info->description;
+associate_bidlist_items($current_bidlist_id,$ud_id->bidlist_id,$association_description,$association_description_2);
+
+
+
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+	
+
+
+
+
+exit;
+
+	
+
+if ($current_bidlist_id=="") die("ERROR: Missing bidlist_id. Can not continue!");
+else $current_bidlist_id=addslashes($current_bidlist_id);
+
+//if (!(getoneb("select bidlist_id from bidlist where bidlist_id = '$current_bidlist_id'"))) {
+//	die("ERROR: Could not load bidlist_id: $current_bidlist_id!");
+//	}
+
+//if (($associate_bidlist_id!="")&&($associate_proposal_num!="")) {
+//	die ("ERROR: You must only specify a proposal number, or lead number... NOT both.");
+//	}
+
+if ($associate_bidlist_id!="") {
+	$associate_bidlist_id=addslashes($associate_bidlist_id);
+	if (!(getoneb("select bidlist_id from bidlist where bidlist_id = '$associate_bidlist_id'")))
+		die("ERROR: Invalid bidlist_id ($bidlist_id)!");
+	
+	
+	associate_bidlist_items($current_bidlist_id,$associate_bidlist_id,$association_description);
+	echo "
+	<script>
+	opener.document.location.reload();
+	self.close();
+	</script>
+	";
+	
+	
+	exit;
+	}
+
+if ($associate_proposal_num!="") {
+	$associate_proposal_num=addslashes($associate_proposal_num);
+	$prop_info=getoneb("select bidlist_id from bidlist where proposal_num = '$associate_proposal_num' and revision = ''");
+	if (!($prop_info))
+		die("ERROR: Invalid proposal_num ($associate_proposal_num)!");
+	
+	associate_bidlist_items($current_bidlist_id,$prop_info->bidlist_id,$association_description);
+	echo "
+	<script>
+	opener.document.location.reload();
+	self.close();
+	</script>
+	";
+	
+
+	exit;
+	}
+
+	
+
+
+?>

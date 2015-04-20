@@ -1,0 +1,15 @@
+<?
+//$employee_group=1;
+$last_week_default_lamchop=getoneb("select * from lamchops where week_ending = '$week_info->last_week_end_mysql' and prime_cut = 'Y' and shepherd_id = '$labor_manager'");
+$list=@mysql_query("select * from lam where lamchops_id = '$lamchop_info->lamchops_id'");
+//print_r($last_week_default_lamchop);exit;
+
+if ($ignore_last_week!='Y') $ignore_last_week='N';
+else $ignore_last_week='Y';
+
+while ($row=@mysql_fetch_object($list)) {
+	$result=place_me($last_week_default_lamchop->lamchops_id,$row->lam_id,$ignore_last_week);
+	}
+forward("$mode&report_name=$report_name&lamchops_id=$lamchop_info->lamchops_id");
+exit;
+?>

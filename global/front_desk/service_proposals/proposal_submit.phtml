@@ -1,0 +1,117 @@
+<?
+//require('querylib.inc');
+
+if ($proposal_date!=$proposal_date_last) $recalc_date=1;
+	else $recalc_date=0;
+
+$sales_person=addslashes($sales_person);
+if ((!($adminuser)) && ($sales_person != $global_user_id)) {
+	
+	if ($application_user_type=="read_only") {
+		echo "ERROR: Trying to modify someone else's proposal. Permission Denied.<p>
+		Please contact your system administrator with any questions.<p>";
+		exit;
+		}
+	}
+
+$proposal_daily_count=addslashes($proposal_daily_count);
+$proposal_date=vali_date($proposal_date);
+$customer=addslashes($customer);
+$description=addslashes($description);
+$type=addslashes($type);
+$mkt_type=addslashes($mkt_type);
+$proposal_amount=addslashes(ereg_replace('$','',$proposal_amount));
+
+$projected_bill_date=ereg_replace("-",'/',$projected_bill_date);
+$projected_bill_date=ereg_replace(" ",'/',$projected_bill_date);
+$projected_bill_date=ereg_replace("/",'-01-',$projected_bill_date);
+$projected_bill_date=vali_date($projected_bill_date);
+$probability=addslashes(ereg_replace('%','',$probability));
+$estimated_hours=addslashes($estimated_hours);
+$estimated_margin_percent=addslashes($estimated_margin_percent);
+$status=addslashes($status);
+$workorder_num=addslashes($workorder_num);
+$beaten_by=addslashes($beaten_by);
+
+if ($svc_proposals_id=="") {
+	$days_proposals_info=getone("select ifnull(max(proposal_daily_count),0) as daily_total from svc_proposals where sales_person = '$sales_person' and proposal_date = '$proposal_date'");
+	$proposal_daily_count=$days_proposals_info->daily_total + 1;
+	$query="insert into svc_proposals (
+	sales_person,
+	proposal_date,
+	proposal_daily_count,
+	customer,
+	description,
+	type,
+	mkt_type,
+	proposal_amount,
+	projected_bill_date,
+	probability,
+	estimated_hours,
+	estimated_margin_percent,
+	status,
+	workorder_num,
+	beaten_by
+	) values (
+	'$sales_person',
+	'$proposal_date',
+	'$proposal_daily_count',
+	'$customer',
+	'$description',
+	'$type',
+	'$mkt_type',
+	'$proposal_amount',
+	'$projected_bill_date',
+	'$probability',
+	'$estimated_hours',
+	'$estimated_margin_percent',
+	'$status',
+	'$workorder_num',
+	'$beaten_by')";
+	} else {
+	$svc_proposals_id=addslashes($svc_proposals_id);
+
+	if ($recalc_date==1) {
+		$days_proposals_info=getone("select ifnull(max(proposal_daily_count),0) as daily_total from svc_proposals where sales_person = '$sales_person' and proposal_date = '$proposal_date'");
+		$proposal_daily_count=$days_proposals_info->daily_total + 1;
+		}
+
+	$query="update svc_proposals set
+	sales_person='$sales_person',
+	proposal_date='$proposal_date',
+	proposal_daily_count='$proposal_daily_count',
+	customer='$customer',
+	description='$description',
+	type='$type',
+	mkt_type='$mkt_type',
+	proposal_amount='$proposal_amount',
+	projected_bill_date='$projected_bill_date',
+	probability='$probability',
+	estimated_hours='$estimated_hours',
+	estimated_margin_percent='$estimated_margin_percent',
+	status='$status',
+	workorder_num='$workorder_num',
+	beaten_by='$beaten_by'
+	where svc_proposals_id = '$svc_proposals_id'";
+
+	//echo "<hr>$query<hr>";die();
+
+	if (($application_user_type=="full") && ($sales_person != $global_user_id)) {
+		$query="update svc_proposals set
+		status='$status',
+		workorder_num='$workorder_num',
+		beaten_by='$beaten_by'
+		where svc_proposals_id = '$svc_proposals_id'";
+		}
+	}
+	
+//echo "<hr>$query<hr>$sales_person / $global_user_id";exit;
+
+$res=@mysql_query($query);
+
+if (!($res)) {
+	echo "ERROR: There was an error submitting your query. Please contact your system administrator. The erroring query is listed below:<hr>$query <p>";
+	exit;
+	}
+forward("main");
+?>

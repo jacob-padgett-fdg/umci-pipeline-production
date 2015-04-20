@@ -1,0 +1,245 @@
+<?
+require('header.phtml');
+include("reports/report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+fd_navs_header();
+include("main_tabs.phtml");
+session_write_close();
+contact_view_javascript();
+
+if ($report_mode=="") $report_mode="baldwin";
+switch ($report_mode) {
+	case "baldwin": 		$baldwin_check				="checked";break;
+	case "baldwin_full": 	$baldwin_full_check			="checked";break;
+	case "baldwin_weekly_labor": 	$baldwin_weekly_labor_check	="checked";break;
+	case "baldwin_graphs": 			$baldwin_graphs_check		="checked";break;
+	case "baldwin_mjcs": 			$baldwin_mjcs_check			="checked";break;
+	default:				$baldwin_check				="checked";
+							$report_mode				="baldwin";break;
+	}
+
+function is_valid_viewpoint_job($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
+// Gotta go get the is_valid_viewpoint_job_function from somewhere.. 
+// it should be in a central library, but too many conflicts at this point.
+// we'll do that as part of a major clean up.
+$job=is_valid_viewpoint_job($global_jobinfo->contract_num);
+
+$summary_info=job_financial_summary("$job->job");
+
+echo "
+<script src='/javascript/cal2.js'></script>
+
+<script type=\"text/javascript\">
+
+function validate_form() {
+	update_baldwin();
+	return (FALSE);
+	}
+
+function baldwin_weekly_labor_popup(employee_num,week_ending) {
+	open('$pagename?mode=report_show&report_name=baldwin_weekly_labor_popup&week_ending=' + week_ending + '&employee_num=' + employee_num,'baldwin_weekly_pu_win','width=900,height=600,scrollbars=yes,resizable=yes');
+	}
+
+function baldwin_both_dates() {
+	start_date='';
+	end_date=encodeURIComponent(document.select_we.week_ending.value);
+	ajaxManager('load_page','$pagename?mode=report_show&report_name=baldwin&show_both=Y&week_starting=' + start_date + '&week_ending=' + end_date,'fs_output_div');
+	}
+
+function baldwin_full_both_dates() {
+	start_date='';
+	end_date=encodeURIComponent(document.select_we.week_ending.value);
+	ajaxManager('load_page','$pagename?mode=report_show&report_name=baldwin_full&show_both=Y&week_starting=' + start_date + '&week_ending=' + end_date,'fs_output_div');
+	}
+
+function update_baldwin() {
+	show_both='';
+	if (typeof(document.select_we.week_starting)!='undefined') {
+		start_date=encodeURIComponent(document.select_we.week_starting.value);
+		}
+	else start_date='';
+	if (start_date!='') show_both='Y';
+	end_date=encodeURIComponent(document.select_we.week_ending.value);
+	ajaxManager('load_page','$pagename?mode=report_show&report_name=baldwin&show_both=' + show_both + '&week_starting=' + start_date + '&week_ending=' + end_date,'fs_output_div');
+	}
+
+function update_baldwin_full() {
+	show_both='';
+	if (typeof(document.select_we.week_starting)!='undefined') {
+		start_date=encodeURIComponent(document.select_we.week_starting.value);
+		}
+	else start_date='';
+	if (start_date!='') show_both='Y';
+	end_date=encodeURIComponent(document.select_we.week_ending.value);
+	ajaxManager('load_page','$pagename?mode=report_show&report_name=baldwin_full&show_both=' + show_both + '&week_starting=' + start_date + '&week_ending=' + end_date,'fs_output_div');
+	}
+
+function d(phase,job,ct,detailmode,start_date,end_date) {
+	//alert('phase: ' + phase);
+	//alert('job: ' + job);
+	//alert('ct: ' + ct);
+	//alert('detailmode: ' + detailmode);
+	//alert('start_date: ' + start_date);
+	//alert('end_date: ' + end_date);
+	phase=encodeURIComponent(phase);
+	job=encodeURIComponent(job);
+	ct=encodeURIComponent(ct);
+	detailmode=encodeURIComponent(detailmode);
+	start_date=encodeURIComponent(start_date);
+	end_date=encodeURIComponent(end_date);
+	open('$pagename?mode=report_show&report_name=baldwin_details&phase=' + phase + '&job=' + job + '&detailmode=' + detailmode + '&start_date=' + start_date + '&end_date=' + end_date + '&ct=' + ct,'details_' + job,'width=900,height=600,scrollbars=yes,resizable=yes');
+	}
+            
+function open_aging_window(jobinfo_id) {
+	open('?mode=report_show&report_name=baldwin_aging&jobinfo_id_set=' + jobinfo_id,'${global_jobinfo_id}>aging','width=1000,height=600,scrollbars=1,resizable=1');
+	}
+
+function open_change_orders(jobinfo_id) {
+	open('?mode=report_show&report_name=baldwin_change_orders&jobinfo_id_set=' + jobinfo_id,'${global_jobinfo_id}>change_orders','width=500,height=400,scrollbars=1,resizable=1');
+	}
+
+function open_subcontracts(jobinfo_id) {
+	open('?mode=report_show&report_name=baldwin_subcontracts&jobinfo_id_set=' + jobinfo_id,'${global_jobinfo_id}>change_orders','width=1000,height=400,scrollbars=1,resizable=1');
+	}
+</script>
+	<table border=1 width=950px style=\"text-align: right; font-size: 75%;\" cellspacing=0 cellpadding=2>
+	<tr><td bgcolor=$fd_color_4 align=center colspan=10>
+		<b>Contract Status</b>
+	</td></tr>
+
+	<tr><td bgcolor=$fd_color_3>
+		Orig Contract
+	</td><td>
+		$summary_info->orig_contract_amount_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Gross Billed
+	</td><td>
+		<a href=javascript:open_aging_window()><font color=blue>$summary_info->billedamt_gap_num</font></a>
+	</td><td bgcolor=$fd_color_3>
+		Received Amt
+	</td><td>
+		$summary_info->receivedamt_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Committed Subs
+	</td><td>
+		$summary_info->rcc_subcontracts_gap_num
+	</td></tr>
+
+	<tr><td bgcolor=$fd_color_3>
+		Change Orders
+	</td><td>
+		<a href=\"javascript:open_change_orders($global_jobinfo_id)\">$summary_info->change_orders_gap_num</a>
+	</td><td bgcolor=$fd_color_3>
+		Net Billed
+	</td><td>
+		$summary_info->netbilledamt_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Paid to date
+	</td><td>
+		$summary_info->paidtodate_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Committed Matl
+	</td><td>
+		$summary_info->rcc_material_gap_num
+	</td></tr>
+
+	<tr><td bgcolor=$fd_color_3>
+		Curr Contract
+	</td><td>
+		$summary_info->current_contract_amount_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Retainage
+	</td><td>
+		$summary_info->retainage_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Net Cash Flow
+	</td><td>
+		$summary_info->netcashflow_gap_num
+	</td><td bgcolor=$fd_color_3>
+		Committed Equip
+	</td><td>
+		$summary_info->rcc_equipment_gap_num
+	</td></tr>
+	<form name=fs_view_form method=post action=$pagename>
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=$report_name>
+	<tr style=\"border-left: 0px solid white;\"><td colspan=8 style=\"border: 0px solid white;\">&nbsp;</td></tr>
+	<tr><td colspan=8 bgcolor=$fd_color_4 align=left style=\"border: 3px solid black;\">
+		<font style=\"font-size: 16px;\"><b>Select View</b></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		&nbsp;&nbsp;&nbsp;&nbsp;Summary:<input $baldwin_check type=radio name=report_mode value=baldwin onclick=submit()>
+		&nbsp;&nbsp;&nbsp;&nbsp;Details:<input $baldwin_full_check type=radio name=report_mode value=baldwin_full onclick=submit()>
+		&nbsp;&nbsp;&nbsp;&nbsp;Graphs:<input $baldwin_graphs_check type=radio name=report_mode value=baldwin_graphs onclick=submit()>
+		&nbsp;&nbsp;&nbsp;&nbsp;Weekly Labor:<input $baldwin_weekly_labor_check type=radio name=report_mode value=baldwin_weekly_labor onclick=submit()>
+		&nbsp;&nbsp;&nbsp;&nbsp;MJCS:<input $baldwin_mjcs_check type=radio name=report_mode value=baldwin_mjcs onclick=submit()>
+	</td></tr>
+	</form>	
+
+
+
+	</table>
+	
+<div id=\"fs_output_div\" style=\"width: 950px;\"></div>	
+<div id=fs_output_dive>&nbsp;</div>	
+
+
+";
+
+$load_url="$pagename?mode=report_show&report_name=$report_mode&show_jobinfo_id=$global_jobinfo_id&week_ending=$week_ending&order_by=$order_by";
+//$load_url="$pagename";
+//$load_url="/gallery/";
+
+//$load_url="/";
+fd_navs_footer();
+
+//sleep (.5);
+echo "
+<script>
+	ajaxManager('load_page','$load_url','fs_output_div');
+</script>
+";
+		
+
+
+//die();
+//if ($debug==1) tcheck("after printing out everything");
+
+//fd_navs_footer();exit;
+?> 

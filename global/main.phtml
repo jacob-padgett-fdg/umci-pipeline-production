@@ -1,0 +1,84 @@
+<?
+require('header.phtml');
+
+$query="select * from access_applications where application_active = 'Y' order by application_description";
+echo "
+<h2><center>Web <font onclick=\"javascript:ln();\">D</font>atabases</center></h2><hr>
+<script>
+function ln() {
+	if(confirm('Warning! Only use devel databases if instructed to!'))
+	document.location=\"/global-devel\";
+	}
+function todo_list(app_name) {
+	open('http://pipeline.umci.com/global/global_todo_list/?mode=application_show&application_name=' + app_name,'global_app_todos','width=700,height=500,scrollbars=1,resizable=1');
+	}
+function todo_add(app_name) {
+	open('http://pipeline.umci.com/global/global_todo_list/?mode=todo_add&application_name=' + app_name,'global_app_todos','width=700,height=500,scrollbars=1,resizable=1');
+	}
+
+</script>
+
+<table border=0 cellspacing=0 cellpadding=2>
+";
+$res=@mysql_query($query);
+$bgcolor="#ffffff";
+while($row=@mysql_fetch_object($res)){
+	if ($row->font_door_open!='Y') {
+		$perms=getoneb("select * from access where application_name = '$row->application_name' and contacts_id = '$global_user_id' and rightsmode = 'grant'");
+		if ($perms) $row->front_door_open='Y';
+		else {
+			$next_perms="select * from access left join contacts_groups on ( contacts_groups.group_id = access.group_id ) right join contacts_groups_members on (contacts_groups_members.group_id = contacts_groups.group_id and contacts_groups_members.contacts_id = '$global_user_id')  where application_name = '$row->application_name' and access.group_id > 0 limit 1"; 
+			$perms=getoneb($next_perms);
+			if ($perms) $row->front_door_open='Y';
+			}
+		}
+	
+	if ($row->front_door_open=='Y') {
+		$row->application_description=ereg_replace(" ","&nbsp;",$row->application_description);
+		echo "<tr bgcolor=$bgcolor><td width=10%>
+			</td><td>
+				<a href=$row->application_name$devel/><font color=blue>$row->application_description</font></a>
+			";
+			
+			
+			if ($devel!="") {
+				if ($bgcolor=="#ffffff") $bgcolor="#eeeeee";
+				else $bgcolor="#ffffff";
+				
+				$total=getone("select sum(1) as count from global_apps_todo where application_name = '$row->application_name' and active = 'Y'");
+				if ($total->count=="") $total->count="0";
+				echo "</td><td width=100% align=right>
+						<a href=javascript:todo_add('$row->application_name');>
+						Feature&nbsp;Request</a>
+					</td><td>
+						&nbsp;&nbsp;&nbsp;<a href=javascript:todo_list('$row->application_name');>To&nbsp;Do&nbsp;List</a>
+					</td><td>
+						($total->count)
+						";
+				}
+
+			echo"
+			</td></tr>";
+		} else {
+		echo "<tr><td width=10%>		
+				</td><td>
+				<i>$row->application_description</i>
+			</td></tr>";
+		}
+	}
+
+
+echo "
+</table>
+<hr>
+<a href=/intra/><font color=blue>UMC Insider</font><br>
+$auth_session_toggle_link
+";
+if ($devel==1)
+echo "<p align=right><i><a href=$pagename?devel=0><font color=#dddddd>&pi;</font></a></i>";
+else 
+echo "<p align=right><i><a href=$pagename?devel=1><font color=#dddddd>&pi;</font></a></i>";
+
+
+require('footer.phtml');
+?>

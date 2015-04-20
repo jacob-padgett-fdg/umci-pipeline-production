@@ -1,0 +1,21 @@
+<?
+require('header.phtml');
+$agreement_id=escapeshellcmd($agreement_id);
+$age=escapeshellcmd($age);
+
+$query="select * from svc_equip_categories order by category";
+//tabledump($query);
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	echo "<a href=$pagename?mode=svc_agreement_equipment_add_3&agreement_id=$agreement_id&age=$age&category_id=$row->category_id><font color=blue>$row->category</font></a><br>";
+	}
+
+
+
+
+
+
+
+
+
+?>

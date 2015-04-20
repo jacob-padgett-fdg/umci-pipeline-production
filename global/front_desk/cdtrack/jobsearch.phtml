@@ -1,0 +1,19 @@
+<?
+require("pageheader.phtml");
+
+echo "
+Type in a job #, name, or part of a description:
+<form name=jobsearch method=get action=$pagename>
+<input type=hidden name=mode value=jobsearch_submit>
+<input type=text name=search_string><br>
+<input type=button value=Search onclick=submit();>
+
+
+
+</form>
+";
+require("footer.phtml");
+?>
+
+
+

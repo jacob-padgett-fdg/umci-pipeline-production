@@ -1,0 +1,66 @@
+<?
+echo"
+<input type=hidden name=proposal_form_estimating_assignments value=\"true\">
+<table border=1 cellspacing=0 cellpadding=1 class=\"tableobj\">
+
+	<tr><td bgcolor=$table_dark colspan=2>
+		<b>Estimating Assignments</b>
+	</td></tr>
+	";
+	
+	if ($form_mode=="search") { echo "<tr><td><b>All</b></td><td>";
+	contactbox("select contacts_id as to_all_selection,display_name 
+	from contacts where bidlist_takeoff_lists = 'Y' order by alphasort");echo "</td></tr>"; }
+	
+	echo"
+	<tr><th>
+		<b><font color=red>Lead</font></b>
+	</th><td>
+		";contactbox("select contacts_id as to_lead,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_lead,"","",1);echo"
+	</td></tr>
+		
+	<tr><th>
+		PLM
+	</th><td>
+		";contactbox("select contacts_id as to_plm,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_plm,"","",1);echo"
+	</td></tr>
+		
+	<tr><th>
+		HTG
+	</th><td>
+		";contactbox("select contacts_id as to_htg,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_htg,"","",1);echo"
+	</td></tr>
+		
+	<tr><th>
+		Metal
+	</th><td>
+		";contactbox("select contacts_id as to_metal,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_metal,"","",1);echo"
+	</td></tr>
+	
+	<tr><th>
+		PROC
+	</th><td>
+		";contactbox("select contacts_id as to_proc,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_proc,"","",1);echo"
+	</td></tr>
+	
+	<tr><th>
+		PROP
+	</th><td>
+		";contactbox("select contacts_id as to_prop,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_prop,"","",1);echo"
+	</td></tr>
+
+	<tr><th>
+		GCT
+	</th><td>
+		";contactbox("select contacts_id as to_gct,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_gct,"","",1);echo"
+	</td></tr>
+
+</table>
+<input type=hidden name=to_lead_radio value='='>
+<input type=hidden name=to_plm_radio value='='>
+<input type=hidden name=to_htg_radio value='='>
+<input type=hidden name=to_metal_radio value='='>
+<input type=hidden name=to_proc_radio value='='>
+<input type=hidden name=to_prop_radio value='='>
+";
+?>

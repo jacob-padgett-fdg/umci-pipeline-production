@@ -1,0 +1,57 @@
+<?
+
+if (!($issue_res_admin))
+	die("Error: you don't have permission to be here, so go away!!!!!!!!!");
+
+if ($issue_res_problem_new_category=="")
+	die("Error: you didn't pass me enough information!!!!!! Aborting for your own safety!!!!!! Contact your system administrator for help!");
+
+if ($problem_id=="")
+	die("Error: not enough information received (missing problem_id)!!!!!! Aborting for your own safety!!!!!! Contact your system administrator for help!");
+	
+
+$issue_res_problem_new_category=escapeshellcmd($issue_res_problem_new_category);
+$problem_id=escapeshellcmd($problem_id);
+
+session_register('$issue_res_problem_last_new_category');
+$issue_res_problem_last_new_category=$issue_res_problem_new_category;
+
+$current_conflict_id=getone("select max(conflict_id) as max from issue_res_issues where issue_res_category_id = '$issue_res_problem_new_category'");
+
+$new_conflict_id=$current_conflict_id->max + 1;
+
+$query="update issue_res_issues set conflict_id = '$new_conflict_id',issue_res_category_id = '$issue_res_problem_new_category' where problem_id = '$problem_id'";
+
+
+//tabledump("select * from issue_res_issues where problem_id = '$problem_id'");
+$problem_info=getone("select * from issue_res_issues where problem_id = '$problem_id'");
+while($problem_info->issue_child != 0) {
+	$problem_info=getone("select * from issue_res_issues where problem_id = '$problem_info->issue_child'");
+	@mysql_query("update issue_res_issues set conflict_id = '$new_conflict_id',issue_res_category_id = '$issue_res_problem_new_category' where problem_id = '$problem_info->problem_id'");
+	}
+
+
+
+//echo "<hr>$query</hr>";exit;
+
+$res=@mysql_query($query);
+
+if (!($res)) {
+	echo "Error: Contact your system administrator *IMMEDIATELY*! DO NOT 
+	try this again without assistence, and please leave this page open, and
+	exactly where it is if possible, or print it out if you need to close this
+	window.<p>
+	The update of the database has failed. The query that failed is:<hr>
+	$query";
+	exit;
+	}
+
+forward('main');
+echo "hiya";
+
+
+
+
+
+
+?>

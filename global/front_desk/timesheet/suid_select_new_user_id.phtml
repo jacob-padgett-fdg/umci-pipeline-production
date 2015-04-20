@@ -1,0 +1,31 @@
+<?
+if (!($suid_check)) die ("ERROR: Security Violation! The authorities are being notified");
+
+echo "
+<body bgcolor=white>
+
+
+<form name=new_uid method=post action=$pagename>
+<input type=hidden name=mode value=suid_assume_new_user_id>
+";
+//dropbox("select contacts_id as assume_id, last_name, ', ',first_name,'(',login_name,')' from contacts where umc_emp = 'Y' and current = 'Y' order by last_name","",20);
+contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'","","assume_id");
+
+echo "
+
+<p>
+<input type=submit value=\"Assume User's Identity\">
+
+</form>
+</body>
+";
+
+
+
+
+
+
+
+
+
+?>

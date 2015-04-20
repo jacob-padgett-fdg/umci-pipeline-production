@@ -1,0 +1,18 @@
+<?
+
+$walk_through=escapeshellcmd($walk_through);
+$walk_through_remind_lead=escapeshellcmd($walk_through_remind_lead);
+$walk_through_employee=escapeshellcmd($walk_through_employee);
+$walk_through_date=vali_date($walk_through_date);
+$walk_through_time=timefix($walk_through_time);
+
+$query_data=$query_data . "$data_seperator
+walk_through = '$walk_through',
+walk_through_remind_lead = '$walk_through_remind_lead',
+walk_through_employee = '$walk_through_employee',
+walk_through_date = '$walk_through_date',
+walk_through_time = $walk_through_time";
+
+$data_seperator=",";
+
+?>

@@ -1,0 +1,6 @@
+<?
+include("lam_lib.inc");
+$prent_lam=addslashes($parent_lam);
+$parent_info=getoneb("select * from lam where lam_id = '$parent_lam'");
+print_lam_div($parent_info->lam_id);
+?>

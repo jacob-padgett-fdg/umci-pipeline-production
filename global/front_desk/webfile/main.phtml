@@ -1,0 +1,51 @@
+<?
+require('header.phtml');
+require_once('querylib.inc');
+require_once('header.phtml');
+
+echo "
+
+$auth_session_toggle_link<br>
+$auth_session_exit_link<br>
+<p>
+<a href=$pagename?mode=maintenance_script><font color=blue>Maintenance</font></a><br>
+<a href=$pagename?mode=list_queues><font color=blue>Manage Queues</font></a>";
+
+echo "<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=\"#dddddd\"><th colspan=3 align=center><b>Files uploaded in the last week</b></th></tr>
+<tr bgcolor=\"#dddddd\"><th>Upload Date</th><th>Description</th><th>File</th></tr>
+";
+
+//$res=@mysql_query("select * from webfile_groups where create_date = now() order by description");
+//DATE_SUB(CURDATE(),INTERVAL 7 DAY) <= date_col;
+$res=@mysql_query("select * from webfile_groups where 
+date_sub(curdate(),interval 7 day) <= create_date order by create_date desc, file_group_id desc,description limit 400");
+
+while ($row=@mysql_fetch_object($res)) {
+	$row->create_date=invali_date($row->create_date);
+	echo "<tr><td>
+	$row->create_date
+	</td><td>
+	$row->description&nbsp;</td><form name=webfile_$row->file_group_id method=post action=$pagename><td>";webfilebox($row->file_group_id,"test_field");echo "</td></tr></form>";
+	}
+echo "</table>";
+
+
+
+echo "
+<form name=testform method=post action=$pagename>
+<input type=hidden name=mode value=main>
+";
+webfilebox("","a_blank_file_group");
+echo "
+<p>
+<input type=submit>
+</form>
+
+
+";
+
+
+
+
+?>

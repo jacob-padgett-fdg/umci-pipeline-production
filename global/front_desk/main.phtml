@@ -1,0 +1,345 @@
+<?
+/*
+$res=@mysql_query("select contacts_id,display_name,login_name,email,web_password from contacts where current = 'Y' and login_name like '%@%' and web_password != ''");
+while($row=@mysql_fetch_object($res)) {
+	$obsolete=TRUE;
+	//$has_perms=getoneb("select * from access_rights where contacts_id = '$row->contacts_id' and application_name != 'issue_resolution' limit 1");
+	$has_perms_query="
+		select 
+			access_id,
+			application_name,
+			contacts_id,
+			login_name,
+			access_rights.display_name,
+			jobinfo.display_name,
+			first_name,
+			last_name,
+			type,
+			groupname,
+			jobinfo.jobinfo_id 
+			
+			from access_rights 
+			
+			left join jobinfo on access_rights.jobinfo_id = jobinfo.jobinfo_id
+			
+			where 
+			contacts_id = '$row->contacts_id' and 
+			application_name != 'issue_resolution' and
+			active = 'Y' limit 1";
+		$has_perms=getoneb($has_perms_query);
+		
+	if ($has_perms) {
+		$obsolete=FALSE;
+		//exit;
+		} else {
+		//echo "<hr>$has_perms_query<hr>";
+		}
+	
+	
+	$has_issues_query="select 
+		issue_res_users_id,
+		issue_res_users.jobinfo_id,
+		issue_res_users.contacts_id 
+		
+		from issue_res_users 
+		
+		left join jobinfo on issu_res_users.jobinfo_id = jobinfo.jobinfo_id
+		
+		where 
+			contacts_id = '$row->contacts_id' and 
+			active = 'Y'
+
+		limit 1";
+	$has_issues=getoneb($has_issues_query);
+	//if (getoneb("select * from issue_res_users where contacts_id = '$row->contacts_id' limit 1")) {
+	if ($has_issues) {
+		$obsolete=FALSE;
+		}
+	
+	if ($obsolete) {
+		echo "OBSOLETE ACCOUNT: $row->contacts_id - $row->display_name, $row->login_name,$row->web_password<br>";
+		//echo "<hr>$has_perms_query<hr>";
+		//echo "update contacts set current = 'N' where contacts_id = '$row->contacts_id'<br>";
+		//mysql_query("update contacts set current = 'N' where contacts_id = '$row->contacts_id'");
+		$o_count++;
+		//$count++;
+		} else {
+		echo "<b>*******NOT OBSOLETE: $row->contacts_id - $row->display_name, $row->login_name</b><br>";
+		$count++;
+		}
+	flush();
+	}
+
+echo "Total remaining users: $count<br>";
+echo "Total obsolete&nbsp;&nbsp;users: $o_count";
+
+exit;
+//tabledump("select contacts_id,display_name,login_name,email,web_password from contacts where current = 'Y' and login_name like '%@%' and web_password != ''");exit;
+//die_security();
+*/
+
+require('header.phtml');
+require_once('viewpoint_libs.inc');
+
+$report_manager=getoneb("select * from front_desk_reports natural join front_desk_reports_permissions where report_name = 'report_manager' and contacts_id = '$global_user_id'");
+
+$mouseovercolor="#aaaaff";
+fd_navs_header();
+
+//if ($global_browser=="IE") warn_chrome_plugin();
+
+
+if ($global_jobinfo) {
+	
+include("./main_tabs.phtml");
+	///////////////////////////////////////////////////////////////////////
+	// Job specific alerts!!!!!
+	///////////////////////////////////////////////////////////////////////
+	if ($global_jobinfo->active != 'Y') {
+		echo "<center><h1 style=\"background: red;\">This job is closed</h1></center>";
+		}
+	if ($global_jobinfo->confidential=='Y') echo "<br><font color=red><b>CONFIDENTIAL PROJECT</b></font>";
+	///////////////////////////////////////////////////////////////////////
+	// End of jobs specific alerts... 
+	///////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////
+// The general information table that makes up most of the page.. 
+///////////////////////////////////////////////////////////////////////////
+echo "<table border=0 style=\"border-collapse: collapse;\" cellspacing=0 cellpadding=4>";
+	$traxx_res=@mysql_query("select * from bidlist where jobinfo_id = '$global_jobinfo_id'");
+	$traxx_count=@mysql_num_rows($traxx_res);
+	if ($traxx_count>0) {
+		while ($trxrow=@mysql_fetch_object($traxx_res)) {
+		echo "<tr><td>
+			<b>TRAXX Record</b>
+			</td><td>
+				<a href=/global/proposals$devel?mode=proposal_edit&bidlist_id=$trxrow->bidlist_id><font color=blue>$trxrow->proposal_num</font></a>
+			</td></tr>";
+		}
+	}
+	
+	
+	echo "
+	<tr><td valign=top>
+		<b>UMC PM</b>
+	</td><td>
+		<form name=junk>";contactsbox("",$global_jobinfo->project_manager_id,'asdf','',33);echo"</form>
+	</td><td rowspan=13 valign=top>";
+	
+	///////////////////////////////////////////////////////////////////////
+	// Right side.. 
+	///////////////////////////////////////////////////////////////////////
+	$image_link=webfile_possible_view_link($global_jobinfo->fd_site_picture);
+	if (!($image_link)) $image_link="/images/fd_umc_logo.png";
+	echo "<div style=\"padding-right: 10px; text-align: center; float: right;\"><img border=2 style=\"width: 200px;\" src=\"$image_link\">";
+	
+	// Show web page links.. 
+	$web_links=getoneb("select * from front_desk_links where jobinfo_id = '$global_jobinfo->jobinfo_id' and active = 'Y' limit 1");
+	if ($web_links) {
+		$links_res=@mysql_query("select * from front_desk_links where jobinfo_id = '$global_jobinfo->jobinfo_id' and active = 'Y' order by sort_priority");
+		echo "<div width=100% style=\"padding: 3px; border: 1px solid black; background: $fd_color_3;\"><b><font size=-1>Job Links</font></b><br>";
+		
+		
+		
+		while ($link_row=@mysql_fetch_object($links_res)) {
+			$target_spec="";
+			if($link_row->new_window=='Y') $target_spec="target=\"fd_job_url$link_row->link_id\"";
+			echo "<a href=\"$link_row->link_url\" $target_spec><font color=blue>$link_row->link_text</font></a><br>";
+			}
+		echo "</div>";
+		}
+	// Important files
+	$files_res=@mysql_query("select * from front_desk_files where jobinfo_id = '$global_jobinfo->jobinfo_id' and active = 'Y' order by sort_priority");
+	
+	echo "
+	<div style=\"width: 200px; padding: 3px; border: 1px solid black; background: $fd_color_4;\">";
+	if ($global_user->umc_emp=='Y') echo "<div style=\"float: right;\"><a href=\"javascript:open_file_add_box()\"><font color=blue>Add</font></a></div>";
+	echo "<b><font size=-1>Important Job Files</font></b>
+	<center><div style=\"border: 1px solid black; display: none; background: white; width: 275px;\" id=file_add_box>
+	<table cellspacing=0 cellpadding=2><form name=file_upload_form method=get action=\"$pagename\">
+	<input type=hidden name=mode value=fd_file_add_submit>
+	<input type=hidden name=jobinfo_id value=\"$global_jobinfo->jobinfo_id\">
+	<tr><td>
+		Description:
+	</td><td>
+		<input type=text name=link_text size=18>
+	</td></tr>
+	
+	<tr><td>
+		Select File:
+	</td><td>";
+		webfilebox("",'file_group_id','opener.document.file_upload_form.submit()',17);
+	echo"
+	</td></form></tr>
+	</table>
+	</div></center>
+	";
+	while ($file_row=@mysql_fetch_object($files_res)) {
+		echo "
+		<div id=\"file_form_div_$file_row->file_group_id\" style=\"text-align: left; display: none;\">
+		<form name=\"fuuform$file_row->file_entry_id\" method=post action=$pagename>
+		<div style=\"float: right;\"><input type=submit value=Save></div>
+		<input type=hidden name=mode value=fd_file_add_submit>
+		<input type=hidden name=file_entry_id value=\"$file_row->file_entry_id\">
+		<input type=text size=20 name=link_text value=\"$file_row->link_text\">";
+		webfilebox($file_row->file_group_id,'file_group_id','',17);
+		echo "</form></div>
+		<div style=\"text-align: center;\" id=\"file_text_div_$file_row->file_group_id\">";
+		if (($adminuser)||($fd_manager)||($global_user_id==$file_row->creator_id)) {
+			echo "<div style=\"float: right;\"><a href=javascript:show_file_update_form($file_row->file_group_id)><font size=-1 color=blue><i>Update</i></font></a></div>";
+			}
+		$link=webfile_possible_view_link($file_row->file_group_id);
+		echo "&nbsp;<a target=\"job_file_view_$file_row->file_group_id\" href=\"$link\"><font color=blue>$file_row->link_text</font></a></div>";
+	}
+	echo "</div></div>";
+	////////////////////////////////////////////////////////////////////////
+	// End right side.. 
+	////////////////////////////////////////////////////////////////////////
+	
+	echo "</td></tr><form name=junk2>";
+
+	$foreman_res=@mysql_query("select * from front_desk_job_foreman where jobinfo_id = '$global_jobinfo_id' order by general desc, plumb desc, pipe desc, sheet desc, industrial desc, foreman_entry_id");
+	$foreman_count=0;
+	while ($foreman_row=@mysql_fetch_object($foreman_res)) {
+		$foreman_count++;
+		echo "<tr><td>
+				<b>Foreman $foreman_count</b> ";
+				if ($foreman_row->general=='Y') echo "(general)";
+				else {	if ($foreman_row->plumb=='Y') echo "(plumb)";
+						if ($foreman_row->pipe=='Y') echo "(pipe)";
+						if ($foreman_row->sheet=='Y') echo "(sheet)";
+						if ($foreman_row->industrial=='Y') echo "(indust)";
+						}
+				echo"
+			</td><td>
+				";contactsbox("",$foreman_row->foreman_id,"asdfgxef$foreman_count",'',33);echo"
+			</td></tr>";
+		}
+	
+	if ($global_jobinfo->detailing_lead_id > 0) {
+		echo "<tr><td valign=top>
+			<b>BIM Services Lead</b>
+		</td><td>
+			";contactsbox("",$global_jobinfo->detailing_lead_id,'asdfg','',33);echo"
+		</td></tr>
+		";
+		}
+
+	if ($global_jobinfo->contract_admin > 0) {
+		echo "<tr><td valign=top>
+			<b>Contract Admin</b>
+		</td><td>
+			";contactsbox("",$global_jobinfo->contract_admin,'asdfgh','',33);echo"
+		</td></tr>
+		";
+		}
+
+	if ($global_jobinfo->safetyrep > 0) {
+		echo "<tr><td>
+			<b>Safety Czar</b>
+		</td><td>
+			";contactsbox("",$global_jobinfo->safetyrep,'asdfghi','',33);echo"
+		</td></tr>
+		";
+		}
+$global_jobinfo->expected_complete_date=invali_date($global_jobinfo->expected_complete_date);
+
+echo " <tr><td>
+	<b>Contract Type</b>
+</td><td>
+	$global_jobinfo->contract_type
+</td></tr>
+
+<tr><td>
+	<b>Project Type</b>
+</td><td>
+	$global_jobinfo->fed_pub
+</td></tr>
+
+<tr><td>
+	<b>Expected End Date</b>
+</td><td>
+	$global_jobinfo->expected_complete_date
+</td></tr>
+";
+
+$res=@mysql_query("select * from jobinfo_phone_numbers where jobinfo_id = '$global_jobinfo->jobinfo_id' order by sort_priority,description");
+echo "<tr><td colspan=2><table border=0 cellspacing=0 cellpadding=3>";
+while($phone=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<b>$phone->description&nbsp;&nbsp;</b>
+		</td><td>
+			$phone->phone_number
+		</td>";
+		if ($phone->extension!="") echo "<td>$phone->extension</td>";
+		echo "</tr>";
+	}
+
+echo "
+	</table>
+</td></tr>";
+
+$site_ups="";
+if ($global_jobinfo->ups_ok=='Y') $site_ups="<img src=\"/images/fd_ups_okay_tiny.png\">";
+else $site_ups="<img src=\"/images/fd_ups_noway_tiny.png\">";
+//if ($global_jobinfo->ups_ok=='N') $site_ups="<img src=\"/images/fd_ups_noway_tiny.png\">";
+
+//echo "$global_jobinfo->ups_ok";
+
+echo "
+<tr><td valign=top>
+	<b>Site Address</b>&nbsp;$site_ups
+</td><td style=\"border: 1px solid black;\">";
+	$site_formatted=ereg_replace('  ',' ',ereg_replace("\n",'<br>',$global_jobinfo->job_site_address));
+	$site_escaped=urlencode(ereg_replace("\r",' ',ereg_replace("  "," ",ereg_replace("\r",' ',$global_jobinfo->job_site_address))));echo "
+	$site_formatted<br>
+	<a href=\"http://www.google.com/maps?hl=en&iwloc=addr&q=$site_escaped\" target=site_map_window><font color=blue>MAP</font></a>
+</td></tr>";
+
+
+$address_res=@mysql_query("select * from jobinfo_addresses where jobinfo_id = '$global_jobinfo->jobinfo_id' order by sort_priority");
+while ($address_row=@mysql_fetch_object($address_res)) {
+	$site_ups="";
+	if ($address_row->is_ups=='Y') $site_ups="<img src=\"/images/fd_ups_okay_tiny.png\">";
+	if ($address_row->is_ups=='N') $site_ups="<img src=\"/images/fd_ups_noway_tiny.png\">";
+	
+	$trailer="";
+	if ($address_row->is_job_office=='Y') $trailer="<img src=\"/images/job_office_tiny.png\">";
+
+	echo "
+	<tr><td valign=top>
+		<b>$address_row->description</b>&nbsp;$site_ups$trailer
+	</td><td style=\"border: 1px solid black;\">";
+		$site_formatted=ereg_replace('  ',' ',ereg_replace("\n",'<br>',$address_row->address));
+		$site_escaped=urlencode(ereg_replace("\r",' ',ereg_replace("  "," ",ereg_replace("\r",' ',$address_row->address))));echo "
+		$site_formatted<br>
+		<a href=\"http://www.google.com/maps?hl=en&iwloc=addr&q=$site_escaped\" target=site_map_window><font color=blue>MAP</font></a>
+	</td></tr>";
+	}
+echo "</table></form>";
+///////////////////////////////////////////////////////////////////////////
+// End of the general information table.. 
+///////////////////////////////////////////////////////////////////////////
+}
+
+
+echo "
+
+<script>
+function show_file_update_form(file_group_id) {
+	formdiv=document.getElementById('file_form_div_' +  file_group_id);
+	textdiv=document.getElementById('file_text_div_' +  file_group_id);
+	textdiv.style.display='none';
+	formdiv.style.display='block';
+	}
+
+function open_file_add_box() {
+	document.getElementById('file_add_box').style.display='block';
+	}
+</script>";	
+
+fd_navs_footer();
+?>

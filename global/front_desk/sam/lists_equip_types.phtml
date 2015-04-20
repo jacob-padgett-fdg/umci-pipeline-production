@@ -1,0 +1,51 @@
+<?
+
+if ($category_id!="") {
+	$category_id=escapeshellcmd($category_id);
+	$category_info=getoneb("select * from svc_equip_categories where category_id = '$category_id'");
+	} else {
+	$category_info=FALSE;
+	}
+
+echo "
+<a href=$pagename?mode=admin_settings><font color=blue>Return to admin settings</font></a><br>
+
+<h3><center>Modify Category Types</center></h3><hr>
+<form method=post action=$pagename>
+<b>Modify equipment types for what category: </b>
+<input type=hidden name=mode value=lists_equip_types>
+";dropbox("select category_id,category from svc_equip_categories order by category",$category_info->category_id,"","submit()",2);echo "
+</form>
+";
+
+if ($category_info) {
+	$category_id=escapeshellcmd($category_id);
+	echo "
+	<b>Types for category: $category_info->category</b><hr>
+	<form name=category_types_edit method=post action=$pagename>
+	<input type=hidden name=mode value=lists_equip_type_edit>
+	<input type=hidden name=category_id value=$category_info->category_id>
+	<input type=submit value=Add>
+	</form>	
+	<table border=1 cellspacing=0 cellpadding=5>
+	";
+	
+	$query="select * from svc_equip_types where category_id = '$category_info->category_id' order by type";
+	
+	$res=@mysql_query($query);
+	while ($row=@mysql_fetch_object($res)) {
+		echo "<tr><td>
+				$row->type
+			</td><td>
+				<a href=$pagename?mode=lists_equip_type_edit&category_id=$category_info->category_id&equip_type_id=$row->equip_type_id><font color=blue><i>Edit</i></font></a>
+			</td></tr>
+			
+			";
+		}
+	echo "</table>";
+	
+	//tabledump("select * from svc_equip_category_types where category_id = '$category_info->category_id'");
+	
+	
+	}
+?>

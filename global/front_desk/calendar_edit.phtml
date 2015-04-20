@@ -1,0 +1,177 @@
+<?
+if ($unique_id!="") {
+	$event_info=getoneb("select * from front_desk_calendar where jobinfo_id = '" . addslashes($cal_jobinfo_id) . "' and unique_id = '" . addslashes($unique_id) . "' limit 1");
+	if ($event_info) $calendar_id=$event_info->calendar_id;
+	}
+if ($calendar_id!="") {
+	$calendar_id=addslashes($calendar_id);
+	$cal_info=getoneb("select * from front_desk_calendar where calendar_id = '$calendar_id'");
+	$cal_info->shared=checkbreak($cal_info->shared);
+	$cal_info->is_a_task=checkbreak($cal_info->is_a_task);
+	$cal_info->new="no";
+	} else {
+	if ($start_date=="") $start_date=date('m/d/Y');
+	$cal_info->title=addslashes($title);
+	$cal_info->category=addslashes($category);
+	$cal_info->jobinfo_id=addslashes($cal_jobinfo_id);
+	$cal_info->start_date=vali_date($start_date);
+	$cal_info->end_date=vali_date($end_date);
+	$cal_info->start_time=addslashes($start_time);
+	$cal_info->end_time=addslashes($end_time);
+	$cal_info->owner_id=$global_user_id;
+	$cal_info->creator_id=$global_user_id;
+	$cal_info->shared="checked";
+	if ($is_signed_off=="") $cal_info->is_signed_off="N";
+	else $cal_info->is_signed_off=addslashes($is_signed_off);
+	if ($is_a_task=="checked") $cal_info->is_a_task="checked";
+	$unique_id=addslashes($unique_id);
+	}
+check_cal_init($cal_info->jobinfo_id);
+
+$creator=getoneb("select * from contacts where contacts_id = '$cal_info->creator_id'");
+$times_array=array(
+	"","00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23",
+	"display_text"=>array("00"=>"12 am","01"=>"01 am","02"=>"02 am","03"=>"03 am","04"=>"04 am","05"=>"05 am",
+		"06"=>"06 am","07"=>"07 am","08"=>"08 am","09"=>"09 am","10"=>"10 am","11"=>"11 am","12"=>"12 pm","13"=>"01 pm",
+		"14"=>"02 pm","15"=>"03 pm","16"=>"04 pm","17"=>"05 pm","18"=>"06 pm","19"=>"07 pm","20"=>"08 pm","21"=>"09 pm",
+		"22"=>"10 pm","23"=>"11 pm"));
+$minutes_array=array("",00,05,10,15,20,25,30,35,40,45,50,55);
+
+if ($cal_info->start_time!="00:00:00") {
+	$sta=explode(":",$cal_info->start_time);
+	$start_time_hours=$sta[0];
+	$start_time_minutes=$sta[1];
+	}
+if ($cal_info->end_time!="00:00:00") {
+	$eta=explode(":",$cal_info->end_time);
+	$end_time_hours=$eta[0];
+	$end_time_minutes=$eta[1];
+	}
+
+echo "
+<form name=cal_edit method=get action=$pagename>
+<input type=hidden name=mode value=calendar_submit>
+<input type=hidden name=cal_jobinfo_id value=\"$cal_info->jobinfo_id\">
+<input type=hidden name=calendar_id value='$cal_info->calendar_id'>
+<input type=hidden name=unique_id value='$unique_id'>
+<table bgcolor=$fd_color_1 border=1 cellspacing=0 cellpadding=2 width=100%>
+
+<tr><td colspan=2 bgcolor=$fd_color_4 align=center><b>Calendar Item</b></td></tr>
+
+<tr><td>
+	<b><font size=-1>Title:</font></b>
+</td><td>
+	<input style=\"background: $fd_color_3;\" type=text size=30 name=title value=\"$cal_info->title\">
+</td></tr>
+
+<tr><td>
+	<b><font size=-1>This Item Is:</font></b>
+</td><td>
+	<font size=-1><b>A Due Date<input onchange=\"check_form()\" type=checkbox name=is_a_task $cal_info->is_a_task> ";
+	if ($cal_info->jobinfo_id>0) {
+		echo "Shared<input type=checkbox name=shared $cal_info->shared>
+			</td></tr>";
+		} else {
+			echo "<input type=hidden name=shared value='N'>";
+		}
+echo "
+<tr><td>
+	<b><font size=-1>Category:</font></b>
+</td><td>";
+	dropbox("select category_name as category,category_name from front_desk_calendar_categories where jobinfo_id = '$cal_info->jobinfo_id' and active = 'Y'",$cal_info->category,1,'',2);echo "
+</td></tr>
+
+<tr><td>
+	<b><font size=-1>Owner:</font></b>
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'",$cal_info->owner_id,'owner_id');echo "
+</td></tr>
+
+<tr><td id=start_date_text>
+	<b><font size=-1>Start Date/Time:</font></b>
+</td><td>";
+	datebox($cal_info->start_date,"cal_edit.start_date","","\" style=\"background: $fd_color_3;\"");echo "/&nbsp;";
+	dropbox_array($times_array,"start_time_hours",$start_time_hours);
+	dropbox_array($minutes_array,"start_time_minutes",$start_time_minutes);
+echo "
+</td></tr>
+
+<tr id=is_signed_off_row><td>
+	<b><font size=-1>Status:</font></b>
+</td><td>";
+	dropbox_array(array('Y','N',"display_text"=>array("Y"=>"Complete","N"=>"Incomplete")),"is_signed_off",$cal_info->is_signed_off);echo "
+</td></tr>
+
+<tr id=end_date_row><td>
+	<b><font size=-1>End Date/Time:</font></b>
+</td><td>";
+	datebox($cal_info->end_date,"cal_edit.end_date");echo "/&nbsp;";
+	dropbox_array($times_array,"end_time_hours",$end_time_hours);
+	dropbox_array($minutes_array,"end_time_minutes",$end_time_minutes);
+echo "
+</td></tr>
+
+<tr><td>
+	<b><font size=-1>Details:</font></b>
+</td><td>
+	<textarea name=description rows=5 cols=40>$cal_info->description</textarea>
+</td></tr>
+
+<tr><td>
+	<b><font size=-1>Attachment:</font></b>
+</td><td>	
+	";webfilebox($cal_info->file_group_id,"file_group_id");echo"
+</td></tr>
+
+
+</table>
+<br>
+<div style=\"float: right;\"><input type=submit value=\"Save\"></form></div>
+";
+
+if ($cal_info->new=="no") {
+	if ((pm_for_this_job($cal_info->jobinfo_id)) || ($global_user_id==$cal_info->owner_id) || (member_of_global_group_named("IT"))) {
+	//if (TRUE) {
+		echo "
+		<div style=\"float: right;\">
+		<form name=delete_event method=get action=$pagename>
+		<input type=hidden name=mode value=calendar_delete>
+		<input type=hidden name=calendar_id value=\"$cal_info->calendar_id\">
+		<input type=button value=\"Delete\" onclick=\"if(confirm('Delete this record?')) document.delete_event.submit()\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</form></div>
+		 ";
+		}
+	}
+
+echo "
+<div style=\"width: 20px; border: 1px solid black; background: $fd_color_3; float: left;\">&nbsp;</div>&nbsp;=&nbsp;Required field";
+
+
+echo "
+<script>
+function check_form() {
+	is_a_task=(document.cal_edit.is_a_task.checked);
+	if (is_a_task) {
+		document.getElementById('start_date_text').innerHTML='<font size=-1><b>Due Date/Time:</b></font>&nbsp;&nbsp;';
+		document.getElementById('end_date_row').style.display='none';
+		document.getElementById('is_signed_off_row').style.display='table-row';
+		} else {
+		document.getElementById('start_date_text').innerHTML='<font size=-1><b>Start Date/Time:</b></font>';
+		document.getElementById('end_date_row').style.display='table-row';
+		document.getElementById('is_signed_off_row').style.display='none';
+		}
+	}
+check_form();
+</script>
+
+
+
+";
+
+
+
+
+
+
+
+?>

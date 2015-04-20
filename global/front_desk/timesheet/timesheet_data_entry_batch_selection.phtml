@@ -1,0 +1,79 @@
+<?
+if (!($timesheet_data_entry_check)) die_security();
+
+if ($create_new=="1") {
+	$max_batch=getoneb("select * from timesheet_entry_batches order by data_entry_batch desc limit 1");
+	if ($match_batch->data_entry_batch<1) $new_batch=1;
+	else $new_batch=$match_batch->data_entry_batch + 1;
+	@mysql_query("insert into timesheet_entry_batches set
+					batch_owner = '$global_user_id',
+					batch_create_time = now(),
+					posted = 'N'");
+	$id=@mysql_insert_id();
+	session_register('data_entry_batch');
+	$data_entry_batch=$id;
+	forward("timesheet_data_entry_data_entry");
+	die();
+	}
+
+if ($select_new_batch!="") {
+	session_register('data_entry_batch');
+	$data_entry_batch=addslashes($select_new_batch);
+	forward("timesheet_data_entry_data_entry");
+	die();
+	}
+
+
+
+
+
+echo "choose an open batch or create a new one
+<hr>
+
+
+<a href=$pagename?mode=timesheet_data_entry_batch_selection&create_new=1><font color=blue>New Batch</font></a><br>
+
+
+<table border=1 cellspacing=0 cellpadding=5>
+
+<tr><td colspan=5 align=center valign=top bgcolor=$fd_color_4>
+	<b>Batches for $global_user_info->first_name $global_user_info->last_name</b>
+</td></tr>
+
+<tr><td>
+	Batch
+</td><td>
+	Create Time
+</td><td>
+	Post Time
+</td><td>
+	Posted
+</td></tr>
+
+";
+$res=@mysql_query("select * from timesheet_entry_batches where batch_owner = '$global_user_id' and posted = 'N' order by data_entry_batch");
+//tabledump("select * from timesheet_entry_batches where batch_owner = '$global_user_id' and posted = 'N' order by data_entry_batch");
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><Td>	
+			<a href=$pagename?mode=$mode&select_new_batch=$row->data_entry_batch><font color=blue>$row->data_entry_batch</font></a>
+		</td><td>
+			$row->batch_create_time
+		</td><td>
+			$row->batch_post_time
+		</td><td>
+			$row->posted
+		</td></tr>";
+	}
+echo "</table>";
+
+//tabledump("select * from timesheet_entry_batches where batch_owner = '$global_user_id' and posted = 'N' order by batch_create_time");
+
+
+
+
+
+
+
+
+
+?>

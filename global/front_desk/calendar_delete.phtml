@@ -1,0 +1,15 @@
+<?
+$calendar_id=addslashes($calendar_id);
+$cal_info=getoneb("select * from front_desk_calendar where calendar_id = '$calendar_id'");
+if (!($cal_info)) die("Application error. Incorrect event information.");
+
+if ($global_user_id!=$cal_info->owner_id) {
+	if (!(pm_for_this_job($cal_info->jobinfo_id))) die_security("trying to delete someone else's calendar event");
+	}
+
+//echo "<hr>delete from front_desk_calendar where calendar_id = '$cal_info->calendar_id'<hr>";
+//die();;
+@mysql_query("delete from front_desk_calendar where calendar_id = '$cal_info->calendar_id'");
+echo "<script>opener.document.location.reload();self.close();</script>";
+exit;
+?>

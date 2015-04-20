@@ -1,0 +1,146 @@
+<?
+include("header.phtml");
+if ($notify_id!="") {
+	$notify_id=addslashes($notify_id);
+	$notify_info=getone("select * from filewatch_notify where notify_id = '$notify_id'");
+	$notify_info->active=checkbreak($notify_info->active);
+	$notify_info->filter_umc_folder=checkbreak($notify_info->filter_umc_folder);
+	$saved_filter=$notify_info->filter_folder;
+	}
+
+
+
+if ($contacts_id!="") $notify_info->contacts_id=addslashes($contacts_id);
+if (($notify_info->contacts_id!="")&&($notify_info->contacts_id!=0)) {
+	$contact_info=getone("select * from contacts where contacts_id = '$notify_info->contacts_id'");
+	if ($contact_info->email=="") echo "<h2>Warning: Contact has not email address. Please correct</h2>";
+	}
+if ($active!="") $notify_info->active=checkbreak(checkfix($active));
+if ($filter_umc_folder!="") $notify_info->filter_umc_folder=checkbreak(checkfix($filter_umc_folder));
+
+////////////////////////////////////////////////////////////////////////
+// First try to make the directory and filter vars make sense
+////////////////////////////////////////////////////////////////////////
+if ($directory!="") {
+	$notify_info->directory=addslashes($directory);
+	//die("$directory");
+	}
+if ($filter_folder!="") $notify_info->filter_folder=addslashes($filter_folder);
+
+if ($notify_info->directory!="") $notify_info->directory=ereg_replace('[.][.]','',$notify_info->directory);
+if ($notify_info->filter_folder!="") $notify_info->filter_folder=ereg_replace('[.][.]','',$notify_info->filter_folder);
+
+$root_len=strlen($ftp_site_root);
+if (strncmp($notify_info->directory,$ftp_site_root,$root_len)!=0) $notify_info->directory=$ftp_site_root;
+//if(!(is_dir($notify_info->directory))) $notify_info->directory=$ftp_site_root;
+
+
+$dir_len=strlen($notify_info->directory);
+if (($notify_info->filter_folder!="")&&((strncmp($notify_info->filter_folder,$notify_info->directory,$dir_len)!=0))) $notify_info->filter_folder="";
+if (strlen($notify_info->filter_folder)<=$dir_len)$notify_info->filter_folder="";
+//if (($notify_info->filter_folder!="") && (!(is_dir($notify_info->filter_folder)))) $notify_info->filter_folder="";
+////////////////////////////////////////////////////////////////////////
+//echo "$notify_info->directory/$notify_info->filter_folder<p>";
+
+$directory_above=ereg_replace("/[^/]*$","",$notify_info->directory);
+$filter_folder_above=ereg_replace("/[^/]*$","",$notify_info->filter_folder);
+
+echo "
+<script>
+function setdir(directory) {
+	document.notify_edit.directory.value=directory;
+	document.notify_edit.mode.value='notify_edit';
+	document.notify_edit.submit();
+	}
+
+function setfilt(directory) {
+	document.notify_edit.filter_folder.value=directory;
+	document.notify_edit.mode.value='notify_edit';
+	document.notify_edit.submit();
+	}
+
+</script>
+
+<form name=notify_edit method=post action=$pagename>
+<input type=hidden name=mode value=notify_submit>
+<input type=hidden name=notify_id value=\"$notify_info->notify_id\">
+<input type=hidden name=directory value='$notify_info->directory'>
+<input type=hidden name=filter_folder value='$notify_info->filter_folder'>
+
+<table border=0 cellspacing=0 cellpadding=5>
+<tr><td>
+	<b>Who</b>
+</td><td>
+	";contactsbox("select * from contacts where email != '' and current = 'Y'",$notify_info->contacts_id,"contacts_id");echo"
+</td></tr>
+
+<tr><td>
+	<b>Active</b>
+</td><td>
+	<input type=checkbox name=active $notify_info->active>
+</td><td>
+	<input type=submit value=Save>
+</td></tr>
+
+<tr><td>
+	<b>Skip UMC Dirs</b>
+</td><td>
+	<input type=checkbox name=filter_umc_folder $notify_info->filter_umc_folder>
+</td></tr>
+
+<tr><td valign=top colspan=2>
+	<b>What</b><br>
+	<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td bgcolor=#dddddd>
+		<b>$notify_info->directory</b>
+	</td></tr>
+	<tr><td valign=top>
+	";
+	$notify_info->directory=addslashes($notify_info->directory);
+	$files=@mysql_query("select * from filewatch_dirs where parentname = '$notify_info->directory' order by dirname");
+	
+	echo"<a href=javascript:setdir('$directory_above');><font color=blue>..</font></a><br>";
+	while($file=@mysql_fetch_object($files)) {
+		//$actual_file=$notify_info->directory . "/" . $file;
+		$actual_file=$file->dirname;
+		if ($file=="..") $actual_file=$directory_above;
+		//if ((is_dir($actual_file))&&($file!=".")) echo"<a href=javascript:setdir('$actual_file');><font color=blue>$file</font></a><br>";
+		$file->basename=basename($file->dirname);
+		echo"<a href=javascript:setdir('$actual_file');><font color=blue>$file->basename</font></a><br>";
+		}
+	echo"
+	</td></tr></table>
+</td><td valign=top>
+	<b>Skip</b><br>
+	<table border=1 cellspacing=0 cellpadding=3 height=100%>
+	<tr><td bgcolor=#dddddd>
+		<b>$notify_info->filter_folder&nbsp;</b>
+	</td></tr>
+	<tr><td valign=top>";
+	
+	if ($notify_info->filter_folder=="") $scan_root=$notify_info->directory;
+	else $scan_root=$notify_info->filter_folder;
+	$scan_root=addslashes($scan_root);
+	$files=@mysql_query("select * from filewatch_dirs where parentname = '$scan_root' order by dirname");
+	if ($filter_folder!=$notify_info->directory)
+		echo"<a href=javascript:setfilt('$filter_folder_above');><font color=blue>..</font></a><br>";
+	while($file=@mysql_fetch_object($files)) {
+		$actual_file=$file->dirname;
+		if ($file=="..") $actual_file=$filter_folder_above;
+		$file->basename=basename($file->dirname);
+		echo"<a href=javascript:setfilt('$actual_file');><font color=blue>$file->basename</font></a><br>";
+		}
+	echo"
+	</td></tr></table>
+</td></tr>
+</table>
+</form>";
+
+
+
+
+
+
+
+
+?>

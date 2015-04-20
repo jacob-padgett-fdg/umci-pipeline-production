@@ -1,0 +1,50 @@
+<?
+require("querylib.inc");
+
+if ($priority_id!="") {
+	$new=0;
+	$priority_id=addslashes($priority_id);
+	$pri_info=getone("select * from mis_issue_priorities where priority_id = '$priority_id'");
+	$pri_info->priority=addslashes($pri_info->priority);
+	$pri_info->priority_text=addslashes($pri_info->priority_text);
+	} else {
+	$pri_info->priority_id="";
+	$new=1;
+	}
+
+echo "
+<html><head><title>MIS Issue - Priority Edit</title><head>
+<body bgcolor=#ffffff>
+<a href=$pagename?mode=priorities><font color=blue>Back to priorities</font></a><p>
+
+<center><h2>MIS Issue - Priority Edit</h2></center><hr>
+<form name=priority_edit method=post action=$pagename>
+<input type=hidden name=mode value=priority_submit>
+<table border=0>
+<tr><td>
+	Priority ID:
+</td><td>
+	$pri_info->priority_id
+	<input type=hidden name=priority_id value=\"$pri_info->priority_id\">
+</td></tr>
+
+<tr><td>
+	 Priority (integer please):
+</td><td>
+	<input type=text name=priority size=4 value=\"$pri_info->priority\">
+</td></tr>
+
+<tr><td>
+	Priority Text:
+</td><td>
+	<input type=text size=20 name=priority_text value=\"$pri_info->priority_text\">
+</td></tr>
+";
+
+if ($new) 
+	echo "<tr><td colspan=2 align=right><input type=submit value=\"Create\"></td></tr>";
+else 
+	echo "<tr><td colspan=2 align=right><input type=submit value=\"Save\"></td></tr>";
+
+echo"</form>";
+?>

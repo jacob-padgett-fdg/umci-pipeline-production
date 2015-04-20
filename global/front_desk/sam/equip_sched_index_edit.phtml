@@ -1,0 +1,61 @@
+<?
+if ($sched_index_id=="") die("ERROR: Application Error.. \"sched_index_id\" not set (fatal). Please contact your system administrator.");
+$sched_index_id=escapeshellcmd($sched_index_id);
+$sched_info=getone("select * from svc_equip_sched_index where sched_index_id = '$sched_index_id'");
+$task_info=getone("select * from svc_task_items where task_id = '$sched_info->task_id'");
+$maint_info=getone("select * from svc_maint_types where maint_type_id = '$task_info->maint_type_id'");
+
+require_once('header.phtml');
+$task_info->required_times_a_year=float_break($task_info->required_times_a_year);
+$task_info->recommended_times_a_year=float_break($task_info->recommended_times_a_year);
+$sched_info->times_a_year=float_break($sched_info->times_a_year);
+$sched_info->start_date=invali_date($sched_info->start_date);
+
+if ($maint_info->salesman_selects_start_date=="Y") $date_opt="";
+else $date_opt="disabled=true";
+
+
+echo "
+<form name=equip_sched method=get action=$pagename>
+<input type=hidden name=mode value=equip_sched_index_submit>
+<input type=hidden name=sched_index_id value=$sched_info->sched_index_id>
+Schedule for <b>$maint_info->maint_type</b> maint type...<br>
+
+<table>
+<tr><td>
+	<b>Times&nbsp;a&nbsp;year:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+</td><td>
+	<input type=text name=times_a_year size=3 value=\"$sched_info->times_a_year\"> (min = $task_info->required_times_a_year, recommended = $task_info->recommended_times_a_year)
+</td></tr>
+";	
+
+
+if ($date_opt=="") {
+	echo "
+	<tr><td valign=top>
+		<b>First Service Date</b> (approx)<br><font size=-1><i>(blank = AUTO)</i></font>
+	</td><td valign=top>
+		";datebox("$sched_info->start_date","equip_sched.start_date");
+		echo "</td></tr>";
+	} else {
+		echo "<input type=hidden size=10 value=\"$sched_info->start_date\" $date_opt>";
+	}
+
+echo "
+</td></tr>
+
+<tr><td valign=top>
+	<b>Special Notes</b>
+</td><td>
+	<textarea name=special_notes rows=5 cols=40>$sched_info->special_notes</textarea>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+</td></tr>
+
+</table>
+";
+
+
+?>

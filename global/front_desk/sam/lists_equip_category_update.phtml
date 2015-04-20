@@ -1,0 +1,12 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified!");
+if ($category_id=="") die("Application Error: (category_id) Please contact your system administrator.");
+
+$category_id=escapeshellcmd($category_id);
+$category=escapeshellcmd($category);
+$query="update svc_equip_categories set category = '$category' where category_id = '$category_id'";
+//echo "<hr>$query<hr>";
+@mysql_query($query);
+forward('lists_equip_categories');
+
+?>

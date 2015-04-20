@@ -1,0 +1,103 @@
+<?
+if (!($doc_id)) die("document_id error!");
+$doc_id=addslashes($doc_id);
+if (!($gcrfi_info)) {
+	$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+	$gcrfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$doc_info->app_record_id'");
+	}
+
+if ($field) {
+	$set_id=$global_user_id;
+	$field=addslashes($field);
+	$fieldval=addslashes($fieldval);
+	if (($fieldval=="0")||($fieldval=='')) $set_id="";
+	@mysql_query("update gcrfilog set ${field} = '$fieldval', ${field}_user = '$set_id' where gcrfi_id = '$gcrfi_info->gcrfi_id'");
+	$gcrfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$gcrfi_info->gcrfi_id'");
+	}
+
+if ($hoursfield) {
+	$hoursfield=addslashes($hoursfield);
+	$hoursfieldval=addslashes($hoursfieldval);
+	@mysql_query("update gcrfilog set ${hoursfield} = '$hoursfieldval', ${hoursfield}_user = '$global_user_id' where gcrfi_id = '$gcrfi_info->gcrfi_id'");
+	$gcrfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$gcrfi_info->gcrfi_id'");
+	}
+
+echo "
+<div width=100% style=\"background: $fd_color_4;\">Detailing - Cad files updated</div>
+<table width=100% border=0 cellspacing=0 cellpadding=0>";
+##############################################
+if ($gcrfi_info->det_cfu_ref_files_user>0) {
+	$cfu_user=getoneb("select * from contacts where contacts_id = '$gcrfi_info->det_cfu_ref_files_user'");
+	} else {
+	$cfu_user="";
+	}
+
+if ($gcrfi_info->det_cfu_ref_files_hours_user>0) {
+	$cfu_hours_user=getoneb("select * from contacts where contacts_id = '$gcrfi_info->det_cfu_ref_files_hours_user'");
+	} else {
+	$cfu_hours_user="";
+	}
+echo "
+<tr><td></td><td><font size=-1><i>Completed</i></font></td></tr>
+<tr><td>
+Xref files:</td><td><select onchange=\"this.style.background='yellow';cfu_select_update('det_cfu_ref_files');\" name=det_cfu_ref_files>
+			<option>$gcrfi_info->det_cfu_ref_files</option>
+			<option>Y</option>
+			<option>N</option>
+			<option>N/A</option>
+			<option> </option>
+			</select></td><td>$cfu_user->login_name</td>";
+echo "<td>&nbsp;Hrs:&nbsp;<input title=\"updated by $cfu_hours_user->display_name\" type=text size=3 name=det_cfu_ref_files_hours value=\"$gcrfi_info->det_cfu_ref_files_hours\" onchange=\"this.style.background='yellow';cfu_hours_update('det_cfu_ref_files_hours');\"></td>
+<td>$cfu_hours_user->login_name</td>
+</tr>";
+
+##############################################
+if ($gcrfi_info->det_cfu_pp_files_user>0) {
+	$cfu_user=getoneb("select * from contacts where contacts_id = '$gcrfi_info->det_cfu_pp_files_user'");
+	//tabledump("select * from contacts where contacts_id = '$gcrfi_info->det_cfu_pp_files_user'");
+	} else {
+	$cfu_user="";
+	}
+if ($gcrfi_info->det_cfu_pp_files_hours_user>0) {
+	$cfu_hours_user=getoneb("select * from contacts where contacts_id = '$gcrfi_info->det_cfu_pp_files_hours_user'");
+	} else {
+	$cfu_hours_user="";
+	}
+echo "<tr><td>
+Plumb/pipe:</td><td><select onchange=\"this.style.background='yellow';cfu_select_update('det_cfu_pp_files');\" name=det_cfu_pp_files>
+			<option>$gcrfi_info->det_cfu_pp_files</option>
+			<option>Y</option>
+			<option>N</option>
+			<option>N/A</option>
+			<option> </option>
+			</select></td><td>$cfu_user->login_name</td>";
+echo "<td>&nbsp;Hrs:&nbsp;<input title=\"updated by $cfu_hours_user->display_name\" type=text size=3 name=det_cfu_pp_files_hours value=\"$gcrfi_info->det_cfu_pp_files_hours\" onchange=\"this.style.background='yellow';cfu_hours_update('det_cfu_pp_files_hours');\"></td>";
+echo "<td>$cfu_hours_user->login_name</td>";
+echo "</tr>";
+
+##############################################
+if ($gcrfi_info->det_cfu_duct_files_user>0) {
+	$cfu_user=getoneb("select * from contacts where contacts_id = '$gcrfi_info->det_cfu_duct_files_user'");
+	} else {
+	$cfu_user="";
+	}
+if ($gcrfi_info->det_cfu_duct_files_hours_user>0) {
+	//tabledump("select * from contacts where contacts_id = '$gcrfi_info->det_cfu_duct_files_hours_user'");
+	$cfu_hours_user=getoneb("select * from contacts where contacts_id = '$gcrfi_info->det_cfu_duct_files_hours_user'");
+	} else {
+	$cfu_hours_user="";
+	}
+echo "<tr><td>
+Duct files:</td><td><select onchange=\"this.style.background='yellow';cfu_select_update('det_cfu_duct_files');\" name=det_cfu_duct_files>
+			<option>$gcrfi_info->det_cfu_duct_files</option>
+			<option>Y</option>
+			<option>N</option>
+			<option>N/A</option>
+			<option> </option>
+			</select></td><td>$cfu_user->login_name</td>";
+echo "<td>&nbsp;Hrs:&nbsp;<input title=\"updated by $cfu_hours_user->display_name\" type=text size=3 name=det_cfu_duct_files_hours value=\"$gcrfi_info->det_cfu_duct_files_hours\" onchange=\"this.style.background='yellow';cfu_hours_update('det_cfu_duct_files_hours');\"></td>";
+echo "<td>$cfu_hours_user->login_name</td>";
+echo "</tr>";
+##############################################
+echo "</table>";
+?>

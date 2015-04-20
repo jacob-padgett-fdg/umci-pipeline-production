@@ -1,0 +1,223 @@
+<?
+require("timesheet_include.inc");
+$employee_num=addslashes($employee_num);
+
+if ($current_user->employee_num!=$employee_num) die("FATAL ERROR: Error. The information for the \"current\" user doesn't match the requested employee number! This is probably caused by trying to edit timesheets for more that one user at a time. Please don't. Data corruption might (and probably will) occur. If this is a persistent problem please contact your system administrator.");
+
+if ($timesheet_info->status!="new") die("fatal error: timesheet's status is no longer 'new'. Please contact your supervisor, project manager or payroll.");
+
+if ($job_num=="cko magic") {
+	//$job_num="DD708";
+	//$phase="19708";
+	//$earnings_code="8";
+	$sick_avail=employee_sick_hours($current_user->employee_num);
+	echo "<hr>$sick_avail<hr>";exit;
+	}
+if ($job_num=="Vacation") {
+	$job_num="DD708";
+	$phase="19708";
+	$earnings_code="8";
+	}
+if ($job_num=="Sick") {
+	$job_num="DD709";
+	$phase="19709";
+	$earnings_code="9";
+	}
+if ($job_num=="Holiday") {
+	$job_num="DD710";
+	$phase="19710";
+	$earnings_code="10";
+	}
+if ($job_num=="Training") {
+	$job_num="DD724";
+	$phase="19724";
+	}
+
+$job_info=is_valid_viewpoint_job($job_num);
+$phase_info=is_valid_viewpoint_labor_phase($phase,$job_info->job);
+
+//echo $phase_info;
+if ($global_user->pref_timesheet_fab_phases_only=='Y') {
+	//die("why am I here!?!?!?!?$global_user->contacts_id");
+	$phasetmp=$phase_info->phase;
+	$phasetmp=ereg_replace("- *$","",$phasetmp);
+	$phasetmp="$phasetmp-999";
+	$phasetmp_info=is_valid_viewpoint_labor_phase($phasetmp,$job_info->job);
+	if ($phasetmp_info) $phase_info=$phasetmp_info;
+	}
+//echo $phase_info;
+
+//if ($phase_info) echo "good_phase";
+
+if ($global_user->pref_timesheet_fab_phases_warn=='Y') {
+	$phasetmp2=$phase_info->phase;
+	$phasetmp2=ereg_replace("[ -]*$","",$phasetmp2);
+	$phasetmp2="$phasetmp2-999";
+	$phasetmp2_info=is_valid_viewpoint_labor_phase($phasetmp2,$job_info->job);
+	if (($phasetmp2_info)&&($phasetmp2_info->phase!=$phase_info->phase)) {
+		echo "<font color=red><b>WARNING: YOU USED $phase_info->phase FOR YOUR PHASE, BUT $phasetmp2->phase WAS AVAILABLE<p></b></font>
+		<script>
+		alert('WARNING: $phasetmp2_info->phase was available. You used $phase_info->phase.');
+		</script>
+		";
+	}
+}	
+
+$hours_info=verify_timesheet_hours($hours);
+$shift_info=verify_timesheet_shift($shift);
+$workday_info=date_info($workday);
+$comments=addslashes($comments);
+$timesheet_time=new bsclass;
+$timesheet_time->comments=$comments;
+$timesheet_time->workday=addslashes($workday);
+$TIMESHEET_ERROR=0;
+
+if (!($job_info)) {
+	echo "<br>Error: Invalid job: $job_num<br>";
+	$TIMESHEET_ERROR=1;
+	$timesheet_time_id="reentry";
+	} else {
+	$timesheet_time->job_num=ereg_replace("- *$","",$job_info->job);
+	}
+
+if (!($phase_info)) {
+	echo "<br>Error: Invalid phase: $phase<br>";
+	$TIMESHEET_ERROR=1;
+	$timesheet_time_id="reentry";
+	} else {
+	$timesheet_time->phase=$phase_info->phase;
+	}	
+
+$falsetest=FALSE;
+if ("$hours_info"=="$falsetest") {
+	echo "<br>Error: Invalid hours: $hours<br>";
+	$TIMESHEET_ERROR=1;
+	$timesheet_time_id="reentry";
+	} else {
+	$timesheet_time->hours=$hours_info;
+	}
+
+if (!($shift_info)) {
+	echo "<br>Error: Invalid shift (how the hell did you do that!?!?): $shift<br>";
+	$TIMESHEET_ERROR=1;
+	$timesheet_time_id="reentry";
+	} else {
+	$timesheet_time->shift_last="<option>$shift_info</option>";
+	}
+
+$special_job_check=ereg_replace("- *","",$job_info->job);
+if ($special_job_check=="DD708") $earnings_code="8";
+if ($special_job_check=="DD709") $earnings_code="9";
+if ($special_job_check=="DD710") $earnings_code="10";
+
+
+//echo "sjc: -$special_job_check-";exit;
+
+$EC_OK=FALSE;
+if (!($earnings_code)) die ("Error: No earnings code, or earnings code error. Please contact your system administrator!");
+	else
+		switch ($earnings_code) {
+			case 1:
+			case 2:
+			case 3:
+			case 8:
+			case 9:
+			case 10:
+				$EC_OK=TRUE;
+				break;
+			}
+if (!($EC_OK)) die ("Error: No earnings code, or earnings code error. Please contact your system administrator!");
+
+if ($workday_info->week_end != invali_date($timesheet_info->week_ending)) {
+	echo "<br>Error: Week Ending doesn't match given date! This probably came from trying to edit more than one timesheet at a time. Don't do that. If this problem persists, please contact your system administrator.<p>";
+	exit;
+	}
+
+if ($TIMESHEET_ERROR==1) {
+	include("timesheet_edit_add_time.phtml");
+	exit;
+	}
+
+$local_job=ereg_replace("-.*","",$job_info->job);
+$local_job++;$local_job--;
+$local_job_info=getoneb("select * from jobinfo where contract_num = '$local_job'");
+
+if($local_job_info) {
+	$local_jobinfo_id=$local_job_info->jobinfo_id;
+	} else {
+	$local_jobinfo_id=0;
+	}
+
+
+
+//if ($full_week!="") $last_entry_day=5;
+//	else $last_entry_day=$workday_info->day_of_week_num;
+//if ($timesheet_time_id!="") $last_entry_day=$workday_info->day_of_week_num;
+
+$week_end_unixtime=$workday_info->week_end_unixtime;
+
+if ($full_week!="") $last_entry_day_unixtime=$workday_info->week_end_unixtime - 86400;
+	else $last_entry_day_unixtime=$workday_info->unixtime;
+
+if ($timesheet_time_id!="") $last_entry_day_unixtime=$workday_info->unixtime;
+
+while (($workday_info->unixtime <= $last_entry_day_unixtime)&&($workday_info->unixtime <= $week_end_unixtime)) {
+
+	if ($timesheet_time_id!="") {
+		$query="update timesheet_time set 
+		timesheet_id = '$timesheet_info->timesheet_id',
+		creator = '$global_user->contacts_id',
+		employee_id = '$current_user->contacts_id',
+		employee_num = '$current_user->employee_num',
+		employee_group = '$current_user->employee_group',
+		jobinfo_id = '$local_jobinfo_id',
+		job_num = '$job_info->job',
+		job_desc = '$job_info->Description',
+		phase = '$phase_info->phase',
+		phase_desc = '$phase_info->Description',
+		workday = '$workday_info->date_mysql',
+		week_ending = '$timesheet_info->week_ending',
+		earnings_code = '$earnings_code',
+		shift = '$shift_info',
+		hours = '$hours_info',
+		comments = '$comments'
+		
+		where timesheet_time_id = '$timesheet_time_id'
+		";
+	} else {
+		$query="insert into timesheet_time 
+		(timesheet_id,creator,employee_id,employee_num,employee_group,jobinfo_id,job_num,job_desc,phase,phase_desc,workday,week_ending,earnings_code,shift,hours,comments) 
+		values 
+		('$timesheet_info->timesheet_id','$global_user->contacts_id','$current_user->contacts_id','$current_user->employee_num','$current_user->employee_group','$local_jobinfo_id','$job_info->job','$job_info->Description','$phase_info->phase','$phase_info->Description','$workday_info->date_mysql','$timesheet_info->week_ending','$earnings_code','$shift_info','$hours_info','$comments')";
+	}
+
+	$res=@mysql_query($query);
+	if (!($res)) die("Error submitting query:<hr>$query<hr>....Please contact your system administrator for assistance.<p>");
+
+	$previous_date_mysql=$workday_info->date_mysql;
+	$workday_info=date_info($workday_info->next);
+	}
+	
+
+$current_total_hours=getoneb("select sum(hours) as hours from timesheet_time where timesheet_id = '$timesheet_info->timesheet_id' and workday = '$previous_date_mysql'");
+$next_total_hours=getoneb("select sum(hours) as hours from timesheet_time where timesheet_id = '$timesheet_info->timesheet_id' and workday = '$workday_info->date_mysql'");
+
+if ($return_to_once == "") {
+
+	if 	( ($timesheet_time_id =="") &&
+		($full_week=="") &&
+		($global_user->pref_timesheet_hrs_threshold>0) && 
+		($global_user->pref_timesheet_hrs_threshold <= $current_total_hours->hours) &&
+		($global_user->pref_timesheet_hrs_threshold > $next_total_hours->hours) &&
+		($workday_info->day_of_week_num < 6) ) {
+			$return_to="timesheet_showday&showday=$workday_info->date";
+		} else {
+			$return_to="timesheet_showday&showday=$timesheet_time->workday";
+			}
+	} else {
+	$return_to=$return_to_once;
+	$return_to_once="";
+	}
+
+forward("timesheet_edit&timesheet_mode_new=$return_to");
+?>

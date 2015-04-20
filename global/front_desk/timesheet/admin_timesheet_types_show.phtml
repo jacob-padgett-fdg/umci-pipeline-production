@@ -1,0 +1,33 @@
+<?
+if (!($admin_check)) die ("ERROR: Security Violation! The authorities are being notified!");
+
+$query="select login_name, first_name,last_name,timesheet_types.contact_type as group_name from timesheet_types,contacts where timesheet_types.contacts_id = contacts.contacts_id order by last_name,first_name,contacts.contacts_id,group_name";
+echo "<body bgcolor=#ffffff>
+<a href=$pagename?mode=main><font color=blue>Return to main page</font></a>
+<table border=1 cellspacing=0 cellpadding=4 width=100%>
+<tr><td align=center width=100% bgcolor=#dddddd><h2>Current User Permissions</h2></td></tr></table>
+";
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	if ($row->login_name!=$last_login)
+		echo "<h3>$row->last_name, $row->first_name</h3>";
+	echo "<ul><li>$row->group_name</ul></li>";
+	$last_login=$row->login_name;
+	}
+
+//echo "<hr>$query<hr>";
+
+
+
+
+
+
+
+echo "</body>";
+
+
+
+
+
+?>

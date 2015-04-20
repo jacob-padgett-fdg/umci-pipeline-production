@@ -1,0 +1,28 @@
+<?
+global $application_name;
+
+$option_defaults=array(
+	'onefilelimit'=>'N',
+	'invisible'=>'N',
+	'small_box'=>'N',
+	'no_box'=>'N',
+	'jobinfo_id'=>'',
+	'box_size'=>'24'
+	);
+
+$options_encoded=urlencode(serialize($options));
+$options_form_encoded=htmlspecialchars(serialize($options));
+
+if ($options['onefilelimit']=='') $options['onefilelimit']=$option_defaults['onefilelimit'];
+if ($options['invisible']=='') $options['invisible']=$option_defaults['invisible'];
+if ($options['small_box']=='') $options['small_box']=$option_defaults['small_box'];
+	if (($options['small_box']=='Y')&&($options['box_size']=='')) $options['box_size']='12';
+if ($options['box_size']=='') $options['box_size']=$option_defaults['box_size'];
+if ($options['no_box']=='') $options['no_box']=$option_defaults['no_box'];
+if ($options['application_name']=='') $options['application_name']=$application_name;
+
+
+
+
+
+?>

@@ -1,0 +1,12 @@
+<?
+if ($purgatory_id!="") $purgatory_id=addslashes($purgatory_id);
+else die("Application error - record id missing");
+
+$attached_group_id=addslashes($attached_group_id);
+
+@mysql_query("update oiclog_purgatory set attached_group_id = '$attached_group_id' where purgatory_id = '$purgatory_id'");
+
+echo "Attachment saved....";
+
+
+?>

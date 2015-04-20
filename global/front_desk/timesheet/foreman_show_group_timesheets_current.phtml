@@ -1,0 +1,63 @@
+<?
+if ($group_id=="") {
+	$group_id=$foreman_last_group;
+	if ($group_id!="") forward("foreman_show_group_timesheets_current&group_id=$group_id");
+	}
+if ($group_id=="") die("ERROR: No group_id. Please contact your system administrator or try again (start over).");
+else $group_id=escapeshellcmd($group_id);
+$group_info=getone("select * from timesheet_foreman_groups where group_id = '$group_id'");
+require('header.phtml');
+
+echo "
+
+<script>
+function tl(timesheet_id) {
+	document.location='$pagename?mode=foreman_timesheet_load&come_back_to=$mode&ts_id=' + timesheet_id;
+	}	
+</script>
+
+<a href=$pagename?mode=foreman_show_group&group_id=$group_info->group_id>
+<font color=blue>Return to timesheet entry for group</font></a>
+<br>
+<center><h2>Group members $group_info->group_name</h2></center><hr>";
+
+session_register('foreman_last_group');
+$foreman_last_group=$group_info->group_id;
+
+echo "<table border=0 cellspacing=0 cellpadding=3>
+<tr bgcolor=#dddddd><td>Employee</td><td>Week Ending</td><td>ST</td><td>OT</td><td>DT</td><td>H</td><td>S</td><td>H</td><td>Total</td></tr>";
+// works , no contact info: $query="select * from timesheet_index,timesheet_group_members where timesheet_index.status = 'new' and timesheet_group_members.employee_id = timesheet_index.employee_id and timesheet_group_members.group_id = '$group_id' order by timesheet_index.employee_num";
+$query="select * from timesheet_index,timesheet_group_members,contacts where timesheet_index.employee_id = contacts.contacts_id and timesheet_index.status = 'new' and timesheet_group_members.employee_id = timesheet_index.employee_id and timesheet_group_members.group_id = '$group_id' order by contacts.timesheet_group_one_foreman desc , contacts.alphasort";
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$ts_info=timesheet_summary_info($row->timesheet_id);
+	$we_pretty=invali_date($row->week_ending);
+	echo "
+	<tr><td>
+	$row->last_name, $row->first_name
+	</td><td>
+		<a href=javascript:tl($row->timesheet_id);><font color=blue>
+		$we_pretty
+		</font></a>
+	</td><td>
+		$ts_info->st
+	</td><td>
+		$ts_info->ot
+	</td><td>
+		$ts_info->dt
+	</td><td>
+		$ts_info->v
+	</td><td>
+		$ts_info->s
+	</td><td>
+		$ts_info->h
+	</td><td>
+		$ts_info->hours
+	</td></tr>
+	";
+	
+	
+	}
+echo "</table>";
+?>

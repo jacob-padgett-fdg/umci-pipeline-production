@@ -1,0 +1,19 @@
+<?
+if ($invoice_id=="") die("Application error. Missing invoice number..");
+
+$invoice_id=addslashes($invoice_id);
+$invoice_info=getoneb("select * from costore_cart_invoice where contacts_id = '$global_user_id' and invoice_id = '$invoice_id' and ( cart_status = 'processing' or cart_status = 'PM Approval')");
+
+if (!($invoice_info)) die("Application error. Invalid invoice information!");
+
+
+@mysql_query("update costore_cart set status = 'new' where invoice_id = '$invoice_info->invoice_id'");
+@mysql_query("delete from costore_cart_invoice where invoice_id = '$invoice_info->invoice_id'");
+forward('shopping_cart');
+
+
+
+
+
+
+?>

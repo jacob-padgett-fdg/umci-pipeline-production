@@ -1,0 +1,42 @@
+<?
+
+
+if ($agreement_id=="") die("ERROR: Application error. Please call your system administrator!");
+$agreement_info=load_agreement_info($agreement_id);
+if (!($agreement_info)) die("ERROR: Invalid agreement. Application error! Please contact your system administrator!");
+
+
+
+if ($agreement_info->status=="New") {
+	forward("svc_agreement_edit_new&agreement_id=$agreement_id");
+	exit;
+	}
+
+if ($agreement_info->status=="Presenting") {
+	forward("svc_agreement_edit_presenting&agreement_id=$agreement_id");
+	exit;
+	}
+if ($agreement_info->status=="Finishing") {
+	forward("svc_agreement_edit_finishing&agreement_id=$agreement_id");
+	exit;
+	}
+
+if ($agreement_info->status=="Complete") {
+	forward("svc_agreement_edit_finalized&agreement_id=$agreement_id");
+	exit;
+	}
+
+if ($agreement_info->status=="Won") {
+	forward("svc_agreement_edit_presenting&agreement_id=$agreement_id");
+	exit;
+	}
+
+if ($agreement_info->status=="Dead") {
+	forward("svc_agreement_edit_presenting&agreement_id=$agreement_id");
+	exit;
+	}
+
+
+echo "APPLICATION ERROR: Unknown agreement status (\"$agreement_info->status\") for agreement_id \"$agreement_id\"! Please contact your system administrator!";
+
+?>

@@ -1,0 +1,178 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+
+$today=date('Y-m-d');
+//if (!(pm_for_this_job())) die_security();
+$vpjob=get_vp_contract_num();
+//$query="select * from SLIT right join SLHD on (SLIT.SLCo = SLHD.SLCo and SLIT.SL = SLHD.SL and SLIT.Job = SLHD.Job) right join APVM on (SLHD.VendorGroup = APVM.VendorGroup and APVM.Vendor = SLHD.Vendor) where SLIT.Job like '$vpjob%' and SLIT.SLCo = 1 order by SLIT.SL,Name";
+
+/*
+$query="
+SELECT brvSLSubcontrByJob.SLCo, HQCO.Name, brvSLSubcontrByJob.APTDAmt, brvSLSubcontrByJob.OrigItemCost, brvSLSubcontrByJob.ChangeOrderCost, SLHD.Job, brvSLSubcontrByJob.SL, brvSLSubcontrByJob.SLItem, SLHD.Description, APVM.Name, SLHD.Vendor, brvSLSubcontrByJob.APTDStatus, JCJM.JobStatus, brvSLSubcontrByJob.Mth, brvSLSubcontrByJob.PayCategory, APCO.RetPayType, APPC.RetPayType, brvSLSubcontrByJob.PayType, brvSLSubcontrByJob.APPaidMth, JCJM.Description, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.JCCo, ({fn IFNULL(APCO.PayCategoryYN,'N')})
+FROM   {oj (((((Viewpoint.dbo.brvSLSubContrByJob brvSLSubcontrByJob INNER JOIN Viewpoint.dbo.HQCO HQCO ON brvSLSubcontrByJob.SLCo=HQCO.HQCo) INNER JOIN Viewpoint.dbo.APCO APCO ON brvSLSubcontrByJob.SLCo=APCO.APCo) INNER JOIN Viewpoint.dbo.JCJM JCJM ON (brvSLSubcontrByJob.JCCo=JCJM.JCCo) AND (brvSLSubcontrByJob.Job=JCJM.Job)) LEFT OUTER JOIN Viewpoint.dbo.SLHD SLHD ON (brvSLSubcontrByJob.SLCo=SLHD.SLCo) AND (brvSLSubcontrByJob.SL=SLHD.SL)) LEFT OUTER JOIN Viewpoint.dbo.APVM APVM ON (SLHD.VendorGroup=APVM.VendorGroup) AND (SLHD.Vendor=APVM.Vendor)) LEFT OUTER JOIN Viewpoint.dbo.APPC APPC ON (APCO.PayCategory=APPC.PayCategory) AND (APCO.APCo=APPC.APCo)}
+WHERE  brvSLSubcontrByJob.SLCo=1 AND (brvSLSubcontrByJob.JCCo=1) AND (brvSLSubcontrByJob.Job=1) AND brvSLSubcontrByJob.Mth<{ts '2051-01-01 00:00:00'}
+ORDER BY brvSLSubcontrByJob.SLCo, brvSLSubcontrByJob.JCCo, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.SL
+";
+
+
+
+$query="
+SELECT brvSLSubcontrByJob.SLCo, HQCO.Name, brvSLSubcontrByJob.APTDAmt, brvSLSubcontrByJob.OrigItemCost, brvSLSubcontrByJob.ChangeOrderCost, SLHD.Job, brvSLSubcontrByJob.SL, brvSLSubcontrByJob.SLItem, SLHD.Description, APVM.Name, SLHD.Vendor, brvSLSubcontrByJob.APTDStatus, JCJM.JobStatus, brvSLSubcontrByJob.Mth, brvSLSubcontrByJob.PayCategory, APCO.RetPayType, APPC.RetPayType, brvSLSubcontrByJob.PayType, brvSLSubcontrByJob.APPaidMth, JCJM.Description, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.JCCo, ({fn IFNULL(APCO.PayCategoryYN,'N')})
+FROM   {oj (((((Viewpoint.dbo.brvSLSubContrByJob brvSLSubcontrByJob INNER JOIN Viewpoint.dbo.HQCO HQCO ON brvSLSubcontrByJob.SLCo=HQCO.HQCo) INNER JOIN Viewpoint.dbo.APCO APCO ON brvSLSubcontrByJob.SLCo=APCO.APCo) INNER JOIN Viewpoint.dbo.JCJM JCJM ON (brvSLSubcontrByJob.JCCo=JCJM.JCCo) AND (brvSLSubcontrByJob.Job=JCJM.Job)) LEFT OUTER JOIN Viewpoint.dbo.SLHD SLHD ON (brvSLSubcontrByJob.SLCo=SLHD.SLCo) AND (brvSLSubcontrByJob.SL=SLHD.SL)) LEFT OUTER JOIN Viewpoint.dbo.APVM APVM ON (SLHD.VendorGroup=APVM.VendorGroup) AND (SLHD.Vendor=APVM.Vendor)) LEFT OUTER JOIN Viewpoint.dbo.APPC APPC ON (APCO.PayCategory=APPC.PayCategory) AND (APCO.APCo=APPC.APCo)}
+WHERE  brvSLSubcontrByJob.SLCo=1 AND (brvSLSubcontrByJob.SL>='' AND brvSLSubcontrByJob.SL<='zzzzzzzzzz') AND (brvSLSubcontrByJob.JCCo>=0 AND brvSLSubcontrByJob.JCCo<=255) AND brvSLSubcontrByJob.Job like '$vpjob%' AND (SLHD.Vendor>=0 AND SLHD.Vendor<=999999) AND brvSLSubcontrByJob.Mth<{ts '2051-01-01 00:00:00'}
+ORDER BY brvSLSubcontrByJob.SLCo, brvSLSubcontrByJob.JCCo, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.SL
+";
+*/
+
+$query="
+SELECT brvSLSubcontrByJob.SLCo, HQCO.Name, brvSLSubcontrByJob.APTDAmt, brvSLSubcontrByJob.OrigItemCost, brvSLSubcontrByJob.ChangeOrderCost, SLHD.Job, brvSLSubcontrByJob.SL, brvSLSubcontrByJob.SLItem, SLHD.Description as Descriptionsl, APVM.Name as VendorName, SLHD.Vendor, brvSLSubcontrByJob.APTDStatus, JCJM.JobStatus, brvSLSubcontrByJob.Mth, brvSLSubcontrByJob.PayCategory, APCO.RetPayType as RecPayTypeAPCO, APPC.RetPayType as RetPayTypeAPPC, brvSLSubcontrByJob.PayType, brvSLSubcontrByJob.APPaidMth, JCJM.Description as Descriptionjm, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.JCCo, ({fn IFNULL(APCO.PayCategoryYN,'N')}) as PayCategoryYN
+FROM   {oj (((((Viewpoint.dbo.brvSLSubContrByJob brvSLSubcontrByJob INNER JOIN Viewpoint.dbo.HQCO HQCO with (NOLOCK) ON brvSLSubcontrByJob.SLCo=HQCO.HQCo) INNER JOIN Viewpoint.dbo.APCO APCO with (NOLOCK) ON brvSLSubcontrByJob.SLCo=APCO.APCo) INNER JOIN Viewpoint.dbo.JCJM JCJM with (NOLOCK) ON (brvSLSubcontrByJob.JCCo=JCJM.JCCo) AND (brvSLSubcontrByJob.Job=JCJM.Job)) LEFT OUTER JOIN Viewpoint.dbo.SLHD SLHD with (NOLOCK) ON (brvSLSubcontrByJob.SLCo=SLHD.SLCo) AND (brvSLSubcontrByJob.SL=SLHD.SL)) LEFT OUTER JOIN Viewpoint.dbo.APVM APVM with (NOLOCK) ON (SLHD.VendorGroup=APVM.VendorGroup) AND (SLHD.Vendor=APVM.Vendor)) LEFT OUTER JOIN Viewpoint.dbo.APPC APPC with (NOLOCK) ON (APCO.PayCategory=APPC.PayCategory) AND (APCO.APCo=APPC.APCo)}
+WHERE  brvSLSubcontrByJob.SLCo=1 AND (brvSLSubcontrByJob.SL>='' AND brvSLSubcontrByJob.SL<='zzzzzzzzzz') AND brvSLSubcontrByJob.Job like '$vpjob%'
+ORDER BY brvSLSubcontrByJob.SLCo, brvSLSubcontrByJob.JCCo, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.SL";
+
+/*
+$query2="
+SELECT top 11 brvSLSubcontrByJob.SLCo, HQCO.Name, brvSLSubcontrByJob.APTDAmt, brvSLSubcontrByJob.OrigItemCost, brvSLSubcontrByJob.ChangeOrderCost, SLHD.Job, brvSLSubcontrByJob.SL, brvSLSubcontrByJob.SLItem, SLHD.Description as Descriptionsl, APVM.Name as VendorName, SLHD.Vendor, brvSLSubcontrByJob.APTDStatus, JCJM.JobStatus, brvSLSubcontrByJob.Mth, brvSLSubcontrByJob.PayCategory, APCO.RetPayType as RecPayTypeAPCO, APPC.RetPayType as RetPayTypeAPPC, brvSLSubcontrByJob.PayType, brvSLSubcontrByJob.APPaidMth, JCJM.Description as Descriptionjm, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.JCCo, ({fn IFNULL(APCO.PayCategoryYN,'N')}) as PayCategoryYN
+FROM  {oj (((((Viewpoint.dbo.brvSLSubContrByJob brvSLSubcontrByJob INNER JOIN Viewpoint.dbo.HQCO HQCO ON brvSLSubcontrByJob.SLCo=HQCO.HQCo) INNER JOIN Viewpoint.dbo.APCO APCO ON brvSLSubcontrByJob.SLCo=APCO.APCo) INNER JOIN Viewpoint.dbo.JCJM JCJM ON (brvSLSubcontrByJob.JCCo=JCJM.JCCo) AND (brvSLSubcontrByJob.Job=JCJM.Job)) LEFT OUTER JOIN Viewpoint.dbo.SLHD SLHD ON (brvSLSubcontrByJob.SLCo=SLHD.SLCo) AND (brvSLSubcontrByJob.SL=SLHD.SL)) LEFT OUTER JOIN Viewpoint.dbo.APVM APVM ON (SLHD.VendorGroup=APVM.VendorGroup) AND (SLHD.Vendor=APVM.Vendor)) LEFT OUTER JOIN Viewpoint.dbo.APPC APPC ON (APCO.PayCategory=APPC.PayCategory) AND (APCO.APCo=APPC.APCo)}
+WHERE  brvSLSubcontrByJob.SLCo=1 AND (brvSLSubcontrByJob.SL>='' AND brvSLSubcontrByJob.SL<='zzzzzzzzzz') AND brvSLSubcontrByJob.Job like '$vpjob%'
+ORDER BY brvSLSubcontrByJob.SLCo, brvSLSubcontrByJob.JCCo, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.SL";
+
+
+$query2="
+SELECT top 11 brvSLSubcontrByJob.SLCo, HQCO.Name, brvSLSubcontrByJob.APTDAmt, brvSLSubcontrByJob.OrigItemCost, brvSLSubcontrByJob.ChangeOrderCost, SLHD.Job, SLHD.SL, brvSLSubcontrByJob.SLItem, SLHD.Description as Descriptionsl, APVM.Name as VendorName, SLHD.Vendor, brvSLSubcontrByJob.APTDStatus, JCJM.JobStatus, brvSLSubcontrByJob.Mth, brvSLSubcontrByJob.PayCategory, APCO.RetPayType as RecPayTypeAPCO, APPC.RetPayType as RetPayTypeAPPC, brvSLSubcontrByJob.PayType, brvSLSubcontrByJob.APPaidMth, JCJM.Description as Descriptionjm, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.JCCo, ({fn IFNULL(APCO.PayCategoryYN,'N')}) as PayCategoryYN
+FROM   {oj (((((Viewpoint.dbo.brvSLSubContrByJob brvSLSubcontrByJob INNER JOIN Viewpoint.dbo.HQCO HQCO ON brvSLSubcontrByJob.SLCo=HQCO.HQCo) INNER JOIN Viewpoint.dbo.APCO APCO ON brvSLSubcontrByJob.SLCo=APCO.APCo) INNER JOIN Viewpoint.dbo.JCJM JCJM ON (brvSLSubcontrByJob.JCCo=JCJM.JCCo) AND (brvSLSubcontrByJob.Job=JCJM.Job)) LEFT OUTER JOIN Viewpoint.dbo.SLHD SLHD ON (brvSLSubcontrByJob.SLCo=SLHD.SLCo) AND (brvSLSubcontrByJob.SL=SLHD.SL)) LEFT OUTER JOIN Viewpoint.dbo.APVM APVM ON (SLHD.VendorGroup=APVM.VendorGroup) AND (SLHD.Vendor=APVM.Vendor)) LEFT OUTER JOIN Viewpoint.dbo.APPC APPC ON (APCO.PayCategory=APPC.PayCategory) AND (APCO.APCo=APPC.APCo)}
+WHERE  brvSLSubcontrByJob.SLCo=1 AND (brvSLSubcontrByJob.SL>='' AND brvSLSubcontrByJob.SL<='zzzzzzzzzz') AND brvSLSubcontrByJob.Job like '$vpjob%'
+ORDER BY brvSLSubcontrByJob.SLCo, brvSLSubcontrByJob.JCCo, brvSLSubcontrByJob.Job, brvSLSubcontrByJob.SL";
+*/
+
+
+
+//ms_tabledump($query);
+
+
+
+//echo "<hr>$query<hr>";
+//ms_tabledump($query2);
+$res=@mssql_query($query);
+echo "
+
+<script>
+function open_change_orders(sl) {
+	open('$pagename?mode=$mode&report_name=baldwin_subcontracts_change_orders&sl=' + encodeURIComponent(sl),'baldwin_scco','width=800,height=600,scrollbars=1,resizable=1');
+	}
+
+</script>
+
+
+<a class=noprint href=javascript:print()><font color=blue><i>Print</i></font></a>
+<font size=-1><table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=$fd_color_4><td>
+	Sub
+</td><td>
+	Orig Contract
+</td><td>
+	Changes
+</td><td>
+	Curr Contract
+</td><td>
+	Billed
+</td><td>
+	Paid
+</td><td>
+	Retainage
+</td><td>
+	Current Due
+</td><td>
+	To Be Billed
+</td></tr>
+
+";
+$changorder_total=0;
+$lastjob="";
+while($row=@mssql_fetch_object($res)) {
+	if ($row->Job!=$lastjob) echo "<tr><td  colspan=9 bgcolor=$fd_color_1 align=center><b>$row->Job</b></td></tr>";
+	$lastjob=$row->Job;
+	if (($row->SL!=$sl_last)&&($sl_last!="")) {
+		$currentcost=$orig_item_costs + $changeorder_total;
+		$current_due=$billed_total - $paid_total - $retainage_total;
+		$remaining=$currentcost - $billed_total;
+			echo "<tr><td title=\"$lastrow->SL $lastrow->Descriptionsl\">
+				$lastrow->VendorName
+			</td><td align=right>
+				" . gap_num($orig_item_costs) . "
+			</td><td align=right>
+				<a href=\"javascript:open_change_orders('$sl_last')\"><font color=blue>" . gap_num($changeorder_total) . "</font></a>
+			</td><td align=right>
+				" . gap_num($currentcost) . "
+			</td><td align=right>
+				" . gap_num($billed_total) . "
+			</td><td align=right>
+				" . gap_num($paid_total) . "
+			</td><td align=right>
+				" . gap_num($retainage_total) . "
+			</td><td align=right>
+				" . gap_num($current_due) . "
+			</td><td align=right>
+				" . gap_num($remaining) . "
+			</td></tr>";
+			$retainage_total=0;
+			$billed_total=0;
+			$changeorder_total=0;
+			$orig_item_costs=0;
+			$paid_total=0;
+			}
+	if ($row->APTDStatus>2) {
+		$paid_total=$paid_total + $row->APTDAmt;
+		}
+	if (($row->PayCategoryYN==N)||($row->PayCategory==0))
+		$ret_paytype=$row->RecPayTypeAPCO;
+		else 
+		$ret_paytype=$row->RecPayTypeAPPC;
+	$row->APPaidMth=ereg_replace(" 2050 "," 2038 ", $row->APPaidMth);
+	$ret_paid_month=date('Y-m-d',strtotime($row->APPaidMth));
+	$sl_month=date('Y-m-d',strtotime($row->Mth));
+	
+	if (($row->PayType==$ret_paytype)&&(("$ret_paid_month"=="2038-01-01") || ("$ret_paid_month" > "$today"))&& ("$sl_month" <= "$today")) {
+		$retainage_total=$retainage_total + $row->APTDAmt;
+		}
+	$billed_total=$billed_total + $row->APTDAmt;
+	$orig_item_costs=$row->OrigItemCost + $orig_item_costs;
+	$changeorder_total=$row->ChangeOrderCost + $changeorder_total;
+	$sl_last=$row->SL;
+	$lastrow=$row;
+	}
+
+$currentcost=$orig_item_costs + $changeorder_total;
+$current_due=$billed_total - $paid_total - $retainage_total;
+$remaining=$currentcost - $billed_total;
+
+$today=date('m/d/Y');
+echo "<tr><td title=\"$lastrow->SL $lastrow->Descriptionsl\">
+		$lastrow->VendorName
+	</td><td align=right>
+		" . gap_num($orig_item_costs) . "
+	</td><td align=right>
+		<a href=\"javascript:open_change_orders('$sl_last')\"><font color=blue>" . gap_num($changeorder_total) . "</font></a>
+	</td><td align=right>
+		" . gap_num($currentcost) . "
+	</td><td align=right>
+		" . gap_num($billed_total) . "
+	</td><td align=right>
+		" . gap_num($paid_total) . "
+	</td><td align=right>
+		" . gap_num($retainage_total) . "
+	</td><td align=right>
+		" . gap_num($current_due) . "
+	</td><td align=right>
+		" . gap_num($remaining) . "
+	</td></tr>
+</table></font>";
+?>

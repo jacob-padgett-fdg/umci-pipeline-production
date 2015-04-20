@@ -1,0 +1,8 @@
+<?
+if ($query_id=="") die("ERROR: No query specified for search results. Please contact your system administrator!");
+$query_id=escapeshellcmd($query_id);
+$query_info=getone("select * from bidlist_saved_queries where query_id = '$query_id'");
+$basequery=$query_info->query;
+$search_output_mode=$query_info->query_output_mode;
+require('proposal_search_execute.phtml');
+?>

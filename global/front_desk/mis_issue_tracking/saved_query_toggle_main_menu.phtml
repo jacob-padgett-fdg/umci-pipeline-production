@@ -1,0 +1,13 @@
+<?
+$query_id=addslashes($query_id);
+
+$query_info=getone("select * from mis_issue_saved_queries where query_id = '$query_id' and contacts_id = '$global_user_id'");
+
+if ($query_info->default_query=="Y")
+	$query="update mis_issue_saved_queries set default_query = 'N' where query_id = '$query_id'";
+	else 
+	$query="update mis_issue_saved_queries set default_query = 'Y' where query_id = '$query_id'";
+
+@mysql_query($query);
+forward('saved_queries');
+?>

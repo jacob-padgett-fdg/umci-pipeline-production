@@ -1,0 +1,17 @@
+<?
+require_once('querylib.inc');
+
+echo "<html><head><title>MIS Issue - Last query view - $category_info->category_name</title></head>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+<a href=$pagename?mode=category_search&it_category_id=$it_category_id><font color=blue>Search</font></a>
+";
+
+echo "<body bgcolor=#ffffff>";
+
+category_show_last_query();
+echo "</center>";
+
+
+
+
+?>

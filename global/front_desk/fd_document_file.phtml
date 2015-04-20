@@ -1,0 +1,33 @@
+<?
+// GPH MARK - absolute path
+include("/data/web/pipeline/global$devel/webfile$devel/local.inc");
+$file_error=0;
+
+$source_doc_info=getoneb("select * from documents where doc_id = '$file_document_id'");
+$inbound_info=getoneb("select * from inbound where inbound_id = '$source_doc_info->app_record_id'");
+$source_files_id=$inbound_info->files_id;
+
+$filerow=getoneb("select * from documents_links where doca = '$file_document_id'");
+if (!($filerow)) die("Application error! Incorrect number of items to file (either 0 files, or more than 1)");
+$dest_doc_info=getoneb("select * from documents where doc_id = '$filerow->docb'");
+if (!($dest_doc_info)) {
+	$file_error=0;
+	echo "Could not link to document (doc_id = $filerow->docb)";
+	} else {
+	$app_info=getone("select * from front_desk_applications where app_alias = '$dest_doc_info->doc_type'");
+	
+	if ($is_attachment=='Y') {
+		$include_file="../$app_info->app_name${devel}/mini_file_attachment.phtml";
+		} else {
+		$include_file="../$app_info->app_name${devel}/mini_file.phtml";
+		}
+	
+	if (is_file($include_file)) { 
+		//die("is file: $included_file");
+		include($include_file);
+		} else {
+		echo "Filing to that document type is not yet supported!
+		<div onload=\"alert('Filing to that document type is not yet supported!')\"></div>";
+		}
+	}
+?>

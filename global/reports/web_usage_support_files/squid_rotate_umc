@@ -1,0 +1,34 @@
+#!/bin/bash
+
+
+cd /var/log/squid
+/etc/init.d/squid stop
+
+
+killall squid_db_logger 2> /dev/null > /dev/null
+
+mv -f access.log.2 access.log.3 2> /dev/null 
+mv -f access.log.1 access.log.2 2> /dev/null 
+mv -f access.log access.log.1 2> /dev/null 
+touch access.log 2> /dev/null 
+chown proxy.proxy access.log 2> /dev/null 
+
+mv -f access.log.1 access.log.2 2> /dev/null 
+mv -f access.log access.log.1 2> /dev/null 
+touch access.log 2> /dev/null 
+chown proxy.proxy access.log 2> /dev/null 
+
+mv -f cache.log.2 cache.log.3 2> /dev/null 
+mv -f cache.log.1 cache.log.2 2> /dev/null 
+mv -f cache.log cache.log.1 2> /dev/null 
+touch cache.log 2> /dev/null 
+chown proxy.proxy cache.log 2> /dev/null 
+
+mv -f store.log.2 store.log.3 2> /dev/null 
+mv -f store.log.1 store.log.2 2> /dev/null 
+mv -f store.log store.log.1 2> /dev/null 
+touch store.log 2> /dev/null 
+chown proxy.proxy store.log 2> /dev/null 
+
+nohup  /usr/local/sbin/squid_db_logger 2> /dev/null > /dev/null &
+/etc/init.d/squid start

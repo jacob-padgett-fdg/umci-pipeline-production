@@ -1,0 +1,21 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified!");
+
+$agreement_type=escapeshellcmd($agreement_type);
+$description=escapeshellcmd($description);
+$sort_priority=clean_int($sort_priority);
+$min_markup_percent=clean_float($min_markup_percent);
+
+if ($agreement_type_id!="") {
+	$agreement_type_id=escapeshellcmd($agreement_type_id);
+	
+	$query="update svc_agreement_types set agreement_type = '$agreement_type', description = '$description', sort_priority = '$sort_priority', min_markup_percent = '$min_markup_percent'  where agreement_type_id = '$agreement_type_id'";
+	} else {
+	$query="insert into svc_agreement_types set agreement_type = '$agreement_type', description = '$description', sort_priority = '$sort_priority', min_markup_percent = '$min_markup_percent'";
+	}
+
+@mysql_query($query);
+
+forward("lists_agreement_type_edit&agreement_type_id=$agreement_type_id");
+
+?>

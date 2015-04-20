@@ -1,0 +1,137 @@
+<?
+require('header.phtml');
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+else die("ERROR: Applicaton error, agreement_id is empty or null! Please contact your system administrator!");
+
+$agreement_info=load_agreement_info($agreement_id);
+
+if ($agreement_info->status=="New") {
+	//echo "Calculating agreement equipment costs.... Please wait, this could take a minute.<br>";flush();
+	$total_equipment_cost=agreement_cost($agreement_id);
+	$query="update svc_agreement_index set status = 'Finishing', total_equipment_cost = '$total_equipment_cost' where agreement_id = '$agreement_info->agreement_id'";
+	@mysql_query($query);
+	$agreement_info=load_agreement_info($agreement_id);
+	}
+
+if ($agreement_info->status!="Finishing") {
+	forward("svc_agreement_edit&agreement_id=$agreement_id");
+	exit;
+	}
+
+$ag_type_info=getone("select * from svc_agreement_types where agreement_type_id = '$agreement_info->agreement_type_id'");
+
+if ($markup_percent!="") {
+	$markup_percent=escapeshellcmd($markup_percent);
+	$markup_percent=clean_float($markup_percent);
+	if ($markup_percent < $ag_type_info->min_markup_percent) $markup_percent=$ag_type_info->min_markup_percent;
+	@mysql_query("update svc_agreement_index set markup_percent = '$markup_percent' where agreement_id = '$agreement_info->agreement_id'");
+	$agreement_info->markup_percent=$markup_percent;
+	}
+
+echo "<a href=$pagename?mode=main><font color=blue>Cancel</font></a>
+<table border=1 cellspacing=0 cellpadding=3 align=right><tr><td bgcolor=blue>
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td bgcolor=#ffffaa><b>Status Changes</b></td></tr>
+<tr><td bgcolor=#ffffff><a href=$pagename?mode=svc_agreement_transfer&agreement_id=$agreement_info->agreement_id><font color=blue>Change Owner</font></a></td></tr>
+<tr><td bgcolor=#aaffaa><a href=$pagename?mode=svc_agreement_copy&agreement_id=$agreement_info->agreement_id><font color=blue>Copy Agreement</font></a></td></tr>
+
+<tr><td bgcolor=#ffffff>
+<a href=$pagename?mode=mark_agreement_new&agreement_id=$agreement_info->agreement_id><font color=blue>Return to new status</font></a><br>
+</td></tr>
+<tr><td bgcolor=#ffffff>
+<a href=$pagename?mode=svc_agreement_edit_finalized&agreement_id=$agreement_info->agreement_id><font color=blue>Finalize Agreement</font></a>
+</td></tr>
+</table>
+</td></tr></table>
+";
+//<a href=$pagename?mode=svc_agreement_edit_finishing&agreement_id=$agreement_info->agreement_id><font color=blue>Complete Agreement</font></a>
+agreement_summary_box($agreement_id);
+
+
+$mandatory_options=0;
+
+echo "
+<h2>Final Agreement Data</h2>
+<hr>
+
+<font size=+2><b>Options</b></font><br>
+<b>Add</b> <i>(to be added later)</i><p>
+<hr>
+";
+include("svc_agreement_options_show.phtml");
+
+
+
+//$total_equipment_value=round($agreement_info->total_equipment_cost * $agreement_info->markup_percent * 100)/100;
+$total_equipment_value=(round($agreement_info->total_equipment_cost * $agreement_info->markup_percent * 100)/100) + $truck_charges + $mobilization_fees;
+
+
+echo "
+<form name=agreement_finish method=post action=$pagename>
+<input type=hidden name=mode value=svc_agreement_edit_finishing>
+<input type=hidden name=agreement_id value=\"$agreement_info->agreement_id\">
+<table border=0>
+
+
+<tr><td>
+	<b>Total S/A Cost w/o Truck & Options</b>
+</td><td>
+	\$$agreement_info->total_equipment_cost
+</td></tr>
+
+<tr><td>
+	<b>Markup</b>
+</td><td>
+	<input type=text size=6 name=markup_percent value=\"$agreement_info->markup_percent\"> <i>($ag_type_info->min_markup_percent minimum)</i>
+</td></tr>
+
+<tr><td>
+	<b>Truck Charges</b>
+</td><td>
+	\$$truck_charges
+</td></tr>
+
+<tr><td>
+	<b>Total S/A Sell w/ Truck (no options)</b>
+</td><td>
+	\$$total_equipment_value
+</td></tr>
+
+
+";
+//if ($show_totals) {
+//	$umc_cost=agreement_cost($agreement_id);
+//	$total_agreement_amount=agreement_customer_cost($agreement_id);
+//	echo "<tr><td>
+//		UMC Cost
+//	</td><td>
+//		$umc_cost
+//	</td></tr>
+//
+//	<tr><td>
+//		Total Agreement Amount
+//	</td><td>
+//		$total_agreement_amount
+//	</td></tr>";
+//	}
+
+echo "
+<tr><td colspan=2 align=right>
+	<input type=submit value=\"Apply Changes\">
+</td></tr>
+
+</form>
+
+</table>
+<hr>
+
+";
+
+
+
+
+
+
+
+
+?>

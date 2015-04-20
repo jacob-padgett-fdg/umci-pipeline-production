@@ -1,0 +1,10 @@
+<?
+//echo "hello there";
+$drawing_id=addslashes($drawing_id);
+
+$drawing_info=getoneb("select * from drawinglog where drawing_id = '$drawing_id'");
+if ($drawing_info->drawing_is_current=='Y') set_drawing_not_current($drawing_id);
+else set_drawing_current($drawing_id);
+$drawing_info=getoneb("select * from drawinglog where drawing_id = '$drawing_id'");
+echo "<a href=\"javascript:toggle_is_current($drawing_info->drawing_id,'$drawing_info->drawing_is_current')\"><font color=blue>$drawing_info->drawing_is_current</font></a>";
+?>

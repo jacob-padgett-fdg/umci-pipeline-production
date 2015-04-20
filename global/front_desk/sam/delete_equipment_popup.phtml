@@ -1,0 +1,15 @@
+<?
+require("header.phtml");
+$el_id=addslashes($el_id);
+
+delete_equipment($el_id);
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+exit;
+
+
+?>

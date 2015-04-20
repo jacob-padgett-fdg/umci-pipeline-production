@@ -1,0 +1,48 @@
+<?
+require_once('querylib.inc');
+$vp_hours=escapeshellcmd($vp_hours);
+$fx_hours=escapeshellcmd($fx_hours);
+
+if ($vp_hours > $max_hours) $vp_hours=$max_hours;
+if ($fx_hours > $max_hours) $fx_hours=$max_hours;
+if ($vp_hours < 0) $vp_hours=0;
+if ($fx_hours < 0) $fx_hours=0;
+
+
+
+//$email="jeffb@umci.com";
+
+mail("jeffb@umci.com","Firewall Rules Modified by $global_user->first_name $global_user->last_name",
+
+"
+The University Mechanical firewall has just been reconfigured by
+$global_user->first_name $global_user->last_name. The new settings are now:
+
+VP Hours remaining: $vp_hours
+FX Hours remaining: $fx_hours
+
+Open/Close events will also be logged on the firewall.
+
+");
+
+
+
+
+mail("cbond@umci.com","Firewall Rules Modified by $global_user->first_name $global_user->last_name",
+
+"
+The University Mechanical firewall has just been reconfigured by
+$global_user->first_name $global_user->last_name. The new settings are now:
+
+VP Hours remaining: $vp_hours
+FX Hours remaining: $fx_hours
+
+Open/Close events will also be logged on the firewall.
+
+");
+
+mysql_query("update misc_data set data = '$vp_hours' where data_type = 'firewall_hole_viewpoint'");
+mysql_query("update misc_data set data = '$fx_hours' where data_type = 'firewall_hole_fieldcentrix'");
+
+forward('main');
+?>

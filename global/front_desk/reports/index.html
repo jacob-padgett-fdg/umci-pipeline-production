@@ -1,0 +1,11 @@
+<?
+require("settings.cfg");
+require("global-auth.inc");
+//if ($adminuser) echo "ADMIN!";
+if (isset($mode)) {
+	$err=include($mode . ".phtml");
+	if (!($err)) include("badmode.phtml");
+	} else {
+	include ("my_home.phtml");
+	}
+?>

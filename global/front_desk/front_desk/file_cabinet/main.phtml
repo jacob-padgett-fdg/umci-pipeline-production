@@ -1,0 +1,135 @@
+<?
+require("header.phtml");
+fd_navs_header();
+$today=date('m-d-Y');
+
+if (pm_for_this_job()) {
+	if ($gimme_da_works_baby==1) gimme_da_works_baby($global_jobinfo->jobinfo_id);
+	echo "<a href=$pagename?mode=$mode&jobinfo_id_set=$global_jobinfo->jobinfo_id&gimme_da_works_baby=1><font color=blue>Activate All Folders</font></a>";
+	}
+
+
+
+
+
+
+//$result=verify_folder_activated(13,260);
+//exit;
+
+//$res=@mysql_query("select * from file_cabinet_templates where active = 'Y'");
+//while ($row=@mysql_fetch_object($res)) {
+//	echo "<hr>$row->template_id";
+//	$result=verify_folder_activated($row->template_id,417);
+//	if (!($result)) echo "I got false back";
+//	}
+//die();
+
+
+//////////////////////////////////////////////////
+/////	Temporary code to fix screweed up data
+//////////////////////////////////////////////////
+/*
+$res=@mysql_query("select * from file_cabinet");
+while ($row=@mysql_fetch_object($res)) {
+	echo "rebuilding tree: $row->tree_id<br>";
+	update_directory_counts($row->tree_id);
+	}
+die();
+*/
+
+//echo "<hr>$application_user_type<hr>$group_perms_query<hr>";
+//tabledump($group_perms_query);
+
+if ($adminuser) {
+	echo "<br><a href=$pagename?mode=admin_template_manage><font color=blue>Manage Tree Template</font></a><br>";
+	}
+
+echo "
+<a href=$pagename?mode=search><font color=blue>Search</font></a>
+";
+$root_info=get_root();
+if (!($root_info)) {
+	create_root();
+	$root_info=get_root();
+	gimme_da_root_folders($global_jobinfo->jobinfo_id);
+	if (!($root_info)) die ("Application error: Failed to create job root! Please contact system adminstrator!!!");
+	}
+
+
+
+
+if ($current_folder=="") $current_folder=$root_info->tree_id;
+$current_folder_info=getoneb("select * from file_cabinet_tree where tree_id = '$current_folder'");
+$tree_path=get_tree_path_main($current_folder);
+
+
+
+
+if ($current_folder_info->free_for_all=="Y") {
+	echo "<form name=add_ffa_folder method=post action=$pagename>
+	<input type=hidden name=mode value=ffa_add>
+	<input type=hidden name=current_folder_id value=\"$current_folder_info->tree_id\"><p>
+	<b>Add New Folder:</b> <input type=text name=new_folder_name size=20><input type=submit value=Add>";
+	}
+
+echo "
+<div style=\"border: 1px solid black; background: $fd_color_4;\"><ul>$tree_path</ul></div>
+
+<style>
+table.filerows {
+		min-width: 450px;
+	}
+td.filerows {
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	}
+
+</style>
+
+<br>
+<table border=0 cellspacing=0 class=filerows style=\"outline: 1px solid black;\">
+
+<tr><td colspan=4 align=center bgcolor=$fd_color_1>
+	<div style=\"float: right;\"><a href=$pagename?mode=file_cabinet_edit&tree_id=$current_folder><font size=-1 color=blue><i>Add</i></font></a></div>
+	<b>&nbsp;&nbsp;&nbsp;&nbsp;Files&nbsp;&nbsp;&nbsp;&nbsp;</b>
+</td></tr>
+
+<tr bgcolor=$fd_color_3><td align=center>
+	<i><a href=$pagename?mode=$mode&current_folder=$current_folder&sort=description><font color=blue><i>Description</font></a></i>
+</td><td align=center>
+	<i>Created By</i>
+</td><td align=center>
+	<i><a href=$pagename?mode=$mode&current_folder=$current_folder&sort=create_date><font color=blue>Date&nbsp;Created</font></a></i>
+</td><td>
+	&nbsp;
+</td></tr>
+";
+
+if (($sort!='description') && ($sort!='create_date')) {
+	$sort="create_date";
+	}
+
+
+$file_list_res=@mysql_query("select * from file_cabinet where tree_id = '$current_folder' order by $sort,file_num,description");
+while ($file_entry=@mysql_fetch_object($file_list_res)) {
+	$files_info=load_file_group_info($file_entry->file_group_id);
+	$creator=getoneb("select * from contacts where contacts_id = '$file_entry->creator'");
+	$date=invali_date($file_entry->create_date,'/');
+	$link=webfile_paperclip_view($file_entry->file_group_id);
+	if ($file_entry->description=='')$file_entry->description='????';
+	echo "<tr><td class=filerows>
+			<a href=$pagename?mode=file_cabinet_edit&file_cabinet_id=$file_entry->file_cabinet_id><font color=blue>$file_entry->description</font></a>
+		</td><td class=filerows>
+			$creator->display_name
+		</td><td class=filerows>
+			$date
+		</td><td class=filerows>
+			 $link
+		</td></tr>
+		";
+	}
+echo "</table>";
+fd_navs_footer();
+?>

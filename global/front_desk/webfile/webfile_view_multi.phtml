@@ -1,0 +1,50 @@
+<?
+session_name("global");
+session_start();
+
+$res=@mysql_query("select * from webfile_files where file_group_id = '$file_group_id' order by upload_date");
+
+echo "
+<body bgcolor=white>
+<i>This document has multiple files. Please select the one you'd like to view.</i>
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=$fd_color_4><td>
+	&nbsp;
+</td><td>
+	<b>Uploaded</b>
+</td><td>
+	<b>File Type</b>
+</td><td>
+	<b>Size</b>
+</td><td>
+	<b>Name</b>
+</td></tr>
+";
+	
+while ($row=@mysql_fetch_object($res)) {
+	$date=invali_date($row->upload_date,'/');
+	$type=ereg_replace("^.*/","",$row->mime_type);
+	$img=webfile_small_image_icon($row->files_id);
+	$row->file_name=urlencode($row->file_name);
+	echo "<tr><td>
+			<a href=\"/global/webfile$devel/index.html/files/$row->file_name?mode=webfile_view&files_id=$row->files_id\"><img src=\"$img\"</a>
+		</td><td>
+			$date
+		</td><td>
+			$type
+		</td><td>
+			$row->file_size
+		</td><td>
+			$row->file_name
+		</td></tr>
+		";
+	}
+
+echo "</table>
+
+<a href=javascript:history.go(-1)><font color=blue>Go Back</font></a>
+</body>
+";
+exit;
+?>

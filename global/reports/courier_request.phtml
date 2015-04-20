@@ -1,0 +1,448 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+ajax_load();
+
+$report_info=getoneb("select * from front_desk_reports where report_name = 'courier_request'");
+$adminuser=getoneb("select * from front_desk_reports_permissions where report_id = '$report_info->report_id' and contacts_id = '$global_user_id' and admin_user = 'Y' limit 1");
+
+
+
+if ($courier_request_id!="") {
+	$courier_request_id=addslashes($courier_request_id);
+	$courier_request_info=getoneb("select * from courier_request_log where courier_request_id = '$courier_request_id'");
+	if (!($adminuser)) {
+		if ($courier_request_info->owner != $global_user_id) {
+			die_security('loading invalid courier request.. not admin, not theirs');
+			}
+		}
+	}
+
+if ($courier_request_info->address=="") $courier_request_info->address="address";
+if ($courier_request_info->contact_name=="") $courier_request_info->contact_name="name";
+if ($courier_request_info->contact_phone=="") $courier_request_info->contact_phone="phone";
+
+if ($courier_request_info->delivery_address=="") $courier_request_info->delivery_address="optional";
+if ($courier_request_info->delivery_contact_name=="") $courier_request_info->delivery_contact_name="name";
+if ($courier_request_info->delivery_contact_phone=="") $courier_request_info->delivery_contact_phone="phone";
+if ($courier_request_info->confidential=='') $courier_request_info->confidential='N';
+
+if ($toggle_status!="") {
+	$toggle_status=addslashes($toggle_status);
+	$toggle_info=getoneb("select * from courier_request_log where courier_request_id = '$toggle_status'");
+	if ($toggle_info) {
+		if (($adminuser)||($toggle_info->owner==$global_user_id)) {
+			if ($toggle_info->status=="new") $newstatus="complete";
+			else $newstatus="new";
+			@mysql_query("update courier_request_log set status = '$newstatus' where courier_request_id = '$toggle_info->courier_request_id'");
+			}
+		}
+	}
+
+$curr_status=getoneb("select * from courier_request_status limit 1");
+
+if ($adminuser) {
+	if ($curr_status->status=="available") {
+		$curr_status->message="";
+		}
+	echo "
+	<form name=ooo_form method=post action=$pagename>
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=\"${report_name}_ooo_form_submit\">
+	<table border=1 cellspacing=0 cellpadding=4>
+	<tr><td colspan=2 align=center bgcolor=$fd_color_3>
+		<b>Administrative Settings</b>
+	</td></tr>
+	
+	<tr><td>
+	Courier out of office status:
+	</td><td>
+	<select name=status>
+	<option>$curr_status->status</option>
+	<option>out of office</option>
+	<option>available</option>
+	</select>
+	</td></tr>
+	
+	<tr><td>
+		Status text:
+	</td><td>
+		<textarea name=message rows=5 cols=40>$curr_status->message</textarea>
+	</td></tr>
+	
+	<tr><td colspan=2 align=right>
+		<input type=submit value=Change>
+	</td></tr></table>
+	
+	</form>
+	";
+	}
+
+
+if ($curr_status->status=="out of office") {
+	echo "<table border=1 cellspacing=0 cellpadding=10>
+	<tr><td bgcolor=$fd_color_3 align=center><h2>Out of office</h2></td></tr>
+	<tr><td bgcolor=#ff3333><b>$curr_status->message</b></td></tr>
+	</table>";
+	//mh_navs_footer();
+	//die();
+	}
+
+
+echo "
+<script>
+function check_for_address(obj) {
+	if (obj.value=='address') obj.value='';
+	selected_contact=document.crf.site.value;
+	if (selected_contact!='') {
+		document.getElementById('temp_address_spot').ajax_trigger_function=\"copy_addr_to_form();\";
+		ajaxManager('load_page','$pagename?mode=$mode&report_name=${report_name}_getaddr&contacts_id=' + selected_contact,'temp_address_spot');
+		document.crf.site.value='';
+		}
+	}
+
+function check_for_delivery_address(obj) {
+	if (obj.value=='optional') obj.value='';
+	selected_contact=document.crf.delivery_site.value;
+	if (selected_contact!='') {
+		document.getElementById('temp_delivery_address_spot').ajax_trigger_function=\"copy_delivery_addr_to_form();\";
+		ajaxManager('load_page','$pagename?mode=$mode&report_name=${report_name}_get_delivery_address&contacts_id=' + selected_contact,'temp_delivery_address_spot');
+		document.crf.site.value='';
+		}
+	}
+
+function check_for_contact_name(obj) {
+	if (document.crf.contact_name.value=='name')
+			document.crf.contact_name.value='';
+	check_for_contact(obj);
+	}
+
+function check_for_contact_phone(obj) {
+	if (document.crf.contact_phone.value=='phone')
+			document.crf.contact_phone.value='';
+	check_for_contact(obj);
+	}
+
+function check_for_delivery_contact_name(obj) {
+	if (document.crf.delivery_contact_name.value=='name')
+			document.crf.delivery_contact_name.value='';
+	check_for_delivery_contact(obj);
+	}
+
+function check_for_delivery_contact_phone(obj) {
+	if (document.crf.delivery_contact_phone.value=='phone')
+			document.crf.delivery_contact_phone.value='';
+	check_for_delivery_contact(obj);
+	}
+
+function check_for_contact(obj) {
+	selected_contact=document.crf.contact.value;
+	if (selected_contact!='') {
+		document.getElementById('temp_contact_name').ajax_trigger_function=\"copy_contact_name_to_form();\";
+		ajaxManager('load_page','$pagename?mode=$mode&report_name=${report_name}_get_contact_name&contacts_id=' + selected_contact,'temp_contact_name');
+		document.getElementById('temp_contact_phone').ajax_trigger_function=\"copy_contact_phone_to_form();\";
+		ajaxManager('load_page','$pagename?mode=$mode&report_name=${report_name}_get_contact_phone&contacts_id=' + selected_contact,'temp_contact_phone');
+		document.crf.contact.value='';
+		}
+	}
+
+function check_for_delivery_contact(obj) {
+	selected_contact=document.crf.delivery_contact.value;
+	if (selected_contact!='') {
+		document.getElementById('temp_delivery_contact_name').ajax_trigger_function=\"copy_delivery_contact_name_to_form();\";
+		ajaxManager('load_page','$pagename?mode=$mode&report_name=${report_name}_get_delivery_contact_name&contacts_id=' + selected_contact,'temp_delivery_contact_name');
+		document.getElementById('temp_delivery_contact_phone').ajax_trigger_function=\"copy_delivery_contact_phone_to_form();\";
+		ajaxManager('load_page','$pagename?mode=$mode&report_name=${report_name}_get_delivery_contact_phone&contacts_id=' + selected_contact,'temp_delivery_contact_phone');
+		document.crf.delivery_contact.value='';
+		}
+	}
+
+function copy_addr_to_form() {
+	document.crf.address.value=document.getElementById('temp_address_spot').innerHTML;
+	}
+
+function copy_delivery_addr_to_form() {
+	document.crf.delivery_address.value=document.getElementById('temp_delivery_address_spot').innerHTML;
+	}
+
+function copy_contact_name_to_form() {
+	document.crf.contact_name.value=document.getElementById('temp_contact_name').innerHTML;
+	}
+
+function copy_contact_phone_to_form() {
+	document.crf.contact_phone.value=document.getElementById('temp_contact_phone').innerHTML;
+	}
+
+function copy_delivery_contact_name_to_form() {
+	document.crf.delivery_contact_name.value=document.getElementById('temp_delivery_contact_name').innerHTML;
+	}
+
+function copy_delivery_contact_phone_to_form() {
+	document.crf.delivery_contact_phone.value=document.getElementById('temp_delivery_contact_phone').innerHTML;
+	}
+
+function blur_address(obj) {
+	if (obj.value=='') obj.value='address';
+	}
+function blur_delivery_address(obj) {
+	if (obj.value=='') obj.value='optional';
+	}
+function blur_contact_name(obj) {
+	if (obj.value=='') obj.value='name';
+	}
+function blur_delivery_contact_name(obj) {
+	if (obj.value=='') obj.value='name';
+	}
+function blur_contact_phone(obj) {
+	if (obj.value=='') obj.value='phone';
+	}
+function blur_delivery_contact_phone(obj) {
+	if (obj.value=='') obj.value='phone';
+	}
+function check_delivery_option() {
+	obj=document.getElementById('extra_delivery_row');
+	obj2=document.getElementById('extra_contact_row');
+	if ((document.crf.action.options[document.crf.action.selectedIndex].value=='Pick Up From')||(document.crf.action.options[document.crf.action.selectedIndex].text=='Pick Up From')) {
+		obj.style.display='table-row';
+		obj2.style.display='table-row';
+		} else {
+		obj.style.display='none';
+		obj2.style.display='none';
+		}
+	}
+
+function checkandsubmit() {
+	OK=1;
+	if(document.crf.action.options[document.crf.action.selectedIndex].text=='') {
+		alert('Please specify work to be performed');
+		OK=0;
+		}
+	if ((document.crf.address.value=='')||(document.crf.address.value=='address')) {
+		alert('Please specify an address.');
+		OK=0;
+		}
+	if (document.crf.description.value=='') {
+		alert('Please give at least a short description.');
+		OK=0;
+		}
+	if (document.crf.jobinfo_id.options[document.crf.jobinfo_id.selectedIndex].value<1) {
+		alert('Please specify a job to charge to.');
+		OK=0;
+		}
+	if (document.crf.time_sensitive.options[document.crf.time_sensitive.selectedIndex].text=='') {
+		alert('Please select Y/N for \"Time Sensitive\".');
+		OK=0;
+		}
+	if (document.crf.deadline.value=='') {
+		alert('Pleaee fill in the \"Deliver By\" time (even for not time sensitive items).');
+		OK=0;
+		}
+	if (OK==1) document.crf.submit();
+	}
+
+
+</script>
+
+
+<form name=crf method=post action=$pagename>
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=courier_request_id value=\"$courier_request_info->courier_request_id\">
+<input type=hidden name=report_name value=\"$report_name\">
+<input type=hidden name=report_name value=\"${report_name}_submit\">
+<table bgcolor=$fd_color_1 border=1 cellspacing=0 cellpadding=3>
+
+<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+	<b>New Courier Request</b>
+</td></tr>
+
+<tr><td valign=top>
+	<select name=action onchange=\"check_delivery_option();\">
+	<option>$courier_request_info->action</option>
+	<option>Pick Up From</option>
+	<option>Deliver To</option>
+	</select>
+</td><td>
+	<table border=0 cellspacing=0 cellpadding=1>
+	<tr>
+	<td><textarea onblur=\"blur_address(this)\" onfocus=\"check_for_address(this)\" name=address rows=3 cols=35>$courier_request_info->address</textarea><div style=\"display:none;\" id=temp_address_spot></div></td>
+	<td valign=top>";contactsbox("select * from contacts where ( contact_type = 'site' or contact_type = 'company') and current = 'Y'","$courier_request_info->site","site","opener.document.crf.address.focus()",128);echo "</td>
+	</tr></table>
+</td></tr>
+
+<tr><td>
+	<b>Contact:</b>
+</td><td>
+	<div style=\"float: right;\">";contactsbox("select * from contacts where contact_type = 'contact' and current = 'Y'","$courier_request_info->contact","contact","opener.document.crf.contact_name.focus()",128);echo "</div><div style=\"display:none;\" id=temp_contact_name></div><div style=\"display:none;\" id=temp_contact_phone></div>
+	<input size=14 onblur=\"blur_contact_name(this)\" onfocus=\"check_for_contact_name(this)\" type=text name=contact_name size=20 value=\"$courier_request_info->contact_name\">
+	<input size=14 onblur=\"blur_contact_phone(this)\" onfocus=\"check_for_contact_phone(this)\" type=text name=contact_phone size=20 value=\"$courier_request_info->contact_phone\">
+</td></tr>
+
+<tr style=\"display: table-row;\" id=\"extra_delivery_row\"><td valign=top>
+	<b>..and deliver to</b>
+</td><td>
+	<table border=0 cellspacing=0 cellpadding=1>
+	<tr>
+	<td><textarea onblur=\"blur_delivery_address(this)\" onfocus=\"check_for_delivery_address(this)\" name=delivery_address rows=3 cols=35>$courier_request_info->delivery_address</textarea><div style=\"display:none;\" id=temp_delivery_address_spot></div></td>
+	<td valign=top>";contactsbox("select * from contacts where ( contact_type = 'site' or contact_type = 'company') and current = 'Y'","$courier_request_info->delivery_site","delivery_site","opener.document.crf.delivery_address.focus()",128);echo "</td>
+	</tr></table>
+</td></tr>
+
+<tr style=\"display: none;\" id=\"extra_contact_row\"><td>
+	<b>Delivery Contact:</b>
+</td><td>
+	<div style=\"float: right;\">";contactsbox("select * from contacts where contact_type = 'contact' and current = 'Y'","$courier_request_info->delivery_contact","delivery_contact","opener.document.crf.delivery_contact_name.focus()",128);echo "</div><div style=\"display:none;\" id=temp_delivery_contact_name></div><div style=\"display:none;\" id=temp_delivery_contact_phone></div>
+	<input size=14 onblur=\"blur_delivery_contact_name(this)\" onfocus=\"check_for_delivery_contact_name(this)\" type=text name=delivery_contact_name size=20 value=\"$courier_request_info->delivery_contact_name\">
+	<input size=14 onblur=\"blur_delivery_contact_phone(this)\" onfocus=\"check_for_delivery_contact_phone(this)\" type=text name=delivery_contact_phone size=20 value=\"$courier_request_info->delivery_contact_phone\">
+</td></tr>
+
+<tr><td valign=top>
+	<b>Description:</b>
+</td><td>
+	<textarea name=description rows=2 cols=30>$courier_request_info->description</textarea>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Time Sensitive:</b>&nbsp;<select name=time_sensitive><option>$courier_request_info->time_sensitive</option><option>Y</option><option>N</option></select>
+</td><td>
+	<b>Deliver&nbsp;By:&nbsp;<input type=text name=deadline size=15 value=\"$courier_request_info->deadline\"></b>
+</td></tr>
+
+<tr><td>
+	<b>Job:</b>
+</td><td>";
+	dropbox("select jobinfo_id,contract_num from jobinfo where active = 'Y' order by contract_num","$courier_request_info->courier_request_id","","");echo "
+</td></tr>
+
+<tr><td>
+	<b>Requester:</b>
+</td><td>
+	$global_user->display_name
+</td></tr>
+
+<tr><Td>
+	<b>Confidential:</b>
+</td><td>
+	<select name=confidential>
+	<option>$courier_request_info->confidential</option>
+	<option>N</option>
+	<option>Y</option>
+	</select>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Additional<br>Notes:</b>
+</td><td>
+	<textarea name=additional_notes rows=3 cols=30>$courier_request_info->additional_notes</textarea>
+</td></tr>
+
+<tr><td colspan=2 align=right><input type=button onclick=\"checkandsubmit()\" value=Submit></td></tr>
+
+</form>";
+
+if ($adminuser) {
+	$query="select * from courier_request_log order by courier_request_id desc limit 20";
+	} else {
+	$query="select * from courier_request_log where  owner = '$global_user_id' or confidential = 'N' order by courier_request_id desc limit 20";
+	//$query="select * from courier_request_log  order by courier_request_id desc limit 200";
+	}
+
+echo "<table style=\"font-size: small;\" border=1 cellspacing=0 cellpadding=4>
+<tr bgcolor=$fd_color_4><td>
+	<b>CR#</b>
+</td><td>
+	<b>Status</b>
+</td><td>
+	<b>For</b>
+</td><td>
+	 <b>Task</b>
+</td><td>
+	<b>Address</b>
+</td><td>
+	<b>Contact</b>
+</td><td>
+	<b>By</b>
+</td><td>
+	<b>TS</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	<b>Job</b>
+</td><td>
+	<b>Additional Notes</b>
+</td><td>
+	<b>Created</b>
+</td><td>
+	&nbsp;
+</td></tr>
+";
+
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$owner=getoneb("select * from contacts where contacts_id = '$row->owner'");
+	$job_info=getoneb("select * from jobinfo where jobinfo_id = '$row->jobinfo_id'");
+	if ($row->status=="complete") $bgcolor="#aaaaaa";
+	else $bgcolor="#ffffff";
+	if ($row->confidetial=='Y') {
+		if ((!($adminuser)) && ($global_user_id!=$row->owner)) continue;
+		}
+	$address=ereg_replace("\n",'<br>',$row->address);
+	
+	echo "<tr valign=top bgcolor=$bgcolor><td>
+			$row->courier_request_id
+		</td><td>";
+			if (($adminuser)||($row->owner==$global_user_id)) {
+				if ($row->status!="complete") echo "<a href=$pagename?mode=$mode&report_name=$report_name&toggle_status=$row->courier_request_id><font color=blue>$row->status</font></a>";
+				else echo "$row->status";
+				} else {
+				echo "$row->status";
+				}
+			echo "
+		</td><td>
+			$owner->display_name
+		</td><td>
+			$row->action
+		</td><td>
+			$address";
+			if ($row->delivery_address!="") {
+				$address=nl2br($row->delivery_address);
+				echo "<hr><i>...and deliver_to</i><br>$address";
+				}
+			echo"
+		</td><td>
+			$row->contact_name<br>$row->contact_phone";
+			if ($row->delivery_contact_name!="") {
+				echo "<hr><i>...delivery contact<br>$row->delivery_contact_name $row->delivery_contact_phone";
+				}
+			echo "
+		</td><td>
+			$row->deadline
+		</td><td>
+			$row->time_sensitive
+		</td><td>
+			$row->description
+		</td><td>
+			<font title=\"($job_info->display_name)\">$job_info->contract_num</font>
+		</td><td>
+			$row->additional_notes
+		</td><td>
+			$row->creation_time
+		</td><td>";
+			if ($row->status!="complete") 
+			echo "<a href=$pagename?mode=$mode&report_name=$report_name&courier_request_id=$row->courier_request_id><font color=blue><i>edit</i></font></a><p>";
+			echo "<a href=$pagename?mode=$mode&report_name=${report_name}_print&courier_request_id=$row->courier_request_id><font color=blue><i>print</i></font></a>
+		</td></tr>
+		";
+			
+	}
+echo "</table>
+<script>
+check_delivery_option();
+</script>
+
+";
+mh_navs_footer();
+?>

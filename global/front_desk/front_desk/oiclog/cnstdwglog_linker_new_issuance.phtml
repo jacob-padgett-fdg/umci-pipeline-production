@@ -1,0 +1,60 @@
+<?
+$new_issuance_name=addslashes($new_issuance_name);
+$oiclog_id=addslashes($oiclog_id);
+
+$issuance_jobinfo_id=addslashes($issuance_jobinfo_id);
+$issuance_jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$issuance_jobinfo_id'");
+//tabledump("select * from jobinfo where jobinfo_id = '$issuance_jobinfo_id'");
+
+$section=addslashes($section);
+$section_info=getoneb("select * from cnstdwglog_sections  where section = '$section' and jobinfo_id = '$issuance_jobinfo->jobinfo_id'");
+//tabledump("select * from cnstdwglog_sections where section = '$section' and jobinfo_id = '$issuance_jobinfo->jobinfo_id'");
+
+$current_construction_issuance_info=getoneb("select * from cnstdwglog_issuances where jobinfo_id = '$issuance_jobinfo->jobinfo_id' and section = '$section_info->section' and issuance_type like 'Constructio%' order by issuance_type,sort_priority desc,issuance_id desc,name desc limit 1");
+
+//tabledump("select * from cnstdwglog_issuances where jobinfo_id = '$issuance_jobinfo->jobinfo_id' and section = '$section_info->section' and issuance_type like 'Constructio%' order by issuance_type,sort_priority desc,issuance_id desc,name desc limit 1");
+//echo ("<hr>select * from cnstdwglog_issuances where jobinfo_id = '$issuance_jobinfo->jobinfo_id' and section = '$section_info->section' and issuance_type like 'Constructio%' order by issuance_type,sort_priority desc,issuance_id desc,name desc limit 1<hr>");
+//echo "<pre>";
+//print_r($current_construction_issuance_info);
+//echo "</pre>";
+//echo "test";
+
+if ($current_construction_issuance_info) {
+	$new_sort_priority=$current_construction_issuance_info->sort_priority + 1;
+	$query="insert into cnstdwglog_issuances set 
+		jobinfo_id = '$issuance_jobinfo->jobinfo_id',
+		section = '$section_info->section',
+		name = '$new_issuance_name',
+		sort_priority = '$new_sort_priority',
+		issuance_type = 'Construction',
+		issuance_date = '" . date('Y-m-d') . "',
+		description = 'Added by $global_user->first_name $global_user->last_name ($global_user_id) from OIC Log'
+		";
+	//echo "<hr>$query<hr>";
+	@mysql_query($query);
+	} else {
+	echo "Application error. Could not add issuance. Please contact your system administrator.";
+	}
+
+include("../cnstdwglog$devel/settings.cfg");
+include("../cnstdwglog$devel/exported_functions.inc");
+$current_cnstdwglog_section_temp=$current_cnstdwglog_section;
+$current_cnstdwglog_section=$section_info->section;
+$global_jobinfo_id=$issuance_jobinfo->jobinfo_id;
+fill_all_gaps();
+$current_cnstdwglog_section=$current_cnstdwglog_section_temp;
+include("settings.cfg");
+
+
+$selected_section=$section_info->section;
+include("cnstdwglog_linker.phtml");
+
+
+
+
+
+
+
+
+
+?>

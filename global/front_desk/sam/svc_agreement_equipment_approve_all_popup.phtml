@@ -1,0 +1,21 @@
+<?
+require_once('header.phtml');
+if(!(is_admin())) die("ERROR: Security violation!!! The authorities have been notified.");
+
+$agreement_info=load_agreement_info($agreement_id);
+
+
+if (!($agreement_info)) die("ERROR: Could not load agreement information!!!!");
+
+$res=@mysql_query("select * from svc_agreement_equip_list where agreement_id = '$agreement_info->agreement_id'");
+
+while ($row=@mysql_fetch_object($res)) {
+	@mysql_query("update svc_agreement_equip_list set supervisor_approved = 'Y' where el_id = '$row->el_id'");
+	//echo "<hr>update svc_agreement_equip_list set supervisor_approved = 'Y' where el_id = '$row->el_id'";
+	}
+echo "<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+?>

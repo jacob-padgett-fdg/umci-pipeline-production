@@ -1,0 +1,16 @@
+
+drop table if exists supplies;
+
+create table supplies (
+	supplies_id int auto_increment not null,
+	username char(50) not null,
+	quantity int default 1,
+	vendorcode char(50) not null,
+	description char(250),
+	status enum ("new","ordered","deleted") default "new",
+	lastaction timestamp,
+	primary key (supplies_id)
+	);
+
+	
+	

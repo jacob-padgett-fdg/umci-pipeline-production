@@ -1,0 +1,49 @@
+<?
+//require_once('querylib.inc');
+$query="select contacts.contacts_id as contacts_id,last_name,', ',first_name,' (',initials,') ' from contacts,access where access.contacts_id = contacts.contacts_id and application_name = 'service_proposals' order by last_name,first_name,employee_num";
+
+echo "<html><head><title>Edit user initials selection</title></head>
+<body bgcolor=#ffffff>
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><p>
+<center><h2>Select a user to modify</h2></center><hr>
+
+<form name=user_selection method=post action=$pagename>
+<input type=hidden name=mode value=user_edit>
+";dropbox($query,"",5);echo"
+
+<p><input type=submit value=Edit>
+
+
+
+
+
+</form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+";
+
+
+
+
+
+
+
+
+
+
+
+?>

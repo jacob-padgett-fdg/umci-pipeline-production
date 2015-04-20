@@ -1,0 +1,55 @@
+<?
+require("header.phtml");
+include("querylib.inc");
+
+///if ($adminuser) echo "Administrative User...<br>";
+
+$query="select * from supplies where status = 'new' order by lastaction";
+$result=mysql_query($query);
+
+echo "
+<font size=+1>Currently on order:</front>
+<table border=0 cellspacing=0 cellpadding=6>
+<tr bgcolor=$oddrowtint><td>
+	User
+</td><td>
+	Quantity
+</td><td>
+	Product #
+</td><td>
+	Description
+</td><td>
+	Job
+</td><td>
+	&nbsp;
+</td></tr>
+";	
+
+while($row=@mysql_fetch_object($result)) {
+	if ($counter=="1") {
+		$counter=0;
+		$bgtint=$oddrowtint;
+		} else {
+		$counter=1;
+		$bgtint="";
+		}
+		
+	echo "	<tr $bgtint><td>
+				$row->username
+			</td><td>
+				<center>$row->quantity</center>
+			</td><td>
+				$row->vendorcode
+			</td><td>
+  				$row->description
+			</td><td>
+  				$row->jobnum";
+  			if (($adminuser)||($row->contacts_id==$global_user->contacts_id)) {
+  				echo "</td><td>
+  					<i><a href=$pagename?mode=delete_item&supplies_id=$row->supplies_id><font color=blue>Delete</font></i></a>";
+  				}
+  			echo"</td></tr>";
+	}
+echo "</table>";
+
+?>

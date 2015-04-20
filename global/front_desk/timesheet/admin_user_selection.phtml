@@ -1,0 +1,45 @@
+<?
+
+if (!($admin_check)) die_security();
+
+//$res=query_underlings($global_user->employee_num);
+
+
+if ($showing_group=="") $showing_group="3";
+
+$res=@mysql_query("select * from contacts where umc_emp = 'Y' and current = 'Y' and employee_group = '$showing_group' order by alphasort");
+echo "
+<html><body bgcolor=white>
+<a href=$pagename?mode=admin_reports><font color=blue>Return to Admin Reports</font></a><br>
+<form name=gsel method=get action=$pagename>
+<input type=hidden name=mode value=$mode>
+<table border=0 cellpadding=5 width=100%>
+<tr><td align=center bgcolor=#dddddd><h2>Users in group <select onchange=submit() name=showing_group><option>$showing_group<option>3<option>1</select></h2></td></tr> 
+</table>
+</form>
+<table border=0 cellpadding=5>
+";
+
+
+//$underling_info=getoneb("select * from contacts where employee_num = $global_user->employee_num");
+//$sick_hrs=employee_sick_hours($underling_info->employee_num);
+//$vac_hrs=employee_vacation_hours($underling_info->employee_num);
+//echo "<tr bgcolor=#f3f3f3><td><b>$underling_info->last_name, $underling_info->first_name</b></td><td><a href=$pagename?mode=supervisor_show_user&underling_id=$underling_info->contacts_id><font color=blue>Timesheets</font></a></td><td>Available Sick Hours: $sick_hrs</td><td>Available Vacation Hours: $vac_hrs</a></td></tr>";
+
+$end_date='9999-12-31';
+$start_date=date("Y-m-d",strtotime("2 years ago"));
+
+//echo "start: $start_date<br>
+//end: $end_date<br>";
+
+
+
+while($row=@mysql_fetch_object($res)) {
+	//$underling_info=getoneb("select * from contacts where employee_num = $row->employee_num");
+	$sick_hrs=round(employee_sick_hours($row->employee_num),2);
+	$vac_hrs=round(employee_vacation_hours($row->employee_num),2);
+	echo "<tr><td>$row->last_name, $row->first_name ($row->employee_num)</td><td><a href=$pagename?mode=admin_reports_overview_show&employee=$row->contacts_id&start_date=$start_date&end_date=$end_date><font color=blue>Timesheets</font></a></td><td>Available Sick Hours: $sick_hrs</td><td>Available Vacation Hours: $vac_hrs</a></td></tr>";
+	}
+echo "</table>";
+
+?>

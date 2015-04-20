@@ -1,0 +1,18 @@
+<?
+require('settings.cfg');
+require('global-auth.inc');
+require_once('classes/Authorization/AccessControl.php');
+
+use classes\Authorization\AccessControl;
+
+session_name("global");
+session_start();
+
+// GPH COMMENTED OUT - eliminate the silly practice of appending '-devel' to every single directory in dev mode.
+// "dev mode" should be a sandboxed snapshot of production.
+// if (AccessControl::isAdmin($global_user_id)) $devel="-devel";
+// GPY REPLACED HARDCODED PATH
+//include("/data/web/pipeline/global/contacts${devel}/contact_selector_real.phtml");
+include("../global/contacts${devel}/contact_selector_real.phtml");
+exit;
+?>

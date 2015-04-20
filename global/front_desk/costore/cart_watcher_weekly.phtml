@@ -1,0 +1,24 @@
+#!/usr/local/bin/php
+<?
+// GPH MARK - absolute path
+require_once('/data/web/pipeline/global/costore/settings.cfg');
+require_once('/data/web/pipeline/global/costore/settings_cart_watcher.cfg');
+require_once('global-auth.inc');
+$watch_status="accepted";
+$message="There is a cart in the company store with a status of $watch_status. Please <a href=https://pipeline.umci.com/global/costore/?mode=orders_admin><font color=blue>go there</font></a> and process the request when you have a chance.";
+
+
+$carts=getoneb("select * from costore_cart where status = '$watch_status' limit 1");
+
+//queue_email($row->contacts_id,"Company Store Cart with status '$watch_status'",$message,'Y');
+
+if ($carts) {
+	//queue_email(2,"Company Store Cart with status '$watch_status'",$message,'Y'); // Jeff
+	queue_email(3043,"Company Store Cart with status '$watch_status'",$message,'Y'); // Gail
+	queue_email(2834,"Company Store Cart with status '$watch_status'",$message,'Y'); // Sonja
+	queue_email(6229,"Company Store Cart with status '$watch_status'",$message,'Y'); // Liz
+	//queue_email(3442,"Company Store Cart with status '$watch_status'",$message,'Y'); // Catherine
+	}
+
+
+?>

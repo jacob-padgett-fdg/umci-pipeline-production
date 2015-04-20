@@ -1,0 +1,29 @@
+<?
+require("timesheet_header.phtml");
+if ($showday=="") $showday=date("m-d-Y");
+$showday=escapeshellcmd($showday);
+
+$showday_info=date_info($showday);
+
+if ($timesheet_info->status!="new") $noedit=1;
+	else $noedit=0;
+
+if ($showday_info->week_end!=invali_date($timesheet_info->week_ending)) {
+	$timesheet_mode="timesheet_summary";
+	include("timesheet_summary.phtml");
+	exit;
+	}
+require("timesheet_footer.phtml");
+
+$holiday=getoneb("select * from timesheet_holidays where holiday_date = '" . vali_date($showday) . "'");
+if ($holiday) {
+	echo "<h1>HOLIDAY: $holiday->description</h1>";
+	}
+print_day($current_user->contacts_id,$showday,1,"",$noedit);
+
+if ($noedit) exit;
+
+$workday=$showday;
+include("timesheet_edit_add_time.phtml");
+
+?>

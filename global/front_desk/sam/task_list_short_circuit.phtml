@@ -1,0 +1,16 @@
+<?
+$agreement_type_id=addslashes($agreement_type_id);
+$maint_type_id=addslashes($maint_type_id);
+$agreement_type_id_target=addslashes($agreement_type_id_target);
+
+
+$query="insert into svc_task_lists_shorted set 
+agreement_type_id = '$agreement_type_id',
+maint_type_id = '$maint_type_id',
+agreement_type_id_target = '$agreement_type_id_target'";
+
+//echo "<hr>$query<hr>";
+@mysql_query($query);
+forward("lists_agreement_type_edit&agreement_type_id=$agreement_type_id");
+
+?>

@@ -1,0 +1,17 @@
+<?
+if ($task_id=="") die ("ERROR: Missing task_id. Fatal error, can not proceed. Please contact your system administrator");
+
+$task_id=escapeshellcmd($task_id);
+$nextnum=get_next_tasknum($task_id);
+$task_text=escapeshellcmd($task_text);
+
+$query="insert into svc_task_lists set task_id = '$task_id', task_list_number = '$nextnum', task_text = '$task_text'";
+@mysql_query($query);
+forward("task_item_edit&task_id=$task_id&focus_tlist=1");
+
+
+
+
+
+
+?>

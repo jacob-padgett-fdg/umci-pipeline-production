@@ -1,0 +1,45 @@
+<?
+require("header.phtml");
+//require('mh_lib.inc');
+require("report_lib.inc");
+fd_navs_header();
+//check_report_permissions();
+
+if ($search_text!="") {
+	$search_text=addslashes($search_text);
+	
+	}
+
+echo "<form name=project_search method=post action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=report_name value=\"$report_name\">
+<input type=text name=search_text value=\"$search_text\">
+<input type=submit value=\"Search\">
+</form>
+";
+
+if ($search_text!="") {
+	$search_query="select * from documents where ( description like '%$search_text%' or app_reference like '%$search_text%') and jobinfo_id = '$global_jobinfo_id'";
+	$res=@mysql_query($search_query);
+	echo "<table border=1 cellspacing=0 cellpadding=5>";
+	while ($row=@mysql_fetch_object($res)) {
+		echo "<tr><td>
+				<a href=/global/front_desk$devel/?mode=open_doc&doc_id=$row->doc_id><font color=blue>$row->doc_type - $row->app_reference
+			</td><td>
+				$row->description
+			</td></tr>
+			";
+		}
+	echo "</table>";
+	//tabledump($search_query);
+	//echo "<hr>$search_query<hr>";
+	}
+
+
+
+
+
+fd_navs_footer();
+
+
+?>

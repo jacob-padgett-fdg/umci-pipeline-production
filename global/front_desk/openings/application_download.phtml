@@ -1,0 +1,9 @@
+<?
+require_once('pdf_lib2.inc');
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+if ($application_id=="") die("oops, no application_id!");
+$application_id=addslashes($application_id);
+$pdf=application_pdf($pdf,$application_id);
+$pdf->ezStream();
+?>

@@ -1,0 +1,287 @@
+<?
+require('querylib.inc');
+
+
+if ($bidlist_id=="") {
+	$new=1;
+	} else {
+	$new=0;
+	$bidlist_id=escapeshellcmd($bidlist_id);
+	$bid_info=getone("select * from bidlist where bidlist_id = '$bidlist_id'");
+	$bid_info->refundable=checkbreak($bid_info->refundable);
+	$bid_info->bid_bond=checkbreak($bid_info->bid_bond);
+	$bid_info->bid_date=invali_date($bid_info->bid_date);
+	$bid_info->dwgs_ordered=checkbreak($bid_info->dwgs_ordered);
+	$bid_info->dwgs_received=checkbreak($bid_info->dwgs_received);
+	$bid_info->dwgs_returned=checkbreak($bid_info->dwgs_returned);
+	$bid_info->create_date=invali_date($bid_info->create_date);
+	$bid_info->deposit=format_long_num($bid_info->deposit);
+	$bid_info->bid_time=timebreak($bid_info->bid_time);
+	}
+
+
+echo "
+<html>
+<body bgcolor=white>	
+
+<a href=$pagename?mode=main><font color=blue>Cancel</font></a><p>
+
+<center><h2>Bid Information</h2></center>
+<hr>
+<form name=bidlist_edit method=get action=$pagename>
+<input type=hidden name=mode value=bidlist_submit>
+<input type=hidden name=bidlist_id value='$bidlist_id'>
+<table border=0 cellspacing=0 cellpadding=0><tr><td valign=top>
+<table border=0>
+";
+
+
+if ($new==0) {
+	echo "
+	<tr><td>
+		<b>Bid ID</b>
+	</td><td>
+		<b>$bid_info->bidlist_id</b>
+	</td></tr>";
+	}
+
+
+echo "
+<tr><td>
+	Status
+</td><td>
+	<select name=status>
+	<option value=$bid_info->status>$bid_info->status</option>
+	<option value=Active>Active</option>
+	<option value=Completed>Completed</option>
+	<option value=\"No Bid\">No Bid</option>
+</td></tr>
+
+<tr><td>
+	Bid Date
+</td><td>
+	";datebox("$bid_info->bid_date","bidlist_edit.bid_date");echo"
+</td><td>
+
+<tr><td>
+	Bid Time
+</td><td>
+	<select name=bid_time>
+	<option value=\"$bid_info->bid_time\">$bid_info->bid_time</option>
+	<option value=\"6:00 am\">6:00 am</option>
+	<option value=\"6:30 am\">6:30 am</option>
+
+	<option value=\"7:00 am\">7:00 am</option>
+	<option value=\"7:30 am\">7:30 am</option>
+
+	<option value=\"8:00 am\">8:00 am</option>
+	<option value=\"8:30 am\">8:30 am</option>
+
+	<option value=\"9:00 am\">9:00 am</option>
+	<option value=\"9:30 am\">9:30 am</option>
+
+	<option value=\"10:00 am\">10:00 am</option>
+	<option value=\"10:30 am\">10:30 am</option>
+
+	<option value=\"11:00 am\">11:00 am</option>
+	<option value=\"11:30 am\">11:30 am</option>
+
+	<option value=\"12:00 pm\">12:00 pm</option>
+	<option value=\"12:30 pm\">12:30 pm</option>
+
+	<option value=\"1:00 pm\">1:00 pm</option>
+	<option value=\"1:30 pm\">1:30 pm</option>
+
+	<option value=\"2:00 pm\">2:00 pm</option>
+	<option value=\"2:30 pm\">2:30 pm</option>
+
+	<option value=\"3:00 pm\">3:00 pm</option>
+	<option value=\"3:30 pm\">3:30 pm</option>
+
+	<option value=\"4:00 pm\">4:00 pm</option>
+	<option value=\"4:30 pm\">4:30 pm</option>
+
+	<option value=\"5:00 pm\">5:00 pm</option>
+	<option value=\"5:30 pm\">5:30 pm</option>
+
+	<option value=\"6:00 pm\">6:00 pm</option>
+	<option value=\"6:30 pm\">6:30 pm</option>
+
+	<option value=\"7:00 pm\">7:00 pm</option>
+	<option value=\"7:30 pm\">7:30 pm</option>
+
+	<option value=\"4:00 pm\">6:00 pm</option>
+	<option value=\"4:30 pm\">6:30 pm</option>
+
+	<option value=\"4:00 pm\">6:00 pm</option>
+	<option value=\"4:30 pm\">6:30 pm</option>
+
+</td><td>
+
+<tr><td>
+	Project
+</td><td>
+	<input type=text size=30 name=project maxlength=39 value=\"$bid_info->project\"> <i>(39 characters max)</i>
+</td></tr>
+
+<tr><td>
+	Location
+</td><td>
+	<input type=textsize=30 name=location value=\"$bid_info->location\">
+</td></tr>
+
+<tr><td>
+	Building Sq Ft
+</td><td>
+	<input type=text size=20 name=bld_square_feet value=\"$bid_info->bld_square_feet\">
+</td></tr>
+
+<tr><td valign=center align=center bgcolor=#dddddd>
+	Take-Off<br>Assignments
+</td><td valign=center>
+	<table border=0 cellspacing=0 cellpadding=0>
+		<tr><td>
+			Lead
+		</td><td>
+			";contactbox("select contacts_id as to_lead,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_lead,"","",1);echo"
+		</td></tr>
+		
+		<tr><td>
+			PLM
+		</td><td>
+			";contactbox("select contacts_id as to_plm,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_plm,"","",1);echo"
+		</td></tr>
+		
+		<tr><td>
+			HTG
+		</td><td>
+			";contactbox("select contacts_id as to_htg,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_htg,"","",1);echo"
+		</td></tr>
+		
+		<tr><td>
+			Metal
+		</td><td>
+			";contactbox("select contacts_id as to_metal,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_metal,"","",1);echo"
+		</td></tr>
+	
+		<tr><td>
+			PROC
+		</td><td>
+			";contactbox("select contacts_id as to_proc,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_proc,"","",1);echo"
+		</td></tr>
+	
+		<tr><td>
+			PROP
+		</td><td>
+			";contactbox("select contacts_id as to_prop,display_name from contacts where current = 'Y' and bidlist_takeoff_lists = 'Y' order by alphasort",$bid_info->to_prop,"","",1);echo"
+		</td></tr>
+	</table>	
+	</td></tr>	
+
+	<tr><td>
+		Type
+	</td><td>
+		";
+		$t_query="select type as bidlist_type,type from bidlist_types order by type";
+		$res=@mysql_query($t_query);
+		echo "<select name=type><option value='$bid_info->type'>$bid_info->type</option>";
+		while($row=@mysql_fetch_object($res))
+		echo "<option value='$row->type'>$row->type</option>";
+		echo "</select>
+	</td></tr>
+	
+	<tr><td>
+		Bid Bond
+	</td><td>
+		<input type=checkbox name=bid_bond $bid_info->bid_bond >
+	</td></tr>
+	
+	<tr><td>
+		Bid URL
+	</td><td>
+		<input type=text size=60 name=bid_url value=\"$bid_info->bid_url\">
+	</td></tr>
+	
+	<tr><td>
+		DWG's Ordered
+	</td><td>
+		<input type=checkbox name=dwgs_ordered $bid_info->dwgs_ordered>
+	</td></tr>
+
+	<tr><td>
+		DWG's Received
+	</td><td>
+		<input type=checkbox name=dwgs_received $bid_info->dwgs_received>
+	</td></tr>
+
+	<tr><td>
+		Deposit
+	</td><td>
+		<input type=text name=deposit size=20 value=\"$bid_info->deposit\">
+	</td</tr>
+	
+	<tr><td>
+		Refundable
+	</td><td>
+		<input type=checkbox name=refundable $bid_info->refundable >
+	</td></tr>
+	
+	<tr><td>
+		DWG's Returned
+	</td><td>
+		<input type=checkbox name=dwgs_returned $bid_info->dwgs_returned>
+	</td></tr>
+
+	<tr><td valign=top>
+		Bid Result
+	</td><td>
+		";
+		$uk="";$won="";$lost="";
+		if ($bid_info->bid_result=='') $uk="selected";
+		if ($bid_info->bid_result=='won') $won="selected";
+		if ($bid_info->bid_result=='lost') $lost="selected";
+		echo"
+		<select name=bid_result size=3>
+		<option value='' $uk>Unknown</option>
+		<option value='won' $won>Won</option>
+		<option value='lost' $lost>Lost</option>
+		
+
+	<tr><td valign=top>
+		Comments
+	</td><td>
+		<textarea name=comments rows=5 cols=40>$bid_info->comments</textarea>
+	</td></tr>
+	
+	<tr><td>
+		<input type=submit value=Save>
+	</td></tr>		
+</table>
+</td><td valign=top>
+	<table border=1>
+	<tr><td colspan=3 bgcolor=#dddddd><center><b>Bid Results</b></center></td></tr>
+	<tr><td>Company</td><td colspan=2>Bid</td></tr>
+	";
+	$br_query="select * from bidlist_results where bidlist_id = $bid_info->bidlist_id order by bid_amount";
+	$br_res=@mysql_query($br_query);
+	
+	while($br_row=@mysql_fetch_object($br_res)) {
+		$bidder=getone("select * from contacts where contacts_id = '$br_row->company'");
+		echo "<tr><td>$bidder->display_name</td><td>$br_row->bid_amount</td></tr>";
+		}
+	echo "
+	<tr><td>";
+		contactbox("select contacts_id as company,display_name from contacts where is_company = 'Y' order by alphasort");echo"
+	</td><td colspan=2>
+		<input type=text name=bid_amount>
+	</td></tr>
+	
+	<tr><td colspan=3 align=right>
+		<input type=submit value=Add>
+	</td></tr>
+	</table>
+</td></tr></table>
+
+</form>
+";
+?>

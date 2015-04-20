@@ -1,0 +1,28 @@
+<?
+
+if ("$expense_mode"=="mileage") {
+	forward("timesheet_edit_add_mileage_popup&workday=$workday");
+	exit;
+	}
+
+if ("$expense_mode"=="subsistence") {
+	forward("timesheet_edit_add_spt_popup&opt=5&optval=Subsistence&workday=$workday");
+	exit;
+	}
+if ("$expense_mode"=="parking") {
+	forward("timesheet_edit_add_spt_popup&opt=6&optval=Parking&workday=$workday");
+	exit;
+	}
+if ("$expense_mode"=="travel") {
+	forward("timesheet_edit_add_spt_popup&opt=7&optval=Travel&workday=$workday");
+	exit;
+	}
+
+
+echo "INTERNAL APPLICATION ERROR: Please contact your system administrator.";
+echo "Unexpected value: $expense_mode<p>";
+exit;
+
+
+
+?>

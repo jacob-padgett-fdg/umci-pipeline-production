@@ -1,0 +1,67 @@
+<?
+require_once('timesheet_libs_pdf.inc');
+require_once('pdf_lib2.inc');
+if (!(($admin_check)||($billing_check))) die("ERROR: Security Violation! The authorities are being notified!");
+set_time_limit('900');
+
+if ($fwe!="") $fwe=vali_date($fwe);
+if ($lwe!="") $lwe=vali_date($lwe);
+if ($contract_num!="") $contract_num=addslashes($contract_num);
+else die("ERROR: You need to specify a contract number! <a href=javascript:history.go(-1)>Go back</a> and try again.");
+
+if ($suppress_other_jobs=='on') {
+	$job_totals='on';
+	$hide_others="true";
+	} else {
+	$hide_others="false";
+	}
+
+$contract_num=ereg_replace("-*$","",$contract_num);
+$contract_num=$contract_num . "-";
+
+$query="select * from timesheet_time where job_num = '$contract_num' ";
+
+if ($phase_code != "") {
+	$phase_code=addslashes($phase_code);
+	$query=$query . " and phase = '$phase_code' ";
+	}
+
+if (($fwe!="") && ($lwe!="")) {
+	$query=$query . "and week_ending >= '$fwe' and week_ending <= '$lwe' ";
+	} else {
+	if ($fwe!="") $query=$query . "and week_ending = '$fwe' ";
+	}
+
+$query = $query . " group by timesheet_id order by week_ending";
+
+$res=@mysql_query($query);
+$rowcount=@mysql_num_rows($res);
+
+if ($rowcount==0) {
+	echo "<body bgcolor=white><h3>No Documents Found...</h2><hr>
+	<a href=$pagename?mode=admin_reports_timesheets_by_contract_form>
+	<font color=blue>Return to Search Selection</font></a></body>";
+	exit;
+	}
+
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+if ($job_totals=='on') {
+	$watch_job=$contract_num;
+	} else {
+	$watch_job="";
+	}
+
+//-----------------------------------------------------------------------------------
+//	Page Printing
+//-----------------------------------------------------------------------------------
+$watch_job="";
+while($row=@mysql_fetch_object($res)) {
+	#$pdf=pdf_timesheet_2($pdf,$row->timesheet_id,$job_info->job);
+	if ($job_totals=='on') $watch_job=$row->job_num;
+	$pdf=pdf_timesheet_2($pdf,$row->timesheet_id,$watch_job,$hide_others);
+	}
+
+//pdf_end($page_info);
+$pdf->ezStream();
+?>

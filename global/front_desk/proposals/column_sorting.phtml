@@ -1,0 +1,44 @@
+<?
+session_register('general_query_lastmode');
+session_register('general_query_sort_order');
+session_register('general_query_order_by');
+if ($general_query_lastmode!="$pagename$mode") $new_sort_by="reset_sorting";
+	
+$general_query_lastmode="$pagename$mode";
+
+if (!(isset($general_query_sort_order))) {
+    $general_query_sort_order=array();
+    }
+if ($new_sort_by!="") {
+    $new_sort_by=addslashes($new_sort_by);
+    if ($general_query_sort_order[0]=="$new_sort_by") {
+        $general_query_sort_order[0]="$new_sort_by desc";
+        $sort_changed=1;
+        } else {
+        if ($general_query_sort_order[0]=="$new_sort_by desc") {
+            $general_query_sort_order[0]="$new_sort_by";
+            $sort_changed=1;
+            }
+        }
+    if ($sort_changed!=1) {
+        array_unshift($general_query_sort_order,$new_sort_by);
+        }
+    }
+$general_query_sort_order=array_unique($general_query_sort_order);
+$general_query_sort_order=array_values($general_query_sort_order);
+if ($new_sort_by=="reset_sorting") {
+	$general_query_sort_order=array();
+	$general_query_order_by="";
+	}
+$sort_history_length=sizeof($general_query_sort_order);
+                                                                                           
+$sort_count=0;
+$prepend="";
+while ($sort_count<$sort_history_length) {
+    $general_query_order=$general_query_order . $prepend . $general_query_sort_order[$sort_count];
+    $prepend=",";
+    $sort_count++;
+    }
+if ($general_query_order!="") $general_query_order_by=" order by " . $general_query_order;
+
+?>

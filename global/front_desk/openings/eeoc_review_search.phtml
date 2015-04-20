@@ -1,0 +1,44 @@
+<?
+require('header.phtml');
+$first_date=date('m/01/Y',strtotime('last month'));
+$first_dom=date('F 01 Y');
+$last_date=date('m/d/Y',strtotime('-1 day',strtotime("$first_dom")));
+
+echo "
+<font size=+2><b>Select Date Range</b></font><p>
+<form name=eeoc_search method=post action=$pagename>
+<input type=hidden name=mode value=eeoc_review>
+
+
+<table border=0 cellspacing=0 cellpadding=5>
+<tr><td>
+	Start Date:
+</td><td>
+	";datebox("$first_date","eeoc_search.start_date");echo"
+</td></tr>
+
+<tr><td>
+	End Date:
+</td><td>
+	";datebox("$last_date","eeoc_search.end_date");echo"
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Search>
+</td></tr>
+";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

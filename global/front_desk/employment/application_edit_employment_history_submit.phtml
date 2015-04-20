@@ -1,0 +1,50 @@
+<?
+
+if ($employment_history_id!="") {
+	$employment_history_id=addslashes($employment_history_id);
+	$query_start="update ";
+	$query_end=" where employment_history_id = '$employment_history_id'";
+	} else {
+	$query_start="insert into ";
+	$query_end="";
+	}
+
+if ($employer!="") {
+
+	$application_id=addslashes($application_id);
+	$employer=addslashes($employer);
+	$there_from=addslashes($there_from);
+	$there_to=addslashes($there_to);
+	$employer_address=addslashes($employer_address);
+	$job_title=addslashes($job_title);
+	$supervisor_name=addslashes($supervisor_name);
+	$supervisor_phone=addslashes($supervisor_phone);
+	$salary=addslashes($salary);
+	$salary_period=addslashes($salary_period);
+	$responsibilities=addslashes($responsibilities);
+	$left_because=addslashes($left_because);
+	
+	
+	
+	$query_middle="
+	hr_applications_employment_history set 
+	application_id = '$application_id',
+	employer = '$employer',
+	there_from = '$there_from',
+	there_to = '$there_to',
+	employer_address = '$employer_address',
+	job_title = '$job_title',
+	supervisor_name = '$supervisor_name',
+	supervisor_phone = '$supervisor_phone',
+	salary = '$salary',
+	salary_period = '$salary_period',
+	responsibilities = '$responsibilities',
+	left_because = '$left_because'
+	";
+
+	$query_full=$query_start . $query_middle . $query_end;
+	$res=@mysql_query($query_full);
+	if (!($res)) die("ERROR: Query failed.<br>Failed query:<hr>$query_full");
+	}
+include("app_forward_mode.phtml");
+?>

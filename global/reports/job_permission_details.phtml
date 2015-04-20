@@ -1,0 +1,223 @@
+<?
+include("header.phtml");
+fd_navs_header();
+
+if (
+	(!(pm_for_this_job())) &&
+	(!(member_of_global_group_named("IT")))
+	)
+	
+	
+	 check_report_permissions();
+
+echo "
+<style>
+
+	
+	td.x {
+		border-top: 0px solid black;
+		border-left: 0px solid black;
+		border-right: 0px solid black;
+		border-bottom: 1px solid black;
+		padding-left: 7px;
+		padding-right: 7px;
+		}
+
+
+
+</style>";
+//$deep=TRUE;
+
+$today=date('m/d/Y');
+
+if (!($by_user)) {
+
+if (!($deep)) {
+	$where_add=" and ( employee_num < 1 or employee_num is null ) ";
+	}
+
+$applist_query="select * from front_desk_job_applications left join front_desk_applications on (front_desk_job_applications.fd_app_id = front_desk_applications.fd_app_id) where jobinfo_id = '$global_jobinfo_id' and front_desk_job_applications.current = 'Y' order by sort_priority,app_short_description";
+//tabledump($applist_query);
+echo "<table border=1 cellspacing=0 cellpadding=0>
+<tr><td colspan=4 bgcolor=$fd_color_4 align=center><font size=+1>Permissions for Job $global_jobinfo->contract_num</font><br><font size=-1><i>($today)</i></font></td></tr>
+
+
+";
+$applist_res=@mysql_query($applist_query);
+while ($applist_row=@mysql_fetch_object($applist_res)) {
+	echo "<tr bgcolor=$fd_color_1><th colspan=4 align=center>
+			$applist_row->app_short_description
+		</th></tr>";
+	
+	if ($applist_row->app_name=="issue_resolution") {
+		//echo "<tr><td>nacho</td></tr>";
+		$perms_query="select * from issue_res_users left join contacts on (issue_res_users.contacts_id = contacts.contacts_id) where ( jobinfo_id = '$global_jobinfo_id' or jobinfo_id = 0 or jobinfo_id is null ) $where_add ";
+		//$perms_res=@mysql_query("select * from issue_res_users left join contacts on (issue_res_users.contacts_id = contacts.contacts_id) where ( jobinfo_id = '$global_jobinfo_id' or jobinfo_id = 0 or jobinfo_id is null ) and $where_add ");
+		$perms_res=@mysql_query($perms_query);
+		//echo "<tr><td colspan=4>$perms_query</td></tr>";
+		while($perms_row=@mysql_fetch_object($perms_res)) {
+			echo "<tr><td class=x>
+					$perms_row->display_name
+				</td><td class=x>
+					*special*
+				</td><td class=x>
+					N/A
+				</td><td class=x>
+					$perms_row->login_name
+				</td></tr>";
+			}
+		} else {
+		$perms_query="select access_id,application_name,type,groupname,contacts.display_name,contacts.login_name from access_rights2 left join contacts on (access_rights2.contacts_id = contacts.contacts_id) where display_name is not null and ( jobinfo_id = '$global_jobinfo->jobinfo_id' or jobinfo_id = 0 or jobinfo_id is null ) and application_name = '$applist_row->app_name' $where_add group by application_name,contacts.contacts_id order by type,display_name";
+		//$perms_res=@mysql_query("select access_id,application_name,type,groupname,contacts.display_name,contacts.login_name from access_rights2 left join contacts on (access_rights2.contacts_id = contacts.contacts_id) where ( jobinfo_id = '$global_jobinfo->jobinfo_id' or jobinfo_id = 0 or jobinfo_id is null ) and application_name = '$applist_row->app_name' $where_add order by display_name");
+		$perms_res=@mysql_query($perms_query);
+		//echo "<tr><td colspan=4>$perms_query</td></tr>";
+		while($perms_row=@mysql_fetch_object($perms_res)) {
+			echo "<tr class=x><td class=x>
+					$perms_row->display_name
+				</td><td class=x>
+					$perms_row->type
+				</td><td class=x>
+					$perms_row->groupname
+				</td><td class=x>
+					$perms_row->login_name
+				</td></tr>";
+			}
+		}
+	}
+echo "</table>";
+} else {
+
+if (!($deep)) {
+	$where_add=" and ( employee_num < 1 or employee_num is null ) ";
+	}
+
+
+echo "The by user version of the report has not been written. There are some minor technical difficulties that arise when trying to create an efficient and fast version of that report.";
+
+
+
+
+
+
+
+
+
+
+}
+
+
+//tabledump("select access_id,application_name,type,groupname,contacts.display_name,contacts.login_name from access_rights2 left join contacts on (access_rights2.contacts_id = contacts.contacts_id) where jobinfo_id = '$global_jobinfo->jobinfo_id' $where_add order by display_name");
+
+fd_navs_footer();
+
+
+/*
+session_register('print_size');
+if ($print_size=="") $print_size="8";
+if ($print_size_set!="") $print_size=addslashes($print_size_set);
+$print_size_big=$print_size + 2;
+
+$query="select contract_num, job_name, project_manager_id, job_cost, contract_type,contract_admin,safetyrep,confidential from jobinfo where active = 'Y' and fed_pub = 'Fed' order by contract_num";
+
+$result=@mysql_query($query);
+
+echo "
+<style type=\"text/css\" media=\"print\">
+th {
+	font-size: $print_size_big
+	}
+td {
+	font-size: $print_size
+	}
+div#printsize {
+	display: none;
+	}
+</style>
+
+<div id=\"printsize\">
+<form name=printsize method=post action=$pagename>
+<table border=1 cellspacing=0 cellpadding=3><tr><td bgcolor=#dddddd>Print Size: <input size=2 type=text name=print_size_set value=\"$print_size\" onchange=submit()></td></tr></table>
+</form>
+</div>
+
+<center>
+<h2>Active Federal Projects</h2>
+<table border=1 cellspacing=0 cellpadding=3>
+<thead>
+	<tr bgcolor=#dddddd><th colspan=8>
+	<b>*** Confidential Projects: No information is to be advertised or given out regarding these projects without prior approval.<br>
+	Check with Contract Administration for details.<br></b>
+	</th></tr>
+
+	<tr bgcolor=#dddddd><th>
+	Job Number
+	</th><th>
+	Name
+	</th><th>
+	Project Manager
+	</th><th>
+	Contract Type
+	</th><th>
+	Contract Admin
+	</th><th>
+	Confidential
+	</th></tr>
+</thead>
+";
+
+while($row=@mysql_fetch_object($result)) {
+	$con_ad=getoneb("select * from contacts where contacts_id = '$row->contract_admin'");
+	if ($con_ad) {
+		$contract_admin="$con_ad->last_name, $con_ad->first_name";
+		} else {
+		$contract_admin="";
+		}
+	$mgr=getoneb("select * from contacts where contacts_id = '$row->project_manager_id'");
+	if ($mgr) {
+		$manager="$mgr->last_name, $mgr->first_name";
+		} else {
+		$manager="";
+		}
+	if ($row->confidential=='Y') {
+		$conf_image="<img src=\"/images/check_mark.png\" border=0>";
+		$rowbg="#ff9999";
+		} else {
+		$conf_image="&nbsp;";
+		$rowbg="#ffffff";
+		}
+	echo "<tr bgcolor=\"$rowbg\"><td>
+			$row->contract_num
+		</td><td>
+			$row->job_name
+		</td><td>
+			$manager&nbsp;
+		</td><td>
+			$row->contract_type&nbsp;
+		</td><td>
+			$contract_admin&nbsp;
+		</td><td align=center>
+			$conf_image
+		</td></tr>
+		";
+		
+		}
+
+echo "</table></center>";
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
+
+
+?>

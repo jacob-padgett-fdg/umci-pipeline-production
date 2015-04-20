@@ -1,0 +1,237 @@
+<?
+// GPH MARK 2014-12-10
+session_write_close();
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Update UMC Employees to have correct company_id and company name.
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+set_time_limit(900);
+$umc_info=getone("select * from contacts where contacts_id = '968'");
+mysql_query("update contacts set company_id = '968', company = '$umc_info->company' where umc_emp = 'Y'");
+
+
+if ($skip_viewpoint!="true") {
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Synchronize web employee contacts with viewpoint as long as
+//	employee_num has been set to allow us to match the record.
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+$employees_first="select * from contacts where employee_num != '' and umc_emp = 'Y' order by employee_num";
+
+$emp_first_res=@mysql_query($employees_first);
+$ticker=0;
+while ($ef_row=@mysql_fetch_object($emp_first_res)) {
+	//$ticker++;echo "$ticker<br>"; flush();
+	$ms_qry="select * from HRRM with (NOLOCK) where HRCo = 1 and HRRef = '$ef_row->employee_num'";
+	
+	$vp_info=ms_getoneb($ms_qry);
+	$vp_pr_emp_info=ms_getoneb("select * from PREH with (NOLOCK) where PRCo = 1 and Employee = '$ef_row->employee_num'");
+	
+	//if (!($vp_info)) die("FATAL ERROR: No Viewpoint information, but has non-null employee_num!<hr>$ms_qry");
+	
+	
+	if ($vp_info->ActiveYN=='Y') update_trade($ef_row->contacts_id);
+	//$must_update='Y';
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	if ($vp_info->ActiveYN=='Y') $current='Y';
+	else {
+		$standby_res=@mssql_query("select top (1) * from HREH with (NOLOCK) where HRRef = '$ef_row->employee_num' and HRCo = 1 order by Seq desc");
+		$standby=@mssql_fetch_object($standby_res);
+		if (($standby->Code == 'SB')||($standby->Code == 'FMLA')) {
+			$current='Y';
+			echo "Found a not current, but standby/FMLA employee - $vp_info->FirstName $vp_info->LastName is on $standby->Code<br>";
+			}
+		else $current='N';
+		}
+	
+	//if ($vp_info->HRRef=='6909') {
+	//	echo "<pre>";
+	//	print_r($vp_info);
+	//	echo "</pre>";
+	//	//die();
+	//	}
+	
+	if ($vp_info->udNickName!="") { 
+		$first_name=$vp_info->udNickName;
+		$first_name_real=$vp_info->FirstName;
+		} else { 
+		$first_name=$vp_info->FirstName;
+		$first_name_real="";
+		}
+
+	$last_name=$vp_info->LastName;
+	$employee_group=$vp_info->PRGroup;
+	
+	if ($first_name!=$ef_row->first_name) {
+		$must_update='Y';
+		}
+	
+	if ($ef_row->timesheet_payroll_sequence_num < 1) {
+		$must_update='Y';
+		}
+	
+	if ($first_name_real!=$ef_row->first_name_real) {
+		$must_update='Y';
+		}
+	
+	if ($last_name!=$ef_row->last_name) {
+		$must_update='Y';
+		}
+	
+	if ($current!=$ef_row->current) {
+		$must_update='Y';
+		if($ef_row->login_name!="") {
+			security_log_email(
+				$ef_row->contacts_id,
+				0,
+				0,
+				"account status change: active=$current",
+				"contact maintenance script");
+			}
+		//if ($
+		}
+	
+	/*if ($ef_row->employee_dept=="") {
+		$must_update='Y';
+		}
+	*/
+	
+	if ($ef_row->employee_dept!=$vp_pr_emp_info->PRDept) {
+		$must_update='Y';
+		}
+	
+	if ($employee_group!=$ef_row->employee_group) {
+		$must_update='Y';
+		}
+	
+	//if ($ef_row->contacts_id==2) {
+	//if ($ef_row->phone=="") {
+		$phone_number="";
+		if ($ef_row->phone_ext!="") {
+			$ef_row->phone_ext++;
+			$ef_row->phone_ext=$ef_row->phone_ext - 1;
+			}
+		if (($ef_row->phone_ext>=200)&&($ef_row->phone_ext<=259)){
+			$phone_number="206-368-6$ef_row->phone_ext";
+			} 
+		if (($ef_row->phone_ext>=260)&&($ef_row->phone_ext<=289)) {
+			$two_digits=$ef_row->phone_ext - 200;
+			$phone_number="206-368-69$two_digits";
+			}
+		if ($phone_number!="") {
+			@mysql_query("update contacts set phone = '$phone_number' where contacts_id = '$ef_row->contacts_id'");
+			}
+	
+	if ($must_update=="Y") {
+		if ($ef_row->timesheet_payroll_sequence_num < 1) {
+			if ($employee_group==1) $ef_row->timesheet_payroll_sequence_num=1;
+			if ($employee_group==3) $ef_row->timesheet_payroll_sequence_num=3;
+			if ($ef_row->timesheet_payroll_sequence_num < 1) $ef_row->timesheet_payroll_sequenc_num=1;
+			}
+		
+		//if ($vp_info->HRRef=='6909') {
+		//	echo "<hr>$must_update<hr>";
+		//	echo "<hr>$current/$ef_row->current<hr>";
+			
+		//	$query="update contacts set contact_type = 'contact', first_name = '" . addslashes($first_name) . "', first_name_real = '" . addslashes($first_name_real) . "' , last_name = '" . addslashes($last_name) . "' , current = '$current' , employee_group = '$employee_group' , employee_dept = '$vp_pr_emp_info->PRDept', umc_emp = 'Y' , timesheet_payroll_sequence_num = '$ef_row->timesheet_payroll_sequence_num' where contacts_id = '$ef_row->contacts_id'";
+			//echo "query:<pre>$query</pre>";die();
+		//	}
+		
+		$query="update contacts set contact_type = 'contact', first_name = '" . addslashes($first_name) . "', first_name_real = '" . addslashes($first_name_real) . "' , last_name = '" . addslashes($last_name) . "' , current = '$current' , employee_group = '$employee_group' , employee_dept = '$vp_pr_emp_info->PRDept', umc_emp = 'Y' , timesheet_payroll_sequence_num = '$ef_row->timesheet_payroll_sequence_num' where contacts_id = '$ef_row->contacts_id'";
+		//$query="update contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , current = '$current' , employee_group = '$employee_group' , employee_dept = '$vp_pr_emp_info->PRDept', umc_emp = 'Y' , timesheet_payroll_sequence_num = '$ef_row->timesheet_payroll_sequence_num' where contacts_id = '$ef_row->contacts_id'";
+		@mysql_query($query);
+		}
+	//echo ".";
+	}
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Copy down any contacts that are current in Viewpoint, and we don't
+//	already have a record for them.
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//echo "<hr>done<hr>";exit('done');
+
+//exit;
+$ms_qry2="select * from HRRM with (NOLOCK) where ActiveYN = 'Y' and HRCo = '1' order by HRRef";
+$ms_res2=@mssql_query($ms_qry2);
+$ticker=0;
+while($vp_info=@mssql_fetch_object($ms_res2)) {
+	echo "$vp_info->FirstName $vp_info->LastName ($vp_info->HRRef)\r\n";
+	flush();
+	$ticker++;echo "$ticker<br>\r\n"; flush();
+	if (!(getoneb("select * from contacts where employee_num = '$vp_info->HRRef'"))) {
+		if ($vp_info->ActiveYN=='Y') $current='Y';
+		else $current='N';
+		if ($vp_info->udNickName!="") { 
+			$first_name=addslashes($vp_info->udNickName);
+			$first_name_real=addslashes($vp_info->FirstName);
+			} else { 
+			$first_name=addslashes($vp_info->FirstName);
+			$first_name_real="";
+			}
+		$last_name=addslashes($vp_info->LastName);
+		$employee_group=$vp_info->PRGroup;
+		
+		if ($employee_group==1) $timesheet_payroll_sequence_num=2;
+		if ($employee_group==3) $timesheet_payroll_sequence_num=1;
+		if ($timesheet_payroll_sequence_num < 1) $timesheet_payroll_sequenc_num=1;
+        // GPH MARK 2014-12-10: login_name = '$vp_info->udusername yields a login_name that is blank.
+        // The goal here is instead to build a string concatenation of first char of first_name followed by last_name
+        // Impact analysis: Check for other areas.
+		$query="insert into contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , display_name = '$last_name, $first_name' , login_name = '$vp_info->udusername', current = '$current' , employee_num = '$vp_info->HRRef' , employee_group = '$employee_group' , umc_emp = 'Y', timesheet_payroll_sequence_num = '$timesheet_payroll_sequence_num'";
+		@mysql_query($query);
+		$new_employee_id=@mysql_insert_id();
+		@update_trade($new_employee_id);
+		} else {
+			echo "getone succeeded..(select * from contacts where employee_num = '$vp_info->HRRef')<br>\r\n";
+		}
+	}
+
+}
+////////////////////////////////////////////
+////////////////////////////////////////////
+// Update 
+////////////////////////////////////////////
+////////////////////////////////////////////
+mysql_query("update contacts set company_id = '968', company = '$umc_info->company' where umc_emp = 'Y'");
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Update UMC Employees to have logins && emails if missing login
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+
+/*
+$umc_login_res=@mysql_query("select * from contacts where umc_emp = 'Y' and current = 'Y' and login_name = '' and employee_num > 0 order by alphasort");
+while($login_row=@mysql_fetch_object($umc_login_res)) {
+	$vp_login_info=ms_getoneb("select udusername,PREmp from HRRM with (NOLOCK) where PRCo = 1 and PREmp = '$login_row->employee_num' and udusername != ''");
+	if ($vp_login_info) {
+		$email="$vp_login_info->udusername" . "@umci.com";
+		$login_name="$vp_login_info->udusername";
+		$web_login_query="update contacts set login_name = '$login_name', email = '$email' where contacts_id = '$login_row->contacts_id'";
+		@mysql_query($web_login_query);
+		// Queue and email to Chris/Jeff (contacts_id "1/2")
+		queue_email(1,"New UMC Login Detected","A new UMC employee with a login name defined in viewpoint has been detected<hr>Login Name: $login_name<br>Email: $email<br>First Name: $login_row->first_name<br>Real First Name: $login_row->first_name_real<br>Last Name: $login_row->last_name<p>If you need any other information, just ask someone..");
+		queue_email(2,"New UMC Login Detected","A new UMC employee with a login name defined in viewpoint has been detected<hr>Login Name: $login_name<br>Email: $email<br>First Name: $login_row->first_name<br>Real First Name: $login_row->first_name_real<br>Last Name: $login_row->last_name<p>If you need any other information, just ask someone..");
+		}
+	}
+*/
+
+?>

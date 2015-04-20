@@ -1,0 +1,36 @@
+#!/bin/bash
+#USERNAME='uvousrf1'
+#PASSWORD='$meg4brains'
+
+
+FULLPATH=$0
+BASENAME=`/usr/bin/basename $FULLPATH`
+DIRPATH=`echo $FULLPATH | sed "s/$BASENAME$//g"`
+CURRENTPATH=`pwd -P`
+CURRENTPATH="$CURRENTPATH/"
+cd "$DIRPATH"
+FULLDIRPATH=`pwd -P`
+FULLDIRPATH="$FULLDIRPATH/"
+KEYPATH="${FULLDIRPATH}keys/"
+FILESPATH="${FULLDIRPATH}files/"
+
+export SSL_PKEY_FILE="${KEYPATH}uvousrf1.pem"
+export SSL_X509_FILE="$SSL_PKEY_FILE"
+
+cd "${FILESPATH}send"
+for file in *
+do
+	if [ -f $file ]
+	then
+	#echo "$file"
+	"${FULLDIRPATH}fdx" -u "$file" 'https://redxfer.wellsfargo.com/'
+	RESULT=$?
+	if [ $RESULT -eq 0 ]
+		then
+			mv $file ../sent
+		else
+			echo "result: $RESULT"
+			echo command: "${FULLDIRPATH}fdx" -u "$file" 'https://redxfer.wellsfargo.com/'
+		fi
+	fi
+done

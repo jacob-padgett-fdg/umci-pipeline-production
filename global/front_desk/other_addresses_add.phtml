@@ -1,0 +1,29 @@
+<?
+
+$description=addslashes($description);
+$address=addslashes($address);
+$is_ups=addslashes($is_ups);
+$is_job_office=addslashes($is_job_office);
+$show_jobinfo_id=addslashes($show_jobinfo_id);
+$notes=addslashes($notes);
+
+$sort_pri=getoneb("select max(sort_priority) as biggest from jobinfo_addresses where jobinfo_id = '$show_jobinfo_id'");
+if ($sort_pri) $new_sort_priority=$sort_pri->biggest + 1;
+else $new_sort_priority=10;
+
+if ($notes=="notes") $notes="";
+if ($address=="address") $address="";
+if ($description=="name") $description="";
+if ($description!="") {
+	@mysql_query("insert into jobinfo_addresses set
+	description = '$description',
+	address = '$address',
+	is_ups = '$is_ups',
+	is_job_office = '$is_job_office',
+	jobinfo_id = '$show_jobinfo_id',
+	sort_priority = '$new_sort_priority',
+	notes = '$notes'");
+	}
+
+include("other_addresses.phtml");
+?>

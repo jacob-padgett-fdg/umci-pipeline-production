@@ -1,0 +1,19 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+$ts_id=escapeshellcmd($ts_id);
+
+$timesheet_info=getone("select * from timesheet_index where timesheet_id = '$ts_id'");
+$timesheet_dates=date_info(invali_date($timesheet_info->week_ending));
+
+$query="update timesheet_index set status = 'complete' where timesheet_id = '$ts_id'";
+$query2="update timesheet_time set timesheet_status = 'complete' where employee_id = '$timesheet_info->employee_id' and employee_num = '$timesheet_info->employee_num' and workday >= '$timesheet_dates->week_start_mysql' and workday <= '$timesheet_dates->week_end_mysql'";
+
+$res=@mysql_query($query);
+if (!($res)) die("fatal error: first stage mark for process. Please contact your system administrator.");
+$res=@mysql_query($query2);
+if (!($res)) die("fatal error: second stage mark for process. Please contact your system administrator.");
+
+forward('payroll_timesheet_selection');
+
+?>

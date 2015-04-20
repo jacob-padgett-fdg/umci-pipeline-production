@@ -1,0 +1,28 @@
+<?
+if (!($adminuser)) die_security();
+if (!($global_jobinfo)) die("Job information missing!");
+$query="select * from ${application_name}_sections where jobinfo_id = '$global_jobinfo_id' order by section";
+echo "
+<a href=$pagename?mode=main><font color=blue>Main Menu</font></a><p>
+<p>
+<form name=section_add method=post action=$pagename>
+<input type=hidden name=mode value=section_add>
+<input type=hidden name=section_job value=\"$global_jobinfo_id\">
+<input type=text size=20 name=section_name>
+<input type=submit value=Add>
+</form>
+
+<table border=1 cellspacing=0 cellpadding=5><tr><td colspan=3 align=center bgcolor=\"$fd_color_4\"><b>Current Sections</b></td></tr>";
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<a href=$pagename?mode=section_change_name&section_id=$row->section_id><font color=blue>$row->section</font></a>
+		</td><td>
+			<a href=$pagename?mode=section_toggle_active&section_id=$row->section_id><font color=blue>$row->active</font></a>
+		</td><td>";
+			if ($row->default_section=='Y') echo "<i>default</i>";
+			else echo "<a href=$pagename?mode=section_set_default&section_id=$row->section_id><font color=blue><i>Set&nbsp;Default</i></font></a>";echo "
+		</td></tr>";
+	}
+echo "</table>";
+?>

@@ -1,0 +1,124 @@
+<?
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require("header.phtml");
+fd_navs_header();
+
+function gap_num($number) {
+	$number=addslashes($number);
+	$fontstart="";
+	$fontend="";
+	if ($number < 0) { $fontstart="<font color='red'>("; $fontend=")</font>"; $number=abs($number); }
+	$number=format_long_num(round($number));
+	return ($fontstart . $number . $fontend);
+	}
+
+function is_valid_viewpoint_job($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
+
+$job=is_valid_viewpoint_job($global_jobinfo->contract_num);
+$job_short=ereg_replace("[ -]*$","",$job->Job);
+//ms_tabledump("SELECT * FROM APUI RIGHT OUTER JOIN APVM ON APUI.Vendor = APVM.Vendor WHERE (APUI.udJOB LIKE '$job->Job%') AND (APUI.APCo = 1)");
+$res=@mssql_query("SELECT *,APUI.UniqueAttchID AS apuiattach FROM APUI with (NOLOCK) RIGHT OUTER JOIN APVM with (NOLOCK) ON ( APUI.Vendor = APVM.Vendor and APUI.VendorGroup = APVM.VendorGroup )  WHERE APUI.APCo = 1 and (APUI.udJOB LIKE '$job->Job%') AND (APUI.APCo = 1)");
+//ms_tabledump("SELECT *,APUI.UniqueAttchID AS apuiattach FROM APUI RIGHT OUTER JOIN APVM ON ( APUI.Vendor = APVM.Vendor and APUI.VendorGroup = APVM.VendorGroup )  WHERE APUI.APCo = 1 and (APUI.udJOB LIKE '$job->Job%') AND (APUI.APCo = 1)");
+echo "
+<a href=\"$pagename\"><font color=blue>Back to front desk</font></a>
+
+
+<center><table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=7 align=center bgcolor=$fd_color_4>
+	<b>Unapproved Invoices</b>
+</td></tr>
+<tr bgcolor=$fd_color_1><td>
+	<i>Vendor / Vendor #</i>
+</td><td>
+	<i>AP Ref</i>
+</td><td colspan=2>
+	<i>Description</i>
+</td><td>
+	<i>Total</i>
+</td><td>
+	<i>Notes</i>
+</td><td>
+	<i>&nbsp;</i>
+</td></tr>
+";
+
+$return_to_url=base64_encode($REQUEST_URI);
+
+while ($row=@mssql_fetch_object($res)) {
+	$po_link="";
+	$po_image_link="";
+	$po_num=ereg_replace("/.*$","",$row->Description);
+	$po_header=ms_getoneb("select * from POHD with (NOLOCK) where POCo = 1 and PO = '$po_num'");
+	
+	if ($po_header) {
+		if ($po_hide=="Y") continue;
+		$po_image_link=vp_attachment_view_link($po_header->UniqueAttchID);
+		$po_link="<a href=\"$pagename?mode=report_show&report_name=po_show&return_to_url=$return_to_url&po_number=$po_header->PO\"><img border=0 src=/images/tiny_paper.jpg></a>&nbsp;";
+		}
+//	$po_link="";
+//	$po_num=ereg_replace("/$job_short$","",$row->Description);
+//	$po_header=ms_getoneb("select * from POHD where POCo = 1 and PO = '$po_num'");
+//	if ($po_header) $po_link=vp_attachment_view_link($po_header->UniqueAttchID);
+	$row->InvTotal=round($row->InvTotal,2);
+	echo "<tr><td>
+				$row->Name / $row->Vendor
+			</td><td>
+				$row->APRef
+			</td><td>
+				$row->Description
+			</td><td>
+				$po_link$po_image_link
+			</td><td>
+				$row->InvTotal
+			</td><td>
+				$row->Notes
+			</td><td>
+				";$link=vp_attachment_view_link("$row->apuiattach");echo "
+				$link
+			</td></tr>";
+	}
+echo "</table></center>";
+
+
+
+
+fd_navs_footer();
+
+?>

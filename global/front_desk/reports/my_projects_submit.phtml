@@ -1,0 +1,153 @@
+<?
+//$query="select * from front_desk_my_projects where owner_id = '2' and complete = 'N' order by sort_priority";
+//excel_dump($query);exit;
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+$report_name="my_projects";
+check_report_permissions();
+mh_navs_header();
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Functions
+//////////////////////////////////////////////////////////////////////////////////////////
+
+function current_position($id) {
+	global $my_projects_user_id;
+	$query="select * from front_desk_my_projects where owner_id = '$my_projects_user_id' and complete = 'N' order by sort_priority";
+	$res=@mysql_query($query);
+	$count=1;
+	$position=0;
+	while($row=@mysql_fetch_object($res)) {
+		if ($row->project_id==$id) $position=$count;
+		$count++;
+		}
+	return($position);
+	}
+
+
+function move_up($move_up_id) {
+	global $my_projects_user_id;
+	if ($move_up_id=="") return FALSE;
+	$move_up_id=addslashes($move_up_id);
+	$mu_info=getoneb("select * from front_desk_my_projects where project_id = '$move_up_id'");
+	if (!($mu_info)) {
+		echo "Error: Trying to move invalid project_id.<p>";
+		return FALSE;
+		}
+	$md_info=getoneb("select * from front_desk_my_projects where owner_id = '$mu_info->owner_id' and sort_priority < $mu_info->sort_priority and complete = 'N' order by sort_priority desc limit 1");
+	if (!($md_info)) return FALSE;
+	if ($my_projects_user_id==$mu_info->owner_id) {
+		@mysql_query("update front_desk_my_projects set sort_priority = '$mu_info->sort_priority' where project_id = '$md_info->project_id'");
+		@mysql_query("update front_desk_my_projects set sort_priority = '$md_info->sort_priority' where project_id = '$mu_info->project_id'");
+		return TRUE;
+		} else {
+		echo "Error: Only the owner can change priorities (for now)...<p>";
+		}
+	}
+
+function move_down($move_down_id) {
+	global $my_projects_user_id;
+	if ($move_down_id=="") return FALSE;
+	$move_down_id=addslashes($move_down_id);
+	$md_info=getoneb("select * from front_desk_my_projects where project_id = '$move_down_id'");
+	if (!($md_info)) {
+		echo "Error: Trying to move invalid project_id.<p>";
+		return FALSE;
+		}
+	$mu_info=getoneb("select * from front_desk_my_projects where owner_id = '$md_info->owner_id' and sort_priority > $md_info->sort_priority and complete = 'N' order by sort_priority asc limit 1");
+	if (!($mu_info)) return FALSE;
+	//echo "go";
+	if ($my_projects_user_id==$md_info->owner_id) {
+		@mysql_query("update front_desk_my_projects set sort_priority = '$mu_info->sort_priority' where project_id = '$md_info->project_id'");
+		@mysql_query("update front_desk_my_projects set sort_priority = '$md_info->sort_priority' where project_id = '$mu_info->project_id'");
+		return TRUE;
+		} else {
+		echo "Error: Only the owner can change priorities (for now)...<p>";
+		}
+	}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Program
+//////////////////////////////////////////////////////////////////////////////////////////
+
+if ($my_projects_user_id=="") $my_projects_user_id=$global_user_id;
+if ($my_projects_user_id_set!="") {
+	session_register('my_projects_user_id');
+	$my_projects_user_id=addslashes($my_projects_user_id_set);
+	$mpui_info=getoneb("select * from contacts where contacts_id = '$my_projects_user_id'");
+	if (!($mpui_info)) $my_projects_user_id=$global_user_id;
+	}
+
+
+if ($project_edit_id!="") {
+	$project_edit_id=addslashes($project_edit_id);
+	$project_info=getoneb("select * from front_desk_my_projects where project_id = '$project_edit_id'");
+	}
+
+if ($project_info) {
+	$query_start="update front_desk_my_projects set";
+	
+	$query_end="where project_id = '$project_info->project_id'";
+	} else {
+	$new_id=getoneb("select max(sort_priority) as sort_priority from front_desk_my_projects where owner_id = '$my_projects_user_id'");
+	if (!($new_id)) $priority=1;
+	else $priority=$new_id->sort_priority + 1;
+
+	$query_start="insert into front_desk_my_projects set 
+	sort_priority = '$priority',
+	owner_id = '$my_projects_user_id',
+	";
+	$query_end="";
+	}
+
+$query_middle="
+project_name = '" . addslashes($project_name) . "',
+requested_by = '" . addslashes($requested_by) ."',
+request_type = '" . addslashes($request_type) ."',
+requested_priority = '" . addslashes($requested_priority) ."',
+project_details = '" . addslashes($project_details) . "',
+application = '" . addslashes($application) . "',
+report = '" . addslashes($report) . "',
+expected_completion_date = '" . vali_date($expected_completion_date) . "'
+";
+
+$query_full=$query_start . $query_middle . $query_end;
+
+//echo "<hr>$query_full<hr>";exit;
+$res=@mysql_query($query_full);
+if (!($res)) die("query failed! Failed query: <hr>$query_full<p>");
+
+if (!($project_info)) {
+	$project_id=@mysql_insert_id();
+	$project_info=getoneb("select * from front_desk_my_projects where project_id = '$project_id'");
+	}
+if (!($project_info)) die("Application error! No project information after update was applied!");
+
+
+if ($type_of_create=="Add to top") while (move_up($project_info->project_id)) $moves++;
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Put things into the right position on the list
+///////////////////////////////////////////////////////////////////////////////////////
+$pos=current_position($project_info->project_id);
+//echo "<hr>$new_list_position/$pos<hr>";
+if ($new_list_position!="") {
+	$new_list_position=(integer) $new_list_position;
+	if ($new_list_position>0) {
+		while (($pos>$new_list_position) && (move_up($project_info->project_id))) {
+			$pos=current_position($project_info->project_id);
+			}
+		while (($pos<$new_list_position) && (move_down($project_info->project_id))) {
+			$pos=current_position($project_info->project_id);
+			}
+		}
+	}
+//echo "<hr>$new_list_position/$pos<hr>";
+///////////////////////////////////////////////////////////////////////////////////////
+forward("$mode&report_name=my_projects");
+?>

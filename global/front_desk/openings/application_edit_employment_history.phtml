@@ -1,0 +1,119 @@
+<?
+require_once('application_edit_form_start.phtml');
+
+if ($employment_history_id!="") {
+	$employment_history_id=addslashes($employment_history_id);
+	$employment_info=getone("select * from hr_applications_employment_history where employment_history_id = '$employment_history_id'");
+	}
+
+
+echo "
+<script>
+function form_verify(newmode) {
+	if (document.application_edit.employer.value!='') { 
+		if (document.application_edit.there_from.value=='') { alert('From is a required field.'); document.application_edit.there_from.focus() ; return 0; }
+		if (document.application_edit.there_to.value=='') { 
+			alert('To is a required field. If currently still there please indicate so with \"present\".'); 
+			document.application_edit.there_to.focus(); 
+			return 0; }
+		if (document.application_edit.salary.value!='') { 
+			if (document.application_edit.salary_period.value=='') { alert('If salary is specified, salary frequency (per) is a required field.'); document.application_edit.salary_period.focus(); return 0; }
+			}
+
+		if (document.application_edit.responsibilities.value=='') { 
+		document.application_edit.responsibilities.focus(); 
+		alert('Duties/Responsiblities is a required field.'); 
+		return 0; }
+		}
+	document.application_edit.target_app_mode.value=newmode;
+	document.application_edit.submit();
+	}
+</script>
+<input type=hidden name=employment_history_id value=\"$employment_history_id\">
+<table border=0 cellspacing=4 cellpadding=0 bgcolor=$app_form_bg width=100%>
+<tr><td colspan=4 align=right width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr><td width=25%>
+	</td><td width=50% align=center>
+		<input type=button value=\"More Employment History\" onclick=form_verify(\"employment_history\")>
+	</td><td width=25% align=right>
+		<input type=button value=\"Next Section\" onclick=form_verify(\"education\")>
+	</td></tr>
+	</table>
+</td></tr>
+<tr><td colspan=3 align=center>
+<h3>Employment History</h3>
+</td></tr>
+
+<tr><td colspan=4 align=center>
+	<table border=1 width=80%><tr><td align=center bgcolor=white><font size=-1>
+	Start with your present or last job. List all work experience over the past ten years. Include any job-related military service assignments and volunteer activities. You may exclude organizations which indicate race, color, religion, gender, sexual orientation, national origin, disabilities or other protected statuses.
+	</font>
+	</td></tr></table>
+</td></tr>
+
+<tr><td>
+	<b>Employer</b>
+</td><td>
+	<input type=text name=employer value=\"$employment_info->employer\">
+</td><td colspan=2>
+	<b>From</b><input type=text size=12 name=there_from value=\"$employment_info->there_from\">&nbsp;<b>To</b><input type=text size=12 name=there_to value=\"$employment_info->there_to\">
+</td></tr> 
+
+<tr><td>
+	<b>Address</b>
+</td><td>
+	<input type=text size=20 name=employer_address value=\"$employment_info->employer_address\">
+</td></tr>
+
+<tr><td>
+	<b>Your&nbsp;Job&nbsp;Title</b>
+</td><td>
+	<input type=text name=job_title value=\"$employment_info->job_title\">
+</td><td colspan=2>
+	<b>Salary</b><input type=text name=salary value=\"$employment_info->salary\">&nbsp;<b>per</b><input type=text size=6 name=salary_period value=\"$employment_info->salary_period\">
+</td></tr>
+
+<tr><td colspan=1>
+	<b>Supervisor&nbsp;Name</b>
+</td><td colspan=3>
+	<input type=text size=20 name=supervisor_name value=\"$employment_info->supervisor_name\">
+	<b>Phone</b><input type=text size=20 name=supervisor_phone value=\"$employment_info->supervisor_phone\">
+</td></tr>
+
+<tr><td colspan=4>
+	<b>Duties/Responsibilities</b><br>
+	<textarea rows=3 cols=60 name=responsibilities>$employment_info->responsibilities</textarea>
+</td></tr>
+
+<tr><td colspan=4>
+	<b>Reason for leaving</b><br>
+	<input type=text size=60 name=left_because value=\"$employment_info->left_because\">
+</td></tr>
+";
+
+//tabledump("select employer,job_title,there_from,there_to from hr_applications_employment_history where application_id = '$application_id'");
+$res=@mysql_query("select * from hr_applications_employment_history where application_id = '$application_id'");
+echo "<tr><td colspan=4>&nbsp;<hr></td></tr>";
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->employment_history_id==$employment_history_id) continue;
+	echo "<tr><td></td></tr>";
+	echo "<tr bgcolor=#eeeeee><td colspan=4>
+			<table border=1 cellspacing=0 cellpadding=2 width=100%>
+				<tr><td width=50%>
+					<a href=javascript:form_verify(\"employment_history&employment_history_id=$row->employment_history_id\")>$row->employer</a>
+				</td><td width=25%>
+					$row->there_from
+				</td><td width=25%>
+					$row->there_to
+				</td></tr>
+			</table>
+		</td></tr>";
+	
+	}
+echo"</table></center>";
+
+
+require_once('application_edit_form_end.phtml');
+
+?>

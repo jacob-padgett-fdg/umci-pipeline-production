@@ -1,0 +1,50 @@
+<?
+$start_date=vali_date($start_date);
+$end_date=vali_date($end_date);
+$today=date('m/d/Y');
+
+$query="select * from hr_eeoc where eeoc_date >= '$start_date' and eeoc_date <= '$end_date' order by applicant_name";
+$res=@mysql_query($query);
+echo "
+<a href=$pagename><font color=blue>Cancel</font></a><br>
+
+<table border=1 cellspacing=0 cellpadding=5>
+
+<tr><td align=center colspan=7><font size=+1><b>EEOC Date as of $today</b></font></td></tr>
+<tr bgcolor=#6688ff><td><b>Name</b></td><td><b>Date&nbsp;Applied</b></td><td><b>EEOC&nbsp;Date</b></td><td><b>Sex</b></td><td><b>Race</b></td><td><b>Disability</b></td><td><b>Position</b></td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$row->eeoc_date=invali_date($row->eeoc_date);
+	echo "<tr><td>
+			$row->applicant_name
+		</td><td>
+			$row->doa
+		</td><td>
+			$row->eeoc_date
+		</td><td>
+			$row->sex
+		</td><td>
+			$row->race
+		</td><td>
+			$row->disability
+		</td><td>
+			$row->paf
+		</td></tr>
+		";
+		
+	}
+ 
+//echo "</table>";
+//tabledump($query);
+
+
+//echo "<hr>$query<hr>";
+
+
+
+
+
+
+
+?>

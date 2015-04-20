@@ -1,0 +1,32 @@
+<?
+if (!($timesheet_data_entry_check)) die_security();
+$employee_info=getoneb("select * from contacts where employee_num = '$timesheet_data_entry_selected_employee' and current = 'Y'");
+if (!($employee_info)) die("Bad Employee information. Please contact your system administrator!");
+$date_info=date_info($timesheet_data_entry_week_ending);
+if (!($date_info)) die("Error: Bad date information. Please contact your system administrator!");
+
+
+
+$query="insert into timesheet_index set 
+	creator = '$global_user->contacts_id', 
+	employee_id = '$employee_info->contacts_id',
+	employee_num = '$employee_info->employee_num',
+	employee_group = '$employee_info->employee_group',
+	week_ending = '$date_info->week_end_mysql',
+	status = 'new'";
+	
+	
+$res=@mysql_query($query);
+
+if (!($res)) {
+	echo "<hr>$query<hr>";exit;
+	forward('timesheet_data_entry_batch_employee_select');
+	exit;
+	} else {
+	$id=@mysql_insert_id();
+	forward("timesheet_load&come_back_to=timesheet_data_entry_batch_employee_select&ts_id=$id");
+	exit;
+	}
+
+
+?>

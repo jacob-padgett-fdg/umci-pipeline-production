@@ -1,0 +1,14 @@
+<?
+include("lam_lib.inc");
+$lam_id=addslashes($lam_id);
+$lam_info=getoneb("select * from lam where lam_id = '$lam_id'");
+
+$jobinfo_id=addslashes($jobinfo_id);
+$job_information=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+if (($job_information) && ($lam_info)) {
+	$res=recursively_set_job($lam_info->lam_id,$job_information->jobinfo_id);
+	print_lam_div($lam_info->lam_id);
+	} else {
+	echo "Error applying update! Please reload this page to make sure you're viewing the most current tree!";
+	}
+?>

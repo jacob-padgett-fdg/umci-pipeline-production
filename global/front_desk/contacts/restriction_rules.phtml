@@ -1,0 +1,44 @@
+<?
+if (!($adminuser)) die("ERROR: Security violation! The authorities have been notified!!");
+require("header.phtml");
+//require_once('querylib.inc');
+$res=@mysql_query("select * from contacts_restricted order by restext");
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+<table border=1 cellspacing=0 cellpadding=4>
+<tr bgcolor=#eeeeee><td>
+	<b>Restricted Text</b>
+</td><td>
+	<b>Restriction Type</b>
+</td><td>
+	<b>Correct Contact</b>
+</td></tr>
+";
+
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			$row->restext
+		</td><td>
+			$row->resmode
+		</td><td>
+			";contact_view("",$row->true_contact_id);echo"
+		</td></tr>
+		";
+	}
+echo "</table>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

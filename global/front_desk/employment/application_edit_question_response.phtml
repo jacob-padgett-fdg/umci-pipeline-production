@@ -1,0 +1,32 @@
+<?
+$application_id=addslashes($application_id);
+$hr_opening_bullets_id=addslashes($hr_opening_bullets_id);
+
+$response=getoneb("select * from hr_opening_bullet_responses where application_id = '$application_id' and hr_opening_bullets_id = '$hr_opening_bullets_id'");
+$question=getone("select * from hr_opening_bullets where hr_opening_bullets_id = '$hr_opening_bullets_id'");
+$opening=getone("select * from hr_openings where hr_openings_id = '$question->hr_openings_id'");
+
+
+
+
+//if (!($response)) {
+//	echo "nacho";
+//	} else {
+//	else echo "nachos";
+//	}
+
+echo "
+<input type=hidden name=hr_opening_bullets_id value=\"$hr_opening_bullets_id\">
+<center><b>Optional question for $opening->job_title opening</b></center><hr>
+$question->bullet_text<br>
+<textarea name=optional_question rows=5 cols=50>$response->response</textarea><br>
+<input type=button onclick=form_verify('openings') value=\"Submit\">
+<script>
+function form_verify(newmode) {
+	document.application_edit.target_app_mode.value=newmode;
+	document.application_edit.submit();
+	}
+document.application_edit.optional_question.focus();
+</script>
+";
+?>

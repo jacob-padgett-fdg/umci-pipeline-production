@@ -1,0 +1,134 @@
+<?
+require_once("global_connect_rw.phtml");
+require_once('querylib.inc');
+
+function make_or_break_user($user_name) {
+	if ($user_name=="") exit (0);
+	$server_id=$GLOBALS['server_id'];
+	$group_name=addslashes($GLOBALS['group_name']);
+	if (ignore_user($user_name)) die("Ignoring invalid user");
+	$user_name=addslashes($user_name);
+	
+	$contact_info=getoneb("select * from contacts where login_name = '$user_name'");
+	if (!($contact_info)) {
+		log_warning("Invalid username provided ($user_name). Either duped, or missing in contact DB");
+		return FALSE;
+		}
+	if ($contact_info->current!='Y') log_warning("Warning, obsolete user ($user_name) provided. Will include anyway.");
+	if (!(getoneb("select * from access_servers_users where server_id = '$server_id' and user_id = '$contact_info->contacts_id'"))) {
+		@mysql_query("delete from access_servers_users where server_id = '$server_id' and user_id = '$contact_info->contacts_id'");
+		@mysql_query("insert into access_servers_users set server_id = '$server_id', user_id = '$contact_info->contacts_id'");
+		}
+	if (!(getoneb("select * from access_servers_group_members where server_id = '$server_id' and group_name = '$group_name' and user_id = '$contact_info->contacts_id'"))) {
+		@mysql_query("delete from access_servers_group_members where server_id = '$server_id' and group_name = '$group_name' and user_id = '$contact_info->contacts_id'");
+		@mysql_query("insert into access_servers_group_members set server_id = '$server_id', group_name = '$group_name', user_id = '$contact_info->contacts_id'");
+		}
+	return TRUE;
+	}
+
+function make_or_break_group($group_name="") {
+	if ($group_name=="") exit (0);
+	$server_id=$GLOBALS['server_id'];
+	$group_name=addslashes($group_name);
+	if (ignore_group($group_name)) die("Ignoring invalid group");
+	if (!(getoneb("select * from access_servers_groups where server_id = '$server_id' and group_name = '$group_name'"))) {
+		@mysql_query("delete from access_servers_group_members where server_id = '$server_id' and group_name = '$group_name'");
+		@mysql_query("delete from access_servers_groups where server_id = '$server_id' and group_name = '$group_name'");
+		@mysql_query("insert into access_servers_groups set server_id = '$server_id', group_name = '$group_name'");
+		}
+	return TRUE;
+	}
+
+function ignore_group ($group_name) {
+	$badgroups=array('root','uucp','mail','exim','daemon','bin','sys','sync','games',
+					'man','lp','news','proxy','www-data','backup','list','irc','gnats',
+					'nobody','postfix','sendmail','syslog','klogd','messagebus','cups',
+					'cupsys','fetchmail','hal','saned','gdm','sshd','disk','kmem',
+					'dialout','fax','voice','cdrom','floppy','tape','sudo','audio',
+					'dip','operator','list','src','shadow','wtmp','utmp','video','sasl',
+					'plugdev','staff','nogroup','crontab','postdrop','lpadmin','scanner',
+					'admin','slocate');
+
+	if (in_array($group_name,$badgroups)) return TRUE;
+	else return FALSE;
+	}
+function ignore_user ($user_name) {
+	$badusers=array('root','uucp','mail','exim','daemon','bin','sys','sync','games',
+					'man','lp','news','proxy','www-data','backup','list','irc','gnats',
+					'nobody','postfix','sendmail','syslog','klogd','messagebus','cups',
+					'cupsys','fetchmail','hal','saned','gdm','sshd','anybody');
+	if (in_array($user_name,$badusers)) return TRUE;
+	else return FALSE;
+	}
+
+function log_warning($error="") {
+	return log_error($error,"warn");
+	}
+
+function log_error ($error="",$error_mode="error") {
+	$ip_address=addslashes($GLOBALS['REMOTE_ADDR']);
+	$forwarded_for=addslashes($GLOBALS['HTTP_X_FORWARDED_FOR']);
+
+	$server_name=addslashes($GLOBALS['server_name']);	
+	$server_id=addslashes($GLOBALS['server_id']);	
+	$group_name=addslashes($GLOBALS['group_name']);	
+	$group_id=addslashes($GLOBALS['group_id']);	
+	$login_name=addslashes($GLOBALS['login_name']);	
+	$user_id=addslashes($GLOBALS['user_id']);	
+	$scour_db=addslashes($GLOBALS['scour_db']);	
+	$error_text=addslashes($error);
+	
+	$query="insert into access_servers_info_update_log set
+	ip_address = '$ip_address',
+	forwarded_for = '$forwarded_for',
+	server_name = '$server_name',
+	server_id = '$server_id',
+	group_name = '$group_name',
+	group_id = '$group_id',
+	login_name = '$login_name',
+	user_id = '$user_id',
+	scour_db = '$scour_db',
+	error_text = '$error_text'
+	";
+	//@mysql_query($query);
+	if ($error_mode!="error") {
+		echo $error . "<br>";
+		} else {
+		die($error);
+		}
+	return TRUE;
+	}
+
+if ($server_name=="") {
+	log_error("no server_name specified");
+	} else {
+	$server_name=addslashes($server_name);
+	$server_info=getoneb("select * from access_servers where name = '$server_name'");
+	}
+
+if (!($server_info)) log_error("Unable to find server in db");
+$server_id=$server_info->server_id;
+
+if ($scour_db=="true") {
+	@mysql_query("delete from access_servers_groups where server_id = '$server_id'");
+	@mysql_query("delete from access_servers_users where server_id = '$server_id'");
+	@mysql_query("delete from access_servers_group_members where server_id = '$server_id'");
+	}
+
+if ($log_this_error!="") {
+	$log_this_error=addslashes($log_this_error);
+	log_error($log_this_error);
+	}
+if(!(make_or_break_group($group_name))) exit (0);
+
+
+$userlist=explode(",",$login_name);
+$len=count($userlist);
+$num=0;
+while ($num <= $len) {
+	//echo $userlist[$num] . "<br>";
+	make_or_break_user($userlist[$num]);
+	$num++;
+	}
+//if(!(make_or_break_user($login_name))) exit (0);
+?>

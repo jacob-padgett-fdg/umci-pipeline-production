@@ -1,0 +1,16 @@
+<?
+$issue_id=addslashes($issue_id);
+echo"<html><head><title>Issue Change Category</title></head><body bgcolor=#ffffff>
+<h3>Choose category for issue #$issue_id</h3>
+<hr>
+<a href=javascript:self.close();><font color=blue>Cancel</font></a><p>
+";
+
+$query="select * from mis_issue_categories";
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) 
+echo "<a href=$pagename?mode=issue_change_category_submit&issue_id=$issue_id&it_category_id=$row->it_category_id><font color=blue>$row->category_name</font></a><br>";
+
+echo "</body></html>";
+?>

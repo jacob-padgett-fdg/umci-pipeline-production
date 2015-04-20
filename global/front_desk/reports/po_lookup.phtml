@@ -1,0 +1,586 @@
+<?
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require("report_lib.inc");
+fd_navs_header();
+//die("shit");
+$cost_type_array=cost_type_array();
+
+function phases_drop() {
+	global $jobinfo,$jobinfo_id,$global_jobinfo,$show_phase,$global_user;
+	$job=get_vp_contract_num();
+	$overhead_job=(!(ereg('^[Ww0-9]',$job)));
+	if ($overhead_job) {
+		if (!((pm_for_this_job())||(member_of_global_group_named("IT")||(member_of_global_group_named("Purchasing"))))) {
+		//if (!(pm_for_this_job())) {
+			echo "Error: Overhead jobs require PM security level to access PO's.";
+			fd_navs_footer();
+			exit;
+			}
+		}
+	$res=mssql_query("select POIT.Phase,JCPM.Description from POIT with (NOLOCK) right join JCPM with (NOLOCK) on (POIT.Phase = JCPM.Phase) where POCo = 1 and Job like '$job%' group by POIT.Phase, JCPM.Description order by POIT.Phase");
+	$nice_phase=ereg_replace("[ -]*$","",$show_phase);
+	echo "Phase:&nbsp;<select name=show_phase onchange=submit()><option value=\"$show_phase\">$nice_phase</option><option></option>";
+	while ($row=@mssql_fetch_object($res)) {
+		$desc_short=substr($row->Description,0,20);
+		$nice_phase=ereg_replace("[ -]*$","",$row->Phase);
+		echo "<option value=\"$row->Phase\">$nice_phase - $desc_short</option>";
+		}
+	echo "</select>";
+	}
+
+/*
+if (!(ereg('^[1-9]',$global_jobinfo->contract_num))) {
+	if ($global_user->contacts_id >2) {
+		if ($global_jobinfo->project_manager_id!=$global_user->contacts_id) die("permission denied");
+		}
+	}
+*/
+$page_length="30";
+$return_to_url=base64_encode($REQUEST_URI);
+//$po_status_list=array('0'=>'Open','1'=>'Complete','2'=>'Closed','3'=>'Pending');
+$po_status_list=array('0'=>'Open','1'=>'Complete','2'=>'Closed','3'=>'Pending','4'=>'Void?!?!');
+
+$po_number_query="";
+if ($po_number_filter!="") {
+	$po_number_filter=addslashes($po_number_filter);
+	$po_num_parts=explode('-',$po_number_filter);
+	$po_part_count=sizeof($po_num_parts);
+	if ($po_part_count==1) {
+		$po_number_query="and POHD.PO = '$po_number_filter'";
+		} else {
+		$po_num_from=$po_num_parts[0];
+		$po_num_to=$po_num_parts[1];
+		$po_number_query="and POHD.PO > '$po_num_from' and POHD.PO < '$po_num_to'";
+		}
+	}
+
+$mr_number_query="";
+if ($mr_number_filter!="") {
+	$mr_number_filter=addslashes($mr_number_filter);
+	$mr_number_query="and POHD.udmaterialrequisition like '%$mr_number_filter%'";
+	}
+
+$item_description_query="";
+if ($item_description_filter!="") {
+	$item_description_filter=strtoupper(addslashes($item_description_filter));
+	$item_description_query="and POIT.Description like '%$item_description_filter%'";
+	}
+
+$show_phase_query="";
+if ($show_phase!="") {
+	$show_pase=addslashes($show_phase);
+	$show_phase_query=" and POIT.Phase = '$show_phase' ";
+	}
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+$ordered_date_query="";
+if ($ordered_date_end_filter!="") {
+	$to_date=date('Y-m-d',strtotime($ordered_date_end_filter));
+	$ordered_date_start_filter_sign='>=';
+	$ordered_date_query=" and POHD.OrderDate <= '$to_date' ";
+	} else {
+	$ordered_date_start_filter_sign='=';
+	}
+if ($ordered_date_start_filter!="") {
+	$from_date=date('Y-m-d',strtotime($ordered_date_start_filter));
+	$ordered_date_query=$ordered_date_query . " and POHD.OrderDate $ordered_date_start_filter_sign '$from_date'";
+	}
+///////////////////////////////////////////////////////////////////////////
+$expected_date_query="";
+if ($expected_date_end_filter!="") {
+	$to_exp_date=date('Y-m-d',strtotime($expected_date_end_filter));
+	$expected_date_start_filter_sign='>=';
+	$expected_date_query=" and POHD.ExpDate <= '$to_exp_date' ";
+	} else {
+	$expected_date_start_filter_sign='=';
+	}
+if ($expected_date_start_filter!="") {
+	$from_exp_date=date('Y-m-d',strtotime($expected_date_start_filter));
+	$expected_date_query=$expected_date_query . " and POHD.ExpDate $expected_date_start_filter_sign '$from_exp_date'";
+	}
+///////////////////////////////////////////////////////////////////////////
+
+if ($current_sort_field=="") $current_sort_field="POHD.PO";
+if ($current_sort_direction=="") $current_sort_direction="desc";
+
+$sort_for_real=$current_sort_direction;
+if ($sort_for_real=='asc') $sort_for_real='';
+
+$add_to_sort="";
+$order_by="order by $current_sort_field $add_to_sort $sort_for_real";
+
+switch ($po_status_filter) {
+	case "0": $po_status_query="and POHD.Status = 0"; break;;
+	case "1": $po_status_query="and POHD.Status = 1"; break;;
+	case "2": $po_status_query="and POHD.Status = 2"; break;;
+	case "3": $po_status_query="and POHD.Status = 3"; break;;
+	default: $po_status_query=""; break;;
+	}
+
+$join_vendors="left join APVM with (NOLOCK) on POHD.VendorGroup = APVM.VendorGroup and POHD.Vendor = APVM.Vendor";
+$join_details="left join POIT with (NOLOCK) on POHD.PO = POIT.PO and POIT.POCo = 1";
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Only "PM's" or IT or Purchasing should be able to look up PO's on overhead job #'s
+/////////////////////////////////////////////////////////////////////////////////////////////
+$job=get_vp_contract_num();
+$overhead_job=(!(ereg('^[Ww0-9]',$job)));
+if ($overhead_job) {
+if (!((pm_for_this_job())||(member_of_global_group_named("IT")||(member_of_global_group_named("Purchasing"))))) {
+		echo "Overhead Jobs Restricted";
+		fd_navs_footer();
+		exit();
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////
+$job_selection_query="and POIT.Job like '$job%'";
+$job_selection_query_orig=$job_selection_query;
+
+if ($job_selection_filter!="") {
+	if (!(ereg("-",$job_selection_filter))) $job_selection_filter=$job_selection_filter . '-';
+	$job_selection_filter=addslashes($job_selection_filter);
+	$job_selection_query="and POIT.Job = '$job_selection_filter'";
+	}
+
+$vendor_selection_query="";
+if ($vendor_selection_filter!="") {
+	$vendor_selection_filter=addslashes($vendor_selection_filter);
+	$vendor_selection_query="and POHD.Vendor = '$vendor_selection_filter'";
+	}
+$vendor_selection_query_orig="";
+$vendor_selection_query_old=$vendor_selection_query;
+
+$query_select_spec="POHD.PO,sum(POIT.OrigCost + POIT.OrigTax) as OrigCostSum,sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum,sum(POIT.InvCost + POIT.InvTax) as InvCostSum, sum(POIT.RemCost + POIT.RemTax) as RemCostSum";
+$query_group_spec="POHD.PO";
+
+if ($current_sort_field!="POHD.PO") $query_group_spec=$query_group_spec . ",$current_sort_field";
+
+function return_query() {
+	global $query_select_spec, $join_vendors, $join_details, $job_selection_query, $po_status_query, $po_number_query, $mr_number_query, $query_group_spec, $order_by, $vendor_selection_query,$item_description_query,$sort_for_real,$ordered_date_query,$expected_date_query, $show_phase_query;
+	$fixed_order_by=ereg_replace("order by POHD.PO","order by LEN(POHD.PO) $sort_for_real ,POHD.PO",$order_by);
+	return("select $query_select_spec from POHD with (NOLOCK) $join_vendors $join_details where POHD.POCo = 1 $ordered_date_query $expected_date_query $job_selection_query $po_status_query $po_number_query $mr_number_query $vendor_selection_query $item_description_query $show_phase_query group by $query_group_spec $fixed_order_by");
+	}
+
+function return_job_total_query() {
+	global $global_jobinfo,$cost_type_array;
+	$job=get_vp_contract_num();
+	$overhead_job=(!(ereg('^[Ww0-9]',$job)));
+	if ($overhead_job) {
+		if (!((pm_for_this_job())||(member_of_global_group_named("IT")||(member_of_global_group_named("Purchasing"))))) {
+			echo "Error: Overhead jobs require PM security level to access PO's.";
+			fd_navs_footer();
+			exit;
+			}
+		}
+	
+	$po_totals_query="select 
+	POIT.JCCType,
+	sum(POIT.OrigCost + POIT.OrigTax) as 'OrigCostSum',
+	sum(POIT.TotalCost + POIT.TotalTax) as 'TotalCostSum',
+	sum(POIT.InvCost + POIT.InvTax) as 'InvCostSum',
+	sum(POIT.RemCost + POIT.RemTax) as 'RemCostSum'
+	from POIT with (NOLOCK) where POIT.POCo = 1 and POIT.Job like '$job%' group by substring(Job,1,5),POIT.JCCType";
+	$html="";
+	$res=mssql_query($po_totals_query);
+	$sep="";
+	$ct_list="";
+	$oc_total="";
+	$tc_total="";
+	$inv_total="";
+	$rem_total="";
+	echo "<script> function show_me_job_pals() {";
+	while ($filter_totals=@mssql_fetch_object($res)) {
+		$ct_text=$cost_type_array[$filter_totals->JCCType];
+		$oc_total=$oc_total + $filter_totals->OrigCostSum;
+		$tc_total=$tc_total + $filter_totals->TotalCostSum;
+		$inv_total=$inv_total + $filter_totals->InvCostSum;
+		$rem_total=$rem_total + $filter_totals->RemCostSum;
+		if (($filter_totals->OrigCostSum + $filter_totals->TotalCostSum + $filter_totals->InvCostSum + $filter_totals->RemCostSum)==0) continue;
+		$ct_list=$ct_list . $sep . $filter_totals->JCCType;
+		echo "document.getElementById('job_pal_$filter_totals->JCCType').style.display='table-row';";
+		$html=$html . "<tr id=\"job_pal_$filter_totals->JCCType\" style=\"display: none;\"><td>Current&nbsp;Filter<i>&nbsp;(by line item)</i></td><td>$ct_text&nbsp;($filter_totals->JCCType)</td><td align=right>" . format_long_decimal($filter_totals->OrigCostSum,2) . "</td><td align=right>" . format_long_decimal($filter_totals->TotalCostSum,2) . "</td><td align=right>" .format_long_decimal($filter_totals->InvCostSum,2) . "</td><td align=right>" . format_long_decimal($filter_totals->RemCostSum,2) . "</td></tr>";
+		$sep=",";
+		}
+	echo "} </script>";
+	$html=$html . "<tr><td><b>Entire Job Totals</b></td><td>$ct_list&nbsp;<a href=javascript:show_me_job_pals()><i>(details)</i></a></td><td align=right>" . gap_num($oc_total) . "</td><td align=right>" . gap_num($tc_total) . "</td><td align=right>" . gap_num($inv_total) . "</td><td align=right>" . gap_num($rem_total) . "</td></tr>";
+	return ($html);
+	}
+function return_filter_total_query() {
+	global $join_vendors, $join_details, $job_selection_query, $po_status_query, $po_number_query, $query_group_spec, $order_by, $vendor_selection_query,$item_description_query,$sort_for_real,$ordered_date_query,$expected_date_query, $show_phase_query,$cost_type_array;
+	$select_spec="
+	POHD.POCo,
+	POIT.JCCType,
+	sum(POIT.OrigCost + POIT.OrigTax) as OrigCostSum,
+	sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum,
+	sum(POIT.InvCost + POIT.InvTax) as InvCostSum, 
+	sum(POIT.RemCost + POIT.RemTax) as RemCostSum
+	
+	";
+	$html="";
+	$qry="select $select_spec from POHD with (NOLOCK) $join_details where POHD.POCo = 1 $ordered_date_query $expected_date_query $job_selection_query $po_status_query $po_number_query $vendor_selection_query $item_description_query $show_phase_query group by POHD.POCo,POIT.JCCType";
+	$res=mssql_query($qry);
+	$sep="";
+	$ct_list="";
+	$oc_total="";
+	$tc_total="";
+	$inv_total="";
+	$rem_total="";
+	echo "<script> function show_me_filter_pals() {";
+	while ($filter_totals=@mssql_fetch_object($res)) {
+		$ct_text=$cost_type_array[$filter_totals->JCCType];
+		$oc_total=$oc_total + $filter_totals->OrigCostSum;
+		$tc_total=$tc_total + $filter_totals->TotalCostSum;
+		$inv_total=$inv_total + $filter_totals->InvCostSum;
+		$rem_total=$rem_total + $filter_totals->RemCostSum;
+		if (($filter_totals->OrigCostSum + $filter_totals->TotalCostSum + $filter_totals->InvCostSum + $filter_totals->RemCostSum)==0) continue;
+		$ct_list=$ct_list . $sep . $filter_totals->JCCType;
+		echo "document.getElementById('filter_pal_$filter_totals->JCCType').style.display='table-row';";
+		$html=$html . "<tr id=\"filter_pal_$filter_totals->JCCType\" style=\"display: none;\"><td>Current&nbsp;Filter<i>&nbsp;(by line item)</i></td><td>$ct_text&nbsp;($filter_totals->JCCType)</td><td align=right>" . format_long_decimal($filter_totals->OrigCostSum,2) . "</td><td align=right>" . format_long_decimal($filter_totals->TotalCostSum,2) . "</td><td align=right>" .format_long_decimal($filter_totals->InvCostSum,2) . "</td><td align=right>" . format_long_decimal($filter_totals->RemCostSum,2) . "</td></tr>";
+		$sep=",";
+		}
+	echo "} </script>";
+	$html=$html . "<tr><td><b>Current Filter Totals</b></td><td>$ct_list&nbsp;<a href=javascript:show_me_filter_pals()><i>(details)</i></a></td><td align=right>" . gap_num($oc_total) . "</td><td align=right>" . gap_num($tc_total) . "</td><td align=right>" . gap_num($inv_total) . "</td><td align=right>" . gap_num($rem_total) . "</td></tr>";
+	return ($html);
+	}
+
+function return_phase_total_query() {
+	global $join_vendors, $join_details, $job_selection_query, $po_status_query, $po_number_query, $query_group_spec, $order_by, $vendor_selection_query,$item_description_query,$sort_for_real,$ordered_date_query,$expected_date_query, $show_phase_query;
+	$select_spec="
+	POIT.Phase,
+	sum(POIT.OrigCost + POIT.OrigTax) as OrigCostSum,
+	sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum,
+	sum(POIT.InvCost + POIT.InvTax) as InvCostSum, 
+	sum(POIT.RemCost + POIT.RemTax) as RemCostSum";
+	$qry="select $select_spec from POHD with (NOLOCK) $join_details where POHD.POCo = 1 $ordered_date_query $expected_date_query $job_selection_query $po_status_query $po_number_query $vendor_selection_query $item_description_query $show_phase_query group by POIT.Phase";
+	$totals=ms_getoneb($qry);
+	return($totals);
+	}
+
+function return_phase_total_job_query() {
+	global $join_vendors, $join_details, $job_selection_query, $po_status_query, $po_number_query, $query_group_spec, $order_by, $vendor_selection_query,$item_description_query,$sort_for_real,$ordered_date_query,$expected_date_query, $show_phase_query;
+	$select_spec="
+	POIT.Phase,
+	sum(POIT.OrigCost + POIT.OrigTax) as OrigCostSum,
+	sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum,
+	sum(POIT.InvCost + POIT.InvTax) as InvCostSum, 
+	sum(POIT.RemCost + POIT.RemTax) as RemCostSum";
+	$qry="select $select_spec from POHD with (NOLOCK) $join_details where POHD.POCo = 1 $job_selection_query $show_phase_query group by POIT.Phase";
+	$totals=ms_getoneb($qry);
+	return($totals);
+	}
+
+$query=return_query();
+$res=@mssql_query($query);
+//ms_excel_dump($query);exit;
+$count=@mssql_num_rows($res);
+
+$total_pages=ceil($count / $page_length);
+if ($current_page=="") $current_page=0;
+if (($current_page + 1)>$total_pages) $current_page=0;
+$next_page=$current_page + 1;
+$previous_page=$current_page -1;
+$current_start=($page_length * $current_page) + 1;
+$current_end=$current_start + $page_length - 1;
+if ($current_end>=$count) {
+	$next_page_link="";
+	} else {
+	$next_page_link="<a style=\"text-decoration: none;\" href=javascript:set_page($next_page);><b>-next-&gt;</b></a>";
+	}
+if ($current_page==0) {
+	$previous_page_link="";
+	} else {
+	$previous_page_link="<a style=\"text-decoration: none;\" href=javascript:set_page($previous_page);><b>&lt;-prev-</b></a>";
+	}
+
+echo "<table border=0 cellspacing=0>";
+
+//$po_totals_query="select 
+//sum(POIT.OrigCost + POIT.OrigTax) as 'OrigCost',
+//sum(POIT.TotalCost + POIT.TotalTax) as 'TotalCost',
+//sum(POIT.InvCost + POIT.InvTax) as 'InvCost',
+//sum(POIT.RemCost + POIT.RemTax) as 'RemCost'
+//from POIT where POIT.POCo = 1 and POIT.Job like '0$global_jobinfo->contract_num%' group by substring(Job,1,5)";
+//$po_totals_info=ms_getoneb($po_totals_query);
+//$po_totals_info->OrigCost=round($po_totals_info->OrigCost,2);
+//$po_totals_info->TotalCost=round($po_totals_info->TotalCost,2);
+//$po_totals_info->InvCost=round($po_totals_info->InvCost,2);
+//$po_totals_info->RemCost=round($po_totals_info->RemCost,2);
+
+$job_total_rows=return_job_total_query();
+
+
+echo "
+<td>
+	<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td colspan=6 bgcolor=$fd_color_4 align=center><font size=-1><b>PO Totals</b></font></td></tr>
+	<tr bgcolor=$fd_color_1><td>&nbsp;</td><td>Cost Type</td><td>Orig Cost</td><td>Total Cost</td><td>Inv Cost</td><td>Rem Cost</td></tr>
+	";
+	$job_total_rows=return_job_total_query();
+	$filter_total_rows=return_filter_total_query();
+	echo "
+	$job_total_rows
+	$filter_total_rows
+	";
+	
+	//$filter_totals=return_filter_total_query();
+	
+	
+	/*if ($show_phase!="") {
+		$show_phase_pretty=ereg_replace("[ -]*$","",$show_phase);
+		$phase_totals=return_phase_total_query();
+		$phase_totals_job=return_phase_total_job_query();
+		echo "<tr><td><b>Phase&nbsp;$show_phase_pretty&nbsp;for&nbsp;entire&nbsp;job</td><td>$phase_totals_job->OrigCostSum</td><td>$phase_totals_job->TotalCostSum</td><td>$phase_totals_job->InvCostSum</td><td>$phase_totals_job->RemCostSum</td></tr>";
+		}
+	*/
+echo"</table>
+</td>
+
+
+</tr></table>
+<script>
+function set_sort_order(field) {
+	curr_obj=document.getElementById('current_sort_field_id');
+	if (curr_obj.value==field) {
+		change_sort_direction();
+		} else {
+		curr_obj.value=field;
+		document.getElementById('current_sort_direction_id').value='asc'; // Ascending
+		document.po_filter_form.submit();
+		}
+	}
+function change_sort_direction() {
+	curr_obj=document.getElementById('current_sort_direction_id');
+	if (curr_obj.value=='asc') curr_obj.value='desc';
+	else curr_obj.value='asc';
+	document.po_filter_form.submit();
+	}
+
+function set_page(page) {
+	document.getElementById('current_page_field').value=page;
+	document.po_filter_form.submit();
+	}
+function ordered_d_popup() {
+	open('reports/po_ordered_date_selector.phtml','oddatepu','width=400,height=220');
+	}
+function expected_d_popup() {
+	open('reports/po_expected_date_selector.phtml','exdatepu','width=400,height=220');
+	}
+
+</script>
+<form method=get name=po_filter_form>
+
+
+<table border=0 cellspacing=0 cellpadding=4 style=\"border: 1px solid black;\">
+<input type=hidden name=mode value=$mode>
+<input type=hidden name=report_name value=\"$report_name\">
+<input id=\"current_page_field\" type=hidden name=current_page value=\"$current_page\">
+<input id=\"current_sort_field_id\" type=hidden name=current_sort_field value=\"$current_sort_field\">
+<input id=\"current_sort_direction_id\" type=hidden name=current_sort_direction value=\"$current_sort_direction\">
+
+
+<tr><td colspan=12 align=center bgcolor=$fd_color_4>
+	<div style=\"float: right;\">Search Descriptions: <input type=text size=20 name=item_description_filter value=\"$item_description_filter\" onchange=\"submit()\">&nbsp;";phases_drop();echo"</div>";
+	//<div style=\"float: right;\">&nbsp;Show invoices (slow):<input type=checkbox name=show_invoice_count $show_invoice_count_add onchange=submit()></div>
+	echo "<b>PO List</b>
+</td></tr>
+<tr><td align=center colspan=12>
+	<div style=\"float: right;\">$next_page_links</div>
+	<div style=\"float: left;\">$previous_page_links</div>
+	$previous_page_link&nbsp;<font size=-1><i>Page $next_page/$total_pages ($current_start - $current_end of $count)</i></font>&nbsp;$next_page_link
+</td></tr>
+
+<tr><td>
+	<img src=/images/paperclip.gif>
+</td><td style=\"cursor: pointer; cursor: hand;\" onclick=\"set_sort_order('POHD.PO')\">
+	<b>PO #</b>
+</td><td>
+	<b>MR #</b>
+</td><td style=\"cursor: pointer; cursor: hand;\" onclick=\"set_sort_order('POHD.Job')\">
+	<b>Job</b>
+</td><td style=\"cursor: pointer; cursor: hand;\" onclick=\"set_sort_order('APVM.Name')\">
+	<b>Vendor</b>
+</td><td style=\"cursor: pointer; cursor: hand;\" onclick=\"set_sort_order('POHD.Status')\">
+	<b>Status</b>
+</td><td style=\"cursor: pointer; cursor: hand;\" onclick=\"set_sort_order('POHD.OrderDate')\">
+	<b>Ordered</b>
+</td><td style=\"cursor: pointer; cursor: hand;\" onclick=\"set_sort_order('POHD.ExpDate')\">
+	<b>Expected</b>
+</td><td>
+	<b>Orig&nbsp;Cost</b>
+</td><td>
+	<b>Inv&nbsp;Cost</b>
+</td><td>
+	<b>Rem&nbsp;Cost</b>
+</td><td>
+	<b>Inv</b>
+</td></tr>
+
+<tr><td>
+</td><td>
+	<input type=text size=7 name=po_number_filter value=\"$po_number_filter\" onchange=\"submit()\">
+</td><td>
+	<input type=text size=7 name=mr_number_filter value=\"$mr_number_filter\" onchange=\"submit()\">
+</td><td>
+	<select onchange=\"submit()\" name=job_selection_filter><option></option>";
+ 	$query_select_spec="POIT.Job";
+ 	$job_selection_query_old=$job_selection_query;
+ 	$job_selection_query=$job_selection_query_orig;
+	$vendor_selection_query=$vendor_selection_query_old;
+	$query_group_spec=$query_select_spec;
+	$order_by="order by POIT.Job";
+	$jlres=@mssql_query(return_query());
+    while($jlrow=@mssql_fetch_object($jlres)) {
+	    $jlselected="";
+    	if ($jlrow->Job==$job_selection_filter) $jlselected="selected";
+    	echo "<option $jlselected>$jlrow->Job</option>";
+    	}
+	echo "</select>
+</td><td>
+	<select onchange=\"submit()\" name=vendor_selection_filter><option></option>";
+ 	$query_select_spec="APVM.Name,POHD.Vendor";
+	$query_group_spec=$query_select_spec;
+ 	$job_selection_query=$job_selection_query_old;
+	$order_by="order by APVM.Name";
+	$vendor_list_query=return_query();
+	$vendor_selection_query=$vendor_selection_query_orig;
+	$vlres=@mssql_query(return_query());
+    while($vlrow=@mssql_fetch_object($vlres)) {
+	    $vlselected="";
+    	if ($vlrow->Vendor==$vendor_selection_filter) $vlselected="selected";
+    	echo "<option value=\"$vlrow->Vendor\" $vlselected>$vlrow->Name</option>";
+		}
+	echo "</select>
+</td><td>
+	<select onchange=\"submit()\" name=po_status_filter>
+	<option value=\"\"></option>
+	<option value=\"0\" ";if ($po_status_filter=="0") echo "selected"; echo">Open</option>
+	<option value=\"1\" ";if ($po_status_filter=="1") echo "selected"; echo">Complete</option>
+	<option value=\"2\" ";if ($po_status_filter=="2") echo "selected"; echo">Closed</option>
+	<option value=\"3\" ";if ($po_status_filter=="3") echo "selected"; echo">Pending</option>
+	</select>
+</td><td onclick=\"ordered_d_popup()\" align=center>
+	<font color=blue>Select</font>
+	<input type=hidden name=ordered_date_start_filter value=\"$ordered_date_start_filter\">
+	<input type=hidden name=ordered_date_end_filter value=\"$ordered_date_end_filter\">
+</td><td onclick=\"expected_d_popup()\" align=center>
+	<font color=blue>Select</font>
+	<input type=hidden name=expected_date_start_filter value=\"$expected_date_start_filter\">
+	<input type=hidden name=expected_date_end_filter value=\"$expected_date_end_filter\">
+</td></tr>
+</form>
+";
+
+
+$current_row=0;
+while ($row=@mssql_fetch_object($res)) {
+	$current_row++;
+	if (($current_row < $current_start) || ($current_row > $current_end)) continue;
+	$this_po_seen=po_history_data($row->PO,$row->TotalCostSum);
+	if ($this_po_seen) $po_background="#ffffff";
+	else {
+		$po_background="#ffffcc";
+		$po_background="#eeee99";
+		}
+	$vp_po_info=ms_getoneb("select *,POHD.Job as main_job,convert(varchar(38),POHD.UniqueAttchID) as FDAttachID from POHD with (NOLOCK) $join_vendors $vppo_insert where POHD.POCo = 1 and POHD.PO = '$row->PO'");
+	$status_text=$po_status_list[$vp_po_info->Status];
+	$orderdate=date('m/d/y',strtotime($vp_po_info->OrderDate));
+	$delivery_date=date('m/d/y',strtotime($vp_po_info->ExpDate));
+	$row->OrigCostSum=round($row->OrigCostSum,2);
+	$row->TotalCostSum=round($row->TotalCostSum,2);
+	$row->InvCostSum=round($row->InvCostSum,2);
+	$row->RemCostSum=round($row->RemCostSum,2);
+	if ($vp_po_info->FDAttachID!="") {
+		$po_image_link=vp_attachment_view_link($vp_po_info->FDAttachID);
+		} else {
+		$po_image_link="";
+		}
+	
+	$has_attachments=getoneb("select * from front_desk_po_attachments where po_number = '$row->PO' limit 1");
+	$attach_bg="";
+	$attachment_link="";
+	if ($has_attachments) {
+		$attach_bg=$fd_color_3;
+		$attachment_link="<img src=\"/images/paperclip.gif\">";
+		}
+
+
+
+
+	/*
+	//////////////////////////////////////
+	// Invoice count.. very hard to do.
+	// seperate query means slower page load.
+	// ..and totally extraneous.. just look at the invoiced cost 
+	// to determine if there's an invoice. who cares how many there are
+	//////////////////////////////////////
+	$invres=@mssql_query("select APTH.UniqueAttchID from APTH
+	right join APTD on 
+		( APTH.APCo = APTD.APCo and APTH.Mth = APTD.Mth and APTH.APTrans = APTD.APTrans )
+		right join APTL on 
+		( APTL.APCo = APTD.APCo and APTL.Mth = APTD.Mth and APTL.APTrans = APTD.APTrans and APTL.APLine = APTD.APLine )
+		where APTH.APCo = 1 and APTL.PO = '$vp_po_info->PO' group by APTH.UniqueAttchID");
+	$inv_count=@mssql_num_rows($invres);
+	*/
+	if ($row->InvCostSum!=0) $inv="X";
+	else $inv="&nbsp;";
+	
+	$vp_po_info->PO=ereg_replace(" ","?",$vp_po_info->PO);
+	
+	$vp_po_info->PO=ereg_replace("\?*$","",$vp_po_info->PO);
+	$temp_po=ereg_replace("[^0-9]","",$vp_po_info->PO);
+	$po_status_title="";
+	if ("$temp_po"!="$vp_po_info->PO") {
+		$attach_bg="#ff7777";
+		$po_status_title="This PO has non-standard characters in it!";
+		//if ($vp_po_info->
+		}
+	setlocale(LC_MONETARY, 'en_US.UTF-8');
+	echo "<tr bgcolor=\"$po_background\"><td bgcolor=\"$attach_bg\">
+			$po_image_link
+		</td><td bgcolor=\"$attach_bg\" title=\"$po_status_title\">
+			<a href=\"$pagename?mode=report_show&report_name=po_show&return_to_url=$return_to_url&po_number=$vp_po_info->PO\">$vp_po_info->PO</a>&nbsp;$attachment_link
+		</td><td>
+			$vp_po_info->udmaterialrequisition
+		</td><td>
+			$vp_po_info->main_job
+		</td><td>
+			$vp_po_info->Name
+		</td><td>
+			$status_text
+		</td><td title=\"$vp_po_info->OrderedBy\">
+			$orderdate
+		</td><td>
+			$delivery_date
+		</td><td align=right>
+			" . money_format("%!(.2n",$row->OrigCostSum) . "
+		</td><td align=right>
+			" . money_format("%!(.2n",$row->InvCostSum) . "
+		</td><td align=right>
+			" . money_format("%!(.2n",$row->RemCostSum) . "
+		</td><td align=center>
+			$inv
+		</td></tr>";
+	/*
+	$has_attachments=getoneb("select * from front_desk_po_attachments where po_number = '$row->PO' limit 1");
+	$attachres=@mysql_query("select * from front_desk_po_attachments where po_number = '$row->PO'");
+	while ($attachres=@mysql_fetch_object($attachres)) {
+		echo "
+		<tr bgcolor=$fd_color_3><td bgcolor=#ffffff colspan=2>	
+			&nbsp;
+		</td><td colspan=7>
+			Attached Document - Description: $attachres->document_description
+		</td><td colspan=3>";
+			 $file_paperclip=webfile_paperclip_view($attachres->file_groups_id,"&nbsp;");
+			echo "$file_paperclip
+		</td></tr>";
+			
+			
+		}
+	*/
+	}
+echo "</table>";
+fd_navs_footer();
+?>

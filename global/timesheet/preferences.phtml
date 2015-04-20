@@ -1,0 +1,132 @@
+<?
+
+
+echo "
+<html><body bgcolor=white>
+<h3>Preferences for $global_user->first_name $global_user->last_name</h3><hr>
+
+<form name=user_prefs method=post action=$pagename>
+<input type=hidden name=mode value=preferences_save>
+
+<table border=0>
+<tr><td>
+	Default Paper size (for pdf's):
+</td><td>
+	<select name=pref_paper_size>
+	<option>$global_user->pref_paper_size</option>
+	<option>letter</option>
+	<option>legal</option>
+	<option>11x17</option>
+	<option value=tiny>tiny (for testing)</option>
+	</select>
+</td></tr>
+<tr><td>
+	Timesheet Next Day Threshold (0 for none):
+</td><td>
+	<input type=text size=5 name=pref_timesheet_hrs_threshold value=\"$global_user->pref_timesheet_hrs_threshold\"> hrs
+";
+if ($global_user->email!="") 
+	echo "<tr><td>
+				Timesheet email reminder time:
+			</td><td>
+				";
+				$rh=$global_user->pref_timesheet_reminder_hour;
+				if ($rh == 0) $select_current="<option value=0>Disabled</option>";
+				if ( ($rh > 0 ) && ($rh < 12) ) $select_current="<option value=$rh>$rh AM</option>";
+				if ( ($rh > 11) && ($rh < 24 ) ) { $th=$rh - 12 ; $select_current="<option value=$rh>$th PM</option>"; }
+				if ( $rh > 23 ) $select_current="<option value=0>ERROR</option>";
+				
+				
+				echo "Friday @ 
+				<select name=pref_timesheet_reminder_hour>
+				$select_current
+				<option value=0>Disabled</option>
+				<option value=1>1 AM</option>
+				<option value=2>2 AM</option>
+				<option value=3>3 AM</option>
+				<option value=4>4 AM</option>
+				<option value=5>5 AM</option>
+				<option value=6>6 AM</option>
+				<option value=7>7 AM</option>
+				<option value=8>8 AM</option>
+				<option value=9>9 AM</option>
+				<option value=10>10 AM</option>
+				<option value=11>11 AM</option>
+				<option value=12>12 PM</option>
+				<option value=13>1 PM</option>
+				<option value=14>2 PM</option>
+				<option value=15>3 PM</option>
+				<option value=16>4 PM</option>
+				<option value=17>5 PM</option>
+				<option value=18>6 PM</option>
+				<option value=19>7 PM</option>
+				<option value=20>8 PM</option>
+				<option value=21>9 PM</option>
+				<option value=22>10 PM</option>
+				<option value=23>11 PM</option>
+				</select>
+			</td></tr>";
+
+if ($global_user->pref_timesheet_always_new_toggle=='Y') {
+	echo "
+	<tr><td>
+		Force all timesheets to be \"new\"
+	</td><td>
+		<input type=checkbox name=force_timesheet_status_new_set>
+	</td></tr>
+	";
+	}
+
+if (($global_user->employee_group=="1")||($global_user->contacts_id=="2")) {
+$fab_warn=checkbreak($global_user->pref_timesheet_fab_phases_warn);
+echo "
+<tr><td>
+	Warn when entering non-fab phases
+</td><td>
+	<input type=checkbox name=pref_timesheet_fab_phases_warn $fab_warn>
+</td></tr>
+";
+
+$fab_only=checkbreak($global_user->pref_timesheet_fab_phases_only);
+echo "
+<tr><td>
+	Convert phases to fab-only (Mike Durham)
+</td><td>
+	<input type=checkbox name=pref_timesheet_fab_phases_only $fab_only>
+</td></tr>
+";
+
+}
+
+if (i_have_underlings($global_user->employee_num)) {
+	$global_user->pref_timesheet_svemail=checkbreak($global_user->pref_timesheet_svemail);
+	echo "<tr><td>
+		Viewing all unapproved timesheets limitted to 
+		</td><td>
+			<input type=text size=4 name=pref_timesheet_svl value='$global_user->pref_timesheet_svl'> most recent sheets for each user.
+		</td></tr>
+		<tr><td>
+			Send e-mails when users finish their timesheet: 
+		</td><td>
+			<input type=checkbox name=pref_timesheet_svemail $global_user->pref_timesheet_svemail>
+		</td></tr>";
+	} else {
+	echo "
+	<input type=hidden name=pref_timesheet_svl value='$global_user->pref_timesheet_svl'>
+	<input type=hidden name=pref_timesheet_svemail value='$global_user->pref_timesheet_svemail'>
+	";
+	
+	}
+		
+
+echo"
+</td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>
+	<input type=submit value=\"Save Preferences\">
+</td></tr>
+</table>
+</form>
+";
+
+?>

@@ -1,0 +1,41 @@
+<?
+if ($global_user->umc_emp=="Y") {
+echo "<table border=0 cellspacing=0 cellpadding=4><tr>";
+
+///////////////////////////////////////////////////////////////////////
+if ($mode=="main") echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>General Information</b></td>";
+else echo "<td  bgcolor=$fd_color_2  style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b><a href=$pagename?mode=main><font color=blue><b>General Information</b></font></a></td>";
+///////////////////////////////////////////////////////////////////////
+$tmp_saver=$adminuser;
+if ((pm_for_this_job())||(get_report_permissions('baldwin'))) {
+		if ($mode=="main_financial_summary") echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>Financial Summary</b></td>";
+		else echo "<td  bgcolor=$fd_color_2  style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=main_financial_summary><font color=blue><b>Financial Summary</b></font></a></td>";
+		}
+$adminuser=$tmp_saver;
+///////////////////////////////////////////////////////////////////////
+$tmp_saver=$adminuser;
+if ((pm_for_this_job())||(get_report_permissions('foreman'))) {
+		if ($mode=="foreman_summary") echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>Hours Summary</b></td>";
+		else echo "<td  bgcolor=$fd_color_2  style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=foreman_summary><font color=blue><b>Hours Summary</b></font></a></td>";
+		}
+$adminuser=$tmp_saver;
+///////////////////////////////////////////////////////////////////////
+if ($mode=="main_job_reports") echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>Job Reports</b></td></td>";
+else echo "<td bgcolor=$fd_color_2 style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=main_job_reports><font color=blue><b>Job Reports</b></font></a></td></td>";
+///////////////////////////////////////////////////////////////////////
+if ($mode=="main_project_calendar") echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>Calendar</b></td></td>";
+else echo "<td bgcolor=$fd_color_2 style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=main_project_calendar><font color=blue><b>Calendar</b></font></a></td></td>";
+///////////////////////////////////////////////////////////////////////
+if (member_of_global_group_named("BIM Admins")) {
+	if ($mode=="bim_setup") echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>BIM Setup</b></td>";
+	else echo "<td bgcolor=$fd_color_2 style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=bim_setup&jobinfo_id=$global_jobinfo_id><font color=blue><b>BIM Setup</b></font></a></td>";
+	}
+///////////////////////////////////////////////////////////////////////
+if (($adminuser)||($fd_manager)) {
+	if ($mode=="manage_jobs") echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>Job Setup</b></td>";
+	else echo "<td bgcolor=$fd_color_2 style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=manage_jobs&jobinfo_id=$global_jobinfo_id><font color=blue><b>Job Setup</b></font></a></td>";
+	}
+///////////////////////////////////////////////////////////////////////
+echo "</tr></table>";
+}
+?>

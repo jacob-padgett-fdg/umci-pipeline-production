@@ -1,0 +1,92 @@
+<?
+set_time_limit(20);
+require_once('querylib.inc');
+require_once('pdf_lib2.inc');
+$today=date('m/d/Y g:ia');
+
+
+if ($general_query_lastmode=="${pagename}main_leads") {
+	if ($general_query_order_by!="") {
+		$order_by=$general_query_order_by;
+		} else {
+		$order_by=" order by lead_ranking, start_date ";
+		}
+	}
+$query="select * from bidlist_cache where status = 'Lead' $order_by";
+
+$pdf=&new Cezpdf("$global_user->pref_paper_size","landscape");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+$default_title="Upcoming Projects";
+if ($title!="") {
+	$title=escapeshellcmd($title);
+	$default_title="$title";
+	}
+
+$pdf->ez_umc_header_start("$default_title <i>($today)</i>",16,$textopts=array('justification'=>'center'));
+$pdf->ezSetMargins(85,36,36,36);
+$pdf->ezTableDumpStart();
+$pdf->ezTableDumpAdd("<b>Item","#","Project Name","Next Actn","Rank","Prob","Lead","Start","Proj Type","Total Value","Mech Value","GC","Notes</b>");
+
+$current_row=1;
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$bid_info=load_proposal_info($row->bidlist_id);
+	$bid_date=ereg_replace("-....$","",$bid_info->bid_date);
+	$bt=$bid_info->bid_time;
+	$bt=ereg_replace(":00 "," ",$bt);
+	$bt=ereg_replace(" ","",$bt);
+	$bt=ereg_replace("m","",$bt);
+	if ($bid_info->comments!="") $comment_text="\r\n--\r\nComments: $bid_info->comments";
+	else $comment_text="";
+
+	$date_p1=ereg_replace('-[^-]*$','',$bid_info->start_date);
+	$date_p2=ereg_replace('^.*-','',$bid_info->start_date);
+	$date_p2=ereg_replace('^20','',$date_p2);
+	if ($bid_info->lead_prime_contact > 0) {
+		$lead_contact_info=getone("select * from contacts where contacts_id = '$bid_info->lead_prime_contact'");
+		$prime_contact_initials=$lead_contact_info->initials;
+		} else {
+		$prime_contact_initials=$bid_info->creator_initials;
+		}
+	$bid_info->project_type_list=ereg_replace("/","\r\n",$bid_info->project_type_list);
+	$pdf->ezTableDumpAdd(
+		"$current_row",
+		"$bid_info->bidlist_id",
+		"$bid_info->project",
+		"$bid_info->lead_next_activity",
+		"$bid_info->lead_ranking",
+		"$bid_info->probability",
+		"$prime_contact_initials",
+		"$date_p1-$date_p2",
+		"$bid_info->project_type_list",
+		"$bid_info->approx_total_budget",
+		"$bid_info->rom",
+		"$bid_info->gc_text_list",
+		"$bid_info->lead_lead_notes"
+		);
+	$current_row++;
+	}
+
+$pdf->ezTableDumpPrint(1,array(
+	'width'=>($pdf->ez['pageWidth'] - $pdf->ez['leftMargin'] - $pdf->ez['rightMargin'] - 2),
+	'fontSize'=>'7',
+	'splitRows'=>1,
+	'cols'=>array(
+		'0'=>array('width'=>'26'),
+		'1'=>array('width'=>'26'),
+		'2'=>array('width'=>85),
+		'3'=>array('width'=>47),
+		'4'=>array('width'=>28,'justification'=>'center'),
+		'5'=>array('width'=>28),
+		'6'=>array('width'=>28),
+		'7'=>array('width'=>40),
+		'8'=>array('width'=>84),
+		'9'=>array('width'=>48),
+		'10'=>array('width'=>49),
+		'11'=>array('width'=>60)
+		)));
+$pdf->ezStream();
+
+?>

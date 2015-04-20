@@ -1,0 +1,71 @@
+<?
+require('header.phtml');
+$server_info=getone("select * from access_servers where name = 'jupiter'");
+
+if ($sharelist_id!="") $sharelist_id=addslashes($sharelist_id);
+else die("oops, no sharelist_id!");
+
+$share_info=getone("select * from access_jupiter_sharelist where sharelist_id = '$sharelist_id'");
+
+$t=date('h:i:s');
+echo "
+<a href=$pagename?mode=access_jupiter_main><font color=blue>Return to Share List</font></a><br>
+<a href=$pagename?mode=access_jupiter_permission_edit&sharelist_id=$share_info->sharelist_id><font color=blue>New Entry</font></a>
+<br>
+<h2>Share Permissions for $share_info->share_path</h2><a href=$pagename?mode=audit_share_permissions&sharelist_id=$share_info->sharelist_id><font color=blue>Audit Permissions</font></a>
+<hr>
+";
+
+//$query="<hr>select * from access_jupiter_permissions where sharelist_id = '$share_info->sharelist_id' and active = 'Y' order by path<hr>";
+//echo "<hr>$query<hr>";exit;
+$res=@mysql_query("select * from access_jupiter_permissions where sharelist_id = '$share_info->sharelist_id' and active = 'Y' order by path");
+echo "
+<table border=0 cellspacing=0 cellpadding=4>
+<tr><td bgcolor=#dd4444>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+</td><td>
+	= Everyone but this file our group
+</td></tr>
+</table>
+	
+Fileserver is up to date: $share_info->fileserver_up_to_date ($t)<br>
+
+<table border=1 cellspacing=0 cellpadding=4>
+	<tr bgcolor=#dddddd><td>
+		<b>Path</b>
+	</td><td>
+		<b>User/Group</b>
+	</td><td>
+		<b>Grant/Deny</b>
+	</td><td>
+		<b>Type (RW)</b>
+	</td><td>
+		<b>Recursive</b>
+	</td></tr>
+	";
+		
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->this_dir_only=='Y') $row->this_dir_only='N';
+	else $row->this_dir_only='Y';
+	if ($row->for_who=="everyone in") $bgcolor="#ffffff";
+	else $bgcolor="#dd4444";
+	echo "<tr><td>
+			<a href=$pagename?mode=access_jupiter_permission_edit&permissions_id=$row->permissions_id><font color=blue>$row->path/</font></a>
+		</td><td bgcolor=\"$bgcolor\">";
+			if ($row->user_or_group=="user") contactsbox("select * from contacts where 1 = 1",$row->uid,"uid","",1);
+			else {
+				group_members_link($server_info->server_id,$row->group_name);
+				//echo "$row->group_name";
+				}
+			echo "
+		</td><td>
+			$row->access_action
+		</td><td>
+			$row->access_type
+		</td><td>
+			$row->this_dir_only
+		</td></tr>
+		";
+	}
+echo "</table>";
+?>

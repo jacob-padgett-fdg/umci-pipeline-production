@@ -1,0 +1,231 @@
+<?
+$today_mysql=date('Y-m-d');
+
+if($order_by!="") {
+	$order_by = escapeshellcmd($order_by . ',bid_date');
+	$order_by=ereg_replace(",.*$","",$order_by);
+	} else {
+	$order_by = 'bid_date';
+	}
+
+$traxx_main_menu_tab='main_bidlist';
+
+if ($status=="") $status="Active";
+
+if ($filter_contact != "") {
+	$filter_contact=escapeshellcmd($filter_contact);
+	$filter_contact_query=" and ( 
+	
+	to_lead = '$filter_contact' or 
+	to_plm = '$filter_contact' or 
+	to_htg = '$filter_contact' or 
+	to_metal = '$filter_contact' or 
+	to_proc = '$filter_contact' or 
+	to_prop = '$filter_contact'
+	) ";
+	} else {
+	$filter_contact_query="";
+	}
+
+
+if($status!="*") {
+	$status=escapeshellcmd($status);
+	$query="select * from bidlist where bid_date >= '$today_mysql' and status = '$status' and show_in_bidlist = 'Y' $filter_contact_query order by $order_by";
+	} else {
+	$query="select * from bidlist where bid_date >= '$today_mysql' and show_in_bidlist = 'Y' $filter_contact_query order by $order_by";
+	}
+
+
+//<a href=$pagename?mode=notifications><font color=blue>Notifications</font></a><br>
+
+
+require('header.phtml');
+require('main_selectbar.phtml');
+
+if ($adminuser) {
+	echo "<a href=$pagename?mode=notifications><font color=blue>Modify&nbsp;Notifications</font></a><br>";
+	echo "<a href=$pagename?mode=leads_users><font color=blue>Leads&nbsp;Users</font></a><br>";
+	}
+
+
+echo "
+
+<a target=_show_bidlist_pdf_win_ href=$pagename?mode=show_bidlist_pdf&test=blah/bidlist-current.pdf><font color=blue>Bidlist in PDF</font></a><p>
+
+<form name=status_type method=post action=$pagename>
+<input type=hidden name=mode value=main_bidlist>
+
+Status: <select name=status onchange=submit();>
+<option value=$status>$status</option>
+<option value='*'>All</option>
+<option value='Active'>Active</option>
+<option value='Completed'>Completed</option>
+<option value='No Bid'>No Bid</option>
+</select>
+
+Sort by: <select name=order_by onchange=submit();>
+	<option value='$order_by'>$order_by</option>
+	<option value='bidlist_id'>Bid ID</option>
+	<option value='bid_date'>Bid Date</option>
+	<option value='project'>Project</option>
+	<option value='location'>Location</option>
+	<option value='type'>Type</option>
+	<option value='bid_bond'>Bid Bond</option>
+	</select>
+
+Filter by: 
+";
+
+contactbox("select contacts_id as filter_contact,display_name from contacts where bidlist_takeoff_lists = 'Y' 
+order by last_name,first_name,employee_num","$filter_contact",
+"","submit()",1);
+
+echo "
+</form>
+
+<table cellspacing=0 cellpadding=2 border=1>
+<tr bgcolor=#dddddd><td rowspan=2>
+	Status
+</td><td rowspan=2>
+	Prop/Bid&nbsp;ID
+</td><td rowspan=2>
+	Bid Date
+</td><td rowspan=2>
+	Bid Time
+</td><td rowspan=2>
+	Project
+</td><td rowspan=2>
+	Location
+</td><td colspan=6 align=center>
+		Take-Off Assignments
+</td><td rowspan=2>
+	Type
+</td><td rowspan=2>
+	Comments
+</td><td rowspan=2>
+	Bid Bond
+</td></tr>
+
+<tr bgcolor=#dddddd><td>
+	LEAD
+</td><td>
+	PLM
+</td><td>
+	HTG
+</td><td>
+	METL
+</td><td>
+	PROC
+</td><td>
+	PROP
+</td></tr>
+
+";
+
+session_register('last_bidlist_query');
+$last_bidlist_query=$query;
+
+$bid_result->won=0;
+$bid_result->lost=0;
+$bid_result->total=0;
+$bid_result->unknown=0;
+
+
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$row->bid_date=invali_date($row->bid_date);
+	if (getoneb("select * from bidlist_results where bidlist_id = $row->bidlist_id and company = 968")) continue;
+
+	if ($row->bid_result=="won") $bid_result->won=$bid_result->won + 1;
+	if ($row->bid_result=="lost") $bid_result->lost=$bid_result->lost + 1;
+	if ($row->bid_result=="") $bid_result->unknown=$bid_result->unknown + 1;
+	$bid_result->total=$bid_result->total + 1;
+
+	if ($row->to_lead != 0) {
+		$initials=getone("select initials from contacts where contacts_id = '$row->to_lead'");
+		if ($initials->initials != "") $to_lead_initials=$initials->initials;
+		else $to_lead_initials='??';
+		} else $to_lead_initials="";
+
+	if ($row->to_plm != 0) {
+		$initials=getone("select initials from contacts where contacts_id = '$row->to_plm'");
+		if ($initials->initials != "") $to_plm_initials=$initials->initials;
+		else $to_plm_initials='??';
+		} else $to_plm_initials="";
+
+	if ($row->to_htg != 0) {
+		$initials=getone("select initials from contacts where contacts_id = '$row->to_htg'");
+		if ($initials->initials != "") $to_htg_initials=$initials->initials;
+		else $to_htg_initials='??';
+		} else $to_htg_initials="";
+	
+	if ($row->to_metal != 0) {
+		$initials=getone("select initials from contacts where contacts_id = '$row->to_metal'");
+		if ($initials->initials != "") $to_metal_initials=$initials->initials;
+		else $to_metal_initials='??';
+		} else $to_metal_initials="";
+
+	if ($row->to_proc != 0) {
+		$initials=getone("select initials from contacts where contacts_id = '$row->to_proc'");
+		if ($initials->initials != "") $to_proc_initials=$initials->initials;
+		else $to_proc_initials='??';
+		} else $to_proc_initials="";
+
+	if ($row->to_prop != 0) {
+		$initials=getone("select initials from contacts where contacts_id = '$row->to_prop'");
+		if ($initials->initials != "") $to_prop_initials=$initials->initials;
+		else $to_prop_initials='??';
+		} else $to_prop_initials="";
+	if (($row->status=="Active") || ($row->status=="active")){
+		$hl="<b>";
+		$hle="</b>";
+		} else {
+		$hl="";
+		$hle="";
+		}
+
+	if (($row->notified_recent=='Y')||($row->notified=='N')) $rowbgcolor="#ffffaa";
+	else $rowbgcolor="#ffffff";
+	$row->bid_time=timebreak($row->bid_time);
+	echo "<tr bgcolor=\"$rowbgcolor\"><td>
+			$hl$row->status$hle
+		</td><td>
+			<a href=$pagename?mode=proposal_edit&bidlist_id=$row->bidlist_id><font color=blue>$row->proposal_num</font></a>
+		</td><td>
+			$row->bid_date
+		</td><td>
+			$row->bid_time&nbsp;
+		</td><td>
+			$row->project
+		</td><td>
+			$row->location&nbsp;
+		</td><td>
+			$to_lead_initials&nbsp;	
+		</td><td>
+			$to_plm_initials&nbsp;
+		</td><td>
+			$to_htg_initials&nbsp;
+		</td><td>
+			$to_metal_initials&nbsp;
+		</td><td>
+			$to_proc_initials&nbsp;
+		</td><td>
+			$to_prop_initials&nbsp;
+		</td><td>
+			$row->type&nbsp;
+		</td><td>
+			$row->comments&nbsp;
+		</td><td>
+			$row->bid_bond
+		</td></tr>
+
+		";
+	}
+
+$won_percent=(@round(($bid_result->won / $bid_result->total) * 10000))/100;
+$lost_percent=(@round(($bid_result->lost / $bid_result->total) * 10000))/100;
+$unknown_percent=(@round(($bid_result->unknown / $bid_result->total) * 10000))/100;
+$total_percent=(@round(($bid_result->total / $bid_result->total) * 10000))/100;
+
+?>

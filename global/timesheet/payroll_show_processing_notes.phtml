@@ -1,0 +1,45 @@
+<?
+
+// Trade the comments on these lines to change the comment behavior for Clarice.
+$query="select * from timesheet_index left join timesheet_time using (timesheet_id) left join contacts on (timesheet_time.employee_id = contacts_id) where status = 'processing' and comments != '' and contacts.timesheet_payroll_sequence_num = ' $payroll_seq' order by alphasort, timesheet_time_id";
+//$query="select * from timesheet_index left join timesheet_time using (timesheet_id) left join contacts on (timesheet_time.employee_id = contacts_id) where status = 'processing' and comments != '' and (earnings_code = '1' or earnings_code = '2' or earnings_code = '3' or earnings_code = '6') and contacts.timesheet_payroll_sequence_num = ' $payroll_seq' order by alphasort, timesheet_time_id";
+
+
+
+//$query="select * from timesheet_index left join timesheet_time using (timesheet_id) left join contacts on (timesheet_time.employee_id = contacts_id) where status = 'processing' and comments != '' and (earnings_code = '1' or earnings_code = '2' or earnings_code = '3' or earnings_code = '6') and timesheet_index.employee_group = ' $current_employee_group' order by alphasort, timesheet_time_id";
+//tabledump ($query);
+
+$last_id=0;
+$res=@mysql_query($query);
+
+echo "<table border=1 cellspacing=0 cellpadding=4>";
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->employee_id != $last_id) {
+		echo "<tr bgcolor=#eeeeee><td colspan=7 align=center>
+				<font size=+1><b>$row->display_name (Emp # $row->employee_num)</b></font>
+			</td></tr>";
+		}
+	$last_id=$row->employee_id;
+	$date=invali_date($row->workday);
+	$enter_info=getone("select * from contacts where contacts_id = '$row->creator'");
+	echo "<tr><td>
+			$date
+		</td><td>
+			Job #: $row->job_num
+		</td><td>
+			Phase: $row->phase
+		</td><td>
+			EC: $row->earnings_code
+		</td><td>
+			Hrs: $row->hours
+		</td><td>
+			$row->comments
+		</td><td>
+			$enter_info->login_name
+		</td></tr>";
+	}
+
+echo "</table>";
+
+
+?>

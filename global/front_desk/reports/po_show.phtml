@@ -1,0 +1,497 @@
+<?
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require("report_lib.inc");
+require_once('classes/Authorization/AccessControl.php');
+use classes\Authorization\AccessControl;
+$report_name="po_lookup";
+//fd_navs_header();
+$po_status_list=array('0'=>'Open','1'=>'Complete','2'=>'Closed','3'=>'Pending');
+$po_number=addslashes($po_number);
+$orig_return_to_url=$return_to_url;
+$return_to_url=base64_decode($return_to_url);
+
+
+
+/*
+$job=get_vp_contract_num();
+$overhead_job=(!(ereg('^[1-9]',$job)));
+if ($overhead_job) {
+if (!((pm_for_this_job())||(member_of_global_group_named("IT")||(member_of_global_group_named("Purchasing"))))) {
+		echo "Overhead Jobs Restricted";
+		fd_navs_footer();
+		exit();
+		}
+	}
+*/
+
+
+
+$vp_po_info_query="select *,POHD.Job as main_job,convert(varchar(38),POHD.UniqueAttchID) as FDAttachID from POHD with (NOLOCK) left join APVM with (NOLOCK) on POHD.VendorGroup = APVM.VendorGroup and POHD.Vendor = APVM.Vendor where POHD.POCo = 1 and POHD.PO = '$po_number'";
+//$vp_po_info=ms_getoneb("select *,POHD.Job as main_job,convert(varchar(38),POHD.UniqueAttchID) as FDAttachID from POHD left join APVM on POHD.VendorGroup = APVM.VendorGroup and POHD.Vendor = APVM.Vendor where POHD.POCo = 1 and POHD.PO = '$po_number'");
+$vp_po_info=ms_getoneb($vp_po_info_query);
+//echo "<hr>$vp_po_info_query<hr>";
+//echo "<pre>";
+//print_r ($vp_po_info);
+//echo "</pre>";
+if ($vp_po_info->OrderDate!="") $vp_po_info->OrderDate=date('m/d/y',strtotime($vp_po_info->OrderDate));
+if ($vp_po_info->ExpDate!="") $vp_po_info->ExpDate=date('m/d/y',strtotime($vp_po_info->ExpDate));
+
+//$po_link=vp_attachment_download_link($vp_po_info->UniqueAttchID);
+//die($vp_po_info->FDAttachID);
+$po_link=vp_attachment_download_link($vp_po_info->FDAttachID);
+
+
+
+
+if ($po_link) $po_link="PO Image (viewpoint): $po_link<br>";
+$po_status=$po_status_list[$vp_po_info->Status];
+
+$actual_job=$vp_po_info->main_job;
+$output_var="";
+
+$this_job_po_summary="select 
+	POHD.PO,
+	sum(POIT.OrigCost + POIT.OrigTax) as OrigCostSum,
+	sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum,
+	sum(POIT.InvCost + POIT.InvTax) as InvCostSum, 
+	sum(POIT.RemCost + POIT.RemTax) as RemCostSum 
+	from POHD with (NOLOCK) 
+	left join POIT with (NOLOCK) on POHD.PO = POIT.PO and POIT.POCo = 1 
+	where 
+	POIT.PO = '$po_number' and 
+	POHD.POCo = 1 and 
+	POIT.Job like '0$global_jobinfo->contract_num%' 
+	
+	group by POHD.PO order by LEN(POHD.PO) desc ,POHD.PO desc";
+$entire_po_summary="select 
+	POHD.PO,
+	sum(POIT.OrigCost + POIT.OrigTax) as OrigCostSum,
+	sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum,
+	sum(POIT.InvCost + POIT.InvTax) as InvCostSum, 
+	sum(POIT.RemCost + POIT.RemTax) as RemCostSum 
+	from POHD with (NOLOCK) 
+	left join POIT with (NOLOCK) on POHD.PO = POIT.PO and POIT.POCo = 1 
+	where 
+	POIT.PO = '$po_number' and 
+	POHD.POCo = 1
+	
+	group by POHD.PO order by LEN(POHD.PO) desc ,POHD.PO desc";
+$job_totals=ms_getoneb($this_job_po_summary);
+//ms_tabledump($entire_po_summary);
+$po_totals=ms_getoneb($entire_po_summary);
+
+
+$update_history_res=po_history_update($vp_po_info->PO,$po_totals->TotalCostSum);
+$update_history_res=po_history_update($vp_po_info->PO,$job_totals->TotalCostSum);
+
+
+
+$next_unreviewed_button="";
+if (eregi("mode=my_home",$return_to_url)) {
+	//tabledump("select * from jobinfo where project_manager_id = '$global_user_id' and active = 'Y' order by contract_num");
+	//$job_list=@mysql_query("select * from jobinfo where project_manager_id = '$global_user_id' and active = 'Y' order by contract_num");
+	$job_list=@mysql_query(pm_list_my_jobs_query());
+	 while ($jobrow=@mysql_fetch_object($job_list)) {
+	 	 //die("hello2");
+	 	 $unviewed_po_query="
+	 	 	select
+	 	 	polist.PO,polist.TotalCostSum,Vendor
+	 	 	from (
+	 	 		select POHD.PO as PO,POHD.Vendor as Vendor,
+	 	 		sum(POIT.TotalCost + POIT.TotalTax) as TotalCostSum
+	 	 		from POHD with (NOLOCK)
+	 	 		left join POIT with (NOLOCK) on POHD.PO = POIT.PO and POIT.POCo = 1
+				where POIT.Job like '0$jobrow->contract_num%' and POHD.POCo = 1
+				group by POHD.PO,Vendor ) 
+			polist
+			left join zz_umc_fd_po_review_history with (NOLOCK) on 
+			polist.PO = zz_umc_fd_po_review_history.PO and 
+			polist.TotalCostSum = zz_umc_fd_po_review_history.last_amount and
+			zz_umc_fd_po_review_history.Employee = '$global_user->employee_num'
+			where po_hist_id is null";
+			//ms_tabledump($unviewd_po_query);
+			$vpres=@mssql_query($unviewed_po_query);
+			$po=mssql_fetch_object($vpres);
+			if ($po) {
+				//echo "<p>HELLO THERE<p><p>HELLO THERE<p><p>HELLO THERE<p><p>HELLO THERE<p><p>HELLO THERE<p>";
+				$next_unreviewed_button="<a href=/global$devel/front_desk$devel/?mode=report_show&report_name=po_show&global_jobinfo_id_set=$jobrow->jobinfo_id&return_to_url=${orig_return_to_url}&po_number=$po->PO><font color=blue>Next Unread PO <i>($po->PO)</i></font></a>";
+				break;
+				}
+	 	}
+	}
+$output_var=$output_var . "
+<table border=0 cellspacing=0 cellpadding=0 width=50%>
+<tr><td>
+<a href=$return_to_url><font color=blue>Back to Search</font></a>
+</td><td>
+$next_unreviewed_button
+</td><td></table>
+$po_link
+";
+
+
+$output_var=$output_var . "<table border=0 cellspacing=0 cellpadding=0><tr><td>";
+
+
+if ($note_text_add!="") {
+	$note_text_add=addslashes($note_text_add);
+	@mysql_query("insert into front_desk_po_attachments set notes = '$note_text_add', note_creator = '$global_user_id', po_number = '$po_number'");
+	}
+
+
+
+$has_attachments=getoneb("select * from front_desk_po_attachments where po_number = '$vp_po_info->PO' limit 1");
+if ($has_attachments) {
+$output_var=$output_var . "<table border=1 cellspacing=0 cellpadding=4>
+<tr bgcolor=$fd_color_4><td align=center><b><font size=+1>Additional Front Desk Attachments & Notes</font></b></td></tr>";
+$attachres=@mysql_query("select * from front_desk_po_attachments where po_number = '$vp_po_info->PO'");
+$attach_count=0;
+$dc=$fd_color_3;
+
+while ($attach_item=@mysql_fetch_object($attachres)) {
+	$attach_count++;
+	$file_paperclip=webfile_paperclip_view($attach_item->file_groups_id,"&nbsp;");
+	
+	
+	if ($attach_item->file_groups_id>0) {
+		$output_var=$output_var . "
+		<tr><td bgcolor=$dc>
+			Attached Document # $attach_count:&nbsp;&nbsp;&nbsp;&nbsp;$file_paperclip
+		</td></tr>
+		<tr><td></td></tr>
+		";
+		}
+		
+	if ($attach_item->notes!="") {
+		$note_creator=getoneb("select * from contacts where contacts_id = '$attach_item->note_creator'");
+		$output_var=$output_var . "
+		
+		<tr><td bgcolor=$dc>
+			<div style=\"width: 100%;\"><div style=\"float: right;\"><i>$attach_item->created</i></div><i>Note&nbsp;by&nbsp;$note_creator->display_name&nbsp;($attach_item->note_creator)</i></div>
+			<div style=\"background: white; border: 1px solid black;\"><pre>$attach_item->notes</pre></div>
+		</td></tr>
+		<tr><td></td></tr>
+		";
+		}
+		
+	
+	
+	
+	}
+$output_var=$output_var . "</table>";
+}
+
+
+$output_var=$output_var . "
+</td><td>&nbsp;&nbsp;&nbsp;
+</td><td valign=top align=center>
+	<div width=100% style=\"border: 1px solid black; background: $fd_color_4;\"><b>Add Note</b></div>
+	<form name=po_add_note method=get action=$pagename>
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=po_show>
+	<input type=hidden name=return_to_url value=\"$orig_return_to_url\">
+	<input type=hidden name=po_number value=\"$po_number\">
+	<textarea name=note_text_add rows=4 cols=30></textarea><br>
+	<input type=submit value=Add>
+	</form>
+</td></tr></table>";
+
+
+
+$output_var=$output_var . "
+<table border=0 cellspacing=0 cellpadding=5 style=\"border: 2px solid black;\">
+
+<tr bgcolor=$fd_color_4><td>
+	<b>To</b>
+</td><td>
+	$vp_po_info->Name
+</td><td align=right>
+	<b>PO&nbsp;Number</b>
+</td><td>
+	$po_number
+</td></tr>
+
+<tr bgcolor=$fd_color_4><td>
+	<b>Phone</b>
+</td><td>
+	$vp_po_info->Phone
+</td><td align=right>
+	<b>Status</b>
+</td><td>
+	$po_status
+</td></tr>
+
+<tr bgcolor=$fd_color_4><td>
+	<b>Order Date</b>
+</td><td>
+	$vp_po_info->OrderDate
+</td><td align=right>
+	<b>Expected</b>
+</td><td>
+	$vp_po_info->ExpDate
+</td></tr>
+
+<tr bgcolor=$fd_color_4><td>
+	<b>Ordered by</b>
+</td><td>
+	$vp_po_info->OrderedBy
+</td><td align=right>
+	<b>Requested by</b>
+</td><td>
+	$vp_po_info->udrequisitioner
+</td></tr>
+
+
+
+<tr><td colspan=4>
+";
+
+$output_var=$output_var . "
+<table border=1 cellspacing=0 cellpadding=4>
+<tr bgcolor=$fd_color_1><td>
+	Item
+</td><td>
+	Job
+</td><td>
+	Description
+</td><td>
+	Qty
+</td><td>
+	UM
+</td><td>
+	Cost
+</td><td>
+	Total Cost
+</td><td>
+	TX
+</td><td>
+	Phase
+</td><td>
+	Date&nbsp;Reqd
+</td></tr>
+";
+
+$res=@mssql_query("select * from POIT with (NOLOCK) where POCo = 1 and PO = '$po_number' order by POItem");
+
+
+while ($row=@mssql_fetch_object($res)) {
+	if ($actual_job=="") $actual_job=$row->Job;
+	if (($actual_job!="")&&($actual_job!=$row->Job)) {
+		//echo "$actual_job/$row->Job<hr>";
+		$po_job_contents="mixed";
+		}
+	if ($vp_po_info->main_job!=$row->Job) $jobcolor="#aa0000";
+	if ($row->ReqDate!="") $required_date=date('m/d/y',strtotime($row->ReqDate));
+	$row->Phase=eregi_replace('[ -]*$','',$row->Phase);
+	$row->Job=eregi_replace('[ -]*$','',$row->Job);
+	$total_cost=round($row->TotalCost,2);
+	
+	$output_var=$output_var . "
+		<tr><td>
+			$row->POItem
+		</td><td>
+			<font color=$jobcolor>$row->Job</font>
+		</td><td>
+			$row->Description
+		</td><td>
+			$row->OrigUnits\\$row->RecvdUnits
+		</td><td>
+			$row->UM
+		</td><td>
+			" . format_long_decimal($row->CurUnitCost,2) . "
+		</td><td>
+			" . format_long_decimal($total_cost,2) . "
+		</td><td>
+			$row->TaxType
+		</td><td>
+			$row->Phase
+		</td><td>
+			$required_date
+		</td></tr>";
+	}
+
+$output_var=$output_var . "
+</table>
+</td></tr>
+
+<tr><td colspan=4>
+<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=$fd_color_4><td colspan=3 align=center><b>Totals</b></td></tr>
+
+<tr bgcolor=$fd_color_1><td>
+	&nbsp;
+</td><td>
+	PO
+</td><td>
+	$global_jobinfo->contract_num
+</td></tr>
+
+<tr><td bgcolor=$fd_color_1>
+	<i>Orig Cost</i>
+</td><td>
+	" . format_long_decimal($po_totals->OrigCostSum,2) . "
+</td><td>
+	" . format_long_decimal($job_totals->OrigCostSum,2) . "
+</td></tr>
+
+<tr><td bgcolor=$fd_color_1>
+	<i>Inv Cost</i>
+</td><td>
+	" . format_long_decimal($po_totals->InvCostSum,2) . "
+</td><td>
+	" . format_long_decimal($job_totals->InvCostSum,2) . "
+</td></tr>
+
+<tr><td bgcolor=$fd_color_1>
+	<i>Rem Cost</i>
+</td><td>
+	" . format_long_decimal($po_totals->RemCostSum,2) . "
+</td><td>
+	" . format_long_decimal($job_totals->RemCostSum,2) . "
+</td></tr>
+</table>
+	
+
+
+</table>
+
+";
+
+$vp_po_info_query="select *,POHD.Job as main_job,convert(varchar(38),POHD.UniqueAttchID) as FDAttachID from POHD with (NOLOCK) left join APVM with (NOLOCK) on POHD.VendorGroup = APVM.VendorGroup and POHD.Vendor = APVM.Vendor where POHD.POCo = 1 and POHD.PO = '$po_number'";
+$res=@mssql_query("select convert(varchar(38),APTH.UniqueAttchID) as UniqueAttchID,APTH.Vendor,APTH.APRef,APTH.InvDate,APTH.Description,APTH.InvTotal from APTH
+right join APTD with (NOLOCK) on 
+	(
+	APTH.APCo = APTD.APCo and 
+	APTH.Mth = APTD.Mth and 
+	APTH.APTrans = APTD.APTrans
+	)
+right join APTL with (NOLOCK) on 
+	(
+	APTL.APCo = APTD.APCo and 
+	APTL.Mth = APTD.Mth and 
+	APTL.APTrans = APTD.APTrans and 
+	APTL.APLine = APTD.APLine
+	)
+	
+where 
+
+APTH.APCo = 1 and
+APTL.PO = '$vp_po_info->PO'
+group by APTH.UniqueAttchID,APTH.Vendor,APTH.APRef,APTH.InvDate,APTH.Description,APTH.InvTotal
+order by APTH.InvDate desc,APTH.APRef desc, APTH.UniqueAttchID
+
+");
+
+$output_var=$output_var . "
+<table border=1 cellspacing=0 cellpadding=4>
+<tr bgcolor=$fd_color_4><td>
+	<b>#</b>
+</td><td>
+	<b>Vendor</b>
+</td><td>
+	<b>Invoice/Ref</b>
+</td><td>
+	<b>Invoice&nbsp;Date</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	<b>Inv Total</b>
+</td><td>
+	<b>Img</b>
+</td></tr>
+";
+
+$count=1;
+while($row=@mssql_fetch_object($res)) {
+	//if ($row->UniqueAttchID!=$last_attach_id) 
+	$link=vp_attachment_download_link($row->UniqueAttchID);
+	//else $link="";
+	$row->InvDate_pretty=date('m/d/Y',strtotime($row->InvDate));
+	$output_var=$output_var . "
+		<tr><td>
+			$count
+		</td><td>
+			$row->Vendor
+		</td><td>
+			$row->APRef
+		</td><td>
+			$row->InvDate_pretty
+		</td><td>
+			$row->Description
+		</td><td>
+			$row->InvTotal
+		</td><td>
+			$link
+		</td></tr>";
+	$count++;
+	//$last_attach_id=$row->UniqueAttchID;
+	}	
+$output_var=$output_var . "</table>";
+//fd_navs_footer();
+
+//echo "<hr>$po_job_contents<hr>";
+$overhead_job=(!(ereg('^[0-9]',$actual_job)));
+$overhead_job_info=getoneb("select * from jobinfo where contract_num like '" . ereg_replace("[- ]*\$","",$actual_job) . "%'");
+//tabledump("select * from jobinfo where contract_num like '" . ereg_replace("[- ]*\$","",$overhead_job) . "%'");
+//echo "$overhead_job_id<hr>";
+if ($po_job_contents!="mixed") {
+	if ($overhead_job) {
+	if (!((pm_for_this_job($overhead_job_info->jobinfo_id))||(member_of_global_group_named("IT")||(member_of_global_group_named("Purchasing"))))) {
+			echo "Overhead Jobs Restricted";
+			fd_navs_footer();
+			exit();
+			}
+		}
+	}
+echo $output_var;
+
+
+if (member_of_global_group_named("IT")) {
+
+echo "Review History:<hr>";
+//ms_tabledump("select * from zz_umc_fd_po_review_history where PO = '$vp_po_info->PO' order by last_reviewed desc,first_reviewed desc");
+$res=@mssql_query("select * from zz_umc_fd_po_review_history with (NOLOCK) where PO = '$vp_po_info->PO' order by last_reviewed desc,first_reviewed desc");
+echo "<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=$fd_color_4><td colspan=5>
+	<b>PO Review History</b>
+</td></tr>
+
+<tr><td>
+	Last Amt
+</td><td>
+	Employee
+</td><td>
+	First View
+</td><td>
+	Last View
+</td></tr>
+";
+while ($row=@mssql_fetch_object($res)) {
+	$emp=getoneb("select * from contacts where employee_num = '$row->Employee'");
+	//$proxy=getoneb("select * from contacts where employee_num = '$row->proxying_Employee'");
+	if ($emp->contacts_id <= 2) continue;
+	if ($row->last_amount < 1) continue;
+	
+	echo "
+	<tr><td>
+		$row->last_amount&nbsp;
+	</td><td>
+		$emp->display_name&nbsp;
+	</td><td>
+		$proxy->first_reviewed&nbsp;
+	</td><td>
+		$proxy->last_reviewed&nbsp;
+	</td></tr>
+	";
+	
+	}
+echo "</table>";
+
+
+
+
+
+}
+?>

@@ -1,0 +1,31 @@
+<?
+if ($hr_openings_id!="") {
+	$hr_openings_id=addslashes($hr_openings_id);
+	$opening_info=getone("select * from hr_openings where hr_openings_id = '$hr_openings_id'");
+	}
+
+if (($application_id=="")&&($application_id_session!="")) $application_id=$application_id_session;
+
+if ($application_id!="") {
+	$application_id=addslashes($application_id);
+	$application_info=getone("select * from hr_applications where application_id = '$application_id'");
+	}
+
+if ($last_app_mode=="") {
+	session_register('last_app_mode');
+	$last_app_mode='employment_history';
+	}
+
+if ($app_mode_new!="") {
+	$last_app_mode=addslashes($app_mode_new);
+	}
+
+echo "
+<form name=application_edit method=post action=$pagename>
+<input type=hidden name=mode value=application_edit_${last_app_mode}_submit>
+<input type=hidden name=application_id value=\"$application_id\">
+<input type=hidden name=hr_openings_id value=\"$hr_openings_id\">
+<input type=hidden name=target_app_mode value=\"$last_app_mode\">
+";
+
+?>

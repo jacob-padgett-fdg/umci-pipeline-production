@@ -1,0 +1,12 @@
+<?
+//require('querylib.inc');
+require("../front_desk/mh_lib.inc");
+require("header.phtml");
+mh_navs_header();
+//require('header2.phtml');
+echo "<a href=$pagename?mode=main><font color=blue>Contacts Main Menu</font></a>";
+$query="select * from contacts order by alphasort";
+contact_table($query);
+mh_navs_footer();
+//require('footer.phtml');
+?>

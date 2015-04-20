@@ -1,0 +1,27 @@
+<?
+fd_navs_header();
+
+/*
+echo "location = " . $weather_data["location"] . "<br>";
+echo "condition = " . $weather_data["condition"] . "<br>";
+echo "temp = " . $weather_data["temperature"] . "<br>";
+echo "humidity = " . $weather_data["humidity"] . "<br>";
+echo "visibility = ".$weather_data["visibility"] . "<br>";
+echo "pressure = ".$weather_data["pressure"] . "<br>";
+echo "dewpoint = " . $weather_data["dewpoint"] . "<br>";
+echo "heat index = " . $weather_data["heat_index"] . "<br>";
+echo "wind = " . $weather_data["wind"] . "<br>";
+echo "wind dir = " . $weather_data["wind_dir"] . "<br>";
+echo "wind speed = " . $weather_data["wind_mph"] . "<br>";
+echo "wind gusts = " . $weather_data["wind_gust_mph"] . "<br>";
+echo "wind chill = " . $weather_data["windchill"] . "<br>";
+echo "reported at = " . $weather_data["time"] . "<br>";
+echo "</p>";
+echo "</body></html>";
+*/
+
+$jobinfo=check_weather_data($global_jobinfo);
+echo "$jobinfo->weather_temperature<hr>";
+
+fd_navs_footer();
+?>

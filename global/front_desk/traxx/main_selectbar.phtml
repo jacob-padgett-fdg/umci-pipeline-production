@@ -1,0 +1,175 @@
+<?
+if ($mode=="main") $mode="main_bids";
+
+$main_bids_link="Proposals/Bids";
+$main_bids_color="#ffffff";
+
+$main_leads_link="Lead Tracking";
+$main_leads_color="#ffffff";
+
+$main_bidlist_link="Bidlist";
+$main_bidlist_color="#ffffff";
+
+$main_joblist_link="Joblist";
+$main_joblist_color="#ffffff";
+
+
+
+if ($mode!="main_bids") {
+	$main_bids_link="<a href=$pagename?mode=main_bids><font color=blue>$main_bids_link</font></a>";
+	$main_bids_color="#dddddd";
+	}
+if ($mode!="main_leads") {
+	$main_leads_link="<a href=$pagename?mode=main_leads><font color=blue>$main_leads_link</font></a>";
+	$main_leads_color="#dddddd";
+	}
+if ($mode!="main_bidlist") {
+	$main_bidlist_link="<a href=$pagename?mode=main_bidlist><font color=blue>$main_bidlist_link</font></a>";
+	$main_bidlist_color="#dddddd";
+	}
+if ($mode!="main_joblist") {
+	$main_joblist_link="<a href=$pagename?mode=main_joblist><font color=blue>$main_joblist_link</font></a>";
+	$main_joblist_color="#dddddd";
+	}
+
+
+
+echo "
+
+<script>
+
+function testing(e) {
+	//alert (document.text_field_focus);
+	if (document.text_field_focus=='1') return true;
+	if(typeof e == 'undefined') {
+  		e = event;
+    	}
+	var nav4 = window.Event ? true : false;
+	if ((typeof e.ctrlKey != 'undefined') ? e.ctrlKey : e.modifiers & Event.CONTROL_MASK > 0) {
+		return true;
+		}
+	
+	//if (e.which > 0) alert(e.which);
+	
+	if (e.which == 114 ) {
+		document.location.reload();
+		cancelEvent(e);
+		}
+	
+	if (e.which == 110 ) {
+		confirm_new_proposal();
+		cancelEvent(e);
+		}
+
+	if (e.which == 108 ) {
+		document.location=\"$pagename?mode=main_leads\";
+		cancelEvent(e);
+		}
+	
+	if (e.which == 98 ) {
+		document.location=\"$pagename?mode=main_bidlist\";
+		cancelEvent(e);
+		}
+	
+	if (e.which == 112 ) {
+		document.location=\"$pagename?mode=main_bids\";
+		cancelEvent(e);
+		}
+
+	if (e.which == 106 ) {
+		document.location=\"$pagename?mode=main_joblist\";
+		cancelEvent(e);
+		}
+	
+	if (e.keyCode == 27 ) {
+		document.location=\"$pagename_up\";
+		cancelEvent(e);
+		}	
+
+	//return false;
+	}
+
+function cancelEvent(event) {
+	if (event.preventDefault) {
+		event.preventDefault();
+		event.stopPropagation();
+	} else {
+		event.returnValue = false;
+	}
+}
+
+function init() {
+  if( document.captureEvents && Event.KEYPRESS ) {
+    	document.captureEvents( Event.KEYPRESS );
+    	}
+	document.onkeypress=testing;
+    }
+
+init();
+</script>
+
+
+
+
+<table border=0 cellspacing=0 cellpadding=0>
+<tr><td>
+	<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td bgcolor=#dddddd>
+	<a href=$pagename_up><font color=blue>Exit</font></a><br>
+	</td></tr>
+	</table>
+</td><td>
+	&nbsp;
+</td><td bgcolor=$main_bidlist_color>
+	<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td bgcolor=$main_bidlist_color>
+		$main_bidlist_link
+	</td></tr>
+	</table>
+</td><td>";
+
+if (getoneb("select * from bidlist_leads_users where contacts_id = '$global_user_id'")) {
+
+
+	echo "
+		&nbsp;
+	</td><td>
+		<table border=1 cellspacing=0 cellpadding=3>
+		<tr><td bgcolor=$main_leads_color>
+			$main_leads_link
+		</td></tr>
+		</table>
+	</td><td>";
+
+}
+
+echo "
+	&nbsp;
+</td><td>
+	<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td bgcolor=$main_bids_color>
+		$main_bids_link
+	</td></tr>
+	</table>
+</td><td>
+	&nbsp;
+</td><td>
+	<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td bgcolor=$main_joblist_color>
+		$main_joblist_link
+	</td></tr>
+	</table>
+</td><td>
+	<table border=1 cellspacing=0 cellpadding=3>
+	<tr><td bgcolor=#dddddd>
+		<a href=/global/front_desk$devel/><font color=blue>Front Desk</font></a>
+	</td></tr>
+	</table>
+</td></td>
+
+</table>
+";		
+?>
+
+
+

@@ -1,0 +1,64 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+
+
+switch ($global_user_id) {
+	case "2":
+	case "17":
+	case "158":
+	case "1":
+				$labor_report=1;
+				break;;
+	
+	default: 	$labor_report=0;
+				break;;		
+	}
+
+
+if ($labor_report>0) {
+	echo "<a href=$pagename?mode=labor_report><font color=blue>Labor_report</font></a><br>";
+	
+	}
+
+echo "
+<script>
+toggle_news_text(news_id) {
+	}
+
+
+</script>
+
+<div style=\"float: right; width: 40px;\">&nbsp;</div>
+<div style=\"float: right; text-align: center; border: 1px solid black; padding: 10px;\">
+<font size=+1><b>Front Desk News</b></font>
+<table width=400px border=0 cellspacing=0 cellpadding=5>
+";
+//tabledump("select * from front_desk_news order by date_added desc, news_id desc limit 15");
+$newsres=@mysql_query("select * from front_desk_news order by date_added desc, news_id desc limit 15");
+while ($newsrow=@mysql_fetch_object($newsres)) {
+	$pb_info=getoneb("select * from contacts where contacts_id = '$newsrow->creator_id'");
+	$date=invali_date($newsrow->date_added,'/');
+	echo "<tr><td colspan=3 bgcolor=$fd_color_1 align=center><div style=\"float: left;\">$date</div><div style=\"float: right;\"><i>$pb_info->first_name&nbsp;$pb_info->last_name</i></div><b>$newsrow->news_subject</td></tr>
+	<tr><td style=\"text-align: left; line-height: 1;\"  valign=top colspan=3>
+		<font size=-1>$newsrow->news_text</font>
+	</td></tr>
+	";
+	}
+echo "
+</table>
+</div>
+
+
+
+<p><a href=/global/timesheet/><font color=blue>Timesheet</font></a>
+
+
+
+";
+
+
+mh_navs_footer();
+
+?>

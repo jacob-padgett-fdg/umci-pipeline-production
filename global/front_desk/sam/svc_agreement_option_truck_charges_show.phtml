@@ -1,0 +1,29 @@
+<?
+require("svc_agreement_option_add_truck_charges.phtml");
+
+//echo "<table border=1 cellpadding=2 cellspacing=0 width=90%><tr bgcolor=#eeeeee><td width=5%>&nbsp;</td><td width=100%><b>Truck Charges</b></td></tr></table>";
+$query="select * from svc_agreement_additional_options where agreement_id = '$agreement_info->agreement_id' and option_type = 'truck_charges' order by agreement_options_id";
+
+$res=@mysql_query($query);
+$count=@mysql_num_rows($res);
+if ($count != 1) die ("ERROR: Failure to properly calculate truck charges! Please contact your system administrator!");
+$row=@mysql_fetch_object($res);
+
+
+//$mandatory_options=$mandatory_options + $row->cost;
+$truck_charges=$row->cost;
+
+//echo "<table border=1 cellspacing=0 cellpadding=5><tr><td><b>Description</b></td><td><b>Cost</b></td><td><b>Markup</b></td></tr>";
+//while ($row=@mysql_fetch_object($res)) {
+//	echo "<tr><td>
+//			$row->option_description
+//		</td><td>
+//			$row->cost
+//		</td><td>
+//			$row->markup
+//		</td></tr>";
+//	}
+//echo "</table>";
+
+
+?>

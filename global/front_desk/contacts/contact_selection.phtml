@@ -1,0 +1,13 @@
+<?
+require('settings.cfg');
+$auth_object->require_employee='N';
+require('global-auth.inc');
+
+session_name("global");
+session_start();
+
+// GPH MARK - absolute path
+include("/data/web/pipeline/global/contacts${devel}/contact_selection_show.phtml");
+
+exit;
+?>

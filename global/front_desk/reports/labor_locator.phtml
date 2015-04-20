@@ -1,0 +1,211 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+
+if ($week_ending!="") {
+	$week_info=date_info($week_ending);
+	$we_date=$week_info->week_end;
+	//$we_date=invali_date(vali_date($week_ending, '-'),'/');
+	} else {
+	$we_date=date('m/d/Y',strtotime('last saturday'));
+	}
+
+
+echo "<form name=labor_report method=get action=$pagename>
+<input type=hidden name=mode value=report_show>
+<input type=hidden name=report_name value=\"labor_locator\">
+For the Week Ending: ";datebox("$we_date","labor_report.week_ending",'','document.labor_report.submit()');echo"
+</form>
+";
+
+// Check if it's closed yet using prpc
+$payroll_closed=ms_getoneb("select * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = $employee_group and PREndDate = '$we_date' and Status = 1");
+
+if (!($payroll_closed)) {
+	echo "<h3><font color=red>Warning! It looks like payroll for this week is still open and subject to change!!!!</font></h3>";
+	}
+
+// Cycle through the list of whatever viewpoint has for the week...
+$query="select Employee,sum(Hours) as JobHours, Job from PRTH with (NOLOCK) where (PREndDate = '$we_date') and 
+		(Job is not null) and (PRCo =1) and Hours > 0
+		group by Employee,Job
+		order by Employee,sum(Hours) desc";
+                
+$we_date_mysql=vali_date($we_date);
+@mysql_query("delete from vp_locator_cache where week_ending = '$we_date_mysql'");
+$last_emp='0';
+$res=@mssql_query($query);
+while ($row=@mssql_fetch_object($res)) {
+	if ($last_emp==$row->Employee) continue;
+	$emp_info=getoneb("select * from contacts where employee_num = '$row->Employee'");
+	$last_emp=$row->Employee;
+	$job=substr($row->Job,0,5);
+	$hours=round($row->JobHours);
+	$craft=$emp_info->employee_trade;
+	$class_text=$emp_info->employee_class;
+	$insres=@mysql_query("insert into vp_locator_cache set
+					employee_num = '$row->Employee',
+					hours = '$hours',
+					job = '$job',
+					week_ending = '$we_date_mysql',
+					craft_text = '$craft', 
+					class_text = '$class_text'");
+	if (!($insres)) die("foo inserting data");
+	}
+
+
+$department_totals=array();
+$craft_totals=array();
+$class_totals=array();
+$grand_total=0;
+$lastjob="";
+$lastcraft="";
+$lastclass="";
+$html_out="";
+$html_out=$html_out . "<table border=0 cellspacing=0 cellpadding=2 style=\"border: 1px solid black;\">";
+$query="select * from vp_locator_cache left join contacts on (vp_locator_cache.employee_num = contacts.employee_num) where employee_group = $employee_group and week_ending = '$we_date_mysql' order by job,craft_text,class_text,alphasort";
+//tabledump($query); die();
+//tabledump($query);
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	if ($lastjob!=$row->job) {
+		$job_cleaned=ereg_replace("-.*$","",$row->job);
+		$contract_info=ms_getoneb("select top 1 * from JCCM with (NOLOCK) where JCCo = 1 and Contract like '$job_cleaned%'");
+		$dept=$contract_info->Department;
+		if ($dept[2]==1) $dept=$dept - 1;
+		$contract_info->Department=$dept;
+		$contract_info->Department=$contract_info->Department + 1;
+		//$department_totals[$contract_info->Department]=$department_totals[$contract_info->Department] + 1;
+		//ms_tabledump("select top 1 * from JCCM where JCCo = 1 and Contract like '$job_cleaned'");
+		//echo ("<hr>select top 1 * from JCCM where JCCo = 1 and Contract like '$job_cleaned'<hr>");
+		$contract_num=$row->job + 1;
+		$contract_num=$contract_num - 1;
+		$lastcraft="";
+		$lastclass="";
+		$jobinfo=getoneb("select * from jobinfo where contract_num = '$contract_num'");
+		if ($jobinfo->display_name=="") $jobinfo->display_name = $jobinfo->job_name;
+		
+		$job_head_count=getoneb("select sum(1) as total from vp_locator_cache left join contacts on (vp_locator_cache.employee_num = contacts.employee_num) where employee_group = $employee_group and week_ending = '$we_date_mysql' and job = '$row->job'");
+
+		
+		$html_out=$html_out . "<tr bgcolor=$fd_color_4><td style=\"border: 1px solid black;\" colspan=5 align=center>$row->job - $jobinfo->display_name ($job_head_count->total) (Dept: $contract_info->Department)</td></tr>";
+		$lastjob=$row->job;
+		}
+	if ($row->craft_text!=$lastcraft) {
+		$craft_count=getoneb("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and craft_text = '$row->craft_text'");
+		//tabledump("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and craft_text = '$row->craft_text'");
+		$lastcraft=$row->craft_text;
+		$lastclass="";
+		$html_out=$html_out . "<tr><td><b>$row->craft_text ($craft_count->total):</b>&nbsp;";
+		}
+	if ($row->class_text!=$lastclass) {
+		$lastclass=$row->class_text;
+		$html_out=$html_out . "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>$row->class_text:</b> ";
+		}
+	$html_out=$html_out . "&nbsp;$row->first_name $row->last_name,";
+
+	if ($contract_info->Department=="")$contract_info->Department="FOOBAR";
+	$department_totals[$contract_info->Department]=$department_totals[$contract_info->Department] + 1;
+	if ($row->class_text=="") $row->class_text="FUBAR";
+	$class_totals[$row->class_text]=$class_totals[$row->class_text] + 1;
+	//if ($row->craft_text=="") {
+	//	$row->craft_text="fubar";
+	//	//echo "";
+	//	}
+	$craft_totals[$row->craft_text]=$craft_totals[$row->craft_text] + 1;
+	$grand_total++;
+	}
+$html_out=$html_out . "</table>";
+//echo "<pre>";
+ksort($department_totals);
+ksort($craft_totals);
+ksort($class_totals);
+
+//print_r($craft_totals);
+function print_array_as_table($array,$title="Results") {
+	global $fd_color_4;
+	$array_keys=array_keys($array);
+	echo "<table border=1 cellspacing=0 cellpadding=3><tr bgcolor=$fd_color_4><td colspan=2 align=center><b>$title</b></td></tr>";
+	while ($key=array_shift($array_keys)) {
+		echo "<tr><td>
+				$key
+			</td><td>
+				" . $array["$key"] . "
+			</td></tr>
+			";
+		}
+	echo "</table>";
+	}
+
+function print_dept_array_as_table($array,$title="Results") {
+	global $fd_color_4;
+	$array_keys=array_keys($array);
+	echo "<table border=1 cellspacing=0 cellpadding=3><tr bgcolor=$fd_color_4><td colspan=2 align=center><b>$title</b></td></tr>";
+	while ($key=array_shift($array_keys)) {
+		$dept_info=ms_getoneb("select * from JCDM with (NOLOCK) where JCCo = 1 and Department = '$key'");
+		
+		echo "<tr><td>
+				$key - $dept_info->Description
+			</td><td>
+				" . $array[$key] . "
+			</td></tr>
+			";
+		}
+	echo "</table>";
+	}
+
+//echo "<pre>";print_r($class_totals);echo "</pre>";
+
+$total_foremen=$class_totals['Foreman'] + $class_totals['General Foreman'];
+$workers_to_foremen=format_long_decimal($grand_total / $total_foremen,2);
+$apprentice_percent=round(100 * ($class_totals['Apprentice'] / $grand_total));
+$journeyman_percent=round(100 * ($class_totals['Journeyman'] / $grand_total));
+
+echo "
+<table border=0 cellspacing=0 cellpadding=5>
+<tr valign=top><td>
+	<table border=1 cellspacing=0 cellpadding=4>
+	<tr bgcolor=$fd_color_4><td colspan=2 align=center><b>Summary Information</b></td></tr>
+	<tr><td>
+		Total field employees
+	</td><td>
+		$grand_total
+	</td></tr>
+	<tr><td>
+		Workers / Foremen
+	</td><td>
+		$workers_to_foremen
+	</td></tr>
+	
+	<tr><td>
+		Apprentice % of field
+	</td><td>
+		$apprentice_percent%
+	</td></tr>
+	
+	<tr><td>
+		Journeyman % of field
+	</td><td>
+		$journeyman_percent%
+	</td></tr>
+	</table>
+</td><td>
+	";print_dept_array_as_table($department_totals,"Dept Totals");echo "
+</td><td>
+	";print_array_as_table($craft_totals,"Craft Totals");echo "
+</td><td>
+	";print_array_as_table($class_totals,"Class Totals");echo "
+</td></tr>
+</table>";
+
+echo $html_out;
+mh_navs_footer();
+?>

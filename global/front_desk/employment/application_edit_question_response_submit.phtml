@@ -1,0 +1,17 @@
+<?
+if ($hr_opening_bullets_id=="") die("Web Application Error! I'm sorry, there is an error in this web page, and this section cannot continue. Please hit the back button and try to complete as much as possible!");
+else $hr_opening_bullets_id=addslashes($hr_opening_bullets_id);
+$application_id=addslashes($application_id);
+//echo "$hr_opening_bullets_id";exit;
+
+@mysql_query("delete from hr_opening_bullet_responses where application_id = '$application_id' and hr_opening_bullets_id = '$hr_opening_bullets_id'");
+//echo "delete from hr_opening_bullet_responses where application_id = '$application_id' and hr_opening_bullets_id = '$hr_opening_bullets_id'";exit;
+
+if ($optional_question!="") {
+	$optional_question=addslashes($optional_question);
+	$oq_query="insert into hr_opening_bullet_responses set application_id = '$application_id',hr_opening_bullets_id = '$hr_opening_bullets_id',response = '$optional_question'";
+	//echo "$oq_query";exit;
+	@mysql_query($oq_query);
+	}
+include("app_forward_mode.phtml");
+?>

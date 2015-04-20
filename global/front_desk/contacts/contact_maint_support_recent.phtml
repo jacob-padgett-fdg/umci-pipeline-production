@@ -1,0 +1,6 @@
+<?
+session_write_close();
+$ts_prefix=date('Ymd');
+$reconcile_query="select * from contacts where last_touched like '$ts_prefix%'";
+include("contact_maint_support_specified.phtml");
+?>

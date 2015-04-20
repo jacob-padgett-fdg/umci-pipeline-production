@@ -1,0 +1,15 @@
+<?
+
+$return_to_this_page=base64_encode($GLOBALS['REQUEST_URI']);
+
+if ($return_to!="") {
+	$return_to_decode=base64_decode(addslashes($return_to));
+	$cancel_url=$return_to_decode;
+	} else {
+	$cancel_url="javascript:self.close()";
+	}
+
+$cancel_link="<a href=\"$cancel_url\"><font color=blue>Cancel</font></a>";
+$done_link="<a href=\"$cancel_url\"><font color=blue>Done</font></a>";
+
+?>

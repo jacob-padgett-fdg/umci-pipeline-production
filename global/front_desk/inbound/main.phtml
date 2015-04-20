@@ -1,0 +1,123 @@
+<?
+include("header.phtml"); 
+fd_navs_header(); 
+$today=date('m-d-Y'); $qid="4321";
+$queue_info=load_file_group_info($qid);
+if (fast_connection()) {
+	$load_delay=300;
+	} else {
+	$load_delay=2000;
+	}
+
+if ($current_files_id=="") {
+	$contract_num=$global_jobinfo->contract_num;
+	$first_file=getoneb("select * from webfile_files where file_group_id = '$queue_info->file_group_id' and ( file_name like '%-$contract_num-%' or file_name like '%-${contract_num}_%' ) order by files_id limit 1");
+	$current_files_id=$first_file->files_id;
+	} else {
+	$current_files_id=addslashes($current_files_id);
+	}
+
+if ($current_files_id<1) {
+	echo "
+	<meta http-equiv=\"refresh\" content=\"30;url=$pagename?mode=$mode\">
+	<center><h2>No documents in inbound queue.</h2><p>If you have already scanned something and you are expecting to find it here, then please wait a couple of minutes as it may still be processing on another server right now.<p> For your convenience, this screen will automatically refresh twice a minute.</center>
+	";
+	fd_navs_footer();
+	exit();
+	}
+
+fd_document_box_scripts();
+$current_link="";
+
+echo "
+<script>
+
+function delete_document(files_id) {
+	if (confirm('Are you sure you want to delete this document (' + files_id + ')?')) {
+		ajaxManager('load_page','$pagename?mode=doc_selector&delete_files_id=' + files_id,'doc_selector');
+		}
+	}
+
+function file_document(doc_id) {
+	obj=document.getElementById('document_counter_div');
+	obj.ajax_trigger_function='file_document_follow_up(' + doc_id + ')';
+	ajaxManager('load_page','$pagename?mode=count_file_links&doc_id=' + doc_id,'document_counter_div');
+	}
+
+function file_attachment(doc_id) {
+	obj=document.getElementById('document_counter_div');
+	obj.ajax_trigger_function='file_attachment_follow_up(' + doc_id + ')';
+	ajaxManager('load_page','$pagename?mode=count_file_links&doc_id=' + doc_id,'document_counter_div');
+	}
+
+function file_document_follow_up(doc_id) {
+	obj=document.getElementById('document_counter_div');
+	count=obj.innerHTML;
+	if (count=='1') {
+		ajaxManager('load_page','$pagename?mode=doc_selector&file_document_id=' + doc_id,'doc_selector');
+		} else {
+			alert('Error. You must have one, and only one, document selected to file this item to.');
+		}
+	}
+
+function file_attachment_follow_up(doc_id) {
+	obj=document.getElementById('document_counter_div');
+	count=obj.innerHTML;
+	if (count=='1') {
+		blank_me(viewport);
+		ajaxManager('load_page','$pagename?mode=doc_selector&file_document_id=' + doc_id + '&is_attachment=Y','doc_selector');
+		} else {
+			alert('Error. You must have one, and only one, document selected to file this item to.');
+		}
+	}
+
+function blank_me() {
+	document.getElementById('doc_viewport').src='blank.html';
+	}
+
+function webdelfile(files_id) {
+	if (confirm('Permenantly delete file from database?')) open('$pagename?mode=delete_file_popup&files_id=' + files_id,'webfile_del_pu','width=20,height=20');
+	}
+
+function dsel(show) {
+	//if (!(show)) return 0;
+	//document.show_id=show;
+	clearTimeout(document.show_timeout_id);
+	ajaxManager('load_page','$pagename?mode=doc_selector&current_files_id=' + show,'doc_selector');
+	document.show_timeout_id=setTimeout('watch_the_show()',$load_delay);
+	}
+
+function watch_the_show() {
+	ds_obj=document.getElementById('hdsfi');
+	if (ds_obj!=null) {
+		if (ds_obj.value != 'undefined') {
+			if (ds_obj.value!=document.show_id_last) {
+				document.show_id_last=ds_obj.value;
+				pdflink='https://pipeline.umci.com/global/webfile$devel/index.html/files/inbound_preview.pdf?mode=webfile_view&files_id=' + ds_obj.value;
+				document.getElementById('doc_viewport').src=pdflink;
+				}
+			}
+		}
+	document.show_timeout_id=setTimeout('watch_the_show()',$load_delay);
+	}
+document.show_id_last='';
+</script>
+
+
+
+<table border=0 cellspacin=0 cellpadding=0 height=100%>
+<tr><td valign=top><div id=doc_selector style=\"padding: 0px; width: 204px; overflow: hidden;\"></div>
+</td><td valign=top width=100% height=100%>
+<iframe id=\"doc_viewport\" src=\"\" name=viewportb width=100% style=\""; if ($global_browser=="IE") echo "height: 480px;"; else echo "height: 100%;"; echo "\">No file loaded</iframe>
+</td></tr></table>
+<div id=\"document_counter_div\" style=\"display: none;\"></div>
+<div height=100%>&nbsp;</div>
+<script>
+ajaxManager('load_page','$pagename?mode=doc_selector','doc_selector');
+setTimeout('watch_the_show()',1000);
+</script>
+";
+
+$doc_id="";
+fd_navs_footer();
+?>

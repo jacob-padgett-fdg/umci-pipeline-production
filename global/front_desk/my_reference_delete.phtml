@@ -1,0 +1,37 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+require("../webfile/storage_settings.cfg");
+require("../webfile/local.inc");
+
+if ($reference_id=="") die("Application error: Invalid reference!");
+
+$reference_id=addslashes($reference_id);
+$reference_info=getoneb("select * from front_desk_references where reference_id = '$reference_id'");
+$category_id=$reference_info->category_id;
+
+$category_id=addslashes($category_id);
+$category_info=getoneb("select * from front_desk_reference_categories where category_id = '$category_id'");
+if (!($category_info)) die("Application error! Category info failure!");
+
+$write=FALSE;
+if ($adminuser) $write=TRUE;
+if ($category_info->owner==$global_user_id) $write=TRUE;
+if ($reference_info->others_get_write=="Y") $write=TRUE;
+if ($reference_info->owner==$global_user_id) $write=TRUE;
+
+
+if (!($write)) die_security();
+
+
+//echo "delete_webfile_group($reference_info->reference_id);";
+
+delete_webfile_group($reference_info->file_group_id);
+@mysql_query("delete from front_desk_references where reference_id = '$reference_info->reference_id'");
+forward("my_reference_center_manage&category_id=$reference_info->category_id");
+
+
+
+
+
+?>

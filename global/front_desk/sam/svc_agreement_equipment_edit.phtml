@@ -1,0 +1,263 @@
+<?
+require('header.phtml');
+if ($el_id=="") die("ERROR: No valid equipment_id. Please contact your system administrator.");
+$el_id=escapeshellcmd($el_id);
+$el_info=getone("select * from svc_agreement_equip_list where el_id = '$el_id'");
+$el_type_info=getone("select * from svc_equip_types where equip_type_id = '$el_info->equip_type_id'");
+$agreement_info=load_agreement_info($el_info->agreement_id);
+
+echo "
+<a href=$pagename?mode=svc_agreement_edit&agreement_id=$agreement_info->agreement_id><font color=blue>
+Return to Service Agreement</font></a><br>
+";
+$agreement_type=el_agreement_type($el_info->el_id);
+
+if ($agreement_type=="ESP") {
+	if ($el_info->supervisor_approved!='Y') {
+		if (is_admin()) {
+			echo "
+			<script>
+			function approve_equip() {
+				open('$pagename?mode=svc_agreement_equipment_approve_popup&el_id=$el_info->el_id','equip_approve_win','width=100,height=100');
+				}
+			</script>
+			<a href=javascript:approve_equip($el_info->el_id);><font color=red>Mark this equipment as approved</font></a><br>
+			";
+			}
+		}
+	}
+
+echo"
+
+<form name=equipment_add method=get action=$pagename>
+<input type=hidden name=mode value=svc_agreement_equipment_submit>
+<input type=hidden name=el_id value=\"$el_info->el_id\">
+<input type=hidden name=category_id value=\"$category_id\">
+<input type=hidden name=equip_type_id value=\"$equip_type_id\">
+
+<table border=1 cellspacing=0 cellpadding=5>
+
+<tr><td colspan=2 bgcolor=#eeeeee align=center><font size=+1><b>Edit Equipment</b></font></td></tr>
+
+<tr><td>
+	Manufacturer
+</td><td>
+	";contactsbox("select * from contacts where manufacturer = 'Y'","$el_info->mfg","mfg","",2);echo"
+</td></tr>
+
+<tr><td>
+	Model Number
+</td><td>
+	<input type=text name=model_number value=\"$el_info->model_number\" size=50>
+</td></tr>
+
+<tr><td>
+	Serial Number
+</td><td>
+	<input type=text name=serial_num value=\"$el_info->serial_num\" size=50>
+</td></tr>
+
+<tr><td>
+	Tag Number
+</td><td>
+	<input type=text size=50 name=tag_num value=\"$el_info->tag_num\">
+</td></tr>
+
+<tr><td>
+	Location
+</td><td>
+	<input type=text name=location size=50 value=\"$el_info->location\">
+</td></tr>
+
+<tr><td>
+	Age
+</td><td>
+	<input type=text name=age value=\"$el_info->age\" size=3>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=\"Save\">
+</td></tr>
+
+</table>
+</form>
+";
+
+
+function quick_show_predictive($predict_type,$el_id) {
+	$el_info=getone("select * from svc_agreement_equip_list where el_id = '$el_id'");
+	$el_type_info=getone("select * from svc_equip_types where equip_type_id = '$el_info->equip_type_id'");
+	
+	$predict_res=@mysql_query("select *,sum(1) as total_count from svc_agreement_equipment_events where el_id = '$el_id' and event_type = '$predict_type' group by event_type");
+	$predict_count=@mysql_num_rows($predict_res);
+	
+	$pdt=predict_nice_name($predict_type);
+	
+	if ($el_type_info->{$predict_type}=='Y') {
+		if ($predict_count>0) {
+			while ($row=@mysql_fetch_object($predict_res)) {
+				echo "
+				<table border=0 cellspacing=0 cellpadding=0>
+				<tr><td>
+					<b>$row->description</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</td><td>
+					&nbsp;&nbsp;$row->total_count times
+				</td><td>
+					&nbsp;&nbsp;&nbsp;&nbsp;($$row->cost ea.)
+				</td><td>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=javascript:delete_eq_ev($row->el_ev_id);><font color=blue><i>Delete</i></font></a>
+				</td></tr></table>";
+				}
+			
+			} else {
+			echo "<b>$pdt: </b><a href=javascript:open_predictive('$predict_type','$el_info->el_id');><font color=blue>Add</font></a><br>";
+			}
+		} else {
+		if ($predict_count>0) {
+			die("Got to delete these entries since they're administratively disallowed!");
+			}
+		}
+	}
+
+echo "<table border=1 width=100%><tr bgcolor=#eeeeee><td><b>Available Predictive Services</b></td></tr></table>";
+quick_show_predictive("predict_vibration",$el_id);
+quick_show_predictive("predict_refrigerant_lp",$el_id);
+quick_show_predictive("predict_refrigerant_hp",$el_id);
+quick_show_predictive("predict_laser_alignment",$el_id);
+quick_show_predictive("predict_eddy_current_tube_anal",$el_id);
+quick_show_predictive("predict_thermography",$el_id);
+quick_show_predictive("predict_combustion",$el_id);
+quick_show_predictive("predict_oil",$el_id);
+
+$elqry="select * from svc_equip_sched_index where el_id = '$el_info->el_id'";
+$elres=@mysql_query($elqry);
+
+echo "
+<script>
+
+function delete_eq_ev(el_ev_id) {
+	open('$pagename?mode=delete_equipment_event_popup&el_ev_id=' + el_ev_id,'el_ev_delete','width=200,height=200');
+	}
+
+function open_predictive(service_type,el_id) {
+	open(\"$pagename?mode=svc_agreement_equipment_event_add&el_id=\" + el_id + \"&event_type=\" + service_type,\"el_ev_id_win\",\"width=400,height=400\");
+	}
+
+function open_details(el_ev_id) {
+	open(\"$pagename?mode=svc_agreement_equipment_events_details&el_ev_id=\" + el_ev_id,\"el_ev_id_win\",\"width=400,height=400\");
+	}
+
+function materials_edit(sched_index_id) {
+	open(\"$pagename?mode=svc_agreement_materials_edit&sched_index_id=\" + sched_index_id,\"materials_edit_win\",\"height=500,width=500,scrollbars=yes\");
+	}
+function add_task_id(task_id) {
+	open('$pagename?mode=add_task_popup&el_id=$el_info->el_id&task_id=' + task_id,'add_task_popup','width=100,height=100');
+	}
+
+
+</script>
+
+";
+
+//tabledump ("select * from svc_task_items left join svc_maint_types using (maint_type_id) where equip_type_id = '$el_info->equip_type_id' and agreement_type_id = '$agreement_info->agreement_type_id'");
+
+$maint_types_res=@mysql_query("select * from svc_task_items left join svc_maint_types using (maint_type_id) where equip_type_id = '$el_info->equip_type_id' and agreement_type_id = '$agreement_info->agreement_type_id'");
+while ($maint_types_rows=@mysql_fetch_object($maint_types_res)) {
+	//tabledump("select * from svc_equip_sched_index where el_id = '$el_info->el_id' and task_id = '$maint_types_rows->task_id'");
+	$is_configured=getoneb("select * from svc_equip_sched_index where el_id = '$el_info->el_id' and task_id = '$maint_types_rows->task_id'");
+	if (!($is_configured)) {
+		echo "<a href=javascript:add_task_id($maint_types_rows->task_id);><font color=blue>Add</font></a> $maint_types_rows->maint_type maintenance type<br>";
+		}
+	}
+
+echo"
+
+<table border=1 cellspacing=0 cellpadding=0><tr><td>
+<table border=0 cellspacing=0 cellpadding=4>
+<tr bgcolor=#eeeeee><td>
+	<b>Maint Type</b>
+</td><td>
+	<b>Times a year</b>
+</td><td>
+	<b>Starting</b>
+</td><td>
+	&nbsp;
+</td></tr>
+";
+while($row=@mysql_fetch_object($elres)) {
+	$row->start_date=invali_date($row->start_date);
+	$row->start_date=ereg_replace("-[0-9][0-9]-","/",$row->start_date);
+	$row->times_a_year=float_break($row->times_a_year);
+	$task_info=load_task_info($row->task_id);
+	
+	echo "<tr><td>
+		<a href=$pagename?mode=equip_sched_index_edit&sched_index_id=$row->sched_index_id><font color=blue>
+		$task_info->maint_type
+		</font></a>
+	</td><td>
+		$row->times_a_year
+	</td><td>
+		$row->start_date
+	</td><td>
+		<a href=javascript:materials_edit($row->sched_index_id)><font color=blue><i>Standard&nbsp;Materials</i></font></a>
+	</td></tr>
+	
+	<tr><td>
+		&nbsp;
+	</td><td colspan=2>";
+	
+	
+	//echo "<hr>select * from svc_equip_sched_items where sched_index_id = '$row->sched_index_id' order by maint_date<hr>";
+	$datesres=mysql_query("select * from svc_equip_sched_items where sched_index_id = '$row->sched_index_id' order by maint_date");
+	$rowcount=@mysql_num_rows($datesres);
+	
+	
+	////////////////////////////////////////////////////////
+	//	Debug code
+	////////////////////////////////////////////////////////
+	$debug=0;
+	if ($debug==1) {
+		while($daterow=mysql_fetch_object($datesres)) {
+			$cost=equip_sched_cost($daterow->sched_item_id);
+			$maintdate=invali_date($daterow->maint_date);
+			echo "$maintdate / $cost<br>";
+			}
+		}
+	////////////////////////////////////////////////////////
+	
+	//if ($show_totals) {
+	//	$cost=equip_sched_index_cost($row->sched_index_id);
+	//	echo "Total: $rowcount / \$$cost<br>";
+	//	}
+	echo "</td></tr>";
+	}
+
+echo "</table></td></tr></table>";
+
+echo "
+<table border=1 width=100%><tr bgcolor=#eeeeee><td><b>Non-standard Materials</b>&nbsp;<a href=$pagename?mode=svc_agreement_equipment_event_add&event_type=materials&el_id=$el_info->el_id target=el_event_add><font color=blue>Add</font></a>
+</td></tr></table>
+";
+$misc_res=@mysql_query("select *,sum(1) total_type from svc_agreement_equipment_events where el_id = '$el_info->el_id' and event_type = 'materials' group by description order by event_date");
+$misc_count=@mysql_num_rows($misc_res);
+if ($misc_count < 1) {
+	echo "<b>No Records Found...</b>";
+	} else {
+	echo "<table border=0>";
+	while($misc_row=@mysql_fetch_object($misc_res)) {
+		echo "<tr><td>
+				$misc_row->description
+			</td><td>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$misc_row->total_type&nbsp;times
+			</td><td>
+				<a href=javascript:open_details($misc_row->el_ev_id);><i><font color=blue>Details</font></i></a>
+			</td></tr>";
+		}
+	echo "</table>";
+	}
+
+if ($show_totals) {
+	$cost=equip_list_item_total_cost($el_id);
+	echo "<p>Total Cost: \$$cost<br>";
+	}
+?>

@@ -1,0 +1,100 @@
+<?
+include("report_lib.inc");
+include("mh_lib.inc");
+check_report_permissions();
+if ($download_in_excel=='Y') {
+	excel_dump("select * from zz_table_defs left join zz_field_defs on (zz_table_defs.table_id = zz_field_defs.table_id) where table_active = 'Y' and currently_used = 'Y' order by table_name");
+	exit;
+	}
+
+require('header.phtml');
+
+
+mh_navs_header();
+
+$res=@mysql_query("show tables");
+while ($row=@mysql_fetch_object($res)) {
+	if (!(getoneb("select * from zz_table_defs where table_name = '$row->Tables_in_global'"))) {
+		echo "found new table: $row->Tables_in_global<br>";
+		@mysql_query("insert into zz_table_defs set table_name = '$row->Tables_in_global', table_active = 'Y', fd_app_main = 'N', fd_doc_type = '', table_description = ''");
+		}
+	}
+
+
+if ($update_schema_from_db=='Y') {
+	$tlist=@mysql_query("select * from zz_table_defs where table_active = 'Y' order by table_name");
+	while($table_info=@mysql_fetch_object($tlist)) {
+		$fields=@mysql_query("describe $table_info->table_name");
+		while ($field=@mysql_fetch_object($fields)) {
+			$current=getoneb("select * from zz_field_defs where table_id = '$table_info->table_id' and field_name = '$field->Field' limit 1");
+			if (!($current)) {
+				//echo "Add field: $field->Field<br>";
+				$type=ereg_replace("[(].*$","",$field->Type);
+				$length=ereg_replace("^[^(]*","",$field->Type);
+				$length=ereg_replace("[()]","",$length);
+				if ($field->Null=='NO') $null='N';
+				else $null='Y';
+				
+				
+				mysql_query("insert into zz_field_defs set
+					table_id = '$table_info->table_id',
+					field_name = '$field->Field',
+					field_type = '$type',
+					field_length = '$length',
+					null_allowed = '$null',
+					key_type = '$field->Key',
+					default_value = '$field->Default',
+					extra_mysql = '$field->Extra'
+					");
+				}
+			}
+		}
+	}
+
+echo "
+<a href=$pagename?mode=$mode&report_name=$report_name&download_in_excel=Y><font color=blue>Download Schema</font></a><br>
+<a href=$pagename?mode=$mode&report_name=$report_name&update_schema_from_db=Y><font color=blue>Update Schema</font></a>
+
+<font size=-1>
+<table border=1 cellspacing=0 cellpadding=3>
+
+<tr><td colspan=6 bgcolor=$fd_color_4 align=center>
+	<b><font size=+1>Currently active tables</font></b>
+</td></tr>
+
+<tr><td>
+	<b>Table</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	<b>Active</b>
+</td><td>
+	<b>FD APP Index</b>
+</td><td>
+	<b>fd_doc_type</b>
+</td></tr>
+";
+$count=0;
+$query="select * from zz_table_defs where table_active = 'Y' order by table_name";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$count++;
+	if ($row->fd_app_main!='Y') $row->fd_app_main="&nbsp;";
+	echo "<tr><td>
+			<a target=_blank href=$pagename?mode=$mode&report_name=${report_name}_edit&table_id=$row->table_id><font size=-1 color=blue>$row->table_name&nbsp;</font></a>
+		</td><td>
+			$row->table_description&nbsp;
+		</td><td>
+			$row->table_active
+		</td><td>
+			$row->fd_app_main&nbsp;
+		</td><td>
+			$row->fd_doc_type&nbsp;
+		</td></tr>";
+	}
+echo "</table>Total tables shown: $count<br>
+
+</font>
+";
+mh_navs_footer();
+?>

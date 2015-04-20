@@ -1,0 +1,102 @@
+<?
+if ($form_mode!="search") {
+if (($bid_info->umcgroups_id=="")||($bid_info->umcgroups_id=="0")) $umcgroups_id_marker="<font color=red>*</font>";
+if (($bid_info->proposal_type=="")||($bid_info->proposal_type=="0")) $proposal_type_marker="<font color=red>*</font>";
+if (($bid_info->project=="")||($bid_info->project=="0")) $project_marker="<font color=red>*</font>";
+if (($bid_info->location=="")||($bid_info->location=="0")) $location_marker="<font color=red>*</font>";
+if (($bid_info->contract_type=="")||($bid_info->contract_type=="0")) $contract_type_marker="<font color=red>*</font>";
+if (($bid_info->bid_date=="")||($bid_info->bid_date=="0")) $bid_date_marker="<font color=red>*</font>";
+if (!(getoneb("select * from bidlist_bid_projtypes where bidlist_id = '$bidlist_id' and project_type_id >0 limit 1"))) $type_marker="<font color=red>*</font>";
+
+
+if (($bid_info->design_process=="")||($bid_info->design_process=="0")) $design_process_marker="<font color=red>*</font>";
+}
+echo "
+	<input type=hidden name=proposal_form_required value=true>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr><td>&nbsp;";
+	
+	echo"
+	</td><td align=right width=100%>";
+		if ($bid_info->status!="Lead") {
+			
+			if ($form_mode!="search")
+				echo "<b>&nbsp;<font color=red>Display&nbsp;in&nbsp;Bid&nbsp;List:</font></b>&nbsp;<input type=checkbox name=show_in_bidlist $bid_info->show_in_bidlist>";
+			else
+				echo "<b>&nbsp;Display&nbsp;in&nbsp;Bid&nbsp;List:</b>&nbsp;Y<input type=radio name=show_in_bidlist value='Y'>N<input type=radio name=show_in_bidlist value='N'>";
+		} 
+	echo "</td></tr></table>
+	<table border=1 cellpadding=0 cellspacing=0 width=100%>
+	<tr><td bgcolor=#ffdddd>
+	<table border=0 cellspacing=0 cellpadding=3 width=100%>
+		
+		<tr valign=bottom><td>
+			Group:&nbsp;";dropbox("select umcgroups_id as 'umcgroups_id$dropboxvaradd',name from bidlist_umcgroups order by name",$bid_info->umcgroups_id,"$dropboxsize","",1,"$dropboxmode");echo"$umcgroups_id_marker
+		</td><td>
+			";
+			echo"Prop&nbsp;Type:&nbsp;";dropbox("select proposal_type as 'proposal_type$dropboxvaradd',proposal_type from bidlist_proptypes order by proposal_type",$bid_info->proposal_type,"$dropboxsize","",1,$dropboxmode);
+			echo"$proposal_type_marker
+		</td><td valign=middle>
+			Record Creator:&nbsp;<font style=\"background: white; border: solid thin #000000;\">&nbsp;$bid_info->record_owner_first_name $bid_info->record_owner_last_name&nbsp;</font>
+		</td><td>
+			Contract&nbsp;Type:&nbsp;<select name=contract_type$dropboxvaradd $dropboxmode size=$dropboxsize>
+			<option>$bid_info->contract_type</option>
+			<option>Cost+</option>
+			<option>Fixed Price</option>
+			<option>GMAX</option>
+			<option>T & M</option>
+			<option>RFQ Only</option>
+			</select>$contract_type_marker
+		</td></tr>
+		
+		<tr><td colspan=3>
+			Project:&nbsp;<input type=text size=30 name=project maxlength=39 value=\"$bid_info->project\">$project_marker
+			&nbsp;Location:&nbsp;<input type=text size=15 name=location value=\"$bid_info->location\">$location_marker";
+			if ($form_mode!="search") echo "&nbsp;&nbsp;GC/CM&nbsp;<input type=checkbox name=gccm $bid_info->gccm>&nbsp;&nbsp;UMC&nbsp;G/C&nbsp;(<i>Prime</i>)&nbsp;<input type=checkbox name=umc_gc_prime $bid_info->umc_gc_prime>&nbsp;&nbsp;</td><td align=right>Public&nbsp;<input type=checkbox name=public $bid_info->public>&nbsp;&nbsp;Private&nbsp;<input type=checkbox name=private $bid_info->private>"; echo "
+		</td></tr>
+		
+		<tr><td colspan=2>
+			<table border=0 cellspacing=0 cellpadding=0><tr><td><font color=red>Bid&nbsp;Date:</font>&nbsp;";
+			if ($form_mode=="search") { echo "
+				<input type=radio name=bid_date_radio value='>'>&gt;
+				<input type=radio name=bid_date_radio value='=' checked>=
+				<input type=radio name=bid_date_radio value='<'>&lt;";
+				}
+			echo "</td><td>";datebox($bid_info->bid_date,"bidlist_edit.bid_date");
+			echo"</td><td valign=top>$bid_date_marker";
+			if ($form_mode=="search") {
+				echo "<table border=0 cellspacing=0 cellpadding=0><tr valign=top><td>&nbsp;from&nbsp;<input type=radio name=bid_date_radio value=range>&nbsp;to&nbsp;</td><td>";
+				datebox($bid_info->bid_date,"bidlist_edit.bid_date_range_end");
+				echo "</td></tr></table>";
+				} else {
+				echo "&nbsp;/&nbsp;Time:&nbsp;<input type=text size=12 name=bid_time value=\"$bid_info->bid_time\">";
+				}
+			echo "
+			</td></tr></table><input type=hidden name=bid_date_is_date value=1>
+		</td><td>";list_projtypes($bidlist_id);echo"
+			Project Type: ";dropbox("select type as 'type$dropboxvaradd',type from bidlist_types order by type",$bid_info->type,"$dropboxsize","",2,$dropboxmode);echo"$type_marker
+		</td><td>
+			Design Process: <select name=design_process$dropboxvaradd $dropboxmode size=$dropboxsize>
+			<option>$bid_info->design_process</option>
+			<option>Design Assist</option>
+			<option>Design Build</option>
+			<option>Plan/Spec</option>
+			</select>$design_process_marker
+		</td></tr>
+		
+	</table>
+	</td></tr>
+	</table>
+";
+
+
+if (($failed_required=="true")&&($bid_info->status!="Lead")) {
+	echo "<script>
+	alert('You did not fill in all required fields. Please look for a \"*\" next to items in the required information section!');
+	</script>
+	";
+	}
+
+
+?>
+

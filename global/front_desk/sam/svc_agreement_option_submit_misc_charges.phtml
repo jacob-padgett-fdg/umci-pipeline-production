@@ -1,0 +1,40 @@
+<?
+
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+else die("Application error! No agreement_id specified! Please contact your system administrator.");
+
+if ($description!="") {
+	$description=addslashes($description);
+	$description="Misc Charge (" . $description . ")";
+	} else {
+	$description="Misc Charge";
+	}
+
+if ($amount=="") die("ERROR: Missing amount! Nothing done!");
+$amount=addslashes($amount);
+$amount=clean_float($amount);
+$markup=checkfix($markup);
+
+
+$query="insert into svc_agreement_additional_options set
+agreement_id = '$agreement_id',
+option_type = 'misc_charges',
+option_description = '$description',
+calculation_notes = 'no calc required',
+cost = '$amount',
+markup = '$markup'";
+
+//exit("$query<hr>");
+@mysql_query($query);
+
+
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+exit;
+
+?>

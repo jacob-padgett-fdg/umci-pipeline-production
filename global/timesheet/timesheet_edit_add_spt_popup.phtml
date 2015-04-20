@@ -1,0 +1,96 @@
+<?
+require("timesheet_include.inc");
+
+$opt=escapeshellcmd($opt);
+$optval=escapeshellcmd($optval);
+
+echo "
+
+<body bgcolor=white>
+
+<table border=1><tr><td colspan=2 bgcolor=#dddddd>
+Add Subsistence, Travel or Parking:
+</td></tr>
+
+<form name=add_time method=post action=$pagename>
+<input type=hidden name=mode value='timesheet_edit_add_spt_verify'>
+<input type=hidden name=employee_num value='$current_user->employee_num'>
+
+<tr><td>
+	Date:
+</td><td>
+	<b>$workday</b>&nbsp;
+	<input type=hidden name=workday value=\"$workday\">
+</td></tr>
+
+<tr><td valign=top>
+	<a href=javascript:job_help();><font color=black>Job:</font></a>
+</td><td>
+	<input type=text name=job_num><br>
+	";recent_jobs($current_user->contacts_id,1);echo"
+</td></tr>
+
+<tr><td valign=top>
+	<a href=javascript:phase_help();><font color=black>Phase:</font></a>
+</td><td>
+	<input type=text name=phase><br>
+</td></tr>
+
+<tr><td>
+	Type:
+</td><td>
+	<select name=earnings_code>
+	<option value='$opt'>$optval</option>
+	<option value=5>Subsistence</option>
+	<option value=6>Parking</option>
+	<option value=7>Travel</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Amount:
+</td><td>
+	<input type=text name=dollars>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=button onclick=submit(); value=Add>
+</td></tr>
+
+<tr><td colspan=2>
+	<textarea name=comments rows=5 cols=25 scrollbars=n></textarea>
+</td></tr>	
+
+</form>
+</table>
+
+<script>
+function job_help() {
+	open('$pagename?mode=timesheet_job_popup','timesheet_popup','height=400,width=400,scrollbars=yes,resizable=yes');
+	}
+
+function phase_help() {
+	if (document.add_time.job_num.value=='') {
+		alert('Error: Please enter a job number first');
+	} else {
+		open ('$pagename?mode=timesheet_phase_spt_popup&job_num=' + document.add_time.job_num.value,'timesheet_popup','height=400,width=500,scrollbars=yes,resizable=yes');
+	}
+}
+document.add_time.job_num.focus();
+</script>            
+
+
+
+
+";
+
+
+
+
+
+
+
+
+
+echo "</body>";
+?>

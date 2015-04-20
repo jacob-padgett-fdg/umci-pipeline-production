@@ -1,0 +1,209 @@
+<?
+require('querylib.inc');
+require('header.phtml');
+echo "<a href=$pagename?mode=main><font color=blue>Exit</font></a>";
+
+if ($jobinfo_id != "") {
+	$new=0;
+	$jobinfo_id=addslashes($jobinfo_id);
+	$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+	} else {
+	$new=1;
+	}
+
+$jobinfo->contract_type=htmlspecialchars($jobinfo->contract_type);
+
+$jobinfo->active=checkbreak($jobinfo->active);
+$jobinfo->confidential=checkbreak($jobinfo->confidential);
+$jobinfo->spool_fab_tracking=checkbreak($jobinfo->spool_fab_tracking);
+$jobinfo->issue_res_tracking=checkbreak($jobinfo->issue_res_tracking);
+$jobinfo->exclude_from_reproduction=checkbreak($jobinfo->exclude_from_reproduction);
+$jobinfo->tom_pm=checkbreak($jobinfo->tom_pm);
+$jobinfo->tom_eng=checkbreak($jobinfo->tom_eng);
+$jobinfo->tom_fld=checkbreak($jobinfo->tom_fld);
+
+$jobinfo->svc_agreement_status=escapeshellcmd($jobinfo->svc_agreement_status);
+
+$jobinfo->start_date=invali_date($jobinfo->start_date);
+$jobinfo->complete_date=invali_date($jobinfo->complete_date);
+$jobinfo->submittals_date=invali_date($jobinfo->submittals_date);
+$jobinfo->permits_due_date=invali_date($jobinfo->permits_due_date);
+$jobinfo->as_builts_date=invali_date($jobinfo->as_builts_date);
+$jobinfo->o_and_m_date=invali_date($jobinfo->o_and_m_date);
+$jobinfo->owner_train_or_service_date=invali_date($jobinfo->owner_train_or_service_date);
+$jobinfo->warranty_start_date=invali_date($jobinfo->warranty_start_date);
+$jobinfo->warranty_end_date=invali_date($jobinfo->warranty_end_date);
+
+//<form name=jobinfo_sync action=$pagename method=get>
+//<input type=hidden name=job_num value=\"$jobinfo->contract_num\">
+//<input type=hidden name=mode value=get_job_info>
+//<input type=submit value=Sync>
+//</form>
+
+echo "<center>";
+
+include("jobinfo_edit_tabs_start.phtml");
+
+echo "
+<table bgcolor=#ffffff border=1 cellspacing=0 cellpadding=3 style=\"font-variant: small-caps; font-size: smaller; font-weight: bold;\">
+
+<tr><td>
+	Contract Number
+</td><td>
+	<input ";
+	if ($jobinfo_id!="") echo "style=\"readonly: true;\" ";
+	echo" type=text size=8 name=contract_num value=\"$jobinfo->contract_num\">
+</td><td bgcolor='#aabbff'>
+	General/Cust
+</td><td bgcolor='#aabbff'>
+	";contactsbox("select * from contacts where (owner = 'Y' or is_general = 'Y')",$jobinfo->general_id,"general_id","opener.apply_changes();","2");echo"
+</td></tr>
+
+<tr><td>
+	Job Name
+</td><td>
+	<input type=text name=job_name value=\"$jobinfo->job_name\" size=25>
+</td><td bgcolor='#aabbff'>
+	Owner ID
+</td><td bgcolor='#aabbff'>
+	";contactsbox("select * from contacts where owner = 'Y' order by alphasort","$jobinfo->owner_id","owner_id","opener.apply_changes();",2);echo"
+</td></tr>
+
+<tr><td>
+	Start Date
+</td><td>
+	";datebox($jobinfo->start_date,"jobinfo_edit.start_date");echo "
+</td><td bgcolor='#aabbff'>
+	VP Owner Text
+</td><td bgcolor='#aabbff'>
+	<table border=1 width=100% cellspacing=0 cellpadding=2>
+		<tr><td bgcolor=#ffffff><font size=-1>$jobinfo->viewpoint_owner_text</font>&nbsp;</td></tr></table>
+</td></tr>
+
+<tr><td>
+	Complete Date
+</td><td>
+	";datebox($jobinfo->complete_date,"jobinfo_edit.complete_date");echo"
+</td><td bgcolor='#aabbff'>
+	Contract Admin
+</td><td bgcolor='#aabbff'>
+	";contactsbox("select * from contacts where contract_admin = 'Y' order by alphasort","$jobinfo->contract_admin","contract_admin","opener.apply_changes();",2);echo"
+</td></tr>
+
+<tr><td>
+	Contract/PO
+</td><td>
+	<input type=text size=20 name=contract_or_po value=\"$jobinfo->contract_or_po\">
+</td><td bgcolor='#aabbff'>
+	Project Manager
+</td><td bgcolor='#aabbff'>
+	";contactsbox("select * from contacts where proj_manager = 'Y' and umc_emp = 'Y' order by alphasort","$jobinfo->project_manager_id","project_manager_id","opener.apply_changes();",2);echo"
+</td></tr>
+
+<tr><td>
+	Contract Type
+</td><td>
+	<select name=contract_type>
+	<option value=\"$jobinfo->contract_type\">$jobinfo->contract_type
+	<option value=Cost+>Cost+
+	<option value=\"Fixed Price\">Fixed Price
+	<option value=GMAX>GMAX
+	<option value=\"T & M\">T & M
+	</select>
+</td><td bgcolor='#aabbff'>
+	Project Sponsor
+</td><td bgcolor='#aabbff'>
+	";contactsbox("select * from contacts where proj_sponsor = 'Y' and umc_emp = 'Y' order by alphasort","$jobinfo->project_sponsor_id","project_sponsor_id","opener.apply_changes();",2);echo"
+</td></tr>
+
+<tr><td>
+	Job Cost
+</td><td>
+	<select name=job_cost>
+	<option value=\"$jobinfo->job_cost\">$jobinfo->job_cost
+	<option value=A>A
+	<option value=B>B
+	<option value=D>D
+	<option value=M>M
+	</select>
+</td><td bgcolor='#aabbff'>
+	Architect
+</td><td bgcolor='#aabbff'>
+	";contactsbox("select * from contacts where architect = 'Y' order by alphasort","$jobinfo->architect_id","architect_id","opener.apply_changes();",0);echo"
+</td></tr>
+
+<tr><td>
+	Design/Build
+</td><td>
+	<select name=design_build>
+	<option>$jobinfo->design_build</option>
+	<option>Design Assist</option>
+	<option>Design Build</option>
+	<option>Plan/Spec</option>
+	</select>
+</td><td bgcolor='#aabbff' colspan=2>
+	&nbsp;
+</td></tr>
+
+<tr bgcolor='#aaccaa'><td>
+	Orig Contract Amt
+</td><td>
+	<input type=text size=20 name=contract_amount_orig value=\"$jobinfo->contract_amount_orig\">
+</td><td>
+	Final Amount
+</td><td>
+	<input type=text size=20 name=contract_amount_final value=\"$jobinfo->contract_amount_final\">
+</td></tr>
+
+<tr bgcolor='#aaccaa'><td>
+	Curr Contract Amt
+</td><td>
+	<input type=text size=20 name=contract_amount_current value=\"$jobinfo->contract_amount_current\">
+</td><td>
+	Billed Amount
+</td><td>
+	<input type=text size=20 name=contract_amount_billed value=\"$jobinfo->contract_amount_billed\">
+</td></tr>
+
+<tr><td>
+	Site Address
+</td><td colspan=2>
+	<textarea cols=35 rows=3 name=job_site_address>$jobinfo->job_site_address</textarea>
+</td><td align=right>
+	Fed/Pub&nbsp;
+	<select name=fed_pub>
+	<option value=\"$jobinfo->fed_pub\" selected>$jobinfo->fed_pub
+	<option value=Fed>Fed
+	<option value=Pub>Pub
+	<option value=\"(n/a)\">(n/a)
+	</select><br>
+	Confidential&nbsp;<input align=right type=checkbox name=confidential $jobinfo->confidential><br>
+	Active&nbsp;<input type=checkbox name=active $jobinfo->active>
+</td></tr>
+
+<tr><td>
+	Job Type
+</td><td colspan=2>
+	<select name=job_type>
+	<option value=\"$jobinfo->job_type\">$jobinfo->job_type</option>
+	<option value=\"100 - Major Projects\">Major Projects (100)</option>
+	<option value=\"110 - South\">South (110)</option>
+	<option value=\"120 - Industrial\">Industrial (120)</option>
+	<option value=\"190 - Special Projects\">Special Projects (190)</option>
+	</select>
+</td><td bgcolor=#eeeeee>
+	<table border=1 cellspacing=0 cellpadding=2 width=100%>
+		<tr><td align=center onclick=apply_changes();>
+			<b><a href=javascript:apply_changes();><font color=black>Apply</font></a></b>
+		</td><td align=center onclick=document.jobinfo_edit.submit();>
+			<b><a href=javascript:document.jobinfo_edit.submit();><font color=black>Save</font></a></b>
+		</td></tr>
+	</table>
+</td></tr>
+
+</table>";
+
+include("jobinfo_edit_tabs_end.phtml");
+
+echo "</center>";
+?>

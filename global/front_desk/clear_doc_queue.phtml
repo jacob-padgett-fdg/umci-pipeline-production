@@ -1,0 +1,26 @@
+<?
+require("header.phtml");
+fd_navs_header();
+
+
+if ($global_jobinfo_id=="") die();
+$global_jobinfo_id=addslashes($global_jobinfo_id);
+
+$job=getoneb("select * from jobinfo where jobinfo_id = '$global_jobinfo_id'");
+
+$directory="/tmp/front_desk/cook_a_batch/$global_user->login_name/$job->contract_num";
+@chdir($directory);
+$actual=getcwd(); 
+if ($actual==$directory) {
+	@exec("rm *"); 
+	}
+
+@mysql_query("delete from front_desk_doc_queue where contacts_id = '$global_user_id' and jobinfo_id = '$global_jobinfo_id'");
+
+if ($goto!="") forward($goto);
+else 
+echo "<script>
+history.go(-1);
+</script>";
+
+?>

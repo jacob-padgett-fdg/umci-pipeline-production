@@ -1,0 +1,62 @@
+<?
+if ($jobinfo_id!="") {
+	$jobinfo_id=addslashes($jobinfo_id);
+	} else {
+	die("Job information error!");
+	}
+
+if ($doc_type=="") die("doc type error!");
+$doc_type=addslashes($doc_type);
+
+
+$query="
+select doc_type,pal_num,pal_id,pal_short_description,viewed,app_reference,doc_id,sum(1) as linked_count,priority from pal_buddies
+where 
+jobinfo_id = '$jobinfo_id' and 
+status = 'active' and 
+pass_signed_off = 'N' and 
+owner_id = '$global_user_id' and 
+doc_type = '$doc_type' and 
+doc_id > 0 
+group by pal_id
+order by pal_num,viewed desc
+";
+
+//tabledump($query);
+
+$res=@mysql_query($query);
+$shaded=$fd_color_1;
+$bg=$shaded;
+echo "<table style=\"border: 2px solid black;\" cellspacing=0 cellpadding=4>";
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->viewed=='N') {
+		$tstart='<b>';
+		$tend='</b>';
+		} else {
+		$tstart='';
+		$tend='';
+		}
+	if ($bg==$shaded) $bg='';
+	else $bg=$shaded;
+	
+	if ($row->linked_count<2) {
+		echo "<tr bgcolor=\"$bg\"><td onclick=\"document.location='/global$devel/front_desk$devel/?mode=open_doc&doc_id=$row->doc_id&pal_open_bitte_schon=$row->pal_id';\" class=normnav style=\"border: 1px solid black;\">";
+		if ($row->priority=='high') echo "<div style=\"float: right; background: white; color: red;\"><font title=\"Contains a high priority item!\">&nbsp;<b>!</b>&nbsp;</font></div>";
+		echo "$tstart(PAL $row->pal_num) $row->app_reference - $row->pal_short_description$tend</td></tr>";
+		} else {
+		echo "<tr bgcolor=\"$bg\"><td onmouseover=\"my_tasks_menu_hold();toggle_my_pal_details($row->pal_id,this,'on');\" onmouseout=my_tasks_menu_release(); class=normnav style=\"border: 1px solid black;\">";
+		if ($row->priority=='high') echo "<div onmouseover=my_tasks_menu_hold() onmouseout=my_tasks_menu_release() style=\"float: right; background: white; color: red;\"><font title=\"Contains a high priority item!\">&nbsp;<b>!</b>&nbsp;</font></div>";
+		echo "$tstart(PAL $row->pal_num) <i>Multi</i> - $row->pal_short_description$tend</td></tr>";
+		}
+	}
+
+echo "</table>";
+//tabledump($query);
+
+
+
+
+
+
+
+?>

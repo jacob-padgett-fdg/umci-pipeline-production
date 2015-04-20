@@ -1,0 +1,37 @@
+<?
+require("timesheet_include.inc");
+function fatal_error() {
+	echo "Error: There was a fatal error trying to process your request. Please contact your system administrator";
+	exit;
+}
+
+
+$timesheet_time_id=escapeshellcmd($timesheet_time_id);
+$timesheet_time_info=getone("select * from timesheet_time where timesheet_time_id = '$timesheet_time_id'");
+
+if ($current_user->contacts_id != $timesheet_time_info->employee_id) fatal_error();
+if ($timesheet_info->status != "new") fatal_error();
+$timesheet_time_info_day=date_info(invali_date($timesheet_time_info->workday));
+if ($timesheet_info->week_ending != $timesheet_time_info_day->week_end_mysql) fatal_error();
+
+
+$temp=getone("select * from timesheet_time where timesheet_time_id = '$timesheet_time_id'");
+$query="delete from timesheet_time where timesheet_time_id = '$timesheet_time_id'";
+
+@mysql_query($query);
+
+
+if ($return_to_once != "") {
+	$return_to=$return_to_once;
+	$return_to_once="";
+	} else {
+	$return_to="timesheet_showday&showday=$timesheet_time_info_day->date";
+	}	
+$day_to_show=invali_date($temp->workday);
+forward("timesheet_edit&timesheet_edit_mode_new=timesheet_showday&showday=$day_to_show");
+
+
+
+
+
+?>

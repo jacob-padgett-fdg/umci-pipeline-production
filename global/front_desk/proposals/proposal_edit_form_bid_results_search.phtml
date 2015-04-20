@@ -1,0 +1,40 @@
+<?
+
+echo "
+<input type=hidden name=proposal_form_bidding_to value=true>
+<b>Bid Results</b>
+
+<table border=1 cellpadding=0 cellspacing=0 width=100%>
+<tr bgcolor=#eeeeee><td>
+Awarded Status 
+<select name=awarded>
+<option value=''> </option>
+<option value='Y'>Y</option>
+<option value='N'>N</option>
+<option value='P'>P</option>
+</select>
+
+</td><td>
+
+<table border=0 cellspacing=0 cellpadding=6>
+
+</td><td valign=top>
+	Awarded to:<br>
+	Y<input type=radio name=winning_bid value='Y'>
+	N<input type=radio name=winning_bid value='N'>
+</td><td>
+Company<br>";
+contactsbox("select contacts where contact_type = 'company' and mechanical_contractor = 'Y'","","company$dropboxaddvar","",2);
+echo"
+<input type=hidden name=company_radio value='='>
+</td></tr>
+</table>
+</td><td>
+	Amount <input type=text size=10 name=bid_amount><i>(just the number)</i>
+	<input type=radio name=bid_amount_radio value='>'>&gt;
+	<input type=radio name=bid_amount_radio value='='>=
+	<input type=radio name=bid_amount_radio value='<'>&lt;
+</td></tr>
+</table>
+";
+?>

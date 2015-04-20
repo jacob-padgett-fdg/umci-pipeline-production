@@ -1,0 +1,33 @@
+<?
+if (!($billing_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+
+echo "<body bgcolor=white>
+<script>
+function run_batch(week_ending) {
+	document.location='$pagename?mode=billing_timesheet_batch_results&week_ending=' + week_ending + '&b=b/tsbatch-' + week_ending + '.pdf';
+	//alert('$pagename?blah=blah&mode=billing_timesheet_batch_results&week_ending=' + week_ending + '&blah2=blah2/timesheet_batch-' + week_ending + '.pdf');
+	//document.location='$pagename/download.pdf?blah=blah&mode=billing_timesheet_batch_results&week_ending=' + week_ending + '&blah2=blah2/timesheet_batch-' + week_ending + '.pdf';
+	}
+</script>
+
+";
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////            List Weeks that we have posted timesheets for
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$query="select * from timesheet_index  where status = 'posted' group by week_ending order by week_ending desc";
+
+$res=@mysql_query($query);
+echo "<table cellpadding=4 cellspacing=0 border=1 width=100%><tr><td align=center bgcolor=#dddddd><h2>Weeks With Posted Timesheets</h2></td></tr></table><table border=0 cellpadding=3>";
+while($row=@mysql_fetch_object($res)) {
+	if (week_fully_posted($row->week_ending)) $textcolor="blue"; else $textcolor="red";
+	$week_end=invali_date($row->week_ending);
+	echo "	<tr><td>
+			<a href=javascript:run_batch('$week_end');><font color=$textcolor>Download Batch for $week_end</font></a>
+		</td></tr>";
+	}
+echo "</table>";
+
+
+echo "<hr><a href=$pagename?mode=main><font color=blue>Return to Main</font></a>";
+?>

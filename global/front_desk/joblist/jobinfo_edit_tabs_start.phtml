@@ -1,0 +1,46 @@
+<?
+$traxxbg="#ff9999";
+echo "
+<center>
+<font size=+2 style='font-variant: small-caps;'><b>Job Information</b></font>
+
+<form name=jobinfo_edit action=$pagename method=post>
+<input type=hidden name=mode value=jobinfo_submit_tab_${target_tab}>
+<input type=hidden name=jobinfo_id value=\"$jobinfo->jobinfo_id\">
+<input type=hidden name=target_tab value=exit>
+<table style=\"border-collapse: collapse;\" border=1 cellspacing=0 cellpadding=2><tr>";
+
+$tabfg="yellow";
+$tabbg="#eeeeee";
+if ($target_tab=="") $target_tab=1;
+
+if ($target_tab==1) echo "<td align=center bgcolor=$tabfg width=25%>Setup</td>";
+else echo "<td width=25% align=center bgcolor=$tabbg onclick=submit_changes(1);>Setup</td>";	
+
+if ($jobinfo_id!="") {
+	if ($target_tab==2) echo "<td width=25% align=center bgcolor=$tabfg>Other</td>";
+	else echo "<td width=25% align=center bgcolor=$tabbg onclick=submit_changes(2);>Other</td>";	
+	
+	if ($target_tab==3) echo "<td width=25% align=center bgcolor=$tabfg>Marketing</td>";
+	else echo "<td width=25% align=center bgcolor=$tabbg onclick=submit_changes(3);>Marketing</td>";	
+	
+	if ($target_tab==4) echo "<td width=25% align=center bgcolor=$tabfg>Sync</td>";
+	else echo "<td width=25% align=center bgcolor=$tabbg onclick=submit_changes(4);>Sync</td>";	
+	}
+echo "</tr><tr>
+";
+$table_disp_show="table-row";
+if ($global_browser=="IE") $table_disp_show="inline";
+if ($global_browser=="MOZILLA") $table_disp_show="table-row";
+
+if ($jobinfo_id!="") {
+	$trxres=@mysql_query("select * from bidlist_cache where jobinfo_id = '$jobinfo_id'");
+	if (@mysql_num_rows($trxres) >0) echo "<tr onclick=\"getElementById('tr1').style.display='$table_disp_show';getElementById('tr2').style.display='$table_disp_show';getElementById('tr3').style.display='$table_disp_show';getElementById('tr4').style.display='$table_disp_show';\" bgcolor=$traxxbg><td colspan=4 align=center><b>Related Traxx Records</b></td></tr>";
+	$count=1;
+	while($trxrow=@mysql_fetch_object($trxres)) {
+		echo "<tr id=\"tr$count\" style=\"display: none;\" bgcolor=$traxxbg><td><a target=traxx_win href=${pagename_up}proposals/?mode=proposal_edit&bidlist_id=$trxrow->bidlist_id><font color=blue>$trxrow->proposal_num</font></a></td><td colspan=3>$trxrow->project</td></tr>";
+		$count++;
+		}
+	}
+echo "<td colspan=4 bgcolor=#000000>";
+?>

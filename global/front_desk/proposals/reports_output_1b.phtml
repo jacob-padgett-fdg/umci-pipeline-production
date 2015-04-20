@@ -1,0 +1,47 @@
+<?
+require('header.phtml');
+
+$query_start="select bidlist_id from bidlist where 
+status = 'Active' and 
+proposal_type != 'Budget' and
+proposal_type != 'No Bid' and
+proposal_type != 'RFQ/Preq/Eleg' and 
+bid_date < now() 
+";
+
+$connector="";
+
+$query_mid="";
+if ($commercial=="on") {
+	$query_mid=$query_mid . " $connector umcgroups_id = '1' ";
+	$connector=" or ";
+	}
+
+if ($industrial=="on") {
+	$query_mid=$query_mid . " $connector umcgroups_id = '2' ";
+	$connector=" or ";
+	}
+
+if ($service=="on") {
+	$query_mid=$query_mid . " $connector umcgroups_id = '3' ";
+	$connector=" or ";
+	}
+
+if ($special_projects=="on") {
+	$query_mid=$query_mid . " $connector umcgroups_id = '4' ";
+	$connector=" or ";
+	}
+
+if ($southern_wa=="on") {
+	$query_mid=$query_mid . " $connector umcgroups_id = '5' ";
+	$connector=" or ";
+	}
+
+if ($query_mid!="") $query_start=$query_start . " and ($query_mid) ";
+
+
+
+$query=$query_start . " order by to_lead,proposal_num ";
+proposal_search_output_2($query,"Proposal Log by Group");
+
+?>

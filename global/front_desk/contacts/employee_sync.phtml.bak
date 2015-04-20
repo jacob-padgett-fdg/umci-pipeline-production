@@ -1,0 +1,78 @@
+<?
+//require_once('querylib.inc');
+mssql_connect("viewpoint","reddwarf","cl01st3r");
+mssql_select_db("Viewpoint");
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+
+
+$employees_first="select * from contacts where employee_num != '' and umc_emp = 'Y' order by employee_num";
+$emp_first_res=@mysql_query($employees_first);
+
+while ($ef_row=@mysql_fetch_object($emp_first_res)) {
+	$must_update='N';
+	$ms_qry="select * from HRRM with (NOLOCK) where PREmp = '$ef_row->employee_num'";
+	$vp_info=ms_getoneb($ms_qry);
+	if (!(vp_info)) {
+		echo "FATAL ERROR: No Viewpoint information, but has non-null employee_num!";
+		exit;
+		}
+	
+	
+	if ($vp_info->ActiveYN=='Y') $current='Y';
+	else $current='N';
+	if ($vp_info->udNickName!="") { 
+		$first_name=$vp_info->udNickName;
+		$first_name_real=$vp_info->FirstName;
+		} else { 
+		$first_name=$vp_info->FirstName;
+		$first_name_real="";
+		}
+
+	$last_name=$vp_info->LastName;
+	$employee_group=$vp_info->PRGroup;
+	
+	if ($first_name!=$ef_row->first_name) {
+		echo "$ef_row->first_name -> $first_name<br>";
+		$must_update='Y';
+		}
+	
+	if ($first_name_real!=$ef_row->first_name_real) {
+		echo "real first name: $ef_row->first_name_real -> $first_name_real<br>";
+		$must_update='Y';
+		}
+	
+	if ($last_name!=$ef_row->last_name) {
+		echo "$ef_row->last_name -> $last_name<br>";
+		$must_update='Y';
+		}
+	
+	if ($current!=$ef_row->current) {
+		echo "active: $ef_row->current -> $current<br>";
+		$must_update='Y';
+		}
+	
+	if ($employee_group!=$ef_row->employee_group) {
+		echo "group: $ef_row->employee_group -> $employee_group<br>";
+		$must_update='Y';
+		}
+	
+	if ($must_update=="Y") {
+		echo "<hr>$ef_row->first_name $ef_row->last_name - $ef_row->employee_num<br>";
+		$query="update contacts set first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , current = '$current' , employee_group = '$employee_group' where contacts_id = '$ef_row->contacts_id'";
+		@mysql_query($query);
+		}
+	}
+
+$ms_qry2="select * from HRRM with (NOLOCK) where ActiveYN = 'Y' order by PREmp";
+ms_tabledump($ms_qry2);exit;
+$ms_res2=@mssql_query($ms_qry2);
+
+while($ef_row=@mssql_fetch_object($ms_res2)) {
+	if (!(getoneb("select * from contacts where employee_num = '$ef_row->PREmp'"))) {
+		echo "Not Matched $ef_row->FirstName $ef_row->LastName ($ef_row->PREmp)<br>";
+		}
+	}
+
+
+?>

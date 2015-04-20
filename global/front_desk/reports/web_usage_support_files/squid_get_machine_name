@@ -1,0 +1,11 @@
+#!/bin/bash
+MACHINE_NAME=`/usr/bin/nmblookup -A $1 | grep '<00>' | grep -v '<GROUP>' | cut -d\  -f1`
+MACHINE_NAME=`echo $MACHINE_NAME`
+
+if [ -z "$MACHINE_NAME" ]
+then
+	MACHINE_NAME="UNKNOWN_COMPUTER"
+fi
+
+echo $MACHINE_NAME
+

@@ -1,0 +1,51 @@
+<?
+require('header.phtml');
+require('querylib.inc');
+
+if ($search_items!="") {
+	$search_items=escapeshellcmd($search_items);
+	$search_items_list=$search_items;
+	$search_items_array=explode(" ",$search_items);
+	$seperator="";
+	$query="select * from contacts where is_company = 'Y' and (";
+	while($row=@each($search_items_array)) {
+		$query=$query . $seperator . " display_name like '%$row[1]%' ";
+		$seperator=" or ";
+		}
+	$query=$query . ") order by alphasort";
+	contact_table($query);
+	
+	$show_create_button=1;
+	} else {
+	$show_create_button=0;
+	}
+
+
+echo "
+<font size=+1><b>First search the existing companies to make sure it doesn't exist already</b></font><br>
+
+<form name=company_search method=post action=\"$pagename\">
+<input type=hidden name=mode value=company_new_search>
+<input type=hidden name=contact_type value=\"company\">
+<input type=text name=search_items value=\"$search_items_list\">
+<input type=submit value=\"Search\">
+</form>
+<script>
+document.company_search.search_items.focus();
+</script>
+";
+
+if ($show_create_button==1) {
+	echo "<p>If you don't see the company listed anywhere above, you may add a new record,<br>but <b><font size=+1>please be sure the company does not already exist!</font></b><p>
+	<a href=$pagename?mode=contacts_edit&is_company=Y&contact_type=company><font color=blue>Add a company</font></a><p>";
+	}
+
+
+
+
+
+
+
+
+
+?>

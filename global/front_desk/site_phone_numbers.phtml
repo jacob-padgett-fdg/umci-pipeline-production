@@ -1,0 +1,97 @@
+<?
+if ($jobinfo_id=="") die("Oops: job information error. Please contact your system administrator.");
+$jobinfo_id=addslashes($jobinfo_id);
+
+
+
+if ($delete_phone_number_id>0) {
+	$delete_phone_number_id=addslashes($delete_phone_number_id);
+	$info=getoneb("select * from jobinfo_phone_numbers where phone_number_id = '$delete_phone_number_id'");
+	if ($info->jobinfo_id!=$jobinfo_id) die('Application error! Job information not matching. Please contact your system administrator!');
+	
+	@mysql_query("delete from jobinfo_phone_numbers where phone_number_id = '$delete_phone_number_id'");
+	$info="";
+	}
+
+if ($edit_phone_number_id>0) {
+	$edit_phone_number_id=addslashes($edit_phone_number_id);
+	$info=getoneb("select * from jobinfo_phone_numbers where phone_number_id = '$edit_phone_number_id'");
+	$submit_text="Save";
+	} else {
+	$submit_text='Add';
+	}
+
+
+if ($add_number=='1') {
+	if (($description=="")||($phone_number=="")) echo "ERROR: Description and phone number must be filled in..";
+	else {
+		if ($sort_priority=="") $sort_priority=5;
+	
+		$description=addslashes($description);
+		$phone_number=addslashes($phone_number);
+		$extension=addslashes($extension);
+		$sort_priority=addslashes($sort_priority);
+		if ($phone_number_id>0) {
+			$phone_number_id=addslashes($phone_number_id);
+			$query="update jobinfo_phone_numbers set jobinfo_id = '$jobinfo_id', description = '$description', phone_number = '$phone_number', extension = '$extension', sort_priority = '$sort_priority' where phone_number_id = '$phone_number_id'";
+			} else {
+			$query="insert into jobinfo_phone_numbers set jobinfo_id = '$jobinfo_id', description = '$description', phone_number = '$phone_number', extension = '$extension', sort_priority = '$sort_priority'";
+			}
+		@mysql_query($query);
+		}
+	}
+
+
+
+echo "
+<table border=0 cellspacing=0 cellpadding=2>
+<tr><td>
+	Description
+</td><td>
+	Phone #
+</td><td>
+	Extension
+</td><td>
+	Sort
+</td></tr>
+
+<tr><td>
+	<input type=text size=20 id=\"description\" value=\"$info->description\">
+	<input type=hidden id=phone_number_id value=\"$info->phone_number_id\">
+</td><td>
+	<input type=text size=20 id=\"phone_number\" value=\"$info->phone_number\">
+</td><td>
+	<input type=text size=5 id=\"extension\" value=\"$info->extension\">
+</td><td>
+	<input type=text size=2 id=\"sort_priority\" value=\"$info->sort_priority\">
+</td><td>
+	<input type=button onclick=\"add_phone_number()\" value=\"$submit_text\">
+</td></tr>
+";
+
+if ($edit_phone_number_id>0) {
+	echo "<br><center><a href=\"javascript:phone_number_delete($info->phone_number_id);\"><font color=blue><i>delete</i></font></a></center>";
+	exit;
+	}
+
+$query="select * from jobinfo_phone_numbers where jobinfo_id = '$jobinfo_id' order by sort_priority";
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			$row->description
+		</td><td>
+			$row->phone_number
+		</td><td>
+			$row->extension
+		</td><td>
+			$row->sort_priority
+		</td><td>
+			<a href=\"javascript:phone_number_edit($row->phone_number_id);\"><font color=blue><i>edit</i></font></a>
+		</td></tr>";
+	}
+echo "</table>";
+
+
+
+
+?>

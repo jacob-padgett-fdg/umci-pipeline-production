@@ -1,0 +1,246 @@
+<?
+if (!($timesheet_data_entry_check)) die_security();
+
+//////////// Figure out the employee ////////////////////////
+$last_timesheet_data_entry_selected_employee=$timesheet_data_entry_selected_employee;
+if ($timesheet_data_entry_selected_employee_set!="") {
+	session_register('timesheet_data_entry_selected_employee');
+	$timesheet_data_entry_selected_employee=addslashes($timesheet_data_entry_selected_employee_set);
+	}
+$employee_info=getoneb("select * from contacts where employee_num = '$timesheet_data_entry_selected_employee' and current = 'Y'");
+$timesheet_data_entry_selected_employee=$employee_info->employee_num;
+
+//////////// Pick a sane default for the week ending ////////
+if ($timesheet_data_entry_week_ending=="") $timesheet_data_entry_week_ending=date('m-d-Y',strtotime('3 days ago'));
+//////////// Use the requested week ending //////////////////
+if ($timesheet_data_entry_week_ending_set!="") {
+	$dinfo=date_info($timesheet_data_entry_week_ending_set);
+	session_register('timesheet_data_entry_week_ending');
+	$timesheet_data_entry_week_ending=$dinfo->week_end;
+	}
+//// ...and sanitize it..
+$date_info=date_info($timesheet_data_entry_week_ending);
+$timesheet_data_entry_week_ending=$date_info->week_end;
+$next_week_link="$pagename?mode=$mode&timesheet_data_entry_week_ending_set=$date_info->next_week_end";
+$last_week_link="$pagename?mode=$mode&timesheet_data_entry_week_ending_set=$date_info->last_week_end";
+$timesheet_monday=date('m-d-Y',strtotime('5 days ago',strtotime("$date_info->week_end_mysql")));
+
+//////////// Sort out the hours fields //////////////////////
+if ($timesheet_data_entry_st_hours_set!="") $timesheet_data_entry_st_hours=addslashes($timesheet_data_entry_st_hours_set);
+if ($timesheet_data_entry_ot_hours_set!="") $timesheet_data_entry_ot_hours=addslashes($timesheet_data_entry_ot_hours_set);
+if ($timesheet_data_entry_dt_hours_set!="") $timesheet_data_entry_dt_hours=addslashes($timesheet_data_entry_dt_hours_set);
+if ($timesheet_data_entry_st_hours=="0") $timesheet_data_entry_st_hours="";
+if ($timesheet_data_entry_ot_hours=="0") $timesheet_data_entry_ot_hours="";
+if ($timesheet_data_entry_dt_hours=="0") $timesheet_data_entry_dt_hours="";
+if ($last_timesheet_data_entry_selected_employee!=$timesheet_data_entry_selected_employee) {
+	session_register('timesheet_data_entry_st_hours');$timesheet_data_entry_st_hours="";
+	session_register('timesheet_data_entry_ot_hours');$timesheet_data_entry_ot_hours="";
+	session_register('timesheet_data_entry_dt_hours');$timesheet_data_entry_dt_hours="";
+	}
+
+echo"<a href=$pagename><font color=blue>Return to main</font></a>
+
+<form name=batch_employee_select method=post action=$pagename>
+<input type=hidden name=mode value=timesheet_data_entry_batch_employee_select>
+
+<table border=1><tr><td>
+<table border=0>
+<tr><td>
+	<b>Select employee:</b>
+</td><td>
+	<input name=timesheet_data_entry_selected_employee_set type=text size=6 onchange=submit() value=\"$timesheet_data_entry_selected_employee\">
+</td></tr>
+
+<tr><td>
+	<b>For Date</b>
+</td><td>
+	<a href=$last_week_link><font color=blue>&lt;</font></a><input type=text size=10 name=timesheet_data_entry_week_ending_set value=\"$timesheet_data_entry_week_ending\" onchange=\"submit()\"><a href=$next_week_link><font color=blue>&gt;</font></a>";echo"
+</td></tr>
+
+<tr><td colspan=2 bgcolor=#dddddd align=center>
+	<b>Expected Hours</b>
+</td></tr>
+
+<tr><td>
+	<b>ST</b>
+</td><td>
+	<input type=text size=3 name=timesheet_data_entry_st_hours_set onchange=submit() value=\"$timesheet_data_entry_st_hours\">
+</td></tr>
+
+<tr><td>
+	<b>OT</b>
+</td><td>
+	<input type=text size=3 name=timesheet_data_entry_ot_hours_set onchange=submit() value=\"$timesheet_data_entry_ot_hours\">
+</td></tr>
+
+<tr><td>
+	<b>DT</b>
+</td><td>
+	<input type=text size=3 name=timesheet_data_entry_dt_hours_set onchange=submit() value=\"$timesheet_data_entry_dt_hours\">
+</td></tr>
+
+
+</table>
+</td></tr>
+</table>
+
+
+</form>
+
+<script>
+function load_timesheet(tsid) {
+	document.location='$pagename?mode=timesheet_load&jump_to_day=$timesheet_monday&come_back_to=timesheet_data_entry_batch_employee_select&ts_id=' + tsid;
+	}
+function create_timesheet() {
+	document.batch_employee_select.mode.value='timesheet_data_entry_timesheet_create';
+	document.batch_employee_select.submit();
+	}
+</script>
+";
+
+if (($timesheet_data_entry_st_hours_set!="")&&($timesheet_data_entry_st_hours_set!=0)) {
+	echo "<script>
+	document.batch_employee_select.timesheet_data_entry_ot_hours_set.focus();
+	</script>
+	";
+	}
+if (($timesheet_data_entry_ot_hours_set!="")&&($timesheet_data_entry_ot_hours_set!=0)) {
+	echo "<script>
+	document.batch_employee_select.timesheet_data_entry_dt_hours_set.focus();
+	</script>
+	";
+	}
+if ($timesheet_data_entry_selected_employee=="") {
+	echo "<script>
+	document.batch_employee_select.timesheet_data_entry_selected_employee_set.focus();
+	</script>
+	";
+	}
+if ($last_timesheet_data_entry_selected_employee!=$timesheet_data_entry_selected_employee) {
+	echo "<script>
+	document.batch_employee_select.timesheet_data_entry_st_hours_set.focus();
+	</script>
+	";
+	}
+
+$create_ts="false";
+$edit_ts="false";
+if ($employee_info) {
+	echo "<h3>Timesheet Info for $employee_info->display_name ($employee_info->employee_num)</h3>";
+	if ($date_info) {
+		$ts_info=getoneb("select * from timesheet_index where employee_id = '$employee_info->contacts_id' and week_ending = '$date_info->week_end_mysql'");
+		
+		if (!($ts_info)) {
+			if ( 
+				($timesheet_data_entry_st_hours < 1) &&
+				($timesheet_data_entry_st_hours < 1) &&
+				($timesheet_data_entry_st_hours < 1)
+				) {
+				echo "Please fill in the expected hours...";
+				} else {
+				echo "No Timesheet, Hit \"C\" to create.";
+				$create_ts="ok";
+				}
+			} else {
+			$timesheet_summary=timesheet_summary_info($ts_info->timesheet_id);
+			$we=invali_date($ts_info->week_ending);
+			$error=FALSE;
+			$st_bg="white";
+			$ot_bg="white";
+			$dt_bg="white";
+			if ($timesheet_summary->st!=$timesheet_data_entry_st_hours) { $error=TRUE; $st_bg="red"; }
+			if ($timesheet_summary->ot!=$timesheet_data_entry_ot_hours) { $error=TRUE; $ot_bg="red"; }
+			if ($timesheet_summary->dt!=$timesheet_data_entry_dt_hours) { $error=TRUE; $dt_bg="red"; }
+			
+			//if ($error) {
+			//	echo "<script>alert('The expected time, and actual time for this timesheet do not match!');</script>";
+			//	}
+			
+			echo "
+			<table border=1 cellspacing=0 cellpadding=5>
+			<tr><td colspan=2 bgcolor=#dddddd align=center>
+				<font size=+1><b>Timesheet&nbsp;Summary</b></font>
+			</td></tr>
+			
+			<tr><td>
+						<b>Employee&nbsp;Name</b>
+			</td><td>
+				$employee_info->display_name
+			</td></tr>
+			
+			<tr><td>
+				<b>Week&nbsp;Ending</b>
+			</td><td>
+				$we
+			</td></tr>
+			
+			<tr><td>
+				<b>Timesheet&nbsp;Status</b>
+			</td><td>
+				$ts_info->status&nbsp;&nbsp;";
+				if ($ts_info->status=="complete") {
+					echo "<a href=$pagename?mode=timesheet_data_entry_mark_as_new&ts_id=$ts_info->timesheet_id><font color=blue>retrieve</font></a>";
+					}
+				echo"
+			</td></tr>
+			
+			<tr><td>
+				<b>Total&nbsp;Hours</b>
+			</td><td>
+				$timesheet_summary->hours
+			</td></tr>
+			
+			<tr bgcolor=$st_bg><td>
+				<b>Standard&nbsp;Time&nbsp;Hours</b>
+			</td><td>
+				$timesheet_summary->st
+			</td></tr>
+			
+			<tr bgcolor=$ot_bg><td>
+				<b>Over&nbsp;Time&nbsp;Hours</b>
+			</td><td>
+				$timesheet_summary->ot
+			</td></tr>
+			
+			<tr bgcolor=$dt_bg><td>
+				<b>Double&nbsp;Time&nbsp;Hours</b>
+			</td><td>
+				$timesheet_summary->dt
+			</td></tr>
+			
+			<tr><td colspan=2 align=right>
+			";
+			if ($ts_info->status!='new') $editlinktext='View';
+			else $editlinktext='Edit';
+			echo"
+				<a title=\"Hit 'c' to create or edit timesheet\" href=\"javascript:timesheet_load($ts_info->timesheet_id)\"><font color=blue><i>$editlinktext</i></font></a>
+			</td></tr>
+			</table>
+			";
+			$edit_ts="ok";
+			}
+		}
+	}
+
+$keylist=array(
+	'esc'=>"document.location='$pagename'",
+	'a'=>"alert('a is for apple')",
+	'b'=>"alert('b is for boy')",
+	'u'=>"alert('u is for University Mechanical Contractors, Inc.')",
+	'lar'=>"document.location='$last_week_link'",
+	'rar'=>"document.location='$next_week_link'",
+	'e'=>"document.batch_employee_select.timesheet_data_entry_selected_employee_set.select()",
+	'+'=>"document.batch_employee_select.timesheet_data_entry_selected_employee_set.select()",
+	's'=>"document.batch_employee_select.timesheet_data_entry_st_hours_set.select()",
+	'o'=>"document.batch_employee_select.timesheet_data_entry_ot_hours_set.select()",
+	'd'=>"document.batch_employee_select.timesheet_data_entry_dt_hours_set.select()",
+	'w'=>"document.batch_employee_select.timesheet_data_entry_week_ending_set.select()"
+	);
+if ($create_ts=="ok") {
+	$keylist=array_merge($keylist,array('c'=>"create_timesheet()"));
+	}
+if ($edit_ts=="ok") {
+	$keylist=array_merge($keylist,array('c'=>"load_timesheet($ts_info->timesheet_id)"));
+	}
+javascript_hotkeys($keylist);
+?>

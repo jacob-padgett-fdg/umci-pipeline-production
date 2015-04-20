@@ -1,0 +1,90 @@
+<?
+
+$creator=$global_user_id;
+$status=addslashes($status);
+$company_id=addslashes($company_id);
+$customer_contact_id=addslashes($customer_contact_id);
+$site_id=addslashes($site_id);
+$agreement_type_id=addslashes($agreement_type_id);
+$agreement_printed_title=addslashes($agreement_printed_title);
+$years=addslashes($years);
+$expected_start_date=vali_date($expected_start_date);
+$expected_start_date_override=vali_date($expected_start_date_override);
+$total_cost=clean_int($total_cost);
+$total_value=clean_int($total_value);
+$description=addslashes($description);
+$notes=addslashes($notes);
+$agreement_name=addslashes($agreement_name);
+if ($billing_frequency=="") $billing_frequency="Quarterly";
+$billing_frequency=addslashes($billing_frequency);
+
+if (!(is_admin())) {
+	$forced_total_value="0.00";
+	} else {
+	$forced_total_value=clean_float($forced_total_value);
+	}
+
+if ($agreement_id!="") {
+	$agreement_id=escapeshellcmd($agreement_id);
+	$query="update svc_agreement_index set
+	agreement_name = '$agreement_name',
+	agreement_printed_title = '$agreement_printed_title',
+	status = '$status',
+	company_id = '$company_id',
+	customer_contact_id = '$customer_contact_id',
+	site_id = '$site_id',
+	agreement_type_id = '$agreement_type_id',
+	years = '$years',
+	expected_start_date = '$expected_start_date',
+	expected_start_date_override = '$expected_start_date_override',
+	total_cost = '$total_cost',
+	total_value = '$total_value',
+	forced_total_value = '$forced_total_value',
+	billing_frequency = '$billing_frequency',
+	description = '$description',
+	agreement_notes = '$agreement_notes'
+	where agreement_id = '$agreement_id'";
+	} else {
+	$c_info=getone("select * from contacts where contacts_id = '$customer_contact_id'");
+	$agreement_name=$c_info->company . " - " . $c_info->display_name;
+	$agreement_name=addslashes($agreement_name);
+	$status="New";
+	$query="insert into svc_agreement_index set
+	creator = '$creator',
+	agreement_name = '$agreement_name',
+	agreement_printed_title = '$agreement_printed_title',
+	status = '$status',
+	company_id = '$company_id',
+	customer_contact_id = '$customer_contact_id',
+	site_id = '$site_id',
+	agreement_type_id = '$agreement_type_id',
+	years = '$years',
+	expected_start_date = '$expected_start_date',
+	expected_start_date_override = '$expected_start_date_override',
+	total_cost = '$total_cost',
+	total_value = '$total_value',
+	forced_total_value = '$forced_total_value',
+	billing_frequency = '$billing_frequency',
+	description = '$description',
+	agreement_notes = '$agreement_notes'
+	";
+	}
+
+$res=@mysql_query($query);
+if (!($res)) die("error:<hr>$query<hr>");
+if ($target=="") $target="svc_agreement_edit";
+if (($agreement_id=="")||($agreement_id==0)) $agreement_id=@mysql_insert_id();
+
+if ($target=="svc_agreement_edit") {
+	forward("svc_agreement_edit&agreement_id=$agreement_id");
+	exit;
+	}
+
+
+
+forward("main");
+exit;
+
+
+
+?>

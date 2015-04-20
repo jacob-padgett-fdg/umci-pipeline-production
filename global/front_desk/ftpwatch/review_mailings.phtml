@@ -1,0 +1,49 @@
+<?
+
+
+$start_date=date('Y/m/d',strtotime('1 week ago'));
+//die($start_date);
+$res=@mysql_query("select * from webmail_queue where subject = 'Updated files on UMC\'s FTP Site' and create_time >= '$start_date' order by create_time desc");
+echo "
+<a href=$pagename?mode=main><font color=blue>Main Menu</font></a><p>
+
+
+<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=$fd_color_4><td>
+	Contact
+</td><td>
+	Email
+</td><td>
+	Subject
+</td><td>
+	Created
+</td><td>
+	Sent
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$contact=getoneb("select * from contacts where contacts_id = '$row->contacts_id'");
+	echo "<tr><td>
+			$contact->display_name
+		</td><td>
+			$row->email
+		</td><td>
+			<a href=$pagename?mode=view_mailing&webmail_queue_id=$row->webmail_queue_id><font color=blue>$row->subject</font></a>
+		</td><td>
+			$row->create_time
+		</td><td>
+			$row->sent
+		</td></tr>";
+	}
+
+echo "</table>";
+
+
+
+
+
+
+
+
+?>

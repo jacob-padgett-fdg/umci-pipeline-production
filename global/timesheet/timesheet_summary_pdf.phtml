@@ -1,0 +1,28 @@
+<?
+require_once("timesheet_include.inc");
+require_once('timesheet_libs_pdf.inc');
+require_once('pdf_lib2.inc');
+
+set_time_limit(20);
+
+//-----------------------------------------------------------------------------------
+//	Document Setup...
+//-----------------------------------------------------------------------------------
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+// This function sets up the page header
+$pdf=pdf_timesheet_2($pdf,$timesheet_info->timesheet_id);
+
+
+
+$pdf->ezStream();
+exit;
+
+//-----------------------------------------------------------------------------------
+//	Page Printing
+//-----------------------------------------------------------------------------------
+$page_info=pdf_timesheet_1($page_info,$timesheet_info->timesheet_id);
+pdf_end($page_info);
+
+?>

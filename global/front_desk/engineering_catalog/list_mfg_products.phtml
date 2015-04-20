@@ -1,0 +1,21 @@
+<?
+require('header.phtml');
+require('querylib.inc');
+
+$product_id=escapeshellcmd($record_id);
+$mfg_info=getone("select * from engineering_products where product_id = '$product_id'");
+
+echo "
+<a href=$pagename?mode=mfg_info&record_id=$product_id><font color=blue>Return to mfg info</font></a><br>
+<h2>$mfg_info->mfg_name products:</h2><hr>
+<form name=blahblahblah method=post action=$pagename>
+<input type=hidden name=mode value=product_edit>
+";
+
+clicktable("select product_id,mfg_name as 'Manufacturer',rep_company as 'Rep Company' ,
+name as 'Products/Description' from engineering_products
+where mfg_name = '$mfg_info->mfg_name'","#444444","1");
+
+echo "</form>";
+
+?>

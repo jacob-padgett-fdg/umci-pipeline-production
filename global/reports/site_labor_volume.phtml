@@ -1,0 +1,118 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+
+if ($week_ending!="") {
+	$week_info=date_info($week_ending);
+	$we_date=$week_info->week_end;
+	//$we_date=invali_date(vali_date($week_ending, '-'),'/');
+	} else {
+	$we_date=date('m/d/Y',strtotime('last saturday'));
+	}
+
+
+echo "<form name=labor_report method=get action=$pagename>
+<input type=hidden name=mode value=report_show>
+<input type=hidden name=report_name value=\"site_labor_volume\">
+For the Week Ending: ";datebox("$we_date","labor_report.week_ending",'','document.labor_report.submit()');echo"
+</form>
+";
+
+// Check if it's closed yet using prpc
+$payroll_closed=ms_getoneb("select * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = $employee_group and PREndDate = '$we_date' and Status = 1");
+
+if (!($payroll_closed)) {
+	echo "<h3><font color=red>Warning! It looks like payroll for this week is still open and subject to change!!!!</font></h3>";
+	}
+
+// Cycle through the list of whatever viewpoint has for the week...
+$query="
+SELECT	SUM(PRTH.Hours) AS JobHours, PRTH.Job, PRTH.Phase, PRTH.Class, PRCM.udtrade
+FROM	PRTH with (NOLOCK)
+RIGHT OUTER JOIN PRCM with (NOLOCK) 
+		ON PRTH.PRCo = PRCM.PRCo AND PRTH.Craft = PRCM.Craft
+WHERE	(PRTH.PREndDate = '$we_date') AND (PRTH.Job IS NOT NULL) AND (PRTH.PRGroup = 1) and ( PRTH.PRCo = 1 ) and 
+( 
+PRTH.Phase not like '%-999%'
+)
+GROUP BY PRTH.Job, PRTH.Phase, PRTH.Class, PRCM.udtrade
+ORDER BY JobHours DESC
+";
+//$query="select top 5 * from PRTH";
+//ms_tabledump($query);exit;
+$we_date_mysql=vali_date($we_date);
+@mysql_query("delete from vp_field_labor_volume_cache where week_ending = '$we_date_mysql'");
+$last_emp='0';
+$res=@mssql_query($query);
+while ($row=@mssql_fetch_object($res)) {
+	//ms_tabledump("select SUM(Hours) as hours from PRTH where PostDate = '$we_date' and PRTH.Job = '$row->job_num' and PRGroup = '1' and PRCo = 1"); 
+	//exit;
+	$job=substr($row->Job,0,5);
+	$contract=($job + 1) - 1;
+	$jobinfo=getoneb("select * from jobinfo where contract_num = '$contract'");
+	if (!($jobinfo)) $jobinfo=getoneb("select * from jobinfo where contract_num = '$job'");
+	$phase=substr($row->Phase,0,5);
+	$hours=round($row->JobHours);
+	$craft=getcraft($phase);
+	$insres=@mysql_query("insert into vp_field_labor_volume_cache set
+					jobinfo_id = '$jobinfo->jobinfo_id',
+					job_num = '$job',
+					phase = '$phase',
+					class = '$row->Class',
+					trade = '$row->udtrade',
+					week_ending = '$we_date_mysql',
+					hours = '$hours'");
+	if (!($insres)) die("foo inserting data");
+	}
+
+
+
+//tabledump("select *,sum(hours) as total_hours, sum(hours)/40 as men from vp_field_labor_volume_cache where job_num like '0%' group by job_num order by total_hours desc");
+
+$res=@mysql_query("select *,sum(hours) as total_hours, sum(hours)/40 as men from vp_field_labor_volume_cache where job_num like '0%' and week_ending = '$we_date_mysql' group by job_num order by total_hours desc");
+echo "<pre>";
+while ($row=@mysql_fetch_object($res)) {
+	//echo "<hr>select SUM(Hours) as hours from PRTH where ( PostDate = '$we_date' ) and ( PRTH.Job like '$row->job_num%' ) and ( PRGroup = '1' ) and ( PRCo = '1' )<hr>"; 
+	$saturday=ms_getoneb("select SUM(Hours) as hours from PRTH with (NOLOCK) where ( PREndDate = '$we_date' ) and ( PostDate = '$we_date' ) and ( PRTH.Job like '$row->job_num%' ) and ( PRGroup = '1' ) and ( PRCo = '1' )"); 
+	$sat_text="";
+	if ($saturday->hours > 0) $sat_text="   Sat Hrs: $saturday->hours (" . round($saturday->hours / 40,1) . " workers)\r\n";
+	if ($row->total_hours < 1) continue;
+	$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$row->jobinfo_id'");
+	$row->men=round($row->men,1);
+	$pm_info=getoneb("select * from contacts where contacts_id = '$jobinfo->project_manager_id'");
+	echo "
+-----------------------------
+Job #: $jobinfo->contract_num
+$jobinfo->display_name
+$jobinfo->job_site_address
+$sat_text   Hours: $row->total_hours
+   Workers (avg): $row->men
+   PM: $pm_info->first_name $pm_info->last_name";
+$fres=@mysql_query("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo->jobinfo_id'");  
+while ($frow=@mysql_fetch_object($fres)) {
+	$f_info=getoneb("select * from contacts where contacts_id = '$frow->foreman_id'");
+	$general="";
+	$plumb="";
+	$pipe="";
+	$sheet="";
+	$industrial="";
+	$sep="";
+	if ($frow->general=='Y') { $general="gen";$sep="/"; }
+	if ($frow->plumb=='Y') { $plumb="${sep}plumb";$sep="/"; }
+	if ($frow->pipe=='Y') { $pipe="${sep}pipe";$sep="/"; }
+	if ($frow->sheet=='Y') { $sheet="${sep}sheet";$sep="/"; }
+	if ($frow->industrial=='Y') { $industrial="${sep}indst"; }
+	echo "\r\n   Foreman: $f_info->first_name $f_info->last_name\r\n            ($general$plumb$pipe$sheet$industrial)";
+		}
+   
+	}
+mh_navs_footer();
+
+?>

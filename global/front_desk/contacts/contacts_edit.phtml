@@ -1,0 +1,59 @@
+<?
+// GPH 2014-12-10 Web Password should not be a required field if contact is a UMC employee.
+//
+//require('querylib.inc');
+require('header.phtml');
+
+
+if ($contacts_id == "") {
+	$new=1;
+	$contact->contact_type=$contact_type;
+	$contact->current='on';
+	switch ($contact_type) {
+		case "company":
+							$is_company="Y";
+							$contact->is_company="Y";
+							break;;
+		case "site":
+							if ($company_id!="") $company_id=escapeshellcmd($company_id);
+							else die("ERROR: Contact type 'site' selected, but no company_id specified!");
+							$contact->company_id=$company_id;
+							$is_company="Y";
+							$contact->is_company="Y";
+							$c_info=getone("select * from contacts where contacts_id = '$company_id'");
+							if ($c_info->contact_type!="company") die("ERROR: Invalid company_id specified for new site record (parent ! company).");
+							break;;
+		case "contact":
+							if ($company_id!="") $company_id=escapeshellcmd($company_id);
+							else die("ERROR: Contact type 'contact' selected, but no company_id specified!");
+							$contact->company_id=$company_id;
+							$is_company="N";
+							$contact->is_company="N";
+							$c_info=getone("select * from contacts where contacts_id = '$company_id'");
+							if ($c_info->contact_type!="company") die("ERROR: Invalid company_id specified for new contact record (parent ! company).");
+							break;;
+		default:
+							$contact_type="error";
+							die("ERROR: No contact_type specified! Cannot create contact!!");
+							break;;
+		
+		}
+
+	} else {
+	$new=0;
+	$contacts_id=addslashes($contacts_id);
+	$contact=getone("select * from contacts where contacts_id = '$contacts_id'");
+	$c_info=getoneb("select * from contacts where contacts_id = '$contact->company_id'");
+	contacts_hist_add($contact->contacts_id);
+	$contact_type=$contact->contact_type;
+	}
+
+if ($new=="1") {
+	echo "<p><h3>Please be careful to avoid adding duplicate contacts!</h3><hr>";
+	$contact->current="Y";
+	}
+
+include("contacts_edit_${contact_type}.phtml");
+
+require('footer.phtml');
+?>

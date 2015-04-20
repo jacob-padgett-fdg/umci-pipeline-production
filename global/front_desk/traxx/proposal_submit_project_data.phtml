@@ -1,0 +1,86 @@
+<?
+$start_date=vali_date($start_date);
+$complete_date=vali_date($complete_date);
+$engineer_budget=clean_int($engineer_budget);
+$approx_total_budget=clean_int($approx_total_budget);
+$rom=clean_int($rom);
+$rom_hrs_plumb=clean_int($rom_hrs_plumb);
+$rom_hrs_fit=clean_int($rom_hrs_fit);
+$rom_hrs_sheet=clean_int($rom_hrs_sheet);
+$rom_hrs_mill_rights=clean_int($rom_hrs_mill_rights);
+$rom_hrs_iron=clean_int($rom_hrs_iron);
+$rom_hrs_carpenter=clean_int($rom_hrs_carpenter);
+$rom_hrs_misc=clean_int($rom_hrs_misc);
+$bld_square_feet=clean_int($bld_square_feet);
+$bld_stories=clean_int($bld_stories);
+$comments=addslashes($comments);
+
+if ($probability=="") $probability="Null";
+else $probability=clean_int($probability);
+
+$query_data=$query_data . "$data_seperator
+start_date = '$start_date',
+complete_date = '$complete_date',
+engineer_budget = '$engineer_budget',
+approx_total_budget = '$approx_total_budget',
+rom = '$rom',
+probability = $probability,
+rom_hrs_plumb = '$rom_hrs_plumb',
+rom_hrs_fit = '$rom_hrs_fit',
+rom_hrs_sheet = '$rom_hrs_sheet',
+rom_hrs_mill_rights = '$rom_hrs_mill_rights',
+rom_hrs_iron = '$rom_hrs_iron',
+rom_hrs_carpenter = '$rom_hrs_carpenter',
+rom_hrs_misc = '$rom_hrs_misc',
+bld_square_feet = '$bld_square_feet',
+bld_stories = '$bld_stories',
+comments = '$comments'";
+
+$data_seperator=",";
+
+$warn_message="";
+$warn_sep="";
+
+if ($start_date=="") {
+	$warn_message=$warn_message . $warn_sep . "start date";
+	$warn_sep=",";
+	}
+if ($complete_date=="") {
+	$warn_message=$warn_message . $warn_sep . "complete date";
+	$warn_sep=",";
+	}
+if ($probability=="Null") {
+	$warn_message=$warn_message . $warn_sep . "probability";
+	$warn_sep=",";
+	}
+if ($rom=="") {
+	$warn_message=$warn_message . $warn_sep . "approx mechanical";
+	$warn_sep=",";
+	}
+
+if (($warn_message!="")&&
+	($target!="reload")&&
+	($bid_info->status!="Dead Lead")&&
+	($bid_info->status!="No Bid")) {
+	echo "<script>alert('Warning: Important information missing ($warn_message).');</script>";
+	}
+
+
+
+if ($proposal_notes!="") {
+	$bidlist_log_type=addslashes($bidlist_log_type);
+
+	$proposal_notes=addslashes($proposal_notes);
+	$pnquery="insert into bidlist_log set 
+	bidlist_id = '$bidlist_id',
+	type = '$bidlist_log_type',
+	created = now(),
+	ctime = now(),
+	creator = '$global_user_id',
+	comment = '$proposal_notes'";
+	@mysql_query($pnquery);
+	}
+
+
+
+?>

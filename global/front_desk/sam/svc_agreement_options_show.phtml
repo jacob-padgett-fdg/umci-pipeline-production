@@ -1,0 +1,18 @@
+<?
+
+echo "
+<script>
+function new_option(option_type) {
+	open('$pagename?mode=svc_agreement_option_add_' + option_type + '&agreement_id=$agreement_info->agreement_id','new_option_win','width=400,height=400');
+	}
+</script>
+";
+
+include("svc_agreement_option_meter_hood_show.phtml");
+include("svc_agreement_option_misc_charges_show.phtml");
+include("svc_agreement_option_truck_charges_show.phtml");
+include("svc_agreement_option_mobilization_fee_show.phtml");
+echo "<table border=1 cellpadding=2 cellspacing=0 width=90%><tr bgcolor=#eeeeee><td width=100%>&nbsp;</td></tr></table>";
+
+
+?>

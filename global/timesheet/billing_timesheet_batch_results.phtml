@@ -1,0 +1,60 @@
+<?
+
+require_once('timesheet_libs_pdf.inc');
+require_once('pdf_lib2.inc');
+if (!($billing_check)) die("ERROR: Security Violation! The authorities are being notified!");
+$week_ending=vali_date($week_ending);
+set_time_limit(600);
+
+
+
+function print_billing_batch_job ($pdf,$job_num,$week_ending) {
+	if ($job_num=="") return $pdf;
+	$job_info=is_viewpoint_job($job_num);
+	if (!($job_info)) return $pdf;
+	$query="select * from timesheet_time,timesheet_index where timesheet_time.timesheet_id = timesheet_index.timesheet_id and timesheet_time.week_ending = '$week_ending' and job_num like '$job_info->job%' and status = 'posted' group by timesheet_time.timesheet_id order by timesheet_index.employee_num";
+	//echo "<hr>$query<hr>";
+	$res=@mysql_query($query);
+	$rowcount=@mysql_num_rows($res);
+	if ($rowcount==0) return $pdf;
+	//$page_info=pdf_cover_page($page_info,"$job_num");
+	$pdf=pdf_cover_page($pdf,"$job_num");
+	//echo "$page_info=pdf_cover_page($page_info,\"$job_num\")<hr>";
+
+	//-----------------------------------------------------------------------------------
+	//	Page Printing
+	//-----------------------------------------------------------------------------------
+	
+	while($row=@mysql_fetch_object($res)) {
+		$pdf=pdf_timesheet_2($pdf,$row->timesheet_id,$job_info->job);
+		}
+	return $pdf;
+	}
+
+
+
+
+
+//-----------------------------------------------------------------------------------
+//	Document Setup...
+//-----------------------------------------------------------------------------------
+
+//$page_info=pdf_page_info_create($global_user->pref_paper_size);
+//$page_info=pdf_start($page_info);
+
+
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+$query1="select * from jobinfo where contract_type != 'Fixed Price' and contract_type != '' order by contract_num";
+$res1=@mysql_query($query1);
+while($row1=@mysql_fetch_object($res1)) {
+	//echo "print_billing_batch_job ($page_info,$row1->contract_num,$week_ending)<hr>";
+	$pdf=print_billing_batch_job ($pdf,$row1->contract_num,$week_ending);
+	}
+
+$pdf->ezStream();
+
+//pdf_end($page_info);
+
+?>

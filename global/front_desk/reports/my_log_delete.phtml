@@ -1,0 +1,13 @@
+<?
+if ($my_log_id!="") {
+	$my_log_id=addslashes($my_log_id);
+	} 
+$my_log_info=getoneb("select * from front_desk_my_log where my_log_id = '$my_log_id' and contacts_id = '$global_user_id'");
+	
+if (!($my_log_info)) {
+	die("Application error (2112443)!");
+	}
+@mysql_query("update front_desk_my_log set deleted = 'Y' where my_log_id = '$my_log_info->my_log_id'");
+forward("$mode&report_name=my_log");
+
+?>

@@ -1,0 +1,38 @@
+<?
+//tabledump("select * from svc_agreement_documents where agreement_id = '$agreement_info->agreement_id' order by create_date desc");
+$query="select * from svc_agreement_documents where agreement_id = '$agreement_info->agreement_id' order by create_date desc";
+$res=@mysql_query($query);
+echo "<table border=1 cellspacing=0 cellpadding=15>
+<tr><td colspan=6 bgcolor=#eeeeee align=center><b>Document Versions</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$date_parts=explode(" ",$row->create_date);
+	$cdate=invali_date($date_parts[0],'/');
+	$ctime=$date_parts[1];
+	$file_group_info=load_file_group_info($row->file_group_id);
+	$view_link=webfile_possible_view_link($file_group_info->file_group_id);
+	$row->notes=ereg_replace("[\r\n]","<br>",$row->notes);
+	if ($row->notes=="") $row->notes="&nbsp;&nbsp;-&nbsp;&nbsp;";
+	if ($row->document_signed=='Y') $signed="signed";
+	else $signed="<a href=$pagename?mode=mark_agreement_won&agreement_id=$agreement_info->agreement_id&sa_document_id=$row->sa_document_id><font color=blue>Mark&nbsp;Signed</font></a>";
+	echo "<tr><td>
+			$file_group_info->description
+		</td><td>
+			$cdate&nbsp;$ctime
+		</td><td>
+			<form name=doclist$row->sa_document_id method=post action=$pagename>
+			";webfilebox($row->file_group_id,"svc_doc",2);echo"
+			</form>
+		</td><td>";
+			if ($view_link) echo "<a target=sam_pdf_win href=\"$view_link\"><font color=blue>Download</font></a>";
+			else echo "N/A";
+			echo"
+		</td><td>
+			$signed
+		</td><td id=\"doclist_notes_$row->sa_document_id\" style=\"cursor: hand; cursor: pointer;\" onclick=\"load_note_editor($row->sa_document_id)\">
+			$row->notes
+		</td></tr>";
+	}
+echo "</table>";
+?>

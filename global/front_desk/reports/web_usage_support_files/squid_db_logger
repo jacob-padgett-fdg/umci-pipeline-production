@@ -1,0 +1,114 @@
+#!/usr/bin/php
+<?
+
+mysql_connect("10.0.0.80","squiddy","calamaris");
+mysql_select_db("squidlog");
+
+
+set_time_limit(0);
+
+/*
+
+$std_channels = array(
+  0 => array("pipe", "r"),  // stdin is a pipe that the child will read from  
+  1 => array("file", "/dev/null", "a"),  // stdout is a pipe that the child wi
+  2 => array("file", "/dev/null", "a") // stderr is a file to write to
+  );
+*/
+
+function get_machine_name($ip_address) {
+  $time=date('Y-m-d H:i:s',strtotime('1 day ago'));
+  $res=@mysql_query("select * from machine_cache where address = '$ip_address' and cachetime > '$time' limit 1");
+  $rowcount=@mysql_num_rows($res);
+  if ($rowcount<1) {
+    $refresh_cache=1;
+    } else {
+    $info=@mysql_fetch_object($res);
+    if ($info->name!="UNKNOWN_COMPUTER") {
+      return ($info->name);
+      } else {
+        $time=date('Y-m-d H:i:s',strtotime('2 hours ago'));
+        $res=@mysql_query("select * from machine_cache where address = '$ip_address' and cachetime > '$time' limit 1");
+        $rowcount=@mysql_num_rows($res);
+        if ($rowcount<1) {
+          $refresh_cache=1;
+          } else {
+          return ($info->name);
+          }
+      }
+    }
+  
+  
+  if ($refresh_cache==1) {
+    $name=exec("/usr/local/sbin/squid_get_machine_name $ip_address");
+    @mysql_query("delete from machine_cache where address = '$ip_address'");
+    @mysql_query("insert into machine_cache set address = '$ip_address', name = '$name', cachetime = now()");
+    return ($name);
+    }
+  
+  die("application error.. how did I get here? this should be impossible..");
+  return 0;
+  }
+
+
+
+$pointer=popen("tail -f /var/log/squid/access.log","r");
+$count=1;
+while ($line=fgets($pointer)) {
+  $timecode=substr($line,0,14);
+  //$timecode=substr($line,0,10);
+  $timestamp=date('Y-m-d H:i:s',$timecode);
+  $datestamp=date('Y-m-d',$timecode);
+  $test=substr($line,14);
+  $test=ereg_replace("^ *","",$test);
+  $test=ereg_replace("  "," ",$test);
+  $the_rest=explode(" ",$test);
+  $line_elapsed=$the_rest[0];
+  $line_ip_address=$the_rest[1];
+  $line_status=$the_rest[2];
+  $line_bytes=$the_rest[3];
+  $line_method=$the_rest[4];
+  $line_url=$the_rest[5];
+  $line_from_where=ereg_replace("[\r\n]",'',$the_rest[7]);
+  $line_mime_type=ereg_replace("[\r\n]",'',$the_rest[8]);
+  $line_internet_host=ereg_replace("^[^/]*//","",$line_url);
+  $line_internet_host=ereg_replace("/.*$","",$line_internet_host);
+  $hostparts=explode(".",$line_internet_host);
+  $len=count($hostparts);
+  $line_internet_domain=$hostparts[$len - 2] . "." . $hostparts[$len - 1];
+  $line_internet_tld=$hostparts[$len - 1];
+  
+  $machine_name=get_machine_name($line_ip_address);
+  //echo "$line_ip_address: $machine_name\r\n";
+  @mysql_query("insert into access_log set
+    access_time = '$timestamp',
+    access_date = '$datestamp',
+    host_ip = '$line_ip_address',
+    host_name = '$machine_name',
+    status = '$line_status',
+    bytes = '$line_bytes',
+    method = '$line_method',
+    url = '$line_url',
+    internet_domain = '$line_internet_domain',
+    internet_host = '$line_internet_host',
+    internet_tld = '$line_internet_tld',
+    from_where = '$line_from_where',
+    mime_type = '$line_mime_type'");
+  //$line_mime_type=$the_rest[8];
+  
+  //echo "$line_from_where\r\n$line_mime_type\r\n$test\r\n\r\n";
+  $count++;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+?>

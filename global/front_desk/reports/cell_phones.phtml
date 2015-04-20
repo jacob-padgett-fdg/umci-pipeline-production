@@ -1,0 +1,257 @@
+<?
+check_report_permissions();
+
+
+
+if ($download_csv_all=="TRUE") {
+	$linefeedchar=chr(10);
+	$returnchar=chr(13);
+	//csvdump("select first_name, last_name, phone_number from fd_reports_valid_cell_phones right join contacts on (fd_reports_valid_cell_phones.current_owner = contacts.contacts_id) where current_owner > 0 and device_class = '$class' order by first_name, last_name, employee_num",0);
+	$csvdate=date('m-d-Y');
+	header("Content-type: text/csv");
+	header("Content-Disposition: attachment; filename=phone_list_$csvdate.csv");
+	$res=@mysql_query("select first_name, last_name, phone_number, employee_dept, device_class, device_type, model, contacts.current as current from fd_reports_valid_cell_phones left join contacts on (fd_reports_valid_cell_phones.current_owner = contacts.contacts_id)  order by first_name, last_name, employee_num");
+	while ($row=mysql_fetch_object($res)) {
+		$row->phone_number=ereg_replace("[^0-9]*","",$row->phone_number);
+		if ($row->phone_number=="") continue;
+		if (($row->first_name=="") && ($row->last_name=="")) {
+			$row->first_name="available";
+			$row->last_name="available";
+			}
+		echo "$row->first_name, $row->last_name,$row->employee_dept, $row->phone_number,$row->device_class,$row->device_type,$row->model,$row->current$returnchar$linefeedchar";
+		}
+	exit;
+	}
+
+if ($download_csv=="TRUE") {
+	$linefeedchar=chr(10);
+	$returnchar=chr(13);
+	$class=addslashes($class);
+	//csvdump("select first_name, last_name, phone_number from fd_reports_valid_cell_phones right join contacts on (fd_reports_valid_cell_phones.current_owner = contacts.contacts_id) where current_owner > 0 and device_class = '$class' order by first_name, last_name, employee_num",0);
+	$csvdate=date('m-d-Y');
+	header("Content-type: text/csv");
+	header("Content-Disposition: attachment; filename=phone_list_$csvdate.csv");
+	$res=@mysql_query("select first_name, last_name, phone_number, employee_dept, device_class, device_type, model, contacts.current as current from fd_reports_valid_cell_phones left join contacts on (fd_reports_valid_cell_phones.current_owner = contacts.contacts_id) where device_class = '$class' order by first_name, last_name, employee_num");
+	while ($row=mysql_fetch_object($res)) {
+		$row->phone_number=ereg_replace("[^0-9]*","",$row->phone_number);
+		if ($row->phone_number=="") continue;
+		if (($row->first_name=="") && ($row->last_name=="")) {
+			$row->first_name="available";
+			$row->last_name="available";
+			}
+		//echo "$row->first_name $row->last_name, $row->phone_number$returnchar$linefeedchar";
+		echo "$row->first_name, $row->last_name, $row->employee_dept, $row->phone_number,$row->device_class,$row->device_type,$row->model,$row->current$returnchar$linefeedchar";
+		}
+	exit;
+	}
+
+
+if ($motd_history==1) {
+	echo "
+	<a href=\"javascript:print()\"><font color=blue><i>Print</i></font></a>
+	<table border=1 cellspacing=0 cellpadding=5>
+	<tr bgcolor=$fd_color_4><td>
+		<b>Entry</b>
+	</td><td>
+		<b>Who/time</b>
+	</td><td>
+		<b>Comments</b>
+	</td></tr>";
+	$res=@mysql_query("select * from fd_reports_valid_cell_phones_motd_log order by log_id desc limit 20");
+	while ($row=@mysql_fetch_object($res)) {
+		$who=getoneb("select * from contacts where contacts_id = '$row->log_user_id'");
+		echo "<tr valign=top><td>
+				$row->log_id
+			</td><td>
+				$who->display_name<br>$row->logtime
+			</td><td>
+				$row->log_text
+			</td></tr>";
+		}
+	echo "</table>";
+	die();
+	}
+
+require("header.phtml");
+require('mh_lib.inc');
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+mh_navs_header();
+
+
+
+
+
+
+
+$me_link="$pagename?mode=$mode&report_name=$report_name";
+
+if ($cell_phones_mode=="cell_phone_edit") {
+	include("cell_phone_edit.phtml");
+	} else {
+
+
+
+if ($device_delete!="") {
+	$device_delete=addslashes($device_delete);
+	@mysql_query("delete from fd_reports_valid_cell_phones where cell_id = '$device_delete'");
+	}
+
+if ($new_motd=='Y') {
+	$motd=addslashes($motd);
+	@mysql_query("insert into fd_reports_valid_cell_phones_motd_log set log_user_id = '$global_user_id', log_text = '$motd'");
+	}
+
+echo "
+<script>
+function show_motd_history() {
+	open('$pagename?mode=$mode&report_name=$report_name&motd_history=1','motd_history_win','width=800,height=600,resizable=yes,scrollbars=yes');
+	}
+
+function delete_device(cell_id) {
+	if(confirm('Are you sure you want to permanently delete this device?')) 
+		document.location='$me_link&device_delete=' + cell_id;
+	}
+</script>
+
+<table border=10 cellspacing=1 cellpadding=10>
+<tr><td valign=top>
+<a href=$me_link&cell_phones_mode=cell_phone_edit><font color=blue>Add a device</font></a><br>
+<a href=$pagename?mode=$mode&report_name=$report_name&show_all_phones=$show_all_phones&class=$class&download_csv_all=TRUE><font color=blue>Download CSV</font></a><p>
+";
+$class_res=@mysql_query("select device_class from fd_reports_valid_cell_phones group by device_class");
+while ($class_row=@mysql_fetch_object($class_res)) {
+	if ($class_row->device_class=="") $class_text="<i>unknown</i>";
+	else $class_text=$class_row->device_class;
+	echo "<a href=\"$me_link&show_all_phones=Y&class=$class_row->device_class\"><font color=blue>List all \"$class_text\" devices</font></a><br>";
+	}
+
+
+$motd=getoneb("select * from fd_reports_valid_cell_phones_motd_log order by log_id desc limit 1");
+$log_user=getoneb("select * from contacts where contacts_id = '$motd->log_user_id'");
+
+echo "
+</td><td valign=top style=\"max-width: 400px;\">
+	Updated $motd->logtime by $log_user->first_name $log_user->last_name<hr>$motd->log_text
+</td><form name=motd_new method=post action=$pagename><td>
+	<input type=hidden name=class value=\"$class\">
+	<input type=hidden name=show_all_phones value=\"$show_all_phones\">
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=report_name value=\"$report_name\">
+	<input type=hidden name=new_motd value='Y'>
+	<textarea name=motd rows=5 cols=40></textarea>
+	<br>
+	<input valign=top type=submit value=\"Update MOTD\">&nbsp;&nbsp;&nbsp;<input type=button onclick=show_motd_history() value=\"Show History\">
+</td></form></tr></table>
+";
+if ($show_all_phones!="") {
+	$class=addslashes($class);
+	$search_add="";
+	if ($search_filter!="") {
+		$search_filter=addslashes($search_filter);
+		$search_add=" and (
+			contacts.first_name like '%$search_filter%' or 
+			contacts.last_name like '%$search_filter%' or 
+			contacts.login_name like '%$search_filter%' or 
+			contacts.employee_dept like '%$search_filter%' or
+			contacts.phone_cell like '%$search_filter%' or
+			fd_reports_valid_cell_phones.description like '%$search_filter%' or 
+			fd_reports_valid_cell_phones.device_type like '%$search_filter%' or 
+			fd_reports_valid_cell_phones.model like '%$search_filter%' 
+			) ";
+		}
+	$res=@mysql_query("select * from fd_reports_valid_cell_phones left join contacts on (fd_reports_valid_cell_phones.current_owner = contacts.contacts_id) where device_class = '$class' $search_add order by contacts.first_name, contacts.last_name");
+	$total_count=@mysql_num_rows($res);
+	echo "<table border=1 cellspacing=0 cellpadding=3>
+	<tr bgcolor=$fd_color_4><td colspan=8 align=center>
+		<b>Current Cell Phone List</b>&nbsp;<a href=$pagename?mode=$mode&report_name=$report_name&show_all_phones=$show_all_phones&class=$class&download_csv=TRUE><font color=blue>Download CSV</font></a>
+	</td><form name=search_list method=post action=$pagename><td colspan=2>
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=report_name value=\"$report_name\">
+	<input type=hidden name=show_all_phones value=\"$show_all_phones\">
+	<input type=hidden name=class value=\"$class\">
+	<input type=text size=10 name=search_filter value=\"$search_filter\" onchange=submit()>
+	</td></form></tr>
+	
+	<tr bgcolor=$fd_color_1><td>
+		<b>Employee</b>
+	</td><td>
+		<b>Dept</b>
+	</td><td>
+		<b>Phone #</b>
+	</td><td>
+		<b>Class</b>
+	</td><td>
+		<b>Type</b>
+	</td><td>
+		<b>Model</b>
+	</td><td>
+		<b>Purch&nbsp;Date</b>
+	</td><td style=\"width: 500px;\">
+		<b>Description</b>
+	</td><td>
+		&nbsp;
+	</td><td>
+		&nbsp;
+	</td></tr>
+	";
+	$dept_names=array();
+	while ($row=@mysql_fetch_object($res)) {
+		if ($row->current=='Y') {
+			$bgcolor="#ffffff";
+			} else {
+			$bgcolor="$fd_color_1";
+			}
+		
+		$pdate=invali_date($row->purch_date,'/');
+		
+		if ($row->employee_num>0) {
+			//$vp_emp_info=ms_getoneb("select * from PREH where PRCo = 1 and Employee = '$row->employee_num'");
+			//if ($dept_names[$vp_emp_info->PRDept]=="") {
+				//$vp_dept_info=ms_getoneb("select * from PRDL where PRCo = 1 and PRDept = '$vp_emp_info->PRDept'");
+				//$dept_names[$vp_emp_info->PRDept]=$vp_dept_info->Description;
+				//}
+			//$dept_name=$dept_names[$vp_emp_info->PRDept];
+			
+			//ms_tabledump("select * from PRDP where PRCo = 1 and PRDept = '$vp_emp_info->PRDept'");
+			} else {
+			$vp_emp_info=FALSE;
+			$vp_dept_info=FALSE;
+			}
+		
+		echo "<tr bgcolor=\"$bgcolor\"><td>
+				$row->first_name&nbsp;$row->last_name
+			</td><td>
+				$row->employee_dept&nbsp;
+			</td><td>
+				$row->phone_number&nbsp;
+			</td><td>
+				$row->device_class&nbsp;
+			</td><td>
+				$row->device_type&nbsp;
+			</td><td>
+				$row->model&nbsp;
+			</td><td>
+				$pdate&nbsp;
+			</td><td>
+				$row->description&nbsp;
+			</td><td>
+				<a href=\"$me_link&cell_phones_mode=cell_phone_edit&cell_id=$row->cell_id\"><i>edit</i></a>
+			</td><td>";
+			if ($row->contacts_id<1) {
+				echo "<a href=javascript:delete_device($row->cell_id);><i><font color=blue>delete</font></i></a>";
+				}
+			echo "&nbsp;</td></tr>";
+		}
+	echo "
+	<tr><td colspan=8 align=right>
+		<b>Total Devices</b>
+	</td><td colspan=2 align=center>
+		$total_count
+	</td></tr>
+	</table>";
+	}
+}
+
+mh_navs_footer();
+?>

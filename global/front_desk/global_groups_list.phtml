@@ -1,0 +1,44 @@
+<?
+$jobinfo_id=0;
+//
+if ($remove_global_group!="") {
+	$remove_global_group=addslashes($remove_global_group);
+	$memberes=@mysql_query("select * from contacts_groups_members where group_id = '$remove_global_group'");
+	$membercount=@mysql_num_rows($memberes);
+	if ($membercount!=0) {
+		echo "<b>ERROR:</b> Only remove empty groups!";
+		} else {
+		@mysql_query("delete from contacts_groups where group_id = '$remove_global_group'");
+		}
+	}
+
+if ($global_group_add!="") {
+	$global_group_add=addslashes($global_group_add);
+	@mysql_query("insert into contacts_groups set jobinfo_id = '0', description = '$global_group_add', login_required = 'Y'");
+	}
+
+echo "
+<table border=0 width=100% cellspacing=0 cellpadding=3 id=project_teams>
+</td></tr>
+";
+$res=@mysql_query("select * from contacts_groups where jobinfo_id = '0' order by description");
+while($row=@mysql_fetch_object($res)) {
+	$memberes=@mysql_query("select * from contacts_groups_members where group_id = '$row->group_id'");
+	$membercount=@mysql_num_rows($memberes);
+	if ($membercount==0) continue;
+	echo "<tr><td>
+				<a href=javascript:show_global_group($row->group_id)><font color=blue>$row->description</font></a>
+			</td><td>
+				";
+				$memberes=@mysql_query("select * from contacts_groups_members where group_id = '$row->group_id'");
+				$membercount=@mysql_num_rows($memberes);
+				if ($membercount < 1) {
+					echo "<a href=javascript:remove_global_group($row->group_id);><font color=blue><i>Remove</i></font></a>";
+					} else {
+					echo "$membercount&nbsp;Members";
+					}
+				echo"
+			</td></tr>";
+	}
+echo "</table>";
+?>

@@ -1,0 +1,98 @@
+<?
+require('header.phtml');
+if ($selected_contact=="") $is_changed_default='no';
+else $is_changed_default='yes';
+
+
+//
+// contacts modes: repro generals owners competitors
+//
+
+if ($contacts_mode=="") $contacts_mode="repro";
+
+echo "<table border=1 cellspacing=0 cellpadding=3 width=100%><tr>";
+
+if ($searchtext!="") {
+	$contacts_mode="search";
+	$searchtext=escapeshellcmd($searchtext);
+	$query="select * from contacts where is_company = 'Y' and display_name like '%$searchtext%' order by alphasort";
+	}
+
+if ($contacts_mode=="repro") {
+	echo "<td width=25%>Reprographics</td>";
+	$query="select * from contacts where is_reprographics_firm = 'Y' order by alphasort";
+	} else {
+	echo "<td bgcolor=#eeeeee width=25%><a href=$pagename?mode=contacts&contacts_mode=repro><font color=blue>Reprographics</font></a>";
+	}
+
+if ($contacts_mode=="generals") {
+	echo "<td width=25%>Generals</td>";
+	$query="select * from contacts where is_general = 'Y' order by alphasort";
+	} else {
+	echo "<td bgcolor=#eeeeee width=25%><a href=$pagename?mode=contacts&contacts_mode=generals><font color=blue>Generals</font></a>";
+	}
+
+if ($contacts_mode=="owners") {
+	echo "<td width=25%>Owners</td>";
+	$query="select * from contacts where owner = 'Y' order by alphasort";
+	} else {
+	echo "<td bgcolor=#eeeeee width=25%><a href=$pagename?mode=contacts&contacts_mode=owners><font color=blue>Owners</font></a>";
+	}
+
+if ($contacts_mode=="mechanical") {
+	echo "<td width=25%>Mechanical</td>";
+	$query="select * from contacts where mechanical_contractor = 'Y' order by alphasort";
+	} else {
+	echo "<td bgcolor=#eeeeee width=25%><a href=$pagename?mode=contacts&contacts_mode=mechanical><font color=blue>Mechanical</font></a>";
+	}
+
+if ($contacts_mode=="consultant") {
+	echo "<td width=25%>Consultants</td>";
+	$query="select * from contacts where consultant = 'Y' order by alphasort";
+	} else {
+	echo "<td bgcolor=#eeeeee width=25%><a href=$pagename?mode=contacts&contacts_mode=consultant><font color=blue>Consultants</font></a>";
+	}
+
+$sizetestres=@mysql_query($query);
+$resultsize=@mysql_num_rows($sizetestres);
+if ($resultsize<=1) $is_changed_default='yes';
+
+echo "</table>
+<p>
+<form name=contacts_select method=get action=\"$pagename\">
+<input type=hidden name=mode value=contacts_edit>
+";contactbox("$query","$selected_contact",15,"mark_changed();",0);echo"
+<input type=hidden name=is_changed value='$is_changed_default'>
+<input type=button onclick=check_status(); value=Edit>
+</form>
+
+<script>
+function mark_changed() {
+	document.contacts_select.is_changed.value='yes';
+	}
+function check_status() {
+	if (document.contacts_select.is_changed.value=='no') alert('Pick a company first!');
+	else document.contacts_select.submit();
+	}
+</script>
+
+<p>
+
+<form name=contacts_search method=get action=\"$pagename\">
+<input type=hidden name=mode value=contacts>
+<input type=text name=searchtext size=10>
+<input type=submit value=Search>
+</form>
+<h2><font color=red>Please search for your contact thoroughly before adding a new one</font></h2>
+";
+
+
+if ($searchtext!="") {
+	echo "
+	<form name=newcompany method=get action=\"$pagename\">
+	<input type=hidden name=mode value=contacts_edit>
+	<input type=submit value=\"New Company\">
+	</form>
+	";
+	}
+?>

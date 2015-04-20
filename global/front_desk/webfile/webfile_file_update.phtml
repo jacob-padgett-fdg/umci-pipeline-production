@@ -1,0 +1,94 @@
+<?
+if ($files_id=="") die("no file id.. nothing to do");
+else $files_id=addslashes($files_id);
+if (!($writable)) die("Permission Denied: The authorities have been notified!");
+
+$file_info=getone("select * from webfile_files where files_id = '$files_id'");
+require('return_to_handler.phtml');
+if ($onchange!="") $onchange_decode=base64_decode($onchange);
+
+//if (!(($file_info->owner=$global_user_id)||($adminuser))) die_security();
+//if ($writable) echo "writable";
+//else echo "not writable";
+
+if (!(($writable)||($adminuser)||($webfile_owner))) die("I'm sorry, insufficient permissions to change this file");
+
+$description=addslashes($description);
+mysql_query("update webfile_files set description = '$description' where files_id = '$file_info->files_id'");
+
+if ($_FILES) {
+	//exit;
+	if ($file_info->file_group_id=="2855") {
+		die("Oh no, a horrible and unforseen error must have occurred. I have no idea what happened, but surely if you try that again, the entire server might explode.");
+		}
+	
+	if ($_FILES["upload_file_1"]['name']!="") {
+	$file_info->description=addslashes($file_info->description);
+	$new_file_info=new_file_info();
+	prep_for_new_files($new_file_info);
+	if (!(move_uploaded_file($_FILES["upload_file_1"]['tmp_name'],$new_file_info->file_path_orig))) {
+		move_uploaded_file($_FILES["upload_file_1"]['tmp_name'],"/tmp/php_move_uploaded_error_file_2");
+		die("APPLICATION ERROR: Error importing file. Please contact your system administrator (move failed).");
+		}
+	$mime_type=$_FILES["upload_file_1"]['type'];
+	$file_name=$_FILES["upload_file_1"]['name'];
+	$file_size=$_FILES["upload_file_1"]['size'];
+
+	if ($mime_type=="application/force-download") $mime_type=mime_type_from_filename($file_name);
+	if ($mime_type=="application/x-pdf") $mime_type=mime_type_from_filename($file_name);
+	if ($mime_type=="application/x-download") $mime_type=mime_type_from_filename($file_name);
+	if ($mime_type=="application/download") $mime_type=mime_type_from_filename($file_name);
+	if ($mime_type=="application/unknown") $mime_type=mime_type_from_filename($file_name);
+	if ($mime_type=="application/binary") $mime_type=mime_type_from_filename($file_name);
+	if ($mime_type=="binary/octet-stream") $mime_type=mime_type_from_filename($file_name);
+	// FRON-36 This MIME type is coming in, reported by one of the end clients.
+	// Cannot replicate using the client's files, but this ought to fix the case.
+	if ($mime_type=="application/octet-binary") $mime_type=mime_type_from_filename($file_name);
+
+	$query="insert into webfile_files set
+		file_group_id = '$file_info->file_group_id',
+		mime_type = '$mime_type',
+		owner = '$global_user_id',
+		upload_date = now(),
+		file_path_orig = '$new_file_info->file_path_orig',
+		file_path = '$new_file_info->file_path',
+		info_path = '$new_file_info->info_path',
+		file_directory = '$new_file_info->file_directory',
+		file_name = '$file_name',
+		file_size = '$file_size',
+		sequence_num = '$new_file_info->sequence_num',
+		description = '$file_info->description',
+		access_public = '$file_info->access_public',
+		write_public = '$file_info->write_public',
+		access_intranet = '$file_info->access_intranet',
+		write_intranet = '$file_info->write_intranet',
+		access_any_user = '$file_info->access_any_user',
+		write_any_user = '$file_info->write_any_user',
+		access_employees = '$file_info->access_employees',
+		write_employees = '$file_info->write_employees'
+		";
+	@mysql_query($query);
+	$new_file_id=@mysql_insert_id();
+	$query2="update webfile_files set 
+		files_id = 0,
+		file_group_id = '0',
+		replaced_by = '$file_info->files_id'
+		where files_id = '$file_info->files_id'";
+	@mysql_query($query2);
+	@mysql_query("update webfile_files set files_id = '$file_info->files_id' where files_id = '$new_file_id'");
+	@mysql_query("update webfile_files set files_id = '$new_file_id' where files_id = 0");
+	
+	@mysql_query("update webfile_files set replaced_by = '$new_file_id' where replaced_by = '$file_info->files_id' and files_id != '$new_file_id'");
+	
+	//die ("all changes complete...");
+	}
+	}
+
+
+echo "<script>
+$onchange_decode;
+document.location='$return_to_decode';
+</script>
+";
+exit;
+?>

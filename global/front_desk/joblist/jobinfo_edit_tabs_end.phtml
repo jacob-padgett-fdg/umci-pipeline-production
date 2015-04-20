@@ -1,0 +1,17 @@
+<?
+echo"</td></tr></table>
+</form>
+
+
+<script>
+function submit_changes(target_tab) {
+	if (target_tab=='') target_tab='exit';
+	document.jobinfo_edit.target_tab.value=target_tab;
+	document.jobinfo_edit.submit();
+	}
+function apply_changes() {
+	submit_changes('$target_tab');
+	}
+</script>
+";
+?>

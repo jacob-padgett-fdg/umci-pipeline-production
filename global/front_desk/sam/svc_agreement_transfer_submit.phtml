@@ -1,0 +1,12 @@
+<?
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+else die("ERROR: No Agreement_id");
+$agreement_info=load_agreement_info($agreement_id);
+if (($agreement_info->creator!=$global_user_id) &&(!(is_admin()))) die_security();
+if ($new_owner_id=="") die("Application error: Please contact your system administrator! Error: $new_owner_id = ''");
+else $new_owner_id=addslashes($new_owner_id);
+$query="update svc_agreement_index set creator = '$new_owner_id' where agreement_id = '$agreement_info->agreement_id'";
+//echo "<hr>$query<hr>";
+@mysql_query("update svc_agreement_index set creator = '$new_owner_id' where agreement_id = '$agreement_info->agreement_id'");
+forward('main');
+?>

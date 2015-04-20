@@ -1,0 +1,132 @@
+<?
+
+if ($submit_phone_info=='Y') {
+	$phone_number=addslashes($phone_number);
+	$current_owner=addslashes($current_owner);
+	$device_class=addslashes($device_class);
+	$device_type=addslashes($device_type);
+	$model=addslashes($model);
+	$description=addslashes($description);
+	$purch_date=vali_date($purch_date);
+	$owner_has_one=FALSE;
+	
+	if ($cell_id!='') {
+		$cell_id=addslashes($cell_id);
+		$insert=FALSE;
+		$submit_query="update fd_reports_valid_cell_phones set
+			phone_number = '$phone_number',
+			current_owner = '$current_owner',
+			device_class = '$device_class',
+			device_type = '$device_type',
+			model = '$model',
+			description = '$description',
+			purch_date = '$purch_date'
+			where cell_id = '$cell_id'
+			";
+		//echo "<hr>$submit_query<hr>";die();
+		$old_info=getoneb("select * from fd_reports_valid_cell_phones where cell_id = '$cell_id'");
+		if ($old_info->current_owner!=$current_owner) {
+			if ($current_owner>0) {
+				$owner_has_one=getoneb("select * from fd_reports_valid_cell_phones where device_class = '$device_class' and current_owner = '$current_owner' limit 1");
+				}
+			}
+		
+		} else {
+		$insert=TRUE;
+		$submit_query="insert into fd_reports_valid_cell_phones set
+			phone_number = '$phone_number',
+			current_owner = '$current_owner',
+			device_class = '$device_class',
+			device_type = '$device_type',
+			model = '$model',
+			description = '$description',
+			purch_date = '$purch_date'";
+			
+		if ($current_owner>0) {
+			$owner_has_one_query="select * from fd_reports_valid_cell_phones where device_class = '$device_class' and current_owner = '$current_owner' limit 1";
+			$owner_has_one=getoneb($owner_has_one_query);
+			}
+		}
+	
+	@mysql_query("update fd_reports_valid_cell_phones set current_owner = 0 where current_owner = '$current_owner' and device_class = '$device_class'");
+	if ($owner_has_one) {
+		echo "<script>alert('Target owner already had device. Device was freed for use by someone else now.');</script>";
+		}
+	@mysql_query($submit_query);
+	forward("$mode&report_name=$report_name&show_all_phones=Y&class=$device_class");
+	exit;
+	} else {
+	if ($cell_id!="") {
+		$cell_id=addslashes($cell_id);
+		$cell_info=getoneb("select * from fd_reports_valid_cell_phones where cell_id = '$cell_id'");
+		}
+	}
+
+
+
+
+
+echo "
+
+<center>
+<form name=cell_phone_add method=post action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=cell_id value=\"$cell_info->cell_id\">
+<input type=hidden name=cell_phones_mode value=\"cell_phone_edit\">
+<input type=hidden name=report_name value=\"$report_name\">
+<input type=hidden name=submit_phone_info value=\"Y\">
+<table border=1 cellspacing=0 cellpadding=3>
+<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+	<b>Add Phone</b>
+</td></tr>
+
+<tr><td>
+	<b>Phone Number</b>
+</td><td>
+	<input type=text size=20 name=phone_number value=\"$cell_info->phone_number\">
+</td></tr>
+
+<tr><td>
+	<b>Owner</b>
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'","$cell_info->current_owner","current_owner");echo"
+</td></tr>
+
+<tr><td>
+	<b>Device Class</b>
+</td><td>
+	<select name=device_class><option>$cell_info->device_class</option><option>cell</option><option>tablet</option><option>aircard</option><option>fx</option><option>pager</option></select>
+</td></tr>
+
+<tr><td>
+	<b>Device Type</b>
+</td><td>
+	<select name=device_type><option>$cell_info->device_type</option><option>Phone</option><option>Smartphone</option><option>Blackberry</option><option>FX</option><option>Tablet</option><option>Netbook</option><option>Pager</option></select>
+</td></tr>
+
+<tr><td>
+	<b>Model</b>
+</td><td>
+	<input type=text size=20 name=model value=\"$cell_info->model\">
+</td></tr>
+
+<tr><td>
+	<b>Purchase&nbsp;Date</b>
+</td><td>
+	";datebox2($cell_info->purch_date,"cell_phone_add.purch_date");echo"
+</td></tr>
+
+<tr><td>
+	<b>Description</b>
+</td><td>
+	<textarea name=description rows=4 cols=25>$cell_info->description</textarea>
+</td></tr>
+
+<tr><td><input type=button value=\"Cancel\" onclick=\"document.location='$me_link&show_all_phones=Y&class=$cell_info->device_class'\"></td><td align=right><input type=submit value=Save></td></tr>
+</table>
+</center>
+</form>
+";
+
+
+?>

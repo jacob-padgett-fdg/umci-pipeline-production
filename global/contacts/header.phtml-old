@@ -1,0 +1,11 @@
+<?
+echo "
+<html>
+<head>
+<title>UMC Contact Management Page</title>
+</head>
+<body bgcolor=white>
+
+";
+
+?>

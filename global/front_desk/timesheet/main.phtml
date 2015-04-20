@@ -1,0 +1,347 @@
+<?
+echo "
+<body bgcolor=white>
+<a href=$pagename_up><font color=blue>EXIT</font></a>&nbsp;
+<a href=/global/front_desk/?mode=my_home><font color=blue>Front&nbsp;Desk</font></a>&nbsp;
+<a href=$pagename?kill_session_info=1><font color=blue>LOGOUT</font></a><p>
+";
+
+if ($admin_check) {
+	echo "
+	<table width=100% border=1 cellpadding=4 cellspacing=0>
+	<tr><td bgcolor=#dddddd width=100% align=center><h2>Administrative Menu</h2></center></td></tr></table>
+	<ul><li>
+	<a href=$pagename?mode=admin_timesheet_types_show><font color=blue>View Current User Permissions</font></a>
+	</ul></li>
+	<ul><li>
+	<a href=$pagename?mode=admin_timesheet_types_modify><font color=blue>Modify Current User Permissions</font></a>
+	</ul></li>
+	<ul><li>
+	<a href=$pagename?mode=admin_reports><font color=blue>Admin Reports</font></a>
+	</ul></li>
+	<ul><li>
+	<a href=$pagename?mode=admin_safety_recipients_list><font color=blue>Safety Recipients List</font></a>
+	</ul></li>
+	";
+	
+	if ($devel=="") 
+	echo"
+	<ul><li>
+	<a href=\"https://pipeline.umci.com/global/timesheet-devel/\"><font color=red><b>Timesheet Beta</b></font></a>
+	</ul></li>
+	";
+	}
+
+if ($suid_check) {
+	echo "
+	<table width=100% border=1 cellpadding=4 cellspacing=0>
+	<tr><td bgcolor=#dddddd width=100% align=center><h2>Switch User ID Menu</h2></center></td></tr></table>
+	<ul><li>
+	<a href=$pagename?mode=suid_select_new_user_id><font color=blue>Select New User ID</font></a>
+	</ul></li>
+	<ul><li>
+	<a href=$pagename?mode=reset_user_id><font color=blue>Reset User ID</font></a>
+	</ul></li>";
+	if ($global_user_id != $current_user_id) {
+		echo "
+	<ul><li>
+	<a href=$pagename?mode=suid_summary_show><font color=blue>Show 1 year timesheet history for $current_user->display_name</font></a>
+	</ul></li>
+		
+		";
+		}
+	//include("suid_summary_show.phtml");
+	}
+
+if ($timesheet_data_entry_check) {
+	echo "
+	<table width=100% border=1 cellpadding=4 cellspacing=0>
+	<tr><td bgcolor=#dddddd width=100% align=center><h2>Timesheet Data Entry</h2></center></td></tr></table>
+	<ul><li>
+	<a href=$pagename?mode=timesheet_data_entry_batch_employee_select><font color=blue>Enter Timesheet Data</font></a>
+	</ul></li>
+	<ul><li>
+	<a href=$pagename?mode=timesheet_data_entry_data_entry><font color=blue>Timesheet Batch Entry</font></a>
+	</ul></li>
+	<ul><li>
+	<a href=$pagename?mode=timesheet_data_entry_list_timesheets><font color=blue>List Timesheets</font></a>
+	</ul></li>
+		
+		";
+	
+	}
+if ($payroll_check) {
+	$check_seq_query="select * from contacts left join timesheet_payroll_sequences on ( seq = timesheet_payroll_sequence_num ) where current = 'Y' and umc_emp = 'Y' and contact_type = 'contact' and ( seq_id is null or seq_id = 0 ) order by alphasort,employee_num";
+	$invalid_employees_res=@mysql_query($check_seq_query);
+	$invalid_employees_count=@mysql_num_rows($invalid_employees_res);
+	if ($payroll_seq_new!="") {
+		$payroll_seq=addslashes($payroll_seq_new);
+		}
+	$pr_seq_qry="select * from timesheet_payroll_sequences order by seq, description";
+	$seq_res=@mysql_query($pr_seq_qry);
+	session_register('payroll_seq');
+	$payroll_seq_info=getoneb("select * from timesheet_payroll_sequences where seq = '$payroll_seq'");
+	$wrong_group_users=getoneb("select sum(1) as total from contacts where timesheet_payroll_sequence_num = '$payroll_seq_info->seq' and umc_emp = 'Y' and current = 'Y' and employee_group != '$payroll_seq_info->payroll_group'");
+	echo "
+	<table width=100% border=1 cellpadding=4 cellspacing=0>
+	<tr><td bgcolor=#dddddd width=100% align=center><h2>Payroll Menu</h2></center></td></tr></table>
+	";if ($invalid_employees_count > 0) {
+		echo "
+		<ul><li>
+			<b><font color=red>WARNING! $invalid_employees_count EMPLOYEES ARE NOT IN A VALID PAYROLL SEQUENCE!!!!</font></b>";
+			while ($inv_emp=@mysql_fetch_object($invalid_employees_res)) {
+				echo "<br>Fix payroll sequence for <a href=$pagename?mode=payroll_user_seq_change&payroll_seq_user_id=$inv_emp->contacts_id><font color=blue>$inv_emp->display_name ($inv_emp->login_name)</font></a>";
+			}
+		
+		echo "</ul></li>
+		";
+		}
+	
+	echo"
+	<ul><li><form name=prseqnum method=get action=$pagename>
+		Payroll Sequence #:&nbsp;<input type=hidden name=mode value=main>
+		";dropbox("select seq as payroll_seq_new,seq,' ',description,' (group ',payroll_group,')' from timesheet_payroll_sequences where active = 'Y' order by seq", $payroll_seq, "", "submit()" ,1);
+		echo"
+		</select>
+		</form>
+	</ul></li>
+	
+	";
+	$no_payroll_sheets_res=@mysql_query("select * from timesheet_index left join contacts on ( contacts.contacts_id = timesheet_index.employee_id) left join timesheet_payroll_sequences on ( contacts.timesheet_payroll_sequence_num = timesheet_payroll_sequences.seq) where timesheet_payroll_sequences.include_in_payroll = 'N' and ( timesheet_index.status = 'new' or timesheet_index.status = 'complete' )");
+	$no_payroll_sheets_count=@mysql_num_rows($no_payroll_sheets_res);
+	if ($no_payroll_sheets_count>0) {
+		echo "<ul><li><font size=+1 color=red>Warning: Found timesheets for web payroll disabled users!</font></li>
+		";
+		while ($broken_user=@mysql_fetch_object($no_payroll_sheets_res)) {
+			echo "$broken_user->week_ending for $broken_user->display_name<br>";
+			}
+		
+		echo "</ul>";
+		}
+	
+	echo "<ul>";
+	
+	if ($payroll_seq_info) {
+		$pr_seq_count=getoneb("select sum(1) as total from contacts where umc_emp = 'Y' and current = 'Y' and timesheet_payroll_sequence_num = '$payroll_seq_info->seq' and contact_type = 'contact'");
+		if ($wrong_group_users->total==0) {
+			if ($payroll_seq_info->include_in_payroll=='Y') {
+				echo "
+				<ul><li>
+					<a href=$pagename?mode=payroll_timesheet_selection><font color=blue>Current Timesheet Queue's</font></a>
+				</ul></li>
+				<ul><li>
+					<a href=$pagename?mode=payroll_timesheet_completion_report><font color=blue>Completion Report</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</ul></li>";
+				}
+			} else {
+			echo "
+			<ul><li>
+				<b>There is a problem with one or more of the members of this group. It must be corrected before other functions can be used.
+			</li></ul>
+				";	
+			}
+		echo "
+		<ul><li>
+			<a href=$pagename?mode=payroll_manage_sequences><font color=blue>List all $pr_seq_count->total members in sequence $payroll_seq_info->seq</font></a>
+		</ul></li>
+
+		<ul><li>
+			<a href=$pagename?mode=payroll_timesheet_archive_selection><font color=blue>Older Timesheet's</font></a>
+		</ul></li>
+		";
+		}
+	
+	echo "
+	</ul>
+
+	<ul><li>
+		<a href=$pagename?mode=payroll_timesheet_completion_report_full><font color=blue>Completion Report (all valid sequences)</font></a></i>
+	</ul></li>
+	
+	<ul><li>
+		<form name='modify_timesheet_seq' method=post action=$pagename>
+		<input type=hidden name=mode value=payroll_user_seq_change>
+		Change a user's sequence #: ";contactsbox("select * from contacts where umc_emp = 'Y' and contact_type = 'contact' and current = 'Y'","",'payroll_seq_user_id','opener.document.modify_timesheet_seq.submit()');echo"
+			</form>
+	</ul></li>
+	
+	<ul><li>
+		<a href=$pagename?mode=payroll_contacts_update><font color=blue>Update Employee List from Viewpoint</font></a>
+	</ul></li>
+
+	<ul><li>
+		<a href=$pagename?mode=payroll_update_holidays><font color=blue>Update Holidays</font></a>
+	</ul></li>
+
+	
+	";
+	}
+
+if ($billing_check) {
+	echo "
+	<table width=100% border=1 cellpadding=4 cellspacing=0>
+	<tr><td bgcolor=#dddddd width=100% align=center><h2>Billing Menu</h2></center></td></tr></table>
+	<ul><li>
+		<a href=$pagename?mode=billing_timesheet_archive_selection><font color=blue>Select Timesheets to Print</font></a>
+	</ul></li>
+	<ul><li>
+		<a href=$pagename?mode=admin_reports_timesheets_by_contract_form><font color=blue>Timesheets by Contract</font></a>
+	</ul></li>
+	<ul><li>
+		<a href=/global/front_desk$devel/index.html?mode=report_show&report_name=timesheet_week_by_group><font color=blue>Timesheets by Group / Week (front desk)</font></a>
+	</ul></li>";
+	}
+
+
+if (i_have_underlings($global_user->employee_num)) {
+	echo "
+	<table width=100% border=1 cellpadding=4 cellspacing=0>
+	<tr><td bgcolor=#dddddd width=100% align=center><h2>Supervisor Approval Menu</h2></center></td></tr></table>
+	<ul><li>
+		<a href=$pagename?mode=supervisor_timesheet_selection><font color=blue>Show current timesheets</font></a>
+	</ul></li>
+	<ul><li>
+		<a href=$pagename?mode=supervisor_unapproved_selection><font color=blue>Show all unapproved timesheets</font></a>
+ 	</ul></li>
+	<ul><li>
+		<a href=$pagename?mode=supervisor_user_selection><font color=blue>Manage by Employee</font></a>
+	</ul></li>
+	<ul><li>
+		<a href=$pagename?mode=supervisor_user_selection&micromanage=Y><font color=blue>Micromanage by Employee</font></a>
+	</ul></li>
+	<ul><li>
+		<a href=$pagename?mode=supervisor_suid_selection><font color=blue>Supervisor Switch User Menu</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>Use this option for full control of the timesheets for anyone you supervise</i>
+	</ul></li>
+	";
+	}
+
+if ($global_user->timesheet_group_one_foreman=='Y') {
+	
+	//<ul><li>
+	//	<a href=$pagename?mode=foreman_timesheets_by_group><font color=blue>Timesheets by group</font></a>
+	//</ul></li>
+	//
+	//<ul><li>
+	//	<a href=$pagename?mode=foreman_groups_manage><font color=blue>Modify Groups</font></a>
+	//</ul></li>
+	
+	
+	echo "
+	<table width=100% border=1 cellpadding=4 cellspacing=0>
+	<tr><td bgcolor=#dddddd width=100% align=center><h2>Field Timesheets Menu</h2></center></td></tr></table>
+	
+	<ul><li><form name=fmn_new_group method=post action=\"$pagename\">
+	<input type=hidden name=mode value=foreman_group_submit>
+	<input type=text name=group_name size=15>
+	<input type=submit value=Add></form></li></ul>
+	";
+	
+	
+	$fmnquery="select * from timesheet_foreman_groups where foreman_id = '$global_user->contacts_id' order by group_name";
+	//tabledump($fmnquery);
+	$fmnres=@mysql_query($fmnquery);
+	while($fmnrow=@mysql_fetch_object($fmnres)) {
+		if ($fmnrow->group_name=='') $fmnrow->group_name='?????';
+		echo "<ul><li><a href=$pagename?mode=foreman_group_edit&group_id=$fmnrow->group_id>
+		        <font color=blue>$fmnrow->group_name</font></a></li></ul>";
+		} 
+	
+	}
+
+
+if ($current_user->employee_num>1) $timesheet_title_add="";
+else $timesheet_title_add=" <font color=red>(N/A)</font>";
+	echo "
+	<table width=100% border=1 cellpadding=4 cellspacing=0>
+	<tr><td bgcolor=#dddddd width=100% align=center><h2>Timesheets for $current_user->first_name $current_user->last_name $timesheet_title_add</h2></center></td></tr></table>
+	
+	<p>
+	<a href=$pagename?mode=preferences><font color=blue>Preferences</font></a><br>";
+	
+if ($current_user->employee_num>1) {
+	echo "
+	<a href=$pagename?mode=timesheet_new><font color=blue>Create New Timesheet</font></a><br>
+	<a href=$pagename?mode=permissions_selection><font color=blue>Grant other's access to your timesheets</font></a><br>
+	";
+	}
+	$application_name="timesheet";
+	//feature_request("Request&nbsp;a&nbsp;feature");echo "<br>";
+
+	if (getoneb("select * from timesheet_permissions where timesheet_guest = '$global_user->contacts_id' limit 1")) {
+		echo "<a href=$pagename?mode=permissions_suid_selection><font color=blue>Manage Another User's Timesheet</font></a><br>";
+		}
+	
+	if ($global_user->contacts_id != $current_user->contacts_id) {
+		echo "<a href=$pagename?mode=reset_user_id><font color=blue><b>Return to my timesheet profile</b></font></a>";
+		}
+	
+	echo "
+	<p>
+	";
+	
+
+	//tabledump($recent_sheets_qry);
+	
+	
+	if ($timesheet_show_year=="") {
+		session_register('timesheet_show_year');
+		$this_year=date('Y');
+		$timesheet_show_year=$this_year;
+		}
+	
+	if ($timesheet_show_year_new!="") {
+		$timesheet_show_year_new=addslashes($timesheet_show_year_new);
+		$timesheet_show_year=$timesheet_show_year_new;
+		}
+
+
+	$recent_sheets_qry="select * from timesheet_index where employee_id = '$current_user->contacts_id' and (week_ending >= '$timesheet_show_year-01-01' and week_ending <= '$timesheet_show_year-12-31' ) order by week_ending desc";
+	$ts_idx_res=@mysql_query($recent_sheets_qry);
+	$all_links="";
+	$link_col_1="";
+	$link_col_2="";
+	$link_col_3="";
+	$link_col_4="";
+	$link_col_5="";
+	$link_count=1;
+	while($ts_row=@mysql_fetch_object($ts_idx_res)) {
+		$week_ending=invali_date($ts_row->week_ending);
+		if ($ts_row->status=="complete") $addlink="<a href=\"$pagename?mode=timesheet_mark_as_new&ts_id=$ts_row->timesheet_id\"><font color=blue>Retrieve</font></a>";
+		else $addlink="";
+		$link="<a href=$pagename?mode=timesheet_edit&timesheet_id_new=$ts_row->timesheet_id><font color=blue>$week_ending</font></a>&nbsp;&nbsp;&nbsp;$ts_row->status&nbsp;&nbsp;$addlink<br>";
+		if (($link_count >= 1) && ($link_count<=11)) $link_col_1=$link_col_1 . $link;
+		if (($link_count >= 12) && ($link_count<=22)) $link_col_2=$link_col_2 . $link;
+		if (($link_count >= 23) && ($link_count<=33)) $link_col_3=$link_col_3 . $link;
+		if (($link_count >= 34) && ($link_count<=44)) $link_col_4=$link_col_4 . $link;
+		if (($link_count >= 45) && ($link_count<=55)) $link_col_5=$link_col_5 . $link;
+		$link_count++;
+		}
+	$timesheet_count=$link_count - 1;
+	
+	
+	if ($current_user->employee_num>1) {
+	$vac_avail=round(employee_vacation_hours($current_user->employee_num),2);
+	echo "
+	<b title=\"Does not included non-posted timesheets\">Vacation Hours Available:</b> $vac_avail<br>
+	<table cellspacing=0 cellpadding=2 border=1>
+			<tr valign=top><td>
+				$link_col_1
+			</td><td>
+				$link_col_2
+			</td><td>
+				$link_col_3
+			</td><td>
+				$link_col_4
+			</td><td>
+				$link_col_5
+			</td></tr></table>
+	<b>Total: $timesheet_count timesheets shown for $timesheet_show_year</b><br>
+	";
+			
+	$old_years="select year(week_ending) as year from timesheet_index where employee_id = '$current_user->contacts_id' group by year order by year desc";
+	$old_years_res=@mysql_query($old_years);
+	while($old_year=@mysql_fetch_object($old_years_res)) {
+		echo "<b>Show:</b>&nbsp;<a href=$pagename?mode=main&timesheet_show_year_new=$old_year->year><font color=blue>$old_year->year</font></a><br>";
+		}
+	}
+?>

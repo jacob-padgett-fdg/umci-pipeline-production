@@ -1,0 +1,31 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+//if (!(pm_for_this_job())) die_security();
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+$vpjob=get_vp_contract_num();
+$res=mssql_query("select ACO,Description,Sum(ApprovedAmt) as total,ApprovedDate from PMOI with (NOLOCK) where Contract like '$vpjob%' and PMCo = 1 group by Contract,ACO,Description,ApprovedDate order by ACO");
+$grand_total=0;
+echo "<font size=-1><table border=0 cellspacing=0 cellpadding=5>";
+while($row=@mssql_fetch_object($res)) {
+	if (($row->total=="")||($row->total==0)) continue;
+	echo "<tr><td>
+			$row->ACO
+		</td><td>
+			$row->Description
+		</td><td align=right>
+			" . gap_num($row->total) . "
+		</td><td>
+			$row->ApprovedDate
+		</td></tr>";
+	$grand_total=$grand_total + $row->total;
+	}
+
+echo "<tr bgcolor=$fd_color_1><td><b>Total:</td><td colspan=2 align=right>" . gap_num($grand_total) . "</td><td>&nbsp;</td></tr></table></font>";
+?>

@@ -1,0 +1,63 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation! The authorities have been notified!");
+if ($category_id=="") die("Application error (category_id). Please contact your system administrator");
+
+$category_id=addslashes($category_id);
+$type=addslashes($type);
+$description=addslashes($description);
+
+$predict_vibration=checkfix($predict_vibration);
+$predict_oil=checkfix($predict_oil);
+$predict_oil_cost=clean_float($predict_oil_cost);
+$predict_refrigerant_lp=checkfix($predict_refrigerant_lp);
+$predict_refrigerant_hp=checkfix($predict_refrigerant_hp);
+$predict_laser_alignment=checkfix($predict_laser_alignment);
+$predict_eddy_current_tube_anal=checkfix($predict_eddy_current_tube_anal);
+$predict_thermography=checkfix($predict_thermography);
+$predict_combustion=checkfix($predict_combustion);
+
+
+
+if ($equip_type_id!="") {
+	$equip_type_id=addslashes($equip_type_id);
+	$query="update svc_equip_types set type = '$type',description = '$description', 
+	predict_vibration = '$predict_vibration',
+	predict_oil = '$predict_oil',
+	predict_oil_cost = '$predict_oil_cost',
+	predict_refrigerant_lp = '$predict_refrigerant_lp',
+	predict_refrigerant_hp = '$predict_refrigerant_hp',
+	predict_laser_alignment = '$predict_laser_alignment',
+	predict_eddy_current_tube_anal = '$predict_eddy_current_tube_anal',
+	predict_thermography = '$predict_thermography',
+	predict_combustion = '$predict_combustion'
+	
+	
+	where equip_type_id = '$equip_type_id';";
+	} else {
+	$query="insert into svc_equip_types set category_id = '$category_id',type = '$type',description = '$description',
+	predict_vibration = '$predict_vibration',
+	predict_oil = '$predict_oil',
+	predict_refrigerant_lp = '$predict_refrigerant_lp',
+	predict_refrigerant_hp = '$predict_refrigerant_hp',
+	predict_laser_alignment = '$predict_laser_alignment',
+	predict_eddy_current_tube_anal = '$predict_eddy_current_tube_anal',
+	predict_thermography = '$predict_thermography',
+	predict_combustion = '$predict_combustion'
+	
+	
+	
+	
+	";
+	}
+
+$res=@mysql_query($query);
+if (!($res)) die ("application error. Query failed. Please contact your system administrator.<p>Failed Query<hr>$query<hr>");
+
+if ($equip_type_id=="") $equip_type_id=@mysql_insert_id();
+
+forward("lists_equip_type_edit&equip_type_id=$equip_type_id&category_id=$category_id");
+
+
+
+
+?>

@@ -1,0 +1,29 @@
+<?
+$employee_group=1;
+include('../local.inc');
+if ($lamchops_id=="") {
+	die("oops.. where's my lamchops_id");
+	} else {
+	$lamchops_id=addslashes($lamchops_id);
+	$lamchop_info=getoneb("select * from lamchops where lamchops_id = '$lamchops_id'");
+	}
+
+if ($trade=="") die("oops, where's my trade?");
+else $trade=addslashes($trade);
+if ($show_members!='Y') $show_members='N';
+include("lam_lib.inc");
+
+if ($show_members=='N') {
+	$member_count=getoneb("select sum(1) as total from contacts where employee_group = '$employee_group' and current = 'Y' and employee_trade = '$trade'");
+	print_trade_header($trade , $lamchop_info->lamchops_id, 'N');
+	} else {
+	print_trade_header($trade , $lamchop_info->lamchops_id, 'Y');
+	print_trade_class($trade, 'General Foreman');
+	print_trade_class($trade, 'Foreman');
+	print_trade_class($trade, 'Journeyman');
+	print_trade_class($trade, 'Apprentice');
+	print_trade_class($trade,'');
+	
+	}
+
+?>

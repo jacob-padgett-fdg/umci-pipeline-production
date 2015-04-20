@@ -1,0 +1,152 @@
+<?
+require('header.phtml');
+require_once('querylib.inc');
+echo "
+<a href=$pagename?mode=main><font color=blue>Cancel</font></a><p>
+
+<form action=$pagename method=get name=generic_search>
+<input type=hidden name=mode value=\"search_submit\">
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td colspan=2 bgcolor=#eeeeee align=center>
+<b>Job Search</b>
+</td></tr>
+
+<tr><td>
+	Active:&nbsp;
+</td><td>
+	Y<input type=radio name=active value=Y>&nbsp;N<input type=radio name=active value=N>&nbsp;?<input type=radio name=active value=\"\" checked>
+</td></tr>
+
+<tr><td>
+	Contract #:
+</td><td>
+	<input type=text name=contract_num>
+</td></tr>
+
+<tr><td>
+	Name:
+</td><td>
+	<input type=text name=job_name>
+</td></tr>
+
+<tr><td>
+	General/Cust
+</td><td>
+	";contactsbox("select * from contacts where (owner = 'Y' or is_general = 'Y') ","","general_id","","2");echo"
+	<input type=hidden name=general_id_radio value='='>
+</td></tr>
+
+<tr><td>
+	Owner
+</td><td>
+	";contactsbox("select * from contacts where (owner = 'Y' or is_general = 'Y') ","","owner_id","","2");echo"
+	<input type=hidden name=owner_id_radio value='='>
+</td></tr>
+
+<tr><td>
+	Architect
+</td><td>
+	";contactsbox("select * from contacts where 1 = 1 ","","architect_id","","2");echo"
+	<input type=hidden name=owner_id_radio value='='>
+</td></tr>
+
+<tr><td>
+	Orig Contract Amt
+</td><td>
+	<input type=text name=contract_amount_orig>
+	<input type=radio name=contract_amount_orig_radio value='>' checked>&gt;
+	<input type=radio name=contract_amount_orig_radio value='='>=
+	<input type=radio name=contract_amount_orig_radio value='<'>&lt;
+</td></tr>
+
+<tr><td>
+	Final Contract Amt
+</td><td>
+	<input type=text name=contract_amount_final>
+	<input type=radio name=contract_amount_final_radio value='>' checked>&gt;
+	<input type=radio name=contract_amount_final_radio value='='>=
+	<input type=radio name=contract_amount_final_radio value='<'>&lt;
+</td></tr>
+
+<tr><td>
+	Start Date:
+</td><td>
+	Since <input type=radio name=start_date_radio value='>' checked>
+	Before <input type=radio name=start_date_radio value='<'>
+	";datebox('','generic_search.start_date');echo"
+	<input type=hidden name=start_date_is_date value=1>
+</td></tr>
+
+<tr><td>
+	Complete Date:
+</td><td>
+	Since <input type=radio name=complete_date_radio value='>' checked>
+	Before <input type=radio name=complete_date_radio value='<'>
+	";datebox('','generic_search.complete_date');echo"
+	<input type=hidden name=complete_date_is_date value=1>
+</td></tr>
+
+<tr><td>
+	Address:
+</td><td>
+	<input type=text name=job_site_address>
+</td></tr>
+
+<tr><td>
+	Fed/Pub:
+</td><td>
+	<select name=fed_pub>
+	<option value=''>?</option>
+	<option>(n/a)</option>
+	<option>Fed</option>
+	<option>Prv</option>
+	<option>Pub</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Order By:
+</td><td>
+	<select name=query_order_by_1>
+	<option value='contract_num'>Job #</option>
+	<option value='job_name'>Job Name</option>
+	</select>
+	
+	A<input type=radio name=query_order_by_1_direction value='' checked>
+	D<input type=radio name=query_order_by_1_direction value='desc'>
+</td></tr>
+
+<tr><td>
+	Show Traxx Count:
+</td><td>
+	N&nbsp;<input type=radio name=showtraxx value=0 checked>
+	Y&nbsp;<input type=radio name=showtraxx value=1>
+</td></tr>
+
+<tr><td>
+	Export to excel:
+</td><td>
+	<input type=checkbox name=export_to_excel>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit>
+</td></tr>
+</form>
+
+</table>
+<p>
+
+<form name=vpsearchform method=get action=$pagename>
+<input type=hidden name=mode value=search_submit_vp>
+Viewpoint Owner/Architect text search<br>
+<input type=text name=oa_text><br>
+<input type=submit>
+</form>
+";
+
+
+
+
+
+?>

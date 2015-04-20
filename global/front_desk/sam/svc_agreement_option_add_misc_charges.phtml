@@ -1,0 +1,47 @@
+<?
+//echo "agreement_id : $agreement_id";
+if ($agreement_id=="") die("ERROR: missing agreement_id!!!!!!!!");
+else $agreement_id=addslashes($agreement_id);
+
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+else die("Application error! No agreement_id specified! Please contact your system administrator.");
+
+
+echo "<h2>Add a Misc Charge</h2>
+<hr>
+<form name=misc_charge method=post action=$pagename>
+<input type=hidden name=mode value=svc_agreement_option_submit_misc_charges>
+<input type=hidden name=agreement_id value=\"$agreement_id\">
+<table border=0>
+<tr><td>
+	Amount: 
+</td><td>
+	<input type=text size=10 name=amount>
+</td></tr>
+
+<tr><td>
+	Add Markup?
+</td><td>
+	<input type=checkbox name=markup checked>
+</td></tr>
+
+<tr><td>
+	Description:
+</td><td>
+	<input type=text name=description size=30>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Add>
+</td></tr>
+</table>
+
+
+</form>
+";
+
+
+
+
+
+?>

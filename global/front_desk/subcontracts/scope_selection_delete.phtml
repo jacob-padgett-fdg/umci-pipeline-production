@@ -1,0 +1,47 @@
+<?
+
+$selections_id=addslashes($selections_id);
+$selection_info=getoneb("select * from subcontractor_scope_selections where selections_id = '$selections_id'");
+$subcontracts_info=getoneb("select * from subcontracts where subcontracts_id = '$selection_info->subcontracts_id'");
+if (!($selection_info)) die("Application error!");
+
+if ($selection_info->custom_scope_item=='Y') {
+	if (($sucontracts_info->status=="processing")||($subcontracts_info->status=="new")) {
+		//echo "$subcontracts_info->status";
+		@mysql_query("delete from subcontractor_scope_selections where selections_id = '$selection_info->selections_id'");
+		}
+	}
+
+
+
+/*
+
+$description=addslashes($description);
+$subcontracts_id=addslashes($subcontracts_id);
+$subcontractor_type_id=addslashes($subcontractor_type_id);
+
+
+$scope_id_max=getoneb("select sort_priority from subcontractor_scope_selections where subcontractor_type_id = '$subcontractor_type_id' and subcontracts_id = '$subcontracts_id' order by sort_priority desc limit 1");
+$sort_priority=$scope_id_max->sort_priority + 1;
+
+$query="insert into subcontractor_scope_selections set
+	subcontracts_id = '$subcontracts_id',
+	subcontractor_type_id = '$subcontractor_type_id',
+	description = '$description',
+	sort_priority = '$sort_priority',
+	custom_scope_item = 'Y'
+	";
+//$query="delete from subcontractor_scope_selections where
+//	subcontracts_id = '$subcontracts_id'
+//	";
+@mysql_query($query);
+$id=@mysql_insert_id();
+
+
+//$sort_priority++;
+$subcontracts_info->subcontractor_type_id=$subcontractor_type_id;
+$subcontracts_info->subcontracts_id=$subcontracts_id;
+*/
+include("scope_selections.phtml");
+
+?>

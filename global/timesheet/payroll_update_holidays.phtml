@@ -1,0 +1,64 @@
+<?
+if (!($payroll_check)) die_security();
+if ($holiday_year=="") $holiday_year=date('Y');
+$holiday_year=addslashes($holiday_year);
+
+if ($delete_id!="") {
+	$delete_id=addslashes($delete_id);
+	@mysql_query("delete from timesheet_holidays where holiday_id = '$delete_id'");
+	}
+
+if ($holiday_date_add!="") {
+	$holiday_date_add=vali_date($holiday_date_add);
+	$description=addslashes($description);
+	@mysql_query("insert into timesheet_holidays set
+	description = '$description',
+	holiday_date = '$holiday_date_add',
+	creator = '$global_user_id',
+	create_date = now()");
+	$id=@mysql_insert_id();
+	$info=getoneb("select year(holiday_date) as year from timesheet_holidays where holiday_id = '$id'");
+	$holiday_year=$info->year;
+	}
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Main Menu</font></a><p>
+<form name=holiday_year method=post action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+Year:&nbsp;<input type=text size=6 name=holiday_year value=\"$holiday_year\" onchange=submit()>
+</form>";
+$query="select * from timesheet_holidays where year(holiday_date) = $holiday_year order by holiday_date";
+//tabledump($query);
+echo "<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=\"$fd_color_4\"><td>
+	<b>Date</b>
+</td><td>
+	<b>Description</b>
+</td><td>
+	<b>Action</b>
+</td></tr>
+
+<tr><form name=newdate method=post action=\"$pagename\"><td>
+	<input type=hidden name=mode value=\"$mode\">
+	";datebox2("",'newdate.holiday_date_add');echo"
+</td><td>
+	<input type=text name=description size=25>
+</td><td>
+	<input type=submit>
+</td></form></tr>
+";
+
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$date=invali_date($row->holiday_date,'/');
+	echo "
+	<tr><td>
+		$date
+	</td><td>
+		$row->description
+	</td><td>
+		<a href=$pagename?mode=$mode&delete_id=$row->holiday_id><font color=blue><i>delete</i></font></a>
+	</td></tr>";
+	}
+echo "</table>";
+?>

@@ -1,0 +1,47 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+
+
+if ($job_list=="") $job_list="all";
+
+if ($job_list=="all") $all="selected";
+if ($job_list=="gmax") $gmax="selected";
+if ($job_list=="design") $design="selected";
+if ($job_list=="fed") $fed="selected";
+if ($job_list=="recovery") $recovery="selected";
+
+
+
+
+echo "
+<form name=select_dept method=get action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=report_name value=\"$report_name\">
+<select class=noprint name=job_list onchange=\"submit()\">
+<option value=\"all\" $all>All Active Jobs</option>
+<option value=\"gmax\" $gmax>Cost+/GMAX Jobs</option>
+<option value=\"design\" $design>Design/Build Jobs</option>
+<option value=\"fed\" $fed>Federal Jobs</option>
+<option value=\"recovery\" $recovery>Work Recovery Jobs</option>
+</select></form>";
+
+
+
+
+
+if ($job_list!="") {
+	include("active_jobs_lists_${job_list}.phtml");
+	}
+
+
+
+
+
+
+
+
+mh_navs_footer();
+?>

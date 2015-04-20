@@ -1,0 +1,520 @@
+<?
+//$debug=1;
+#$mth_hack=1;
+if ($debug==1) {
+$me_last_time=0;
+$me_now_time=0;
+function tcheck() {
+	global $me_now_time,$me_last_time;
+	$me_now_time=time();
+	if ($me_last_time!=0) {
+		$diff=$me_now_time - $me_last_time;
+		echo "<br>Time since last_check: $diff<br>";
+		}
+	$me_last_time=$me_now_time;
+	}	
+}
+include('header.phtml');
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+echo "
+<style type=\"text/css\">
+@media print {
+	tr.noprint { display: table-row; }
+	td.noprint { display: table-cell; }
+	}   
+</style>
+";
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+//fd_navs_header();
+$fd_color_5="#CCAA55";
+$fd_color_5="#DDBB66";
+$fd_color_6="#EE9999";
+$ct_array=cost_type_array();
+
+$query_limit_add="";
+if ($cap_month=="") $month_text="To Date";
+else {
+	$cap_month_orig=$cap_month;
+	$cap_month=ereg_replace('/','/1/',$cap_month);
+	$mdate_stamp=strtotime($cap_month);
+	$mdate=date('m/Y',$mdate_stamp);
+	$mdate_query_date=date('m/d/Y',$mdate_stamp);
+	$mdate_compare=date('Ym',$mdate_stamp);
+	$month_text=$mdate;
+	$query_limit_add=" and Mth <= '$mdate_query_date' ";
+	}
+
+$last_closed_grp_1=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 1 and Status = 1 order by PREndDate desc");
+$last_closed_grp_3=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 3 and Status = 1 order by PREndDate desc");
+$lcg1date=date('Ymd',strtotime($last_closed_grp_1->PREndDate));
+$lcg3date=date('Ymd',strtotime($last_closed_grp_3->PREndDate));
+if ($lcg1date>$lcg3date) {
+	$closed_date=date('m/d/Y',strtotime($last_closed_grp_3->PREndDate));
+	} else {
+	$closed_date=date('m/d/Y',strtotime($last_closed_grp_1->PREndDate));
+	}
+
+
+if ($week_ending=="") $week_ending=$closed_date;
+$date_info=date_info($week_ending);
+
+if ($mth_hack==1) {
+if ($cap_month!="") {
+	$we_compare=date('Ym',strtotime("$date_info->week_end_mysql"));
+	if ($we_compare>$mdate_compare) {
+		$date_info=date_info(date('m/d/Y',strtotime("-1 days",strtotime("+1 month",$mdate_stamp))));
+		//$new_compare=date('Ym',$date_info->week_end_unixtime2);
+		//if ($new_compare>$mdate_compare) {
+		//	$date_info=date_info($date_info->last_week_end);
+		//	}
+		$constraint_warning="<font color=red><h2>Note: The 'right side' dates are constrained by the 'left side', so 'right side' dates were modified.</h2></font>";
+		$week_starting="";
+		} 
+	}
+}
+
+$week_ending_mssql=$date_info->week_end_slashes;
+
+if ($week_starting=="") {
+	$date_starting_info=date_info($date_info->week_end);
+	} else {
+	$date_starting_info=date_info($week_starting);
+	}
+$week_starting_mssql=$date_starting_info->week_start_slashes;
+//$we_short=date('m/d/y',strtotime("$week_ending_mssql"));
+$ws_short=date('m/d/y',strtotime("$date_starting_info->week_start_slashes"));
+
+if ($week_ending_mssql=="") die("Application error: Week ending error!");
+
+/*
+$tbquery="
+select JCCP.Job, JCCP.Phase,
+sum(JCCP.CurrEstHours) as CurrEstHours,
+sum(JCCP.ActualHours) as ActualHours, 
+
+sum(JCCP.CurrEstCost) as CurrEstCost,
+sum(JCCP.ActualCost) as ActualCost,
+sum(JCCP.RemainCmtdCost) as RemainCmtdCost
+from JCCP
+Left outer JOIN JCCH on JCCP.Phase = JCCH.Phase and JCCH.Job = JCCP.Job and JCCH.JCCo = JCCP.JCCo and JCCH.CostType = JCCP.CostType
+where JCCP.JCCo = 1 and JCCP.Job like '$job->job%'
+group by JCCP.Job,JCCP.Phase
+order by JCCP.Job,JCCP.Phase
+";
+*/
+
+function is_valid_viewpoint_job($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
+$job=is_valid_viewpoint_job($global_jobinfo->contract_num);
+
+
+function clear_ct_totals() {
+	global $ct_totals,$ct_total_rows;
+	$ct_total_rows=0;
+	$ct_totals->h_est=0;
+	$ct_totals->h_act=0;
+	$ct_totals->h_rem=0;
+	$ct_totals->c_est=0;
+	$ct_totals->c_act=0;
+	$ct_totals->c_cmt=0;
+	$ct_totals->c_rem=0;
+	$ct_totals->r_hrs=0;
+	$ct_totals->r_cst=0;
+	}
+function clear_ct_j_totals() {
+	global $ct_j_totals,$ct_j_total_rows;
+	$ct_j_total_rows=0;
+	$ct_j_totals->h_est=0;
+	$ct_j_totals->h_act=0;
+	$ct_j_totals->h_rem=0;
+	$ct_j_totals->c_est=0;
+	$ct_j_totals->c_act=0;
+	$ct_j_totals->c_cmt=0;
+	$ct_j_totals->c_rem=0;
+	$ct_j_totals->r_hrs=0;
+	$ct_j_totals->r_cst=0;
+	}
+
+function print_ct_totals($ct,$job) {
+	global $ct_total_rows,$ct_totals,$fd_color_1,$ct_array,$fd_color_5,$date_starting_info,$date_info;
+	$ct_text=$ct_array[$ct];
+	if (($ct_totals->h_act!=0)&&($ct_totals->c_act!=0)) {
+		$composite=format_long_decimal($ct_totals->c_act/$ct_totals->h_act,2);
+		} else {
+		$composite="N/A";
+		}
+	echo "
+	<tr bgcolor=$fd_color_1><td align=left style=\"border-right: 1px solid black;\">
+	$ct_text totals
+	</td><td>
+		" . gap_num($ct_totals->h_est) . "
+	</td><td>
+		" . gap_num($ct_totals->h_act) . "
+	</td><td style=\"border-right: 1px solid black;\">
+		" . gap_num($ct_totals->h_rem) . "
+	</td><td>
+		" . gap_num($ct_totals->c_est) . "
+	</td><td>
+		" . gap_num($ct_totals->c_act) . "
+	</td><td>
+		" . gap_num($ct_totals->c_cmt) . "
+	</td><td>
+		" . gap_num($ct_totals->c_rem) . " 
+	</td><td class=h onclick=\"d('','$job','$ct','h1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
+		" . gap_num($ct_totals->r_hrs) . " 
+	</td><td class=c onclick=\"d('','$job','$ct','c1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
+		" . gap_num($ct_totals->r_cst) . " 
+	</td></tr>
+	";
+	}
+
+function print_ct_j_totals($job) {
+	global $ct_j_total_rows,$ct_j_totals,$fd_color_1,$fd_color_5,$lastjob,$date_starting_info,$date_info;;
+	//$ct_j_text=$ct_array[$ct];
+	if (($ct_j_totals->h_act!=0)&&($ct_j_totals->c_act!=0)) {
+		$composite=format_long_decimal($ct_j_totals->c_act/$ct_j_totals->h_act,2);
+		} else {
+		$composite="N/A";
+		}
+	echo "
+	<tr bgcolor=$fd_color_1><td align=left style=\"border-right: 1px solid black;\">
+	$lastjob totals
+	</td><td>
+		" . gap_num($ct_j_totals->h_est) . "
+	</td><td>
+		" . gap_num($ct_j_totals->h_act) . "
+	</td><td style=\"border-right: 1px solid black;\">
+		" . gap_num($ct_j_totals->h_rem) . "
+	</td><td>
+		" . gap_num($ct_j_totals->c_est) . "
+	</td><td>
+		" . gap_num($ct_j_totals->c_act) . "
+	</td><td>
+		" . gap_num($ct_j_totals->c_cmt) . "
+	</td><td>
+		" . gap_num($ct_j_totals->c_rem) . " 
+	</td><td class=h onclick=\"d('','$job','','h1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
+		" . gap_num($ct_j_totals->r_hrs) . " 
+	</td><td class=c onclick=\"d('','$job','','c1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
+		" . gap_num($ct_j_totals->r_cst) . " 
+	</td></tr>
+	";
+	}
+
+function add_to_ct_totals($ct) {
+	global 	$ct_j_total_rows,$ct_j_totals,$ct_total_rows,$ct_type_last,$tbrow,$ct_totals,$lastjob,$this_job,$ct_g_totals,$ct_g_total_rows;
+	if ($ct_total_rows=="") $ct_total_rows=0;
+	//echo "<tr><td>$lastjob</td><td>$this_job</td></tr>";
+	if (($ct_type_last!=$ct)||($lastjob!=$this_job)) {
+		if ($ct_total_rows>1) print_ct_totals($ct_type_last,$lastjob);
+		clear_ct_totals();
+		}
+	if ($lastjob!=$this_job) {
+		if ($ct_j_total_rows>1) print_ct_j_totals($lastjob);
+		clear_ct_j_totals();
+		}
+	$ct_type_last=$ct;
+	$ct_total_rows=$ct_total_rows + 1;
+	$ct_totals->h_est=$ct_totals->h_est + $tbrow->CurrEstHours;
+	$ct_totals->h_act=$ct_totals->h_act + $tbrow->ActualHours;
+	$ct_totals->h_rem=$ct_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+	$ct_totals->c_est=$ct_totals->c_est + $tbrow->CurrEstCost;
+	$ct_totals->c_act=$ct_totals->c_act + $tbrow->ActualCost;
+	$ct_totals->c_cmt=$ct_totals->c_cmt + $tbrow->RemainCmtdCost;
+	$ct_totals->c_rem=$ct_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+	$ct_totals->r_hrs=$ct_totals->r_hrs + $tbrow->RangeHours;
+	$ct_totals->r_cst=$ct_totals->r_cst + $tbrow->RangeCosts;
+	
+	$ct_g_total_rows=$ct_g_total_rows + 1;
+	$ct_g_totals->h_est=$ct_g_totals->h_est + $tbrow->CurrEstHours;
+	$ct_g_totals->h_act=$ct_g_totals->h_act + $tbrow->ActualHours;
+	$ct_g_totals->h_rem=$ct_g_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+	$ct_g_totals->c_est=$ct_g_totals->c_est + $tbrow->CurrEstCost;
+	$ct_g_totals->c_act=$ct_g_totals->c_act + $tbrow->ActualCost;
+	$ct_g_totals->c_cmt=$ct_g_totals->c_cmt + $tbrow->RemainCmtdCost;
+	$ct_g_totals->c_rem=$ct_g_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+	$ct_g_totals->r_hrs=$ct_g_totals->r_hrs + $tbrow->RangeHours;
+	$ct_g_totals->r_cst=$ct_g_totals->r_cst + $tbrow->RangeCosts;
+
+	$ct_j_total_rows=$ct_j_total_rows + 1;
+	$ct_j_totals->h_est=$ct_j_totals->h_est + $tbrow->CurrEstHours;
+	$ct_j_totals->h_act=$ct_j_totals->h_act + $tbrow->ActualHours;
+	$ct_j_totals->h_rem=$ct_j_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+	$ct_j_totals->c_est=$ct_j_totals->c_est + $tbrow->CurrEstCost;
+	$ct_j_totals->c_act=$ct_j_totals->c_act + $tbrow->ActualCost;
+	$ct_j_totals->c_cmt=$ct_j_totals->c_cmt + $tbrow->RemainCmtdCost;
+	$ct_j_totals->c_rem=$ct_j_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+	$ct_j_totals->r_hrs=$ct_j_totals->r_hrs + $tbrow->RangeHours;
+	$ct_j_totals->r_cst=$ct_j_totals->r_cst + $tbrow->RangeCosts;
+	}
+$ct_type_last=0;
+clear_ct_totals();
+
+
+if ($debug==1) tcheck();
+
+echo "
+$constraint_warning
+<script>
+function d(phase,job,ct,detailmode) {
+	phase=encodeURIComponent(phase);
+	job=encodeURIComponent(job);
+	ct=encodeURIComponent(ct);
+	detailmode=encodeURIComponent(detailmode);
+	start_date=encodeURIComponent('$date_starting_info->week_start_slashes');
+	end_date=encodeURIComponent('$date_info->week_end_slashes');
+	open('$pagename?mode=$mode&report_name=baldwin_details&phase=' + phase + '&job=' + job + '&detailmode=' + detailmode + '&start_date=' + start_date + '&end_date=' + end_date + '&ct=' + ct,'details_' + job,'width=600,height=600,scrollbars=yes,resizable=yes');
+	}
+</script>
+
+<style>
+	td.h { background: $fd_color_3; cursor: pointer; cursor: hand; border-left: 1px solid black;}
+	td.c { background: $fd_color_3; cursor: pointer; cursor: hand;}
+	td.l { text-align: left; border-right: 1px solid black;}
+</style>
+
+
+
+
+
+
+
+<form name=\"select_we\" onsubmit=\"return false\" method=get action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=report_name value=\"baldwin_full\">
+<input type=hidden name=show_both value=\"$show_both\">
+<table style=\"width: 950px; border: 1px solid black; text-align: right; font-size: 75%;\" cellspacing=0 cellpadding=2><tr bgcolor=$fd_color_4><td colspan=8 align=center>
+<b>Financial summary:</b>";
+	if ($mth_hack==1) {
+	echo "
+	<select name=cap_month onchange=\"submit()\">
+	<option value=\"$cap_month_orig\">$month_text</option>
+	";$mthres=@mssql_query("select Mth from JCCP with (NOLOCK) where Job like '$job->job' group by Mth order by Mth desc");
+	while ($mthrow=@mssql_fetch_object($mthres)) {
+		$mth=date('m/Y',strtotime($mthrow->Mth));
+		echo "<option value=\"$mth\">$mth</option>";
+		}
+	echo "</select>";
+	}
+	echo "
+</td><td colspan=2 rowspan=1 align=center class=h style=\"background: $fd_color_4;\">
+	Posted From/To
+</td></tr>
+
+<tr bgcolor=$fd_color_1><td style=\"border-right: 1px solid black; text-align: center;\">
+	Cost Type
+</td><td colspan=3 align=center style=\"border-right: 1px solid black;\">
+	Hours
+</td><td colspan=4 align=center>
+	Cost
+</td><td rowspan=2 colspan=2 style=\"background: $fd_color_4; border: 1px solid black; border-right: none;\">
+	";
+	if ($show_both=="Y") datebox2($week_starting_mssql,"select_we.week_starting","update_baldwin_full()");
+	else {
+		echo "<a href=\"javascript:baldwin_full_both_dates()\"><font color=blue>$ws_short</font></a>";
+		//echo "<a href=\"$pagename?mode=$mode&report_name=baldwin_full&show_both=Y&week_ending=$week_ending\"><font color=blue>$ws_short</font></a>";
+		}
+	echo "<br>"; 
+	datebox2($week_ending_mssql,"select_we.week_ending","update_baldwin_full()");echo "
+</td></tr>
+
+<tr bgcolor=$fd_color_1><td align=center style=\"border-right: 1px solid black;\">
+	&nbsp;
+</td><td align=center>
+	Est
+</td><td align=center>
+	Act
+</td><td align=center style=\"border-right: 1px solid black;\">
+	Remain
+</td><td align=center>
+	Est
+</td><td align=center>
+	Act
+</td><td align=center>
+	Rem Cmtd
+</td><td align=center>
+	Remain
+</td></form></tr>
+";
+
+
+
+if ($week_ending_mssql=="") {
+	die("Application error: Week ending error!");
+	} else {
+	
+	
+	$tbquery="
+	select JCCP.Job, JCCP.Phase,
+	sum(JCCP.CurrEstHours) as CurrEstHours,
+	sum(JCCP.ActualHours) as ActualHours, 
+	
+	sum(JCCP.CurrEstCost) as CurrEstCost,
+	sum(JCCP.ActualCost) as ActualCost,
+	sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+	JCCP.CostType
+	from JCCP with (NOLOCK) 
+	Left outer JOIN JCCH with (NOLOCK) on JCCP.Phase = JCCH.Phase and JCCH.Job = JCCP.Job and JCCH.JCCo = JCCP.JCCo and JCCH.CostType = JCCP.CostType
+	where JCCP.JCCo = 1 and JCCP.Job like '$job->job%'
+	$query_limit_add
+	group by JCCP.Job,JCCP.Phase,JCCP.CostType
+	order by JCCP.Job,
+	CASE when JCCP.CostType = 4 then 3 when JCCP.CostType = 3 then 4 else JCCP.CostType END,
+	JCCP.Phase
+	";
+	}
+//tcheck();
+//ms_tabledump($tbquery);
+//tcheck();
+//die();
+$lastjob="";
+
+$tbres=mssql_query($tbquery);
+while ($tbrow=@mssql_fetch_object($tbres)) {
+	if (($tbrow->CurrEstHours==0)&&
+		($tbrow->ActualHours==0)&&
+		($tbrow->RemainCmtdCost==0)&&
+		($tbrow->ActualCost==0)&&
+		($tbrow->CurrEstCost==0)) continue;
+	//$this_job=ereg_replace("[- ]*","",$tbrow->Job);
+	$this_job=$tbrow->Job;
+	$phase_info=ms_getoneb("select top 1 * from JCJP with (NOLOCK) where Job = '$tbrow->Job' and Phase = '$tbrow->Phase' and JCCo = 1 and PhaseGroup = 1");
+	$phase_info->Phase=ereg_replace("[ -]*$","",$phase_info->Phase);
+	
+	$weekly_sums_query="
+	select sum(ActualHours) as Hours, sum(ActualCost) as Cost
+	from JCCD with (NOLOCK)
+	where 
+	JCCo = 1 and 
+	Job = '$tbrow->Job' and 
+	CostType = '$tbrow->CostType' and
+	PhaseGroup = 1 and
+	Phase = '$tbrow->Phase' and 
+	PostedDate >= '$date_starting_info->week_start_slashes' and
+	PostedDate <= '$date_info->week_end_slashes'
+	group by CostType,Phase
+	";
+	$weekly_sums=ms_getoneb($weekly_sums_query);
+	if (!($weekly_sums)) {
+		$weekly_sums->Hours=0;
+		$weekly_sums->Cost=0;
+		}
+	$tbrow->RangeHours=$weekly_sums->Hours;
+	$tbrow->RangeCosts=$weekly_sums->Cost;
+	add_to_ct_totals($tbrow->CostType);
+	if ($lastjob!=$this_job) {
+		//echo "<tr><td>boo</td></tr>";
+		$lastjob=$this_job;
+		$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
+		echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=8><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td><td>Cost</tr>";
+		} else {
+		//echo "<tr><td>$lastjob/$this_job</td></tr>";
+		}
+
+	$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+	$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+	$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+	$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+	$hours_remaining=gap_num($hours_remaining);
+	
+	$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+	$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+	$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
+	$cost_remaining=gap_num($cost_remaining);
+	
+	
+	$cttext=$ct_array[$tbrow->CostType];
+	echo "
+	<tr><td class=l>
+		$phase_info->Phase&nbsp;-&nbsp;$phase_info->Description ($cttext)
+	</td><td>
+		$tbrow->CurrEstHours
+	</td><td>
+		$tbrow->ActualHours
+	</td><td style=\"border-right: 1px solid black;\">
+		$hours_remaining
+	</td><td>
+		$tbrow->CurrEstCost
+	</td><td>
+		$tbrow->ActualCost
+	</td><td>
+		$tbrow->RemainCmtdCost
+	</td><td style=\"\">
+		$cost_remaining
+	</td><td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+		" . gap_num($weekly_sums->Hours) . "
+	</td><td class=c onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','c1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+		" . gap_num($weekly_sums->Cost) . "
+	</td></tr>
+	";
+	}
+$this_job=0;
+add_to_ct_totals($ct_type_last);
+
+echo "
+<tr><td colspan=10 align=center bgcolor=$fd_color_4>&nbsp;</td></tr>
+<tr bgcolor=$fd_color_1><td align=left style=\"border-right: 1px solid black;\">
+	Grand Totals
+</td><td>
+	" . gap_num($ct_g_totals->h_est) . "
+</td><td>
+	" . gap_num($ct_g_totals->h_act) . "
+</td><td style=\"border-right: 1px solid black;\">
+	" . gap_num($ct_g_totals->h_rem) . "
+</td><td>
+	" . gap_num($ct_g_totals->c_est) . "
+</td><td>
+	" . gap_num($ct_g_totals->c_act) . "
+</td><td>
+	" . gap_num($ct_g_totals->c_cmt) . "
+</td><td>
+	" . gap_num($ct_g_totals->c_rem) . "
+</td><td class=h onclick=\"d('','$job->Job','','h2','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
+	" . gap_num($ct_g_totals->r_hrs) . "
+</td><td class=c onclick=\"d('','$job->Job','','c3'),'$date_starting_info->week_start_slashes','$date_info->week_end_slashes'\" style=\"background: $fd_color_5;\">
+	" . gap_num($ct_g_totals->r_cst) . "
+</td></tr>
+
+</table>
+";
+if ($debug==1) tcheck();
+
+//fd_navs_footer();exit;
+?>

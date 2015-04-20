@@ -1,0 +1,40 @@
+<?
+$oiclog_id=addslashes($oiclog_id);
+
+
+
+if ($submode=="add_purgatory_dwg") {
+	$file_group_id=addslashes($file_group_id);
+	if ($file_group_id>0) {
+		@mysql_query("insert into oiclog_purgatory set file_group_id = '$file_group_id', oiclog_id = '$oiclog_id'");
+		}
+	}
+
+
+echo "
+<table border=1 cellspacing=0 cellpadding=4>
+	<tr><td colspan=5 align=center bgcolor=$fd_color_4>
+		<b>Drawings:</b>
+	</td></tr>
+	
+	<tr><td colspan=5>
+		<form style=\"display: inline;\" name=dwg_add><b>Add:</b>";webfilebox2("","file_group_id","add_new_dwg()");echo "</form>
+	</td></tr>
+";
+
+
+$purgatory_res=@mysql_query("select * from oiclog_purgatory where oiclog_id = '$oiclog_id'");
+while ($prow=@mysql_fetch_object($purgatory_res)) {
+	$link=webfile_paperclip_view($prow->file_group_id);
+	echo "
+	<tr><td>
+		<input type=text>
+	</td><td>
+		$link
+	</td><td>
+		<form style=\"display: inline;\" name=\"dwg_frm_$prow->purgatory_id\" action=\"$pagename\" method=post>";
+		webfilebox2("$prow->file_group_id","file_group_id","add_new_dwg()");
+	echo"</form></td></tr>";
+	}
+echo "</table>";
+?>

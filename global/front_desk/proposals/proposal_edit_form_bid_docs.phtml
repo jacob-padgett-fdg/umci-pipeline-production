@@ -1,0 +1,147 @@
+<?
+
+echo "
+</script>
+<input type=hidden name=proposal_form_bid_docs value=true>
+<script>
+
+function bdcontacts() {
+	open('$pagename?mode=contacts&selected_contact=$bid_info->reprographics_company_id','bl_contacts_win','width=500,height=500');
+	}
+
+
+function bid_docs_check() {
+	var fieldmode,linkcolor,testval;
+	testval=document.bidlist_edit.bid_docs.value;
+
+	if (testval!=\"Y\") {
+		fieldmode=true;
+		linkcolor='grey';
+		} else {
+		fieldmode=false;
+		linkcolor='blue';
+		}
+	document.bidlist_edit.reprographics_company_id.disabled=fieldmode;
+	";if ($browser!="IE") echo "document.getElementById('reprographics_link').style.color=linkcolor;";echo "
+	document.bidlist_edit.dwgs_url.disabled=fieldmode;
+	document.bidlist_edit.dwgs_ordered.disabled=fieldmode;
+	document.bidlist_edit.dwgs_printed_in_house.disabled=fieldmode;
+	document.bidlist_edit.dwgs_received.disabled=fieldmode;
+	document.bidlist_edit.dwgs_returned.disabled=fieldmode;
+	document.bidlist_edit.deposit_required.disabled=fieldmode;
+	document.bidlist_edit.deposit.disabled=fieldmode;
+	document.bidlist_edit.refundable.disabled=fieldmode;
+	document.bidlist_edit.deposit_returned.disabled=fieldmode;
+	
+	if (testval==\"Y\") {
+		deposit_check();
+		}
+	}
+
+function deposit_check () {
+	if (document.bidlist_edit.deposit_required.value!='Y') {
+		document.bidlist_edit.deposit.disabled=true;
+		document.bidlist_edit.refundable.disabled=true;
+		document.bidlist_edit.deposit_returned.disabled=true;
+		document.bidlist_edit.dwgs_returned.disabled=true;
+		} else {
+		document.bidlist_edit.deposit.disabled=false;
+		document.bidlist_edit.refundable.disabled=false;
+		document.bidlist_edit.deposit_returned.disabled=false;
+		document.bidlist_edit.dwgs_returned.disabled=false;
+		}
+	}
+
+</script>
+
+
+<table border=1 cellspacing=0 cellpadding=1 class=\"tableobj\">
+	<tr><td colspan=2 bgcolor=$table_dark>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td>
+		<b style=\"color: $table_title;\">Bid&nbsp;Docs&nbsp;Required&nbsp;</b>";ynmselect("bid_docs",$bid_info->bid_docs,"?","bid_docs_check();");echo "
+		</td><td align=right style=\"color: $table_title;\">
+		<a href=javascript:addenda_plus()><font size=+1 color=$table_title>+</font></a>&nbsp;/&nbsp;<a href=javascript:addenda_minus()><font size=+1 color=$table_title>-</font></a>&nbsp;
+		Addenda:&nbsp;<font id='addendadata'>$bid_info->addenda</font>
+		<input type=hidden name=addenda value=\"$bid_info->addenda\">
+		<script>
+		function addenda_plus() {
+			var tempint;
+			tempint=parseInt(document.bidlist_edit.addenda.value);
+			document.bidlist_edit.addenda.value=tempint + 1;
+			if (document.bidlist_edit.addenda.value < 1) document.bidlist_edit.addenda.value='0';
+			document.getElementById('addendadata').innerHTML=document.bidlist_edit.addenda.value;
+			}
+		function addenda_minus() {
+			var tempint;
+			tempint=parseInt(document.bidlist_edit.addenda.value);
+			document.bidlist_edit.addenda.value=document.bidlist_edit.addenda.value - 1;
+			if (document.bidlist_edit.addenda.value < 1) document.bidlist_edit.addenda.value='0';
+			document.getElementById('addendadata').innerHTML=document.bidlist_edit.addenda.value;
+			}
+		</script>
+		</td></tr>
+		</table>
+	</td></tr>
+
+	<tr><th>
+		<a href=javascript:bdcontacts(); id=\"reprographics_link\">Reprographics&nbsp;firm:</a>
+	</th><td>
+		";contactbox("select contacts_id as reprographics_company_id,left(display_name,30) as display_name from contacts where current = 'Y' and is_company = 'Y' and is_reprographics_firm = 'Y' order by alphasort",$bid_info->reprographics_company_id,"","\" onfocus=\"bid_docs_check()",2);echo"
+	</td></tr>	
+
+	<tr><th>
+		Web page if online:
+	</th><td>
+		<input type=text size=30 name=dwgs_url name=dwgs_url value=\"$bid_info->dwgs_url\" onfocus=bid_docs_check();>
+	</td></tr>
+
+	<tr><th>
+		Ordered
+	</th><td>";
+		ynmselect("dwgs_ordered",$bid_info->dwgs_ordered,"?","bid_docs_check();");echo"
+	</td></tr>
+
+	<tr><th>
+		Printed in house
+	</th><td>";
+		ynmselect("dwgs_printed_in_house",$bid_info->dwgs_printed_in_house,"?","bid_docs_check();");echo"
+	</td></tr>
+
+	<tr><th>
+		Dwg's Received
+	</th><td>";
+		ynmselect("dwgs_received",$bid_info->dwgs_received,"?","bid_docs_check();");echo"
+	</td></tr>
+
+	<tr><th>
+		Deposit Required
+	</th><td>
+		";ynmselect("deposit_required",$bid_info->deposit_required,"?","bid_docs_check();");echo "
+		Amount:&nbsp;$<input type=text name=deposit size=4 value=\"$bid_info->deposit\" dir=rtl>
+	</td></tr>
+
+	<tr><th>
+		Deposit Refundable
+	</th><td>
+		";ynmselect("refundable",$bid_info->refundable,"?","bid_docs_check();");echo"
+	</td></tr>
+	
+	<tr><th>
+		${rtc_start}Dwg's Returned${rtc_end}
+	</th><td>
+		";ynmselect("dwgs_returned",$bid_info->dwgs_returned,"?","bid_docs_check();");echo"
+	</td></tr>
+
+	<tr><th>
+		Deposit Returned
+	</th><td>
+		";ynmselect("deposit_returned",$bid_info->deposit_returned,"?","bid_docs_check();");echo"
+	</td></tr>
+
+</table>
+<script>
+bid_docs_check();
+</script>
+";
+?>

@@ -1,0 +1,31 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+
+$count=0;
+$resa=@mysql_query("show databases");
+echo "<table border=1 cellspacing=0 cellpadding=5>";
+while ($rowa=@mysql_fetch_object($resa)) {
+	//mysql_select_db($rowa->Database);
+	echo "<tr><td colspan=2 align=center bgcolor=$fd_color_1><b>$rowa->Database</b></td></tr>";
+	$res=@mysql_query("use $rowa->Database");
+	$res=mysql_query("show tables");
+	$db=$rowa->Database;
+	while ($row=@mysql_fetch_row($res)) {
+		$count++;
+		$tablename=$row[0];
+		$status=getoneb("check table $tablename EXTENDED");
+		if ($status->Msg_text!='OK') {
+			echo "<tr><td>$row->Tables_in_global</td><td>$status->Msg_text</td></tr>";
+			//@mysql_query("repair table $tablename");
+			}
+		}
+	}
+echo "</table>
+Any errors should be displayed above...($count tables checked)
+";
+mh_navs_footer();
+?>

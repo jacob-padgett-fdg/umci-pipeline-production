@@ -1,0 +1,69 @@
+<?
+
+$rff="false";
+
+if (($umcgroups_id=="")||($umcgroups_id=="0")) $rff="true";
+if (($proposal_type=="")||($proposal_type=="0")) $rff="true";
+if (($project=="")||($project=="0")) $rff="true";
+if (($location=="")||($location=="0")) $rff="true";
+if (($contract_type=="")||($contract_type=="0")) $rff="true";
+if (($bid_date=="")||($bid_date=="0")) $rff="true";
+//if (!(getoneb("select * from bidlist_bid_projtypes where bidlist_id = '$bidlist_id' and project_type_id > 0 limit 1"))) $rff="true";
+if ($projtype=="") $rff="true";
+
+if (($design_process=="")||($design_process=="0")) $rff="true";
+
+
+if ($bid_info->status=="") $status="Active";
+
+if (($bid_info->status!="Lead")&&($bid_info->status!="Dead Lead")) {
+	if (($rff=="true")&&($target!="reload")) {
+		$target="failed_required";
+		}
+	}
+
+
+
+$show_in_bidlist=checkfix($show_in_bidlist);
+$show_in_bid_total_calc=checkfix($show_in_bid_total_calc);
+$umcgroups_id=addslashes($umcgroups_id);
+$proposal_type=addslashes($proposal_type);
+$project=addslashes($project);
+$location=addslashes($location);
+$contract_type=addslashes($contract_type);
+$bid_date=vali_date($bid_date);
+$type=addslashes($type);
+$gccm=checkfix($gccm);
+$public=checkfix($public);
+$umc_gc_prime=checkfix($umc_gc_prime);
+$private=checkfix($private);
+$bid_time=timefix($bid_time);
+$design_process=addslashes($design_process);
+$attached_files=addslashes($attached_files);
+$projtype=addslashes($projtype);
+
+
+$query_data=$query_data . "$data_seperator
+status = '$status',
+show_in_bidlist = '$show_in_bidlist',
+show_in_bid_total_calc = '$show_in_bid_total_calc',
+umcgroups_id = '$umcgroups_id',
+projtype = '$projtype',
+proposal_type = '$proposal_type',
+project = '$project',
+location = '$location',
+contract_type = '$contract_type',
+bid_date = '$bid_date',
+type = '$type',
+gccm = '$gccm',
+public = '$public',
+umc_gc_prime = '$umc_gc_prime',
+private = '$private',
+bid_time = $bid_time,
+design_process = '$design_process',
+attached_files = '$attached_files'
+";
+
+$data_seperator=",";
+
+?>

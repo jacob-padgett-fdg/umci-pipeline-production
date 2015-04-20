@@ -1,0 +1,39 @@
+<?
+require_once('header.phtml');
+require_once('querylib.inc');
+
+echo "
+
+<center><h3>Select PO Expected Date or Range</h3>
+<form name=po_expected_date_range>
+From&nbsp;";
+datebox2("$expected_date_start_filter",'po_expected_date_range.expected_date_start_filter');
+
+echo "&nbsp;To&nbsp;";
+datebox2("$expected_date_end_filter",'po_expected_date_range.expected_date_end_filter');
+echo "
+<br><font size=-1><i>Use \"from\" only for a single day</i></font><p>
+<input type=button onclick=\"clear_dates()\" value='Clear'>
+<input type=button onclick=\"fill_down_dates()\" value='Apply'>
+</form>
+</center>
+
+<script>
+function fill_down_dates() {
+	datea=document.po_expected_date_range.expected_date_start_filter.value;
+	dateb=document.po_expected_date_range.expected_date_end_filter.value;
+	opener.document.po_filter_form.expected_date_start_filter.value=datea;
+	opener.document.po_filter_form.expected_date_end_filter.value=dateb;
+	opener.document.po_filter_form.submit();
+	self.close();
+	}
+function clear_dates() {
+	document.po_expected_date_range.expected_date_start_filter.value='';
+	document.po_expected_date_range.expected_date_end_filter.value='';
+	}
+document.po_expected_date_range.expected_date_start_filter.value=opener.document.po_filter_form.expected_date_start_filter.value;
+document.po_expected_date_range.expected_date_end_filter.value=opener.document.po_filter_form.expected_date_end_filter.value;
+</script>
+";
+
+?>

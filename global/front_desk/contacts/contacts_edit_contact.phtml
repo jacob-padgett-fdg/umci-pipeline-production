@@ -1,0 +1,336 @@
+<?
+
+$emp = $contact->umc_emp;
+$contact->umc_emp = checkbreak($contact->umc_emp);
+$contact->current = checkbreak($contact->current);
+$contact->proj_manager = checkbreak($contact->proj_manager);
+$contact->proj_sponsor = checkbreak($contact->proj_sponsor);
+$contact->bidlist_takeoff_lists = checkbreak($contact->bidlist_takeoff_lists);
+$contact->gc_proj_manager = checkbreak($contact->gc_proj_manager);
+$contact->contract_admin = checkbreak($contact->contract_admin);
+$contact->owner = checkbreak($contact->owner);
+$contact->consultant = checkbreak($contact->consultant);
+$contact->foreman = checkbreak($contact->foreman);
+$contact->superintendent = checkbreak($contact->superintendent);
+$contact->mech_engineer = checkbreak($contact->mech_engineer);
+$contact->proj_engineer = checkbreak($contact->proj_engineer);
+$contact->estimator = checkbreak($contact->estimator);
+$contact->head_cheese = checkbreak($contact->head_cheese);
+$contact->detailer = checkbreak($contact->detailer);
+
+// FRON-2 Since we are not putting a value in udusername in Viewpoint, I would like to change the code to use the formula of
+// the first character of the first_name concatenated with the last_name.
+if (empty($contact->login_name)) {
+    $employee_login_name = ucwords(substr($contact->first_name, 0, 1)) . ucwords($contact->last_name);
+    $contact->login_name = $employee_login_name;
+} else {
+    $employee_login_name = $contact->login_name;
+}
+
+$cancel_link = "$pagename?mode=$contacts_last_main_mode";
+
+if ($return_to != "") {
+    //$return_to=addslashes($return_to);
+    //$abort_url=base64_decode($return_to);
+    //$cancel_link=$abort_url;
+    $cancel_link = get_return_to_link($return_to);
+}
+
+if ($contact->employee_num == 0) $contact->employee_num = "";
+
+echo "
+<script>
+function check_login() {
+	if (!document.standardform.umc_emp.checked) {
+		document.standardform.login_name.value=document.standardform.email.value;
+	} else {
+	    document.standardform.login_name.value=document.standardform.default_employee_login_name.value;
+
+	}
+}
+</script>
+<table border=0 cellspacing=0 cellpadding=1>
+
+<a href=\"$cancel_link\"><font color=blue>Cancel</font></a><br>
+
+<form name=standardform method=get action=$pagename>
+<input type=hidden name=mode value=contacts_submit>
+<input type=hidden name=contacts_id value=\"$contact->contacts_id\">
+<input type=hidden name=contact_type value=\"$contact->contact_type\">
+<input type=hidden name=exit_target value=\"$contacts_last_main_mode\">
+<input type=hidden name=return_to value=\"$return_to\">
+<input type=hidden name=default_employee_login_name value=\"$employee_login_name\">
+
+* = <i>Required for web application login</i><br>
+
+
+<tr><td>
+	First Name:
+</td><td>
+	<input type=text name=first_name value=\"$contact->first_name\" tabindex=1>*
+</td><td>
+	(real)&nbsp;
+</td><td>
+	<input type=text name=first_name_real value=\"$contact->first_name_real\">
+</td></tr>
+	
+<tr><td>
+	Last Name:
+</td><td>
+	<input type=text name=last_name value=\"$contact->last_name\" tabindex=2>
+</td><td>
+	Initials&nbsp;
+</td><td>
+	<input size=4 type=text name=initials value='$contact->initials'>
+</td></tr>
+";
+
+if ($emp == 'N') {
+    echo "
+	<tr><td>
+		<font title=\"Point of contact\">Main POC
+	</td><td>
+		";
+    contactsbox("select * from contacts where current = 'Y' and umc_emp = 'Y'", "$contact->point_of_contact_id", "point_of_contact_id", "", 2);
+    echo "
+	</td></tr>
+	";
+}
+
+echo "
+
+
+
+<tr><td>
+	E-mail:
+</td><td>
+	<input type=text name=email value='$contact->email' onchange=check_login(); tabindex=4>*
+</td><td>
+	Emp #&nbsp;
+</td><td>
+	<input size=5 type=text name=employee_num value='$contact->employee_num'>
+</td></tr>
+	
+<tr><td>
+	Login Name:
+</td><td>
+	";
+if (($adminuser) || (($emp != 'Y') && ($auth_backend_access_type->type == 'full')))
+    echo "<input title=\"E-mail address if not UMC Employee\" type=text name=login_name value='$contact->login_name' onchange=check_login(); tabindex=5>*";
+else echo "$contact->login_name";
+echo "
+</td></tr>
+
+<tr><td>
+	Picture
+</td><td>
+	";
+webfilebox($contact->photo_file_group_id, 'photo_file_group_id', "", 1);
+echo "
+</td></tr>
+
+<tr><td>
+	Title:
+</td><td colspan=3>
+	<input type=text size=30 name=title value=\"$contact->title\">
+</td></tr>
+
+
+";
+if (($adminuser) || (($emp != 'Y') && ($auth_backend_access_type->type == 'full'))) echo "
+<tr><td>
+	Web Password:
+</td><td>
+	<input type=text name=web_password value='$contact->web_password' tabindex=6>*
+</td></tr>
+";
+
+echo "	
+
+<tr><td>
+	Company
+</td><td>";
+$company_info = getone("select * from contacts where contacts_id = '$contact->company_id'");
+echo "<a href=$pagename?mode=contacts_edit&contacts_id=$company_info->contacts_id><font color=blue>$company_info->display_name</font></a>
+	<input type=hidden name=company_id value=\"$contact->company_id\">
+</td></tr>
+	
+<tr><td>
+	Address:
+</td><td colspan=3>
+	<textarea rows=3 cols=30 scroll=auto wrap=soft name=address_1>$contact->address_1</textarea>
+</td></tr>
+
+<tr><td>
+	City:
+</td><td colspan=3>
+	<input size=15 type=text name=address_city value='$contact->address_city'>&nbsp;State:&nbsp;	<input type=text name=address_state size=3 value='$contact->address_state'>&nbsp;Zip:&nbsp;<input type=text name=address_zip size=10 value='$contact->address_zip'>
+</td></tr>
+
+<tr><td>
+	Phone:
+</td><td colspan=3>
+	<input type=text name=phone value='$contact->phone'>&nbsp;ext&nbsp;<input size=4 type=text name=phone_ext value='$contact->phone_ext'>
+</td></tr>
+
+<tr><td>
+	Current:
+</td><td>
+	<input type=checkbox name=current $contact->current>
+</td></tr>
+
+";
+
+if ($adminuser) echo "
+<tr><td>
+	UMC Employee:
+</td><td>
+	<input type=checkbox name=umc_emp $contact->umc_emp onchange=check_login();>
+</td></tr>
+";
+
+echo "
+<tr><td>
+	<script>
+	function show_extra_checkboxes() {
+		document.getElementById('extra_checkboxes').style.visibility='visible';
+		document.getElementById('extra_checkboxes_link_show').style.visibility='hidden';
+		document.getElementById('extra_checkboxes_link_hide').style.visibility='visible';
+		}
+	function hide_extra_checkboxes() {
+		document.getElementById('extra_checkboxes').style.visibility='hidden';
+		document.getElementById('extra_checkboxes_link_hide').style.visibility='hidden';
+		document.getElementById('extra_checkboxes_link_show').style.visibility='visible';
+		}
+	</script>
+	
+	<div id=extra_checkboxes_link_show style=\"visibility: visible; position: absolute;\"><a href=\"javascript:show_extra_checkboxes()\">
+	<i>More...</i>
+	</a></div>
+	
+	<div id=extra_checkboxes_link_hide style=\"visibility: hidden; position: absolute;\"><a href=\"javascript:hide_extra_checkboxes()\">
+	<i>Less...</i>
+	</a></div>
+</td><td>
+	<input type=button value=Apply onclick=apply_changes();>
+	<input type=button value=Finish onclick=submit(); tabindex=7>
+</td></tr>
+
+
+<tr><td colspan=2>
+	<div id=extra_checkboxes style=\"visibility: hidden; position: absolute;\">
+	<table>
+
+	<tr><td>
+		Fax:
+	</td><td>
+		<input size=12 type=text name=phone_fax value='$contact->phone_fax'>
+	</td><td>
+		Cell:
+	</td><td>
+		<input size=12 type=text name=phone_cell value='$contact->phone_cell'>
+	</td></tr>
+	
+	<tr><td>
+		Pager:
+	</td><td>
+		<input size=12 type=text name=phone_page value='$contact->phone_page'>
+	</td><td>
+		Home Phone:
+	</td><td>
+		<input size=12 type=text name=phone_home value='$contact->phone_home'>
+	</td></tr>
+	
+	<tr><td>
+		Traxx T/O List:
+	</td><td>
+		<input type=checkbox name=bidlist_takeoff_lists $contact->bidlist_takeoff_lists>
+	</td><td>
+		GC Proj Manager:
+	</td><td>
+		<input type=checkbox name=gc_proj_manager $contact->gc_proj_manager>
+	</td></tr>
+	
+	
+	<tr><td>
+		Contract Admin:
+	</td><td>
+		<input type=checkbox name=contract_admin $contact->contract_admin>
+	</td><td>
+		Project Manager:
+	</td><td>
+		<input type=checkbox name=proj_manager $contact->proj_manager>
+	</td></tr>
+	
+	<tr><td>
+		Foreman:
+	</td><td>
+		<input type=checkbox name=foreman $contact->foreman>
+	</td><td>
+		Project Sponsor:
+	</td><td>
+		<input type=checkbox name=proj_sponsor $contact->proj_sponsor>
+	</td></tr>
+	
+	<tr><td>
+		Consultant:
+	</td><td>
+		<input type=checkbox name=consultant $contact->consultant>
+	</td><td>
+		Superintendent:
+	</td><td>
+		<input type=checkbox name=superintendent $contact->superintendent>
+	</td></tr>
+	
+	<tr><td>
+		Mech.&nbsp;Engineer:
+	</td><td>
+		<input type=checkbox name=mech_engineer $contact->mech_engineer>
+	</td><td>
+		Project Engineer:
+	</td><td>
+		<input type=checkbox name=proj_engineer $contact->proj_engineer>
+	</td></tr>
+	
+	<tr><td>
+		Estimator:
+	</td><td>
+		<input type=checkbox name=estimator $contact->estimator>
+	</td><td>
+		Head Cheese:
+	</td><td>
+		<input type=checkbox name=head_cheese $contact->head_cheese>
+	</td></tr>
+	
+	<tr><td>
+		Detailer:
+	</td><td>
+		<input type=checkbox name=detailer $contact->detailer>
+	</td><td>
+		Owner (customer):
+	</td><td>
+		<input type=checkbox name=owner $contact->owner>
+	</td></tr>
+
+	<tr><td>
+		Notes:
+	</td><td colspan=3>
+		<textarea name=notes rows=3 cols=40>$contact->notes</textarea>
+	</td></tr>
+	</table>
+	</div>
+</td></tr>
+
+</table>
+</form>
+<script>
+function apply_changes() {
+	document.standardform.exit_target.value='contact_edit';
+	document.standardform.submit();
+	}
+document.standardform.first_name.focus();
+</script>
+";
+
+require('footer.phtml');
+?>

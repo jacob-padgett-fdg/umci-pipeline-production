@@ -1,0 +1,14 @@
+<?
+require('mh_lib.inc');
+require('report_lib.inc');
+if ($contacts_id!="") $contacts_id=addslashes($contacts_id);
+else die();
+
+$contact_info=getoneb("select * from contacts where contacts_id = '$contacts_id'");
+$address="$contact_info->display_name
+$contact_info->address_1
+$contact_info->address_city $contact_info->address_state, $contact_info->address_zip
+";
+$address = preg_replace("/\n\n+/", "\n", $address);
+echo "$address";
+?>

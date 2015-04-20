@@ -1,0 +1,23 @@
+<?
+require_once('querylib.inc');
+
+$query_id=addslashes($query_id);
+$query_info=getone("select * from mis_issue_query_history where query_id = '$query_id'");
+
+echo "<html><head><title>MIS Issue - Search History - $query_info->query_name</title></head>
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+<a href=$pagename?mode=category_search><font color=blue>Search</font></a><br>
+
+
+";
+
+echo "<body bgcolor=#ffffff>";
+//$query="select * from mis_issue_index where it_category_id = '$it_category_id'";
+
+category_show($query_info->query,"Search History: $query_info->query_id");
+echo "</center>";
+
+
+
+
+?>

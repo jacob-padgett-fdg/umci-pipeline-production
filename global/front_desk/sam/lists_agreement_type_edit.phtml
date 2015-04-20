@@ -1,0 +1,75 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified!");
+
+if ($agreement_type_id!="") {
+	$agreement_type_id=escapeshellcmd($agreement_type_id);
+	$agreement_type_info=getone("select * from svc_agreement_types where agreement_type_id = '$agreement_type_id'");
+	} else {
+	$agreement_type_info->sort_priority="1";
+	}
+
+echo "
+<a href=$pagename?mode=lists_agreement_types><font color=blue>Return to agreement type lists</font></a>
+
+<center><h3>Edit Agreement Type</h3></center><hr>
+
+<form name=agreement_type_edit>
+<input type=hidden name=mode value=lists_agreement_type_submit>
+<input type=hidden name=agreement_type_id value=\"$agreement_type_info->agreement_type_id\">
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td>
+	<b>Agreement type:</b>
+</td><td>
+	<input type=text size=20 name=agreement_type value=\"$agreement_type_info->agreement_type\">
+</td></tr>
+
+<tr><td>
+	<b>Minimum Markup Multiplier</b>
+</td><td>
+	<input type=text size=3 name=min_markup_percent value=\"$agreement_type_info->min_markup_percent\">
+</td></tr>
+
+<tr><td>
+	<b>Sort Priority</b>
+</td><td>
+	<input type=text size=3 name=sort_priority value=\"$agreement_type_info->sort_priority\">
+</td></tr>
+
+<tr><td colspan=2 align=right> 
+	<input type=submit value=Save>
+</td></tr>
+
+</table>
+</form>
+";
+
+if ($agreement_type_id!="") {
+	echo "<hr><h3>Task List Borrowing Rules</h3>
+	<form name=task_list_borrowing method=get action=$pagename>
+	<input type=hidden name=mode value=task_list_short_circuit>
+	<input type=hidden name=agreement_type_id value=\"$agreement_type_id\">
+	<i>If the equipment task list for ";
+	dropbox("select maint_type_id,maint_type from svc_maint_types order by maint_type","","","",1);
+	echo " maintenance<br>type is blank, then borrow the task list from the ";
+	dropbox("select agreement_type_id as agreement_type_id_target, agreement_type from svc_agreement_types where agreement_type_id != '$agreement_type_id'","","","",1);
+	echo "<br>agreement type.</i><br><input type=submit value=Add></form>";
+	
+	}
+
+//tabledump("select * from svc_task_lists_shorted where agreement_type_id = '$agreement_type_id'");
+$query="select * from svc_task_lists_shorted where agreement_type_id = '$agreement_type_id'";
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$maint_info=getone("select * from svc_maint_types where maint_type_id = '$row->maint_type_id'");
+	$agreement_type_target=getone("select * from svc_agreement_types where agreement_type_id = '$row->agreement_type_id_target'");
+	
+	echo "If the equipment task list for $agreement_type_info->agreement_type $maint_info->maint_type maintenance is blank, then borrow the task list from the
+	$agreement_type_target->agreement_type agreement_type.&nbsp;&nbsp;<a href=$pagename?mode=task_lists_shorted_delete&task_lists_shorted_id=$row->task_lists_shorted_id><i><font color=blue>Delete&nbsp;Rule</font></i></a><p>";
+	}
+
+
+
+
+
+?>

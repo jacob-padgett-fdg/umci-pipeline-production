@@ -1,0 +1,33 @@
+
+delimiter |
+create trigger docreg_file_cabinet_update after update on file_cabinet
+for each row begin
+	if NEW.inbound_attached = 'N' then call docreg_generic2 ('file_cabinet',NEW.file_cabinet_id,NEW.jobinfo_id,NEW.file_num,'Unfiled inbound document','default');
+	else call docreg_generic2 ('file_cabinet',NEW.file_cabinet_id,NEW.jobinfo_id,NEW.file_num,concat(NEW.folder_name, ' - ', NEW.description),'default');
+	end if;
+end;
+|
+delimiter ;
+
+delimiter |
+create trigger docreg_file_cabinet_insert after insert on file_cabinet
+for each row begin
+	if NEW.inbound_attached = 'N' then call docreg_generic2 ('file_cabinet',NEW.file_cabinet_id,NEW.jobinfo_id,NEW.file_num,'Unfiled inbound document','default');
+	else call docreg_generic2 ('file_cabinet',NEW.file_cabinet_id,NEW.jobinfo_id,NEW.file_num,concat(NEW.folder_name, ' - ', NEW.description),'default');
+	end if;
+end;
+|
+delimiter ;
+
+
+
+
+delimiter |
+create trigger docreg_file_cabinet_delete after delete on file_cabinet
+for each row begin
+call docunreg ('file_cabinet',OLD.file_cabinet_id);
+end;
+|
+delimiter ;
+
+

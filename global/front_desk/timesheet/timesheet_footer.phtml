@@ -1,0 +1,55 @@
+<?
+if ($timesheet_info->status=="new") $eyecatcher="<center><font color=red><h1>Incomplete</h1></font></center>";
+else $eyecatcher="";
+echo "<b>$eyecatcher Timesheet for $current_user->first_name $current_user->last_name ($current_user->employee_num) / Week Ending $week_end</b><br>";
+
+echo "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
+
+if ($timesheet_mode=="timesheet_summary") $showday="summary";
+if ($timesheet_mode=="timesheet_summary_by_job") $showday="summary";
+
+if ($today_info->week_end_mysql==$timesheet_info->week_ending)
+	print_tab($current_user->contacts_id,$today_info->date,"Today",$showday);
+$counter=0;
+while($counter < 7) {
+	print_tab($current_user->contacts_id,$week_info[$counter]->date,"",$showday);
+	$counter++;
+	}
+print_tab_summary($current_user->contacts_id,$week_end,"",$showday);
+
+if ($timesheet_escape_sheet!="") {
+echo "
+<td><table border=1 cellpadding=3 cellspacing=0><tr><td bgcolor=#ffffff>
+<a title=\"Exit Timesheet\" href=$pagename?mode=reset_user_id><font color=black><tt>Exit</tt></font></a>
+</td></tr></table><td valign=bottom><sub>_</sub></td>";
+} else {
+echo "
+<td><table border=1 cellpadding=3 cellspacing=0><tr><td bgcolor=#ffffff>
+<a title=\"Return to main menu\" href=$pagename><font color=black><tt>Exit</tt></font></a>
+</td></tr></table><td valign=bottom><sub>_</sub></td>";
+}
+
+if ($timesheet_mode_new=="timesheet_summary") $ete_extra="&return_to_set=timesheet_summary";
+
+echo "<td width=100%></td></table>
+
+<script>
+
+function dte(ts_id) {
+if (confirm('Are you sure you want to delete this entry?')) document.location='$pagename?mode=timesheet_edit_time_remove&timesheet_time_id=' + ts_id;
+}
+
+function ete(ts_id) {
+document.location='$pagename?mode=timesheet_edit_add_time&timesheet_time_id=' + ts_id + '$ete_extra';
+}
+
+function shownotes(tstid) {
+	open('$pagename?mode=timesheet_show_comments&tstid=' + tstid,'timesheet_show_comments','width=450,height=300,scrollbars=auto,resizeable=yes');
+	}
+
+</script>
+";
+
+
+
+?>

@@ -1,0 +1,40 @@
+<?
+//echo "agreement_id : $agreement_id";
+if ($agreement_id!="") $agreement_id=addslashes($agreement_id);
+else die("Application error! No agreement_id specified! Please contact your system administrator.");
+
+
+$total_labor_hrs=agreement_total_man_hours($agreement_id);
+$total_option_cost=round(100 * $total_labor_hrs * 4)/100;
+
+$option_message="Meter hood charges based on hours labor.<hr>
+Total Labor Hours: $total_labor_hrs<br>
+Cost per hour: $4<br>
+";
+
+$option_message=addslashes($option_message);
+
+$query="insert into svc_agreement_additional_options set
+agreement_id = '$agreement_id',
+option_type = 'meter_hood',
+option_description = 'Meter Hood Charges',
+calculation_notes = '$option_message',
+cost = '$total_option_cost',
+markup = 'N'";
+
+//echo "<pre>$query</pre>";
+require('header.phtml');
+echo "$option_message";
+@mysql_query("delete from svc_agreement_additional_options where option_type = 'meter_hood' and agreement_id = '$agreement_id'");
+@mysql_query($query);
+
+
+echo "
+<script>
+opener.document.location.reload();
+</script>
+<a href=javascript:self.close();><font color=blue>CLOSE</font></a>
+";
+
+
+?>

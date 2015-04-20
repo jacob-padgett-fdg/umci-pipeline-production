@@ -1,0 +1,45 @@
+<?
+require("header.phtml");
+require("viewpoint_connect_ro.phtml");
+require("viewpoint_libs.inc");
+fd_navs_header();
+
+$edit_mode="view";
+$ca=member_of_global_group_named("Contract Admin");
+$pm=pm_for_this_job();
+
+//if ($pm) die("pm for this job");
+//else die("not a pm for this job");
+
+if ($subcontracts_id!="") {
+	$subcontracts_id=addslashes($subcontracts_id);
+	$subcontracts_info=getoneb("select * from subcontracts where subcontracts_id = '$subcontracts_id'");
+	if (!($subcontracts_info)) { die("Applicaiton error. (subcontracts_id)"); }
+	}
+
+if (!($subcontracts_info)) {
+	if (($ca)||($pm)) $edit_mode="edit";
+	} else {
+	if ($subcontracts_info->status=="new") {
+		if (($pm)||($ca)) $edit_mode="edit";
+		}
+	if ($subcontracts_info->status=="processing") {
+		if ($ca) $edit_mode="edit";
+		}
+	}
+
+
+
+
+
+
+
+
+if ($edit_mode=="edit") {
+	include("subcontracts_edit_edit.phtml");
+	} else {
+	include("subcontracts_edit_view.phtml");
+	}
+
+fd_navs_footer();
+?>

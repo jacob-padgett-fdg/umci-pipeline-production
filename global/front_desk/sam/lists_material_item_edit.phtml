@@ -1,0 +1,100 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation! The authorities have been notified!");
+if ($material_list_id!="") $material_list_id=escapeshellcmd($material_list_id);
+else die ("ERROR: \$material_list_id missing. Please contact your system administrator!");
+
+$mat_info=material_info ($material_list_id);
+
+
+echo "
+<a href=$pagename?mode=admin_settings><font color=blue>Return to admin settings</font></a><br>
+
+<h3><center>Edit Material Item</center></h3><hr>
+$mat_info->parents_link	";
+$mat_info->name=htmlspecialchars($mat_info->name);
+
+$ss_name=checkbreak($mat_info->ss_name);
+$ss_cost=checkbreak($mat_info->ss_cost);
+$disabled=checkbreak($mat_info->disabled);
+
+//// Types should be "cat" or "item".
+
+echo "
+<table border=1 cellspacing=0>
+<tr><td>
+<table border=0 width=100%>
+
+<tr><td>
+<b>Add item to this category:</b>&nbsp;
+<table border=0>
+
+<form name=new_material_item method=post action=$pagename>
+<input type=hidden name=mode value=lists_material_types_item_update>
+<input type=hidden name=material_list_id value=\"$mat_info->material_list_id\">
+<tr><td>
+	Name: 
+</td><td>
+	<input type=text name=name value=\"$mat_info->name\">
+</td></tr>
+
+<tr><td>
+	Unit name <i>(blank for Qty)</i>:
+</td><td>
+	<input type=text name=qty_name value=\"$mat_info->qty_name\">
+</td></tr>
+
+<tr><td>
+	Saleman defines material name:
+</td><td>
+	<input type=checkbox name=ss_name $ss_name>
+</td></tr>
+
+<tr><td>
+	Saleman defines unit cost:
+</td><td>
+	<input type=checkbox name=ss_cost $ss_cost>
+</td></tr>
+
+<tr><td>
+	Unit cost:
+</td><td>
+	<input type=text name=cost value=\"$mat_info->cost\">
+</td></tr>
+
+<tr><td>
+	Item Disabled:
+</td><td>
+	<input type=checkbox name=disabled $disabled>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+</td></tr>
+</form>
+
+</table>
+</td></tr>
+</td></tr>
+</table>
+";
+
+if ($material_list_id=="") {
+	$query="select * from svc_materials_list where material_list_id = material_list_parent order by type,name";
+	} else {
+	$material_info=getone("select * from svc_materials_list where material_list_id = '$material_list_id'");
+	$query="select * from svc_materials_list where material_list_id != '$material_list_id' and material_list_parent = '$material_list_id' order by type,name";
+	}
+
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->type=="cat") {
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=$pagename?mode=lists_material_types&material_list_id=$row->material_list_id><font color=blue>&gt;&gt;</font></a>$row->name<br>";
+		} 
+	if ($row->type=="item") {
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=$pagename?mode=lists_material_item_edit&material_list_id=$row->material_list_id><font color=black>$row->name</font></a><br>";
+		}
+	
+	}
+
+
+?>

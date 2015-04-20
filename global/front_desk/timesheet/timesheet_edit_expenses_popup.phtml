@@ -1,0 +1,28 @@
+<?
+
+$workday=escapeshellcmd($workday);
+
+echo "<html><body bgcolor=white>
+
+<b>What type of entry are you starting?<hr>
+
+<form name=mspt action=$pagename method=post>
+<input type=hidden name=mode value=timesheet_edit_expenses_submit>
+<input type=hidden name=workday value=\"$workday\">
+<select name=expense_mode size=4>
+<option value=mileage>Mileage</option>
+<option value=subsistence>Subsistence</option>
+<option value=parking>Parking</option>
+<option value=travel>Travel</option>
+</select>
+<br>
+<input type=submit value=\"-Next->\">
+</form>
+
+";
+
+
+
+
+
+?>

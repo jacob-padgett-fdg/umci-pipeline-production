@@ -1,0 +1,53 @@
+<?
+
+if ($pal_id=="") die("Application error! Pal ID error. Please contact the system administrator!");
+$pal_id=addslashes($pal_id);
+
+$pal_info=getone("select * from pal where pal_id = '$pal_id'");
+$jobinfo_id=$pal_info->jobinfo_id;
+
+if ($jobinfo_id!="") {
+	$jobinfo_id=addslashes($jobinfo_id);
+	} else {
+	die("Job information error!");
+	}
+
+$query="
+select doc_type,pal_num,pal_id,pal_short_description,viewed,app_reference,doc_id,priority from pal_buddies
+where 
+jobinfo_id = '$jobinfo_id' and 
+status = 'active' and 
+pass_signed_off = 'N' and 
+owner_id = '$global_user_id' and 
+pal_id = '$pal_info->pal_id' and 
+doc_id > 0 
+
+order by doc_type,viewed,app_reference desc
+";
+
+$type="";
+
+$res=@mysql_query($query);
+$shaded=$fd_color_1;
+$bg=$shaded;
+echo "<table style=\"border: 2px solid black;\" cellspacing=0 cellpadding=4>
+<tr><td bgcolor=$fd_color_4 align=center><b>NOTE: This is a single PAL item connected<br>to mulitple documents!</b></td></tr>
+";
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->doc_type!=$type) {
+		$type=$row->doc_type;
+		echo "<tr><td align=center bgcolor=$fd_color_2 colspan=2><b>$row->doc_type</b></td></tr>";
+		}
+	if ($row->viewed=='N') {
+		$tstart='<b>';
+		$tend='</b>';
+		} else {
+		$tstart='';
+		$tend='';
+		}
+	echo "<tr><td onclick=\"document.location='/global$devel/front_desk$devel/?mode=open_doc&doc_id=$row->doc_id&pal_open_bitte_schon=$row->pal_id';\" class=normnav style=\"border: 1px solid black;\">";
+	if ($row->priority=='high') echo "<div style=\"float: right; background: white; color: red;\"><font title=\"Contains a high priority item!\">&nbsp;<b>!</b>&nbsp;</font></div>";
+	echo "$tstart(PAL $row->pal_num) $row->app_reference - $row->pal_short_description$tend</td></tr>";
+	}
+echo "</table>";
+?>

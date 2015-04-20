@@ -1,0 +1,73 @@
+<?php
+session_write_close();
+include("reports/report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+
+include ("graph1/jpgraph.php");
+include ("graph1/jpgraph_line.php");
+
+$ydata=array();
+$textx=array();
+$max=0;
+$contract_num=get_vp_contract_num();
+$res=@mssql_query("select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and ( Phase like '15%' or Phase like '16%' or Phase like '17%' ) group by PREndDate order by PREndDate");
+
+$results_count=@mssql_num_rows($res); 
+if ($results_count<1) {
+    // GPH MARK - absolute path
+	$fullpath="/data/web/pipeline/images/na.jpg";
+	$fsize=@filesize($fullpath);
+	jpg_mime_header("na.jpg");
+	@readfile($fullpath);
+	exit;
+	}
+
+while ($row=@mssql_fetch_object($res)) {
+	if ($row->Hours > $max) $max=$row->Hours;
+	//echo "<hr>$row->Hours";
+	array_push($ydata,$row->Hours);
+	//$bu_date=invali_date($row->backup_date);
+	//$bu_date=ereg_replace("200","0",$bu_date);
+	$wedate=date('m/d/y',strtotime($row->PREndDate));
+	array_push($textx,$wedate);
+	//echo "<hr>$row->Hours";
+	}
+//echo "<table><tr><td><pre>";print_r($ydata);echo "</pre></td><td><pre>";print_r($textx);echo "</pre></td></tr></table>";exit;
+$graph = new Graph(475,300,"auto");	
+//$graph->SetScale("intlin",350000,($max * 1.1),0,sizeof($ydata));
+//$graph->SetScale("intlin",350000,1000000,0,sizeof($ydata));
+$graph->SetScale("intlin",'','',0,sizeof($ydata));
+$graph->SetMarginColor("$fd_color_1");
+$graph->SetBackgroundGradient("$fd_color_4:1.1","black:0.5",GRAD_HOR,BGRAD_PLOT);
+
+$graph->SetTitleBackground("$fd_color_4:1.1",TITLEBKG_STYLE1);
+
+
+// Create the linear plots
+$lineplot=new LinePlot($ydata);
+$lineplot->SetColor("$fd_color_3");
+$lineplot->SetWeight(1);
+
+$lineplot->SetLegend("Hours");
+//$lineplot2->SetLegend("Bah");
+$graph->legend->Pos(0.05,0.7,"right","center");
+
+//$graph->xaxis->SetFont(FF_ARIAL,FS_NORMAL,11);
+$graph->xaxis->SetTickLabels($textx);
+$graph->xaxis->SetLabelAngle(90);
+//$graph->xaxis->scale->ticks->Set(7,1);
+
+// Add the plot to the graph
+$graph->Add($lineplot);
+
+$graph->img->SetMargin(80,65,30,65);
+$graph->title->Set("Field Hours by week");
+//$graph->xaxis->title->Set("Time");
+$graph->xaxis->SetPos("min");
+$graph->yaxis->title->Set("Hours");
+$graph->yaxis->SetTitleMargin(60);
+
+// Display the graph
+$graph->Stroke();
+?>

@@ -1,0 +1,28 @@
+<?
+require('header.phtml');
+
+if ($query_id=="") die ("ERROR: No ID specified. Please contact your system administrator! No action taken.");
+$query_id=escapeshellcmd($query_id);
+$query_info=getone("select * from bidlist_saved_queries where contacts_id = '$global_user_id' and query_id = '$query_id'");
+
+if ($query_info->contacts_id!="$global_user_id") die ("ERROR: You don't own this search. Security violation! The authorities have been notified!!!");
+
+if ($delete_confirmed=='Y') {
+	@mysql_query("delete from bidlist_saved_queries where query_id = '$query_info->query_id'");
+	forward("proposal_search");
+	exit;
+	}
+
+echo "
+Are you sure you want to delete this search?&nbsp;
+<a href=$pagename?mode=proposal_save_search_delete&delete_confirmed=Y&query_id=$query_info->query_id><font color=blue>YES</font></a>&nbsp;&nbsp;&nbsp;<a href=$pagename?mode=proposal_search><font color=blue>NO</font></a>";
+
+
+
+
+
+
+
+
+
+?>

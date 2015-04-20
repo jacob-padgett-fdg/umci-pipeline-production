@@ -1,0 +1,36 @@
+<?
+
+$applicant_name=addslashes($applicant_name);
+$doa=addslashes($doa);
+$paf=addslashes($paf);
+$sex=addslashes($sex);
+$race=addslashes($race);
+$disability=addslashes($disability);
+
+
+@mysql_query("insert into hr_eeoc set
+	applicant_name = '$applicant_name',
+	doa = '$doa',
+	eeoc_date = now(),
+	paf = '$paf',
+	sex = '$sex',
+	race = '$race',
+    disability = '$disability'
+	");
+	
+require('header.phtml');
+
+echo "
+<center>Thank you for submitting your Affirmative Action Information Form. 
+<p>
+Again, the information you have provided will not be used in the employment decision process, 
+and is only collected to conform to government regulations.<p>
+<a href=$pagename><font color=blue>Continue...</font></a>
+
+";
+
+
+
+
+
+?>

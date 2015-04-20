@@ -1,0 +1,10 @@
+<?
+if ($cart_id=="") die ("Applicaiton error. Please contact your system administrator (cart ID missing on delete)");
+$cart_id=addslashes($cart_id);
+$cart_info=getoneb("select * from costore_cart where contacts_id = '$global_user_id' and cart_id = '$cart_id' and status = 'new'");
+
+if (!($cart_info)) die("Application error. Please contact your system administrator (invalid cart ID)");
+
+@mysql_query("delete from costore_cart where cart_id = '$cart_info->cart_id'");
+forward('shopping_cart');
+?>

@@ -1,0 +1,84 @@
+<?
+echo "
+<style>
+.dragme{
+	position:relative;
+	cursor: hand;
+	z-index: 4;
+	}
+</style>
+
+<script>
+var ie=document.all;
+var nn6=document.getElementById&&!document.all;
+var isdrag=false;
+var i_am_over='';
+var object_in_hand;
+var x,y;
+var dobj;
+
+function setZposition(obj, z) {
+	obj.style.zIndex = z
+	}
+
+function movemouse(e)
+{
+  if (isdrag)
+  {
+    dobj.style.left = nn6 ? tx + e.clientX - x : tx + event.clientX - x;
+    dobj.style.top  = nn6 ? ty + e.clientY - y : ty + event.clientY - y;
+    return false;
+  }
+}
+
+function selectmouse(e)
+{
+  var fobj       = nn6 ? e.target : event.srcElement;
+  object_in_hand=fobj.id;
+  setZposition(fobj,2);
+  var topelement = nn6 ? \"HTML\" : \"BODY\";
+  while (fobj.tagName != topelement && fobj.className != \"dragme\")
+  {
+    fobj = nn6 ? fobj.parentNode : fobj.parentElement;
+  }
+  if (fobj.className==\"dragme\")
+  {
+    isdrag = true;
+    dobj = fobj;
+    fobj.getting_dragged='Y';
+    tx = parseInt(dobj.style.left+0,10);
+    ty = parseInt(dobj.style.top+0,10);
+    x = nn6 ? e.clientX : event.clientX;
+    y = nn6 ? e.clientY : event.clientY;
+    document.onmousemove=movemouse;
+    return false;
+  }
+}
+
+function umc_drop() {
+	isdrag=false;
+	obj=document.getElementById(object_in_hand);
+	obj.getting_dragged='N';
+	setZposition(obj,4);
+	if (object_in_hand!=i_am_over) alert('object: ' + object_in_hand + ' dropped on: ' + i_am_over);
+	}
+
+function above_object(object) {
+	i_am_over=object.id;
+	if ((object.getting_dragged!='Y') && (isdrag)) object.style.MozOpacity=.3;
+	}
+
+function not_above_object(object) {
+	i_am_over='';
+	object.style.opacity=100;
+	}
+
+document.onmousedown=selectmouse;
+document.onmouseup=new Function(\"umc_drop()\");
+</script>
+
+";
+//<div onmouseover=\"above_object(this)\" onmouseout=\"not_above_object(this)\" class=dragme style=\"border: 1px solid blue; background: yellow; width: 150px;\" id=\"nacho\">Nacho</div>
+//<div onmouseover=\"above_object(this)\" onmouseout=\"not_above_object(this)\" class=dragme style=\"border: 1px solid blue; background: orange; width: 150px;\" id=\"cheese\">Cheese</div>
+
+?>

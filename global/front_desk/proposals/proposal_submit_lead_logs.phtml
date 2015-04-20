@@ -1,0 +1,26 @@
+<?
+
+$lead_project_description=addslashes($lead_project_description);
+$lead_unique_aspects=addslashes($lead_unique_aspects);
+$lead_lead_notes=addslashes($lead_lead_notes);
+
+$query_data=$query_data . "$data_seperator
+lead_project_description = '$lead_project_description',
+lead_unique_aspects = '$lead_unique_aspects',
+lead_lead_notes = '$lead_lead_notes'";
+
+$data_seperator=",";
+
+if ($lead_note!="") {
+	$lead_note=addslashes($lead_note);
+
+	$pnquery="insert into bidlist_log set 
+	bidlist_id = '$bidlist_id',
+	type = 'lead_comments',
+	created = now(),
+	ctime = now(),
+	creator = '$global_user_id',
+	comment = '$lead_note'";
+	@mysql_query($pnquery);
+	}
+?>

@@ -1,0 +1,14 @@
+<?
+$res=@mysql_query("select * from webfile_groups left join webfile_files using(file_group_id) where files_id is null");
+while ($row=@mysql_fetch_row($res)) {
+	///////////////////////////////////////////////////////
+	// We only want to clean up the file group if it's not
+	// an incoming queue used by the "imaging system"
+	// that I'm working on...
+	///////////////////////////////////////////////////////
+	if (!($qk=array_search($row[0],$storage_queues))) { 
+		@mysql_query("delete from webfile_groups where file_group_id = '$row[0]'");
+		}
+	}
+forward('main');
+?>

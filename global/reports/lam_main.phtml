@@ -1,0 +1,21 @@
+<?
+	if ($shepherd_lam) {
+	$pretty_date=invali_date($lamchop_info->week_ending,'/');
+	if ($adminuser) {
+		$notes_read_only="N";
+		} else {
+		$notes_read_only="Y";
+		} 
+
+	//$childrennodrag='Y';
+
+	echo "<ul>";
+	if ($default_jobinfo_id>0) {
+		//echo"<script>alert('hi');</script>";
+		print_lam_div($shepherd_lam->lam_id,array('parentnodrag'=>'Y','childrennodrag'=>"$childrennodrag",'jobinfo_id'=>addslashes($default_jobinfo_id),'notes_read_only'=>"$notes_read_only",'suppress_job_header'=>"Y"));
+		} else {
+		print_lam_div($shepherd_lam->lam_id,array('parentnodrag'=>'Y','childrennodrag'=>"$childrennodrag",'notes_read_only'=>"$notes_read_only"));
+		}
+	echo "</ul>";
+	}
+?>

@@ -1,0 +1,186 @@
+<?
+require('querylib.inc');
+require('header.phtml');
+echo "<a href=$pagename?mode=main><font color=blue>Cancel</font></a>";
+
+if ($jobinfo_id != "") {
+	$new=0;
+	$jobinfo_id=addslashes($jobinfo_id);
+	$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+	} else {
+	$new=1;
+	}
+
+$jobinfo->spool_fab_tracking=checkbreak($jobinfo->spool_fab_tracking);
+$jobinfo->issue_res_tracking=checkbreak($jobinfo->issue_res_tracking);
+$jobinfo->exclude_from_reproduction=checkbreak($jobinfo->exclude_from_reproduction);
+$jobinfo->tom_pm=checkbreak($jobinfo->tom_pm);
+$jobinfo->tom_eng=checkbreak($jobinfo->tom_eng);
+$jobinfo->tom_fld=checkbreak($jobinfo->tom_fld);
+$jobinfo->svc_agreement_status=escapeshellcmd($jobinfo->svc_agreement_status);
+$jobinfo->submittals_date=invali_date($jobinfo->submittals_date);
+$jobinfo->permits_due_date=invali_date($jobinfo->permits_due_date);
+$jobinfo->as_builts_date=invali_date($jobinfo->as_builts_date);
+$jobinfo->o_and_m_date=invali_date($jobinfo->o_and_m_date);
+$jobinfo->owner_train_or_service_date=invali_date($jobinfo->owner_train_or_service_date);
+$jobinfo->warranty_start_date=invali_date($jobinfo->warranty_start_date);
+$jobinfo->warranty_end_date=invali_date($jobinfo->warranty_end_date);
+
+//<form name=jobinfo_sync action=$pagename method=get>
+//<input type=hidden name=job_num value=\"$jobinfo->contract_num\">
+//<input type=hidden name=mode value=get_job_info>
+//<input type=submit value=Sync>
+//</form>
+
+echo "<center>";
+
+include("jobinfo_edit_tabs_start.phtml");
+
+$jobinfo->job_name=ereg_replace(" ","&nbsp;",$jobinfo->job_name);
+echo "
+<table bgcolor=#ffffff border=1 cellspacing=0 cellpadding=3 style=\"font-variant: small-caps; font-size: small; font-weight: bold;\">
+
+<tr><td colspan=4 align=center bgcolor=#eeeeee>
+	<i>$jobinfo->contract_num&nbsp;-&nbsp;<i>$jobinfo->job_name</i>
+</td></tr>
+
+
+<tr><td>
+	Issue&nbsp;Resolution&nbsp;Tracking
+</td><td>
+	<input type=checkbox name=issue_res_tracking $jobinfo->issue_res_tracking>
+</td><td>
+	Turnover&nbsp;Mtg&nbsp;-&nbsp;PM
+</td><td>
+	<input type=checkbox name=tom_pm $jobinfo->tom_pm>
+</td></tr>
+
+<tr><td>
+	Spool/Fab&nbsp;Tracking
+</td><td>
+	<input type=checkbox name=spool_fab_tracking $jobinfo->spool_fab_tracking>
+</td><td>
+	Turnover&nbsp;Mtg&nbsp;-&nbsp;ENG
+</td><td>
+	<input type=checkbox name=tom_eng $jobinfo->tom_eng>
+</td></tr>
+
+
+<tr><td>
+	Exclude&nbsp;From&nbsp;Reproduction
+</td><td>
+	<input type=checkbox name=exclude_from_reproduction $jobinfo->exclude_from_reproduction>
+</td><td>
+	Turnover&nbsp;Mtg&nbsp;-&nbsp;FLD
+</td><td>
+	<input type=checkbox name=tom_fld $jobinfo->tom_fld>
+</td></tr>
+
+<tr><td colspan=2>&nbsp;</td><td>
+	Svc Agreement Status
+</td><td>
+	<select name=svc_agreement_status>
+	<option>$jobinfo->svc_agreement_status</option>
+	<option>*</option>
+	<option>Y</option>
+	<option>N</option>
+	</select>
+</td></tr>
+
+<tr bgcolor=#aabbff><td colspan=2>
+	Estimator
+	";contactsbox("select * from contacts where estimator = 'Y' order by alphasort","$jobinfo->estimator","estimator","",2);echo"
+</td><td colspan=2>
+	GC Project Mgr
+	";contactsbox("select * from contacts where gc_proj_manager = 'Y' order by alphasort","$jobinfo->gc_project_manager_id","gc_project_manager_id","",2);echo"
+</td></tr>	
+
+<tr bgcolor=#aabbff><td colspan=2>
+	Foreman
+	";contactsbox("select * from contacts where foreman = 'Y' order by alphasort","$jobinfo->foreman_id","foreman_id","",2);echo"
+</td><td colspan=2>
+	Superintendent
+	";contactsbox("select * from contacts where superintendent = 'Y' order by alphasort","$jobinfo->superintendent_id","superintendent_id","",2);echo"
+</td></tr>
+
+<tr bgcolor=#aabbff><td colspan=2>
+	Mechanical&nbsp;Engineer
+	";contactsbox("select * from contacts where mech_engineer = 'Y' order by alphasort","$jobinfo->mech_engineer","mech_engineer","",2);echo"
+</td><td colspan=2>
+	Project&nbsp;Engineer
+	";contactsbox("select * from contacts where proj_engineer = 'Y' order by alphasort","$jobinfo->proj_engineer","proj_engineer","",2);echo"
+</td></tr>
+
+<tr><td colspan=2 align=center bgcolor=#eeeeee>
+	Dates
+</td><td colspan=2 align=center bgcolor=#eeeeee>
+	Reproduction&nbsp;Rates
+</td></tr>
+
+<tr><td colspan=2 valign=top>
+	<table style=\"font-variant: small-caps; font-size: small; font-weight: bold;\" border=0>
+	
+	<tr><td>
+		Submittals
+	</td><td>
+		";datebox($jobinfo->submittals_date,"jobinfo_edit.submittals_date");echo"
+	</td></tr>
+
+	<tr><td>
+		Permits
+	</td><td>
+		";datebox($jobinfo->permits_due_date,"jobinfo_edit.permits_due_date");echo"
+	</td></tr>
+
+	<tr><td>
+		As&nbsp;Builts
+	</td><td>
+		";datebox($jobinfo->as_builts_date,"jobinfo_edit.as_builts_date");echo"
+	</td></tr>
+
+	<tr><td>
+		O&nbsp;&&nbsp;M's
+	</td><td>
+		";datebox($jobinfo->o_and_m_date,"jobinfo_edit.o_and_m_date");echo"
+	</td></tr>
+	
+	<tr><td>
+		Owner&nbsp;Training/Svc
+	</td><td>
+		";datebox($jobinfo->owner_train_or_service_date,"jobinfo_edit.owner_train_or_service_date");echo"
+	</td></tr>
+	
+	<tr><td>
+		Warranty&nbsp;Start
+	</td><td>
+		";datebox($jobinfo->warranty_start_date,"jobinfo_edit.warranty_start_date");echo"
+	</td></tr>
+	
+	<tr><td>
+		Warranty&nbsp;End
+	</td><td>
+		";datebox($jobinfo->warranty_end_date,"jobinfo_edit.warranty_end_date");echo"
+	</td></tr>
+	</table>
+</td><td colspan=2 valign=top>
+	Type 1<input type=text size=6 name=copy_cost1 value=\"$jobinfo->copy_cost1\"><font size=-2)<i>(bond)</i></font><br>
+	Type 2<input type=text size=6 name=copy_cost2 value=\"$jobinfo->copy_cost2\"><font size=-2)<i>(vellum)</i></font><br>
+	Type 3<input type=text size=6 name=copy_cost3 value=\"$jobinfo->copy_cost3\"><font size=-2)<i>(mylar)</i></font><br>
+	Type 4<input type=text size=6 name=copy_cost4 value=\"$jobinfo->copy_cost4\"><font size=-2)<i>(digital archive)</i></font><br>
+	Type 5<input type=text size=6 name=copy_cost5 value=\"$jobinfo->copy_cost5\"><font size=-2)<i>(other)</i></font><br>
+	Color Markup<input type=text size=6 name=copy_color_percent value=\"$jobinfo->copy_color_percent\">%
+	<p><font size=-2>&nbsp;</font>
+	<table border=1 cellspacing=0 cellpadding=2 width=100%>
+		<tr bgcolor=#eeeeee><td align=center onclick=apply_changes();>
+			<b><a href=javascript:apply_changes();><font color=black>Apply</font></a></b>
+		</td><td align=center onclick=document.jobinfo_edit.submit();>
+			<b><a href=javascript:document.jobinfo_edit.submit();><font color=black>Save</font></a></b>
+		</td></tr>
+	</table>
+</td></tr>
+</table>";
+
+include("jobinfo_edit_tabs_end.phtml");
+
+echo "</center>";
+?>

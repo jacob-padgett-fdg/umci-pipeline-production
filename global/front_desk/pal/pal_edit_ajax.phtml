@@ -1,0 +1,147 @@
+<?
+if ($pal_id=="") die('Pal ID Error!');
+else $pal_id=addslashes($pal_id);
+
+if ($pass_sign_off!="") {
+	$pass_sign_off=addslashes($pass_sign_off);
+	$pass_info=getone("select * from pal_assignments where pass_id = '$pass_sign_off'");
+	if ($pass_info->owner_id==$global_user->contacts_id) {
+		@mysql_query("update pal_assignments set signed_off = 'Y', signed_off_date = now() where pass_id = '$pass_info->pass_id'");
+		$pal_info=getoneb("select * from pal where pal_id = '$pass_info->pal_id'");
+		if ($pal_info->status =='active') {
+			$pass_count_res=@mysql_query("select * from pal_assignments where pal_id = '$pass_info->pal_id' and mso = 'Y' and signed_off != 'Y'");
+			$remaining=@mysql_num_rows($pass_count_res);
+			if ($remaining<1) @mysql_query("update pal set status = 'complete',pal_sign_off_date = now() where pal_id = '$pal_info->pal_id'");
+			}
+		}
+	}
+$pal_info=getone("select * from pal where pal_id = '$pal_id'");
+
+if ($pal_info->creator_id==$global_user_id) @mysql_query("update pal set creator_review_required = 'N' where pal_id = '$pal_info->pal_id'");
+@mysql_query("update pal_assignments set viewed = 'Y', last_viewed_by_owner = now() where pal_id = '$pal_info->pal_id' and owner_id = '$global_user_id'");
+
+if ($pal_info->creator==$global_user_info->contacts_id) {
+	//////////////////////////////////////////////////////////
+	// First apply any updates.. 
+	//////////////////////////////////////////////////////////
+	$update='N';
+	if ($short_description_set!="") {
+		$short_description_set=addslashes($short_description_set);
+		@mysql_query("update pal set short_description = '$short_description_set' where pal_id = '$pal_info->pal_id'");
+		$pal_info=getone("select * from pal where pal_id = '$pal_info->pal_id'");
+		echo "<input size=30 maxlength=30 type=text onKeyPress=\"event.keyCode==13 && blur();return event.keyCode!=13\" id=\"pal_item" . $pal_info->pal_id . "_short_description\" name=\"" . $pal_info->pal_id . "_short_description\" onchange=\"pal_update_short_description($pal_info->pal_id)\" value=\"$pal_info->short_description\">";
+		exit;
+		}
+	if ($full_description_set!="") {
+		$full_description_set=addslashes($full_description_set);
+		@mysql_query("update pal set full_description = '$full_description_set' where pal_id = '$pal_info->pal_id'");
+		$pal_info=getone("select * from pal where pal_id = '$pal_info->pal_id'");
+		echo "<textarea name=full_description id=\"pal_item" . $pal_info->pal_id . "_full_description\" cols=30 rows=3 onchange=\"pal_update_full_description($pal_info->pal_id)\">$pal_info->full_description</textarea>";
+		exit;
+		}
+	if ($due_date_set!="") {
+		$due_date_set=vali_date($due_date_set);
+		@mysql_query("update pal set due_date = '$due_date_set' where pal_id = '$pal_info->pal_id'");
+		$update='Y';
+		}
+	
+	if ($update=='Y') $pal_info=getone("select * from pal where pal_id = '$pal_info->pal_id'");
+	$creator=getoneb("select * from contacts where contacts_id = '$pal_info->creator_id'");
+	
+	if ($pal_info->priority=='high') {
+		$pri_text_bg='yellow';
+		} else {
+		$pri_text_bg='';
+		}
+	$pal_info->create_date_nice=invali_date($pal_info->create_date,'/','Y');
+	
+	$pal_id=$pal_info->pal_id;
+	
+	echo "
+	<table bgcolor=$fd_color_1 width=100% cellspacing=0 cellpadding=0 style=\"spacing: 0px; border: 0px solid black; table.td { border: 1px solid black; }\">
+	
+	<tr><td colspan=2 style=\"font-size: small;\">
+		<table width=100% border=1 cellspacing=0 cellpadding=1>
+			<tr>";
+			if (($global_user->contacts_id==$creator->contacts_id)&&($pal_info->status=="active")) {
+				echo "
+				<td onclick=\"pal_force_mark_complete($pal_info->pal_id);\" onmouseover=\"this.style.background='$fd_color_4';\" onmouseout=\"this.style.background='$fd_color_1 ';\" id=\"pal_${pal_id}_status\" style=\"cursor: pointer; cursor: hand; text-align: center; font-size: small;\">
+					Stat:&nbsp;<font color=blue>$pal_info->status</font>";
+			} else {
+				echo "
+				<td style=\"text-align: center; font-size: small;\">
+					Stat:&nbsp;$pal_info->status";
+			}
+			if ($pal_info->forced_sign_off_id>0) {
+				$forcer=getoneb("select * from contacts where contacts_id = '$pal_info->forced_sign_off_id'");
+				echo "<br>Forced: $forcer->login_name($forcer->contacts_id)";
+				}
+			echo "
+			</td><td id=\"pal_${pal_id}_priority\" style=\"cursor: pointer; cursor: hand; text-align: center; font-size: small;\" onmouseover=\"this.style.background='$fd_color_4';\" onmouseout=\"this.style.background='$fd_color_1 ';\">
+				Pri:&nbsp;<font onclick=\"pal_change_priority($pal_info->pal_id);\" style=\"color: blue; background-color: $pri_text_bg;\">$pal_info->priority</font>
+			</td><td style=\"text-align: center; font-size: small;\">";
+				if ($global_user->contacts_id==$creator->contacts_id) {
+					echo "<div style=\"cursor: pointer; cursor: hand; float: right; background: #cc4444; color: white; border: 0px solid black;\" onclick=\"pal_delete($pal_info->pal_id)\"><b>Del</b></div>";
+					}
+			echo "
+				<font size=-2>Created $pal_info->create_date_nice-$creator->login_name</font>
+			</td></tr>
+		</table>
+	</td></tr>
+	
+	<tr><td style=\"font-size: small;\">
+		Due Date
+	</td><td style=\"font-size: small;\">
+		<a href=\"javascript:open('$pagename?mode=pal_printable&pal_id=$pal_info->pal_id','pal_print_win_$pal_info->pal_id','width=500,height=500')\" style=\"float: right;\"><font color=blue><i>print</i></font></a>
+		";datebox($pal_info->due_date,'pal_form.due_date_set',"","pal_update_due_date($pal_info->pal_id,this)");echo"
+	</td></tr>
+	
+	<tr><td style=\"font-size: small;\">
+		Related
+	</td><td style=\"font-size: small;\">";
+		$list_id=rand();
+		echo"<div id=\"$list_id\">";
+		$doc_id=fd_get_doc_id($pal_info->pal_id);
+		include("../front_desk$devel/settings.cfg");
+		include("../front_desk$devel/short_doc_list.phtml");
+		echo"</div>
+	</td></tr>
+	
+	<tr><td style=\"font-size: small;\">
+		Subject
+	</td><td style=\"font-size: small;\" id=\"pal_${pal_id}_short_description_div\">
+		<input size=30 maxlength=30 type=text onKeyPress=\"event.keyCode==13 && blur();return event.keyCode!=13\" id=\"pal_item" . $pal_info->pal_id . "_short_description\" name=\"" . $pal_info->pal_id . "_short_description\" onchange=\"pal_update_short_description($pal_info->pal_id)\" value=\"$pal_info->short_description\">
+	</td></tr>
+	
+	<tr><td style=\"font-size: small;\">
+		Action Reqd
+	</td><td style=\"font-size: small;\" id=\"pal_${pal_id}_full_description_div\">
+		<textarea name=full_description id=\"pal_item" . $pal_info->pal_id . "_full_description\" cols=30 rows=3 onchange=\"pal_update_full_description($pal_info->pal_id)\">$pal_info->full_description</textarea>
+	</td></td>
+	
+	<tr><td colspan=2>
+	<div style=\"font-size: small; width: 100%; max-height: 300px; overflow: auto;\" id=\"pal_notes_area$pal_info->pal_id\">";include("pal_add_notes.phtml");echo"</div>
+	</td></tr>
+	
+	<tr><td colspan=2 valign=top align=left>
+			<div style=\"height: 23px; width: 100%; border: 1px solid black; border-left: 0px solid black; border-right: 0px solid black; background: $fd_color_4;\">
+			<center>";
+			echo "<i><font style=\"vertical-align: top;\">Assignments:&nbsp;&nbsp;&nbsp;Add or remove</font></i>";
+			contact("select * from contacts where current = 'Y'",'','pal_add_assignment',"toggle_assignment('$pal_info->pal_id',document.contact_changed_value);",array('hidden_input'=>'Y','jobinfo_id'=>"$global_jobinfo_id"));
+		echo "</center></div>
+		<div style=\"width: 100%;\" id=\"pal_data_area$pal_info->pal_id\">";
+		include('pal_current.phtml');
+		echo"
+	</td></tr>
+	</table>
+	";
+	
+	//		<div style=\"border: 1px solid black;\">&nbsp;</div>
+	
+	
+	}
+
+if ((($pass_sign_off!="")&&($pal_info->status!='active'))||($short_description_set!="")) {
+	echo "<div onload=\"pal_updated_header($pal_info->pal_id,'true');\"></div>";
+	}
+?>

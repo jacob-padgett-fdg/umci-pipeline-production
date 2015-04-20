@@ -1,0 +1,61 @@
+<?
+require("header2.phtml");
+
+if (!($issue_res_admin))
+	die("Error: you don't have the proper permissions to be here! How did
+		you even get here? Contact the site administrator if you need help
+		with something<p>");
+	
+$query="select * from issue_res_users,contacts where jobinfo_id = '$global_jobinfo_id' and issue_res_users.contacts_id = contacts.contacts_id order by last_name,first_name,company";
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Exit Job/User Administration</font></a><p>
+
+<table border=1 cellpadding=4>
+<tr bgcolor=\"$tableheadbgcolor\"><td>
+	Name
+</td><td>
+	Login Name
+</td><td>
+	Email Address
+</td><td>
+	UMC Employee
+</td><td>
+	&nbsp;
+</td></tr>
+";
+
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) {
+	if(getoneb("select * from access where application_name = '$application_name' and contacts_id = '$row->contacts_id' and rightsmode = 'grant'"))
+		$row_bgcolor="#ffffff";
+		else
+		$row_bgcolor="#ff6666";
+  	echo "
+	<tr bgcolor=$row_bgcolor><td>$row->last_name, $row->first_name
+	</td><td>$row->login_name
+	</td><td>$row->email
+	</td><td>$row->umc_emp
+	</td><td>
+		<a href=$pagename?mode=admin_users_remove_submit&issue_res_users_id=$row->issue_res_users_id>
+		<font color=blue><i>Remove User</i></font></a>
+	</td></tr>
+	";
+	}
+echo "</table>
+
+<p>
+<table border=1 cellspacing=0 cellpadding=3><tr><td bgcolor=#dddddd align=center colspan=2><b>Add a User</b></td></tr>
+<form name=blabhab action=$pagename method=post>
+<input type=hidden name=mode value=admin_users_add_submit>
+<tr><td colspan=2>
+";contactsbox("select * from contacts where contact_type = 'contact' and login_name != '' and email != ''","","issue_res_contacts_id","opener.document.blabhab.submit()",2);echo"
+</td></tr>
+<tr><td colspan=2 align=right>
+<input type=submit value=\"Submit\">
+</form>
+</td></tr></table>
+";
+
+?>

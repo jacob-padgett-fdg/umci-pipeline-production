@@ -1,0 +1,165 @@
+<?
+require_once('querylib.inc');
+if ($issue_id=="") {
+	echo "ERROR: Missing or invalid issue_id. Please contact your system administrator.<p>";
+	exit;
+	}
+
+$issue_id=escapeshellcmd($issue_id);
+$issue_information=getone("select * from mis_issue_index where issue_id = '$issue_id'");
+if ($issue_information->status=="current") $current_project="checked"; else $current_project="";
+$issue_creator=getone("select * from contacts where contacts_id = '$issue_information->creator'");
+
+if ($issue_information->status=="initialized") {
+	include("initialize_error.phtml");
+	exit;
+	}
+
+if ($issue_information->status=="complete") {
+	include("issue_edit_completed.phtml");
+	exit;
+	}
+
+if ($issue_information->status=="approved") {
+	include("issue_edit_completed.phtml");
+	exit;
+	}
+
+
+$current_history_info=getone("select * from mis_issue_history where issue_id = '$issue_id' and status = 'current'");
+if ($current_history_info->us_or_them=="us") $us_selected="selected";
+if ($current_history_info->us_or_them=="them") $them_selected="selected";
+$issue_information->expected_completion=invali_date($issue_information->expected_completion);
+$current_history_info->expected_completion_date=invali_date($current_history_info->expected_completion_date);
+$plus_day=weekday_advance($issue_information->expected_completion,1);
+$plus_week=weekday_advance($issue_information->expected_completion,5);
+$plus_2_weeks=weekday_advance($issue_information->expected_completion,10);
+
+echo "<html><head><title>Viewing issue $issue_information->issue_id - $issue_information->name</title></head><body bgcolor=#ffffff>
+
+<a href=$pagename?mode=main><font color=blue>Return to tasklist</font></a><br>
+
+<form name=issue_edit method=post action=$pagename>
+<input type=hidden name=mode value=issue_edit_submit>
+<input type=hidden name=issue_id value=$issue_information->issue_id>
+<input type=hidden name=issue_history_id value=\"$current_history_info->issue_history_id\">
+<input type=hidden name=issue_approved value='N'>
+
+
+<table border=0 cellpadding=7 cellspacing=0>
+<tr bgcolor=#dddddd><td>
+	<b><a href=javascript:supersede_item($issue_information->issue_id);><font color=blue>Issue #</b> $issue_information->issue_id</font></a>
+</td><td>
+	<b>Subject</b> $issue_information->name
+	<script>
+	function supersede_item (issue_id) {
+		if(confirm(\"You can't change this, but can point this item to another existing issue. Continue?\")) {
+			open('$pagename?mode=supersede_selection&issue_id=' + issue_id,'supersede_select_win','width=500,height=400');
+			}
+		}
+	</script>
+</td></tr>
+
+<tr><td>
+	<b>Description</b>
+</td><td colspan=4>
+	$issue_information->description
+</td></tr>
+
+<tr><td>
+	<b>Priority</b>
+</td><td>
+	";dropbox("select priority,priority_text from mis_issue_priorities order by priority",$issue_information->priority);echo"
+</td></tr>
+
+<tr><td>
+	<b>Requested Completion Date</b><br>
+	";
+	$issue_information->requested_completion=invali_date($issue_information->requested_completion);
+	datebox("$issue_information->requested_completion","issue_edit.requested_completion");echo"
+</td><td>
+	<b>Expected Completion Date</b><br>
+	$issue_information->expected_completion
+</td></tr>
+
+<tr><td valign=top colspan=1>
+	<b>Next Requested Action</b><br>
+	<textarea name=next_action rows=5 cols=25></textarea>
+</td><td valign=top colspan=1>
+	<b>Notes</b> <i><font size=-1>(This action/Reason for update)</font></i><br>
+	<textarea name=notes rows=5 cols=25></textarea>
+</td></tr>
+
+<tr><td valign=top colspan=1>
+	<b>IT Responisibility</b><hr>
+	";$us_list_query="select * from contacts,mis_issue_history,mis_issue_concerned_parties where mis_issue_history.issue_id = '$issue_id' and mis_issue_history.current_hist_item = 'Y' and mis_issue_history.issue_history_id = mis_issue_concerned_parties.issue_history_id and  mis_issue_concerned_parties.contacts_id = contacts.contacts_id and mis_issue_concerned_parties.us_or_them = 'us'";
+	$uslistres=@mysql_query($us_list_query);
+	$email_subject="Email concerning MIS issue id #$issue_id";
+	//$email_subject=urlencode($email_subject);
+	$email_subject=rawurlencode($email_subject);
+	$email_body="A message about mis issue #$issue_id
+https://pipeline.umci.com/global/mis_issue_tracking/?mode=issue_edit&issue_id=$issue_id/
+Message Text Below:
+____________________________________________________________________
+
+";
+	$email_body=rawurlencode($email_body);	
+
+	while($row=@mysql_fetch_object($uslistres)) {
+		echo "<a href=mailto:$row->email?subject=$email_subject&body=$email_body>
+		$row->last_name, $row->first_name</a><br>";
+		}
+	echo"
+</td><td>
+	<b>Next Action Date</b><br>
+	$current_history_info->expected_completion_date
+</td></tr>
+
+<tr><td>
+	<b>Next Action Responsibility</b><br>
+	<select name=us_or_them size=2 onchange=\"document.initialize.us_or_them_touched.value='Y'\";>
+	<option value=us $us_selected>IT
+	<option value=them $them_selected>User(s)
+	</select>
+</td><td>
+	<a href=javascript:add_or_remove_users($issue_information->issue_id);>
+	Give others access to this item</a>
+</td></tr>
+	
+<tr><td colspan=2>
+	<input type=submit value=Submit>
+	<input type=button value='Mark Completed' onclick=mark_approved()>
+</td></tr>
+
+</table>
+</form>
+<script>
+function mark_approved() {
+	if (confirm('Mark the issue as complete?')) {
+		document.issue_edit.issue_approved.value='Y';
+		document.issue_edit.submit();
+		}
+	}
+
+function add_or_remove_users(issue_id) {
+	open(\"$pagename?mode=issue_edit_userchange&issue_id=\" + issue_id,\"mis_issue_add_users\",\"width=500,height=400,scrollbars=yes\");
+	}
+
+</script>
+	
+";
+
+
+$history_query="select * from mis_issue_history where issue_id = '$issue_id' order by issue_history_id desc";
+$res=@mysql_query($history_query);
+
+echo "<table border=0 cellspacing=0 cellpadding=10>
+<tr bgcolor=#dddddd><td>Next Action</td><td>Notes</td><td>Status</td><td>Next Action Date</td><td>Completed</td><td>Responsibility</td><td>Users</td><td>IT</td></tr>";
+while($row=@mysql_fetch_object($res)) issue_history_print($row,1);
+echo "</table>";
+
+
+
+
+
+?>

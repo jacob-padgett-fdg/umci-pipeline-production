@@ -1,0 +1,51 @@
+<?
+//require_once("querylib.inc");
+//require_once('local.inc');
+$year=date('Y');
+echo "
+<html><head><title>Service Proposals Lists</title></head>
+<body bgcolor=white>
+<center><h2>Service Proposal Lists</h2></center><p>
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><hr>
+
+
+";
+
+$year_list=@mysql_query("select year(proposal_date) as year from svc_proposals group by year order by year desc");
+while ($row=@mysql_fetch_object($year_list)) {
+	$fontcolor="blue";
+	if ($year==$row->year) $fontcolor="red";
+	echo "<a href=$pagename?mode=lists_show_year&year=$row->year><font color=$fontcolor>Show Proposals from: $row->year</font></a><br>";
+	}
+
+echo "
+<p><a href=$pagename?mode=lists_show_all><font color=blue>Show All Proposals</font></a>
+<p><a href=$pagename?mode=lists_show_all_mine><font color=blue>Show All My Proposals</font></a>
+<p><a href=$pagename?mode=proposals_search><font color=blue>Search Proposals</font></a>
+";
+
+
+
+/*
+<a href=$pagename?mode=lists_show_all_2002><font color=blue>Show 2002 Proposals</font></a><p>
+<a href=$pagename?mode=lists_show_all_2003><font color=blue>Show 2003 Proposals</font></a><p>
+<a href=$pagename?mode=lists_show_all_2004><font color=blue>Show 2004 Proposals</font></a><p>
+<a href=$pagename?mode=lists_show_all_2005><font color=blue>Show 2005 Proposals</font></a><p>
+<a href=$pagename?mode=lists_show_all_2006><font color=blue>Show 2006 Proposals</font></a><p>
+<a href=$pagename?mode=lists_show_all_2007><font color=blue>Show 2007 Proposals</font></a><p>
+<a href=$pagename?mode=lists_show_all_2008><font color=blue>Show 2008 Proposals</font></a><p>
+<a href=$pagename?mode=lists_show_all_2009><font color=red>Show 2009 Proposals</font></a><p>
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+?>

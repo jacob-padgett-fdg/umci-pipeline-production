@@ -1,0 +1,5 @@
+<?
+echo "<a href=$pagename?mode=main><font color=blue>Cancel</font></a><br>";
+
+listjobs("select * from jobinfo where active = 'Y' order by contract_num");
+?>

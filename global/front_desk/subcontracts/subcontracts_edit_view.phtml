@@ -1,0 +1,163 @@
+<?
+
+
+if ($subcontracts_info->subcontractor_type_id>0) {
+$s_type_info=getoneb("select * from subcontractor_types where subcontractor_type_id = '$subcontracts_info->subcontractor_type_id'");
+}
+//$subcontractor_type_info=getoneb("select * from subcontractor_types where subcontractor_type_id = '$sucontracts_info->subcontractor_type_id'");
+$doc_id=fd_get_doc_id($subcontracts_info->subcontracts_id);
+
+$headbgcolor=$fd_color_4;
+$head_text="Subcontract Request";
+
+if ($subcontracts_info->is_t_and_m=='Y') {
+	$headbgcolor="#ff7777";
+	$head_text="T&M Subcontract Request";
+	}
+
+if ($subcontracts_info->subcontractor_type_id==12) {
+	if ($subcontracts_info->other_subcontractor_type!="") $s_type_info->sub_type=$subcontracts_info->other_subcontractor_type;
+	}
+
+$subcontractor_info=getoneb("select * from contacts where contacts_id = '$subcontracts_info->subcontractor_id'");
+$subcontractor_contact_info=getoneb("select * from contacts where contacts_id = '$subcontracts_info->subcontractor_contact'");
+$prime_contractor_info=getoneb("select * from contacts where contacts_id = '$subcontracts_info->prime_contractor'");
+$owner_info=getoneb("select * from contacts where contacts_id = '$subcontracts_info->owner'");
+
+$scope=ereg_replace("\r\n","<p>",$subcontracts_info->scope);
+
+$tmwarntext="";
+if ($subcontracts_info->status!="complete") {
+	if (($ca)&&($subcontracts_info->is_t_and_m=="Y")) {
+		echo "<script>alert(\"T&M alert! Don't miss it!\");</script>";
+		$tmwarntext="<br><font color=red><b>WARNING! This is a T&M!</b></font>";
+		}
+	}
+
+if ($subcontracts_info->status=="submitted") {
+	if ($ca) echo "<a href=$pagename?mode=go_process&subcontracts_id=$subcontracts_info->subcontracts_id><font color=blue><b>Start Processing</b></font></a><p>";
+	}
+if ($subcontracts_info->status=="complete") {
+	if ($ca) echo "<a href=$pagename?mode=go_process&subcontracts_id=$subcontracts_info->subcontracts_id><font color=blue><b>Return status to 'processing'</b></font></a><p>";
+	}
+echo "
+<table border=1 cellspacing=0 cellpadding=5>
+
+<tr><td colspan=2 bgcolor=$headbgcolor align=center>
+	<b>$head_text</b>
+</td><td bgcolor=$fd_color_4 align=center>
+	<b>$s_type_info->sub_type Scope Options
+</td></tr>
+
+<tr><td>
+	<b>Request #</b>
+</td><td>
+	$subcontracts_info->request_number
+</td><td rowspan=15 valign=top>
+	<div id=scope_selections_output>";
+		///////////////////////////////////////////////////////
+		// Scope options once from included file...
+		///////////////////////////////////////////////////////
+		echo "<table border=0 cellspacing=0 cellpadding=2>";
+		$scope_res=@mysql_query("select * from subcontractor_scope_selections where subcontractor_type_id = '$subcontracts_info->subcontractor_type_id' and subcontracts_id = '$subcontracts_info->subcontracts_id' order by sort_priority");
+		echo "<tr><td colspan=3 align=center><b>$subcontracts_info->exhibit_name</b></td></tr>";
+		while ($current=@mysql_fetch_object($scope_res)) {
+		if ($current->custom_scope_item=="Y") {
+			$rowbg="#bb77bb";
+			} else {
+			$rowbg="#ffffff";
+			}
+
+		echo "<tr bgcolor=\"$rowbg\"><td align=right>
+				$current->sort_priority
+			</td><td>
+				$current->description
+			</td><td id=scope_selection_$current->selections_id align=right bgcolor=\"$bgcolor\">
+				$current->in_scope
+			</td></tr>";
+		}
+		echo "
+		<tr><td colspan=3 align=center>
+			<a href=$pagename?mode=scope_selections_pdf&subcontracts_id=$subcontracts_info->subcontracts_id><font color=blue>Download PDF</font></a>
+		</td></tr>
+		</table>";
+		///////////////////////////////////////////////////////
+		//	End scope options from include...
+		///////////////////////////////////////////////////////
+echo "
+	</div>
+</td></tr>
+
+<tr><td>
+	<b>Status</b>
+</td><td>
+	<b>$subcontracts_info->status</b>
+</td></tr>
+
+<tr><td>
+	<b>Subcontractor Type</b>
+</td><td>
+	$s_type_info->sub_type
+</td></tr>
+
+<tr><td>
+	<b>T&M</b>
+</td><td>
+	$subcontracts_info->is_t_and_m$tmwarntext
+</td></tr>
+
+<tr><td>
+	<b>Subcontractor</b>
+</td><td>
+	$subcontractor_info->display_name
+</td></tr>
+
+<tr><td>
+	<b>Contact</b>
+</td><td>
+	$subcontractor_contact_info->display_name
+</td></tr>
+
+<tr><td>
+	<b>Contract Amount</b>
+</td><td>
+	$subcontracts_info->contract_amount
+</td></tr>
+
+<tr><td>
+	<b>Retainage</b>
+</td><td>
+	$subcontracts_info->retainage %
+</td></tr>
+
+<tr><td>
+	<b>Prime Contractor</b>
+</td><td>
+	$prime_contractor_info->display_name
+</td></tr>
+
+<tr><td>
+	<b>Phase</b>
+</td><td>
+	$subcontracts_info->phase_code
+</td></tr>
+
+<tr><td>
+	<b>Owner</b>
+</td><td>
+	$owner_info->display_name
+</td></tr>
+
+<tr><td valign=top>
+	<b>Scope</b>
+</td><td style=\"width: 400px;\">
+	$scope
+</td></tr>
+
+<tr><td colspan=2>
+	<a href=$pagename?mode=view_data&subcontracts_id=$subcontracts_id><font color=blue>View Data</font></a>
+</td></tr>
+
+</table>
+";
+?>

@@ -1,0 +1,80 @@
+<?
+require('header_table_print.phtml');
+//require('header.phtml');
+
+if ($today=="") {
+	$today=date('m/d/Y');
+	} else {
+	$today=addslashes($today);
+	$today=ereg_replace("-","/",$today);
+	}
+
+if (($prgroup!=1)&&($prgroup!=3)) {
+	forward('main');
+	exit;
+	}
+
+$query="select LastName,FirstName,Suffix,PREmp,HireDate,udNondriver from Viewpoint.dbo.HRRM with (NOLOCK)
+where HRCo = 1 and PRGroup = $prgroup and ActiveYN = 'Y' order by LastName,FirstName,PREmp";
+//$query="select * from Viewpoint.dbo.HRRM 
+//where HRCo = 1 and PRGroup = $prgroup and ActiveYN = 'Y' order by LastName,FirstName,PREmp";
+//ms_tabledump($query);
+//exit;
+$res=@mssql_query($query);
+echo "
+<center>
+<font size=+3>Approved&nbsp;Driver&nbsp;List</font><br><font size=+1>&nbsp;($today)</font><br>
+";
+//if ($prgroup==1) echo "<b>Field Employees</b>";
+//if ($prgroup==3) echo "<b>Admin Employees</b>";
+
+echo"
+<table border=0 cellspacing=0 cellpadding=4>
+<thead>
+<tr bgcolor=#dddddd><td>
+	<b>Name</b>
+</td><td>
+	<b>Emp #</b>
+</td><td>
+	<b>Trk #</b>
+</td><td>
+	<b>Approved</b>
+</td><td>
+	<b>Temp Extension Until</b>
+</td></tr>
+</thead>
+<tbody>
+";
+ 
+while ($row=@mssql_fetch_object($res)) {
+	//$row->PREmp , $today
+	$apinfo=get_approval_data($row->PREmp,$today);
+	$apinfo->extension_end_date=invali_date($apinfo->extension_end_date,'/');
+	echo "
+	<tr bgcolor=\"$apinfo->color\"><td>
+		$row->LastName, $row->FirstName $row->Suffix
+	</td><td>
+		$row->PREmp
+	</td><td>
+		$apinfo->truck_number&nbsp;
+	</td><td align=center>
+		$apinfo->approval_status&nbsp;
+	</td><td>
+		";
+		if ($apinfo->extension_ok=='Y') echo "$apinfo->extension_end_date";
+		echo "&nbsp;
+	</td></tr>
+	";
+	
+	$today=ereg_replace("-","/",$today);
+	//get_approval_data($row->PREmp,$today);
+	
+	//$hire_date_test ($hire_date_cutoff / $row->HireDate)
+	}
+
+echo "</tbody></table></center>";
+
+
+
+
+?>

@@ -1,0 +1,41 @@
+<?
+require("header.phtml");
+$el_id=addslashes($el_id);
+if ($copies!="") $copies=addslashes($copies);
+
+
+if ($copygo=='Y') {
+	if ($copies=="") $copies=1;
+	copy_equipment($el_id,$copies);
+	echo "
+	<script>
+	opener.document.location.reload();
+	self.close();
+	</script>
+	";
+	exit;
+	}
+
+
+echo "
+<center>
+How many total?
+<form name=eq_copy method=post action=$pagename>
+<input type=hidden name=mode value=copy_equipment_popup>
+<input type=hidden name=el_id value=\"$el_id\">
+<input type=hidden name=copygo value=Y>
+<input type=text size=3 name=copies value=\"$copies\">
+<br>
+<input type=submit value=GO>
+</form>
+</center>
+
+";
+
+
+
+
+
+
+
+?>

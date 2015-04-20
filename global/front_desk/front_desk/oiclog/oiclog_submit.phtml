@@ -1,0 +1,56 @@
+<?
+if ($oiclog_id!="") {
+	$oiclog_id=addslashes($oiclog_id);
+	$query_start="update oiclog ";
+	$query_end=" where oiclog_id = '$oiclog_id'";
+	} else {
+	$query_start="insert into oiclog ";
+	$query_end=",section = '$current_oiclog_section',jobinfo_id = '$global_jobinfo->jobinfo_id' ";
+	$status="Pending release for construction";
+	}
+
+$oic_number=addslashes($oic_number);
+$umc_cop_num=addslashes($umc_cop_num);
+$gc_ref_num=addslashes($gc_ref_num);
+$description=addslashes($description);
+$document_file_group_id=addslashes($document_file_group_id);
+$status=addslashes($status);
+$cost_impact=addslashes($cost_impact);
+//$rom_dollars=addslashes($rom_dollars);
+//$actual_dollars=addslashes($actual_dollars);
+$rom_dollars=clean_int($rom_dollars);
+$actual_dollars=clean_int($actual_dollars);
+$ntp=addslashes($ntp);
+$notes=addslashes($notes);
+$shop_dwg_status=addslashes($shop_dwg_status);
+$req_by_date=vali_date($req_by_date);
+$cost_impact_response_date=vali_date($cost_impact_response_date);
+$ntp_date=vali_date($ntp_date);
+
+
+$query_middle=" set 
+oic_number = '$oic_number', 
+umc_cop_num = '$umc_cop_num',
+gc_ref_num = '$gc_ref_num',
+description = '$description', 
+document_file_group_id = '$document_file_group_id',
+status = '$status',
+cost_impact = '$cost_impact',
+rom_dollars = '$rom_dollars',
+actual_dollars = '$actual_dollars',
+ntp = '$ntp',
+notes = '$notes',
+shop_dwg_status = '$shop_dwg_status',
+req_by_date = '$req_by_date',
+cost_impact_response_date = '$cost_impact_response_date',
+ntp_date = '$ntp_date'
+ ";
+
+$query_full=$query_start . $query_middle . $query_end;
+
+@mysql_query($query_full);
+forward('main');
+
+
+
+?>

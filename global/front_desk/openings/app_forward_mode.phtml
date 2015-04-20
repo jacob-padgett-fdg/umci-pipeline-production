@@ -1,0 +1,16 @@
+<?
+if ($last_app_mode=="") $last_app_mode="vitals";
+if ($target_app_mode!="") $target_app_mode=addslashes($target_app_mode);
+else $target_app_mode=$last_app_mode;
+
+if (($application_id!="")&&($application_id!=$application_id_session)) {
+	session_register('application_id_session');
+	$application_id_session=$application_id;
+	}
+
+if ($target_app_mode=="main") {
+		forward("main");
+	} else {
+		forward("application_edit&app_mode_new=$target_app_mode&application_id=$application_id");
+	}
+?>

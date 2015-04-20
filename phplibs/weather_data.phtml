@@ -1,0 +1,59 @@
+<?
+global $weather_data_libs_loaded;
+if ($weather_data_libs_loaded!=1) {
+	$weather_data_libs_loaded=1;
+function collect_weather_data($jobinfo) {
+	global $_fd_weather_data,$xml_current_tag_state;
+	$station=$jobinfo->weather_station_code;
+	$url="http://www.weather.gov/data/current_obs/${station}.xml";
+	$web_data=file_get_contents($url);
+	$weather_data=@simplexml_load_string($web_data);
+	$_fd_weather_data=array();
+	$_fd_weather_data["location"] = $weather_data->location;
+	$_fd_weather_data["station"] = $weather_data->location;
+	$_fd_weather_data["time"] = $weather_data->observation_time;
+	$_fd_weather_data["condition"] = $weather_data->weather;
+	$_fd_weather_data["temperature"] = $weather_data->temp_f;
+	$_fd_weather_data["humidity"] = $weather_data->relative_humidity;
+	$_fd_weather_data["wind"] = $weather_data->wind_string;
+	$_fd_weather_data["wind_dir"] = $weather_data->wind_dir;
+	$_fd_weather_data["wind_mph"] = $weather_data->wind_mph;
+	$_fd_weather_data["wind_gust_mph"] = $weather_data->wind_gust_mph;
+	$_fd_weather_data["pressure"] = $weather_data->pressure_in;
+	$_fd_weather_data["dewpoint"] = $weather_data->dewpoint_f;
+	$_fd_weather_data["heat_index"] = $weather_data->heat_index_f;
+	$_fd_weather_data["windchill"] = $weather_data->windchill_f;
+	$_fd_weather_data["visibility"] = $weather_dat->visibility_mi;
+	return ($_fd_weather_data);
+	}
+
+function update_weather_data($jobinfo) {
+	$weather_data=collect_weather_data($jobinfo);
+	if ($weather_data['temperature']=='') {
+		echo "Failed getting data (temperature = NULL)";
+		return FALSE;
+		}
+	$res=@mysql_query("update jobinfo set 
+	weather_station = '" . $weather_data['station'] . "',
+	weather_time = '" . $weather_data['time'] . "',
+	weather_condition = '" . $weather_data['condition'] . "',
+	weather_temperature = '" . $weather_data['temperature'] . "',
+	weather_humidity = '" . $weather_data['humidity'] . "',
+	weather_wind = '" . $weather_data['wind'] . "',
+	weather_wind_dir = '" . $weather_data['wind_dir'] . "',
+	weather_wind_mph = '" . $weather_data['wind_mph'] . "',
+	weather_wind_gust_mph = '" . $weather_data['wind_gust_mph'] . "',
+	weather_pressure = '" . $weather_data['pressure'] . "',
+	weather_dewpoint = '" . $weather_data['dewpoint'] . "',
+	weather_heat_index = '" . $weather_data['heat_index'] . "',
+	weather_windchill = '" . $weather_data['windchill'] . "',
+	weather_visibility = '" . $weather_data['visibility'] . "',
+	weather_update_time = now()
+	where weather_station_code = '$jobinfo->weather_station_code' and active = 'Y'
+	");
+	if (!($res)) echo "Error updating weather data for job $jobinfo->contract_num";
+	$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo->jobinfo_id'");
+	return ($jobinfo);
+	}
+}
+?>

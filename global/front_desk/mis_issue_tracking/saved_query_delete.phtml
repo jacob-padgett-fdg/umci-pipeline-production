@@ -1,0 +1,8 @@
+<?
+require_once('querylib.inc');
+$query_id=addslashes($query_id);
+$query="delete from mis_issue_saved_queries where contacts_id = '$global_user_id' and query_id = '$query_id'";
+
+@mysql_query($query);
+forward('saved_queries');
+?>

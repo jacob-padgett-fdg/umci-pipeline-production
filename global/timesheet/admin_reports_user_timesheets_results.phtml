@@ -1,0 +1,63 @@
+<?
+require_once('timesheet_libs_pdf.inc');
+require_once('pdf_lib2.inc');
+if (!($admin_check)) die("ERROR: Security Violation! The authorities are being notified!");
+
+//echo "$fwe/$lwe<br>";
+
+if ($fwe!="") $fwe=vali_date($fwe);
+if ($lwe!="") $lwe=vali_date($lwe);
+if ($employee_id!="") $employee_id=addslashes($employee_id);
+else die("ERROR: You need to specify an employee. <a href=javascript:history.go(-1)>Go back</a> and try again.");
+
+//echo "$fwe/$lwe<br>";
+$query="select * from timesheet_index where employee_id = '$employee_id' ";
+
+if (($fwe!="") && ($lwe!="")) {
+	$query=$query . "and week_ending >= '$fwe' and week_ending <= '$lwe' ";
+	}
+$query = $query . " order by week_ending";
+
+
+//echo "$query";exit;
+
+
+//$query="select * from timesheet_time,timesheet_index where timesheet_time.timesheet_id = timesheet_index.timesheet_id and timesheet_time.week_ending = '$week_ending' and job_num like '$job_info->job%' and status = 'posted' group by timesheet_time.timesheet_id order by timesheet_index.employee_num";
+
+//$query="select * from timesheet_index where employee_id = '8' and week_ending >= '2005-01-01' and week_ending <= '2005-12-31' order by week_ending";
+//$job_info->job="";
+
+$res=@mysql_query($query);
+$rowcount=@mysql_num_rows($res);
+
+if ($rowcount==0) {
+	echo "<body bgcolor=white><h3>No Documents Found...</h2><hr>
+	<a href=$pagename?mode=billing_timesheet_archive_selection>
+	<font color=blue>Return to Search Selection</font></a></body>";
+	exit;
+	}
+
+
+
+//-----------------------------------------------------------------------------------
+//	Document Setup...
+//-----------------------------------------------------------------------------------
+//$page_info=pdf_page_info_create($global_user->pref_paper_size);
+//$page_info=pdf_start($page_info);
+
+$pdf=&new Cezpdf("$global_user->pref_paper_size","portrait");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+
+
+//-----------------------------------------------------------------------------------
+//	Page Printing
+//-----------------------------------------------------------------------------------
+
+while($row=@mysql_fetch_object($res)) {
+	$pdf=pdf_timesheet_2($pdf,$row->timesheet_id,$job_info->job);
+	//$page_info=pdf_timesheet_1($page_info,$row->timesheet_id,$job_info->job);
+	}
+
+//pdf_end($page_info);
+$pdf->ezStream();
+?>

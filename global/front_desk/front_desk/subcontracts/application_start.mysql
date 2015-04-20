@@ -1,0 +1,71 @@
+create table subcontracts_sections ( section_id int not null auto_increment, 
+jobinfo_id int not null,
+section char(20) not null, 
+active char(5) not null default 'Y',
+default_section char(5) not null default 'N',
+primary key (section_id)
+);
+                        
+create table subcontracts (
+	subcontracts_id int not null auto_increment,
+	jobinfo_id int not null,
+	section char(20) not null,
+	request_number int not null,
+	description char(50) not null,
+	subcontractor_id int not null, 
+	subcontractor_type char(30) not null,
+	contract_amount decimal(8,2) not null,
+	job_name_alias char(50) not null,
+	phase_code char(20) not null, 
+	prime_contractor int not null,
+	owner int not null,
+	scope text not null,
+	primary key (subcontracts_id),
+	unique (jobinfo_id,section,request_number)
+	);
+
+delimiter |
+create trigger docreg_subcontracts_insert after insert on subcontracts
+for each row begin
+call docreg_generic2 ('subcontracts',NEW.subcontracts_id,NEW.jobinfo_id,NEW.request_number,NEW.description,NEW.section);
+end;
+|
+delimiter ;
+
+
+
+delimiter |
+create trigger docreg_subcontracts_update after update on subcontracts
+for each row begin
+call docreg_generic2 ('subcontracts',NEW.subcontracts_id,NEW.jobinfo_id,NEW.request_number,NEW.description,NEW.section);
+end;
+|
+delimiter ;
+
+
+
+
+delimiter |
+create trigger docreg_subcontracts_delete after delete on subcontracts
+for each row begin
+call docunreg ('subcontracts',OLD.subcontracts_id);
+end;
+|
+delimiter ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

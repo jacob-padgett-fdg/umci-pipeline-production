@@ -1,0 +1,129 @@
+<?
+require_once('application_edit_form_start.phtml');
+$optional="<i><font color=red>";
+$optional_end="</font></i>";
+
+
+echo "
+<script>
+function pinexplain() {
+	alert('You may fill this in if you would like to be able to modify or reuse this application on this site at a later date.');
+	}
+function form_verify(newmode) {
+	//document.application_edit.hours_available.options[document.application_edit.hours_available.selectedIndex].value='hello';
+	//alert(document.application_edit.hours_available.options[document.application_edit.hours_available.selectedIndex].value);
+	//return 0
+	if (document.application_edit.last_name.value=='') { alert('Last name is a required field.'); document.application_edit.last_name.focus(); return 0; }
+	if (document.application_edit.first_name.value=='') { alert('First name is a required field.'); document.application_edit.first_name.focus(); return 0; }
+	if (document.application_edit.address.value=='') { alert('Address is a required field.'); document.application_edit.address.focus(); return 0; }
+	if (document.application_edit.address_city.value=='') { alert('City is a required field.'); document.application_edit.address_city.focus(); return 0; }
+	if (document.application_edit.address_state.value=='') { alert('State is a required field.'); document.application_edit.address_state.focus(); return 0; }
+	if (document.application_edit.address_zip.value=='') { alert('Zip is a required field.'); document.application_edit.address_zip.focus(); return 0; }
+	if (document.application_edit.home_phone.value=='') { alert('Home phone is a required field.'); document.application_edit.home_phone.focus(); return 0; }
+	if (document.application_edit.hours_available.options[document.application_edit.hours_available.selectedIndex].value=='') { alert('Availability is a required field.'); document.application_edit.hours_available.options.focus(); return 0; }
+	if (document.application_edit.date_available.value=='') { alert('Date available is a required field.'); document.application_edit.date_available.focus(); return 0; }
+	";
+	if ($application_id=="") {
+		echo "
+			
+			if (document.application_edit.applicant_pin.value=='') {
+				if (!(confirm('WARNING: A PIN is required if you want to be able to modify or reuse this application at a later date.'))) {
+					document.application_edit.applicant_pin.focus();
+					return 0;
+					}
+			}
+			";
+		}
+	echo"
+	document.application_edit.target_app_mode.value=newmode;
+	document.application_edit.submit();
+	}
+</script>
+
+<center>
+<table border=0 cellspacing=4 cellpadding=0 bgcolor=$app_form_bg>
+<tr><td colspan=6 align=right>
+	<input type=button value=\"Next Section\" onclick=form_verify(\"employment_history\")>
+</td></tr>
+";
+if ($opening_info->job_title!="") {
+	echo "<tr><td colspan=6 align=center><b>POSITION: $opening_info->job_title</b><hr></td></tr>";
+	}
+echo "
+
+<tr><td>
+	<b>Last Name</b>
+</td><td>
+	<input type=text size=15 name=last_name value=\"$application_info->last_name\">
+</td><td>
+	<b>First</b>
+</td><td>
+	<input type=text size=15 name=first_name value=\"$application_info->first_name\">
+</td><td>
+	<b>Middle</b>
+</td><td>
+	<input type=text size=10 name=middle_name value=\"$application_info->middle_name\">
+</td></tr>	
+
+<tr><td>
+	<b>Address</b>
+</td><td>
+	<input type=text size=20 name=address value=\"$application_info->address\">
+</td><td>
+	<b>City</b>
+</td><td colspan=3>
+	<input type=text size=15 name=address_city value=\"$application_info->address_city\">
+	<b>State</b>
+	<input type=text size=3 maxlength=3 name=address_state value=\"$application_info->address_state\">
+	<b>Zip</b>
+	<input type=text size=8 name=address_zip value=\"$application_info->address_zip\">
+</td></tr>
+
+<tr><td>
+	<b>Home Phone</b>
+</td><td colspan=5>
+	<input type=text size=20 name=home_phone value=\"$application_info->home_phone\">
+	<b>${optional}Day/Msg Phone${optional_end}</b>&nbsp;<input type=text size=20 name=day_phone value=\"$application_info->day_phone\">
+</td></tr>
+
+<tr><td>
+	<b>${optional}Email${optional_end}</b>
+</td><td colspan=4>
+	<input type=text size=30 name=email value=\"$application_info->email\">
+</td><td align=center bgcolor=#eeeeee>
+	<table border=1 cellspacing=0 cellpadding=3 width=100%><tr><td width=100% align=center><b>${optional}PIN${optional_end}</b>&nbsp;&nbsp;<input type=text size=5 maxlength=5 name=applicant_pin value=\"$application_info->applicant_pin\">&nbsp;<a href=javascript:pinexplain()><font color=blue><b>?</b></font></a></td></tr></table>
+</td></tr>
+
+<tr><td colspan=6><hr></td></tr>
+
+<tr><td>
+	<b>Availablility</b>
+</td><td>
+	<select name=hours_available>
+	<option value=\"$application_info->hours_available\">$application_info->hours_available
+	<option value=\"Full Time\">Full Time</option>
+	<option value=\"Part Time\">Part Time</option>
+	<option value=\"Temporary\">Temporary</option>
+	</select>
+</td><td colspan=4>
+	<b>Date Available</b>&nbsp;<input type=text size=15 name=date_available value=\"$application_info->date_available\">
+</td></tr>
+
+<tr><td colspan=6><hr></td></tr>
+
+<tr><td colspan=5>
+	<b>${optional}Salary Expectation${optional_end}</b>
+	<input type=text size=10 name=expected_salary value=\"$application_info->expected_salary\">
+	<b>${optional}per${optional_end}</b>
+	<input type=text size=5 name=expected_salary_period value=\"$application_info->expected_salary_period\">
+</td></tr>
+
+</table>
+</center>
+<script>
+document.application_edit.last_name.focus();
+</script>
+";
+
+require_once('application_edit_form_end.phtml');
+?>

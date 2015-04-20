@@ -1,0 +1,12 @@
+<?
+$fd2_application_name="fd2_access";
+require("fd2_auth.inc");
+
+if ($mode=="") $mode="main";
+if (isset($mode)) {
+	$err=@include($mode . ".php");
+	if (!($err)) include("badmode.php");
+	} else {
+	include ("main.php");
+	}
+?>

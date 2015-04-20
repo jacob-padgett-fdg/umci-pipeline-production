@@ -1,0 +1,68 @@
+<?
+//tabledump("select * from bidlist_projecttypes");die();
+require('header.phtml');
+include('../front_desk/reports/report_lib.inc');
+if ($year=="") $year=date('Y');
+echo "<table border=1 cellspacing=0 cellpadding=5 width=500px>";
+
+$last_prop="";
+$query="select * from bidlist where (year(bid_date) = 2009) or (year(create_date) = 2009) order by umcgroups_id,proposal_num";
+$res=@mysql_query($query);
+while ($bid_info=@mysql_fetch_object($res)) {
+	$continue_status='N';
+	if ($bid_info->status=="Lead") $continue_status='Y';
+	if ($bid_info->status=="No Bid") $continue_status='Y';
+	if ($bid_info->status=="Dead Lead") $continue_status='Y';
+	if ($continue_status=='Y') { 
+		//echo "forget it.. status is: $bid_info->status<br>"; 
+		continue; 
+		}
+	
+	//if ($bid_info->proposal_num!=$last_prop) {
+	//	$last_prop=$bid_info->proposal_num;
+	//	}
+	$output="";
+	
+	if (($bid_info->proposal_type=="Budget")||($bid_info->proposal_type=="RFQ/Preq/Eleg")) {
+		//$date_too_close=getoneb("select * from bidlist_results where bidlist_id = '$bid_info->bidlist_results' and datediff(results_date
+		//tabledump("select datediff('$bid_info->create_date',results_date) as num_of_days from bidlist_results where bidlist_id = '$bid_info->bidlist_id'");
+		$budget_won=getoneb("select * from bidlist_results where bidlist_id = '$bid_info->bidlist_id' and winning_bid = 'Y' limit 1");
+		if ($budget_won) $output=$output . "
+		Budgets/RFQ's can not be 'Won'.<br>";
+		}
+	if ($bid_info->bid_date=='0000-00-00') $output=$output . "
+		No Bid Date set.<br>";
+	if ($bid_info->project=='') $output=$output . "
+		Project name not set.<br>";
+	$bidding_to=getoneb("select * from bidlist_bidding_to where bidlist_id = '$bid_info->bidlist_id' limit 1");
+	if (!($bidding_to)) $output=$output . "
+	Is missing the General/Owner. Who are we bidding to.<br>";
+	
+	if ($bid_info->bid_date<date('Y-m-d')) {
+		$bid_amount_umc=getoneb("select * from bidlist_results where bidlist_id = '$bid_info->bidlist_id' and company = 968 limit 1");
+		if (!($bid_amount_umc)) $output=$output . "
+	The bid date has passed, but we still have no bid amount.<br>";
+		}
+	if ($bid_info->proposal_type=="") $output=$output . "
+	No proposal type entered.<br>";
+	if ($bid_info->umcgroups_id<1) $output=$output . "
+	No group entered. Which group would run this jobs (IE: Industrial, Major Projects, Southern WA or Special Projects.<br>";
+	if ($bid_info->rom<1) $output=$output . "
+	No Approx Mech \$ entered. Just give us a guess, and when it's bid, replace it with that number.<br>";
+	if ($bid_info->proposal_type=="Bid/Proposal") {
+		if ($bid_info->start_date=="0000-00-00") $output=$output . "
+		No start date set. Please add one.<br>";
+		if ($bid_info->complete_date=="0000-00-00") $output=$output . "
+		No complete date set. Please add one.<br>";
+		}
+	if ($output!="") {
+		$gp_info=getoneb("select * from bidlist_umcgroups where umcgroups_id = '$bid_info->umcgroups_id'");
+		echo "<tr><td bgcolor=$fd_color_4 align=center><h3><a href=$pagename?mode=proposal_edit&bidlist_id=$bid_info->bidlist_id><font color=blue>$bid_info->proposal_num (rev $bid_info->proposal_revision)</font></a> from $gp_info->name</h3></td></tr>";
+		echo "<tr><td bgcolor=#ffffff>$output</td></tr>";
+		$output_last=$output;
+		}
+	}
+
+echo "</td></tr></table>";
+
+?>

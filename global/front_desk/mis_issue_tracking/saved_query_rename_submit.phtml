@@ -1,0 +1,10 @@
+<?
+$query_id=addslashes($query_id);
+$query_name=addslashes($query_name);
+
+$query="update mis_issue_saved_queries set query_name = '$query_name' where query_id = '$query_id' and contacts_id = '$global_user_id'";
+
+@mysql_query($query);
+forward('saved_queries');
+
+?>

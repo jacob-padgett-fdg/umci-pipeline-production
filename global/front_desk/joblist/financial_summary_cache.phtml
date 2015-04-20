@@ -1,0 +1,70 @@
+#!/usr/local/bin/php
+<?
+sleep(15);
+require_once('global_connect_rw.phtml');
+require_once('viewpoint_connect_ro.phtml');
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/front_desk/reports/report_lib.inc");
+set_time_limit(90);
+$today_mysql=date('Y-m-d');
+
+$msres=mssql_query("select * from UMC_Financial_Summary_By_Contract_With_Aging");
+while($msrow=@mssql_fetch_object($msres)) {
+	$contract=ereg_replace("^0*","",$msrow->Contract);
+	$contract=ereg_replace("-*$","",$contract);
+	$fd_jobinfo=getoneb("select * from jobinfo where contract_num = '$contract'");
+	$current_entry_query="select * from jobinfo_financials_by_contract where Contract = '" . mysql_real_escape_string($contract) . "' and load_date = '$today_mysql' and JCCo = '" . mysql_real_escape_string($msrow->JCCo) . "'";
+	$current_cache_entry=getoneb($current_entry_query);
+	
+	$query_middle="
+	jobinfo_id = '" . mysql_real_escape_string($fd_jobinfo->jobinfo_id) . "', 
+	Contract = '" . mysql_real_escape_string($contract) . "', 
+	JCCo = '" . mysql_real_escape_string($msrow->JCCo) . "', 
+	Description = '" . mysql_real_escape_string($msrow->Description) . "', 
+	Department = '" . mysql_real_escape_string($msrow->Department) . "', 
+	PM = '" . mysql_real_escape_string($msrow->PM) . "', 
+	PMFirstName = '" . mysql_real_escape_string($msrow->PMFirstName) . "', 
+	PMLastName = '" . mysql_real_escape_string($msrow->PMLastName) . "', 
+	CustomerNumber = '" . mysql_real_escape_string($msrow->CustomerNumber) . "', 
+	CustomerName = '" . mysql_real_escape_string($msrow->CustomerName) . "', 
+	DPDesc = '" . mysql_real_escape_string($msrow->DPDesc) . "', 
+	OrigContractAmt = '" . mysql_real_escape_string($msrow->OrigContractAmt) . "', 
+	ContractAmt = '" . mysql_real_escape_string($msrow->ContractAmt) . "', 
+	GrossBilledAmt = '" . mysql_real_escape_string($msrow->GrossBilledAmt) . "', 
+	NetBilledAmt = '" . mysql_real_escape_string($msrow->NetBilledAmt) . "', 
+	CurrentRetainAmt = '" . mysql_real_escape_string($msrow->CurrentRetainAmt) . "', 
+	ReceivedAmt = '" . mysql_real_escape_string($msrow->ReceivedAmt) . "', 
+	OverHeadJob = '" . mysql_real_escape_string($msrow->OverHeadJob) . "', 
+	DepartmentHead = '" . mysql_real_escape_string($msrow->DepartmentHead) . "', 
+	CashFlow = '" . mysql_real_escape_string($msrow->CashFlow) . "', 
+	PaidToDate = '" . mysql_real_escape_string($msrow->PaidToDate) . "', 
+	OrigEstHours = '" . mysql_real_escape_string($msrow->OrigEstHours) . "', 
+	CurrEstHours = '" . mysql_real_escape_string($msrow->CurrEstHours) . "', 
+	ActualHours = '" . mysql_real_escape_string($msrow->ActualHours) . "', 
+	CurrEstCost = '" . mysql_real_escape_string($msrow->CurrEstCost) . "', 
+	RemainCmtdCost = '" . mysql_real_escape_string($msrow->RemainCmtdCost) . "', 
+	ActualCost = '" . mysql_real_escape_string($msrow->ActualCost) . "', 
+	OpenAP = '" . mysql_real_escape_string($msrow->OpenAP) . "', 
+	AgingTotal = '" . mysql_real_escape_string($msrow->AgingTotal) . "', 
+	AgingAmount = '" . mysql_real_escape_string($msrow->AgingAmount) . "', 
+	AgingTaxBasis = '" . mysql_real_escape_string($msrow->AgingTaxBasis) . "', 
+	AgingTaxAmount = '" . mysql_real_escape_string($msrow->AgingTaxAmount) . "', 
+	AgingCurrentDue = '" . mysql_real_escape_string($msrow->AgingCurrentDue) . "', 
+	AgingOver30 = '" . mysql_real_escape_string($msrow->AgingOver30) . "', 
+	AgingOver60 = '" . mysql_real_escape_string($msrow->AgingOver60) . "', 
+	AgingOver90 = '" . mysql_real_escape_string($msrow->AgingOver90) . "', 
+	AgingLastNote = '" . mysql_real_escape_string($msrow->AgingLastNote) . "'
+	";
+	if ($current_cache_entry) {
+		$query_start="update jobinfo_financials_by_contract set ";
+		$query_end="where jobinfo_financials_id = '$current_cache_entry->jobinfo_financials_id'";
+		} else {
+		$query_start="insert into jobinfo_financials_by_contract set ";
+		$query_end=",load_date = '$today_mysql'";
+		}
+	$query_full=$query_start . $query_middle . $query_end;
+	@mysql_query($query_full);
+	}
+?>

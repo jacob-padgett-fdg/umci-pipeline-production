@@ -1,0 +1,9 @@
+<?
+if ($section_name=="") die("Application error.");
+$section_name=addslashes($section_name);
+if ($section_job=="") die("Application error2.");
+$section_job=addslashes($section_job);
+$query="insert into ${application_name}_sections set jobinfo_id = '$section_job', section = '$section_name', active = 'Y', default_section = 'N'";
+@mysql_query($query);
+forward('manage_sections');
+?>

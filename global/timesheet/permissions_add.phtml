@@ -1,0 +1,12 @@
+<?
+$timesheet_guest=escapeshellcmd($timesheet_guest);
+$query="insert into timesheet_permissions set timesheet_owner = '$global_user->contacts_id', timesheet_guest = '$timesheet_guest'";
+$res=@mysql_query($query);
+if (!($res)) {
+	echo "ERROR: Please contact your system administrator. Query could not be completed. See the errorred query below:<hr>$query";
+	exit;
+	}
+
+forward('permissions_selection');
+
+?>

@@ -1,0 +1,7 @@
+<?
+if ($sa_document_id=="") die("Application error: invalid sa_document_id");
+else $sa_document_id=addslashes($sa_document_id);
+$doclist_info=getoneb("select * from svc_agreement_documents where sa_document_id = '$sa_document_id'");
+
+echo "<textarea id=\"doclist_notes_textarea_$doclist_info->sa_document_id\" name=\"doclist_notes_txname_$doclist_info->sa_document_id\" rows=3 cols=50 onblur=\"save_notes($doclist_info->sa_document_id)\">$doclist_info->notes</textarea>";
+?>

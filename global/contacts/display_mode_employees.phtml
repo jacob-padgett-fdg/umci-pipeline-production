@@ -1,0 +1,10 @@
+<?
+$query_real="select * from contacts where umc_emp = 'Y' and current = 'Y' $display_search order by alphasort";
+$res=@mysql_query($query_real);
+$result_count=@mysql_num_rows($res);
+if ($result_count>200) {
+	echo "<h3 style=\"background: $fd_color_3;\">Showing first 200 of $result_count records.<br>Please narrow your list with the search box</h2>";
+	$res=@mysql_query($query_real . " limit 200");
+	}
+include("display_mode_results.phtml");
+?>

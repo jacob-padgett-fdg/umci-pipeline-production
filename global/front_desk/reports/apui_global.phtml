@@ -1,0 +1,205 @@
+<?
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require("mh_lib.inc");
+require("header.phtml");
+mh_navs_header();
+check_report_permissions();
+
+/*function gap_num($number) {
+	$number=addslashes($number);
+	$fontstart="";
+	$fontend="";
+	if ($number < 0) { $fontstart="<font color='red'>("; $fontend=")</font>"; $number=abs($number); }
+	$number=format_long_num(round($number));
+	return ($fontstart . $number . $fontend);
+	}
+*/
+function is_valid_viewpoint_job($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
+
+$search_job_add="";
+if ($search_job!="") {
+	$search_job=strtoupper(addslashes($search_job));
+	$search_job_add="and (APUI.udJOB LIKE '%$search_job%')";
+	}
+$search_vendor_add="";
+if ($search_vendor!="") {
+	$search_vendor=strtoupper(addslashes($search_vendor));
+	$search_vendor_add="and (upper(APVM.Name) LIKE '%$search_vendor%')";
+	}
+$search_description_add="";
+if ($search_description!="") {
+	$search_description=strtoupper(addslashes($search_description));
+	$search_description_add="and (APUI.Description LIKE '%$search_description%')";
+	}
+
+if ($po_hide=="") {
+	///////////////////////////////////////////////////////
+	// Purchasing guys like to have items with PO 
+	// attachments hidden from them cause they can't help
+	// out with those usually..
+	///////////////////////////////////////////////////////
+	if (member_of_global_group_named("Purchasing")) $po_hide="Y";
+	else $po_hide="N";
+	}
+
+echo "<form name=search_apui method=get action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=report_name value=\"$report_name\">
+<input type=hidden name=is_search_submit value=\"TRUE\">
+<table border=1 cellspacing=0 cellpadding=3>
+<tr><td>
+	Job
+</td><td>
+	<input size=5 type=text name=search_job value=\"$search_job\">
+</td><td>
+	Vendor
+</td><td>
+	<input type=text name=search_vendor value=\"$search_vendor\">
+</td><td>
+	Description&nbsp;(PO)
+</td><td>
+	<input size=6 type=text name=search_description value=\"$search_description\">
+</td><td>
+	Hide if PO Found
+</td><td>
+	<select name=po_hide>
+	<option>$po_hide</option>
+	<option>Y</option>
+	<option>N</option>
+	</select>
+	<input type=submit value=Search>
+</td></tr>
+";
+
+
+
+//if (($search_job=="")&&($search_vendor=="")&&($search_description=="")) {
+if ($is_search_submit!="TRUE") {
+	mh_navs_footer();
+	die();
+	}
+
+
+
+
+
+
+$search_query="
+SELECT *,convert(varchar(38),APUI.UniqueAttchID) AS apuiattach 
+FROM APUI with (NOLOCK) RIGHT OUTER JOIN APVM with (NOLOCK) ON 
+	( APUI.Vendor = APVM.Vendor and APUI.VendorGroup = APVM.VendorGroup )  
+WHERE APUI.APCo = 1
+$search_job_add
+$search_vendor_add
+$search_description_add
+order by udJOB,Description,APRef
+";
+
+$job=is_valid_viewpoint_job($global_jobinfo->contract_num);
+$job_short=ereg_replace("[ -]*$","",$job->Job);
+$res=@mssql_query($search_query);
+
+
+
+echo "
+
+<center><table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=8 align=center bgcolor=$fd_color_4>
+	<b>Unapproved Invoices</b>
+</td></tr>
+<tr bgcolor=$fd_color_1><td>
+	<i>Job</i>
+</td><td>
+	<i>Vendor / Vendor #</i>
+</td><td>
+	<i>AP Ref</i>
+</td><td colspan=2>
+	<i>Description</i>
+</td><td>
+	<i>Total</i>
+</td><td>
+	<i>Notes</i>
+</td><td>
+	<i>&nbsp;</i>
+</td></tr>
+";
+
+$return_to_url=base64_encode($REQUEST_URI);
+
+while ($row=@mssql_fetch_object($res)) {
+	$po_link="";
+	$po_image_link="";
+	$po_num=ereg_replace("/.*$","",$row->Description);
+	$po_header=ms_getoneb("select *,convert(varchar(38),POHD.UniqueAttchID) as po_attach_id from POHD with (NOLOCK) where POCo = 1 and PO = '$po_num'");
+	
+	if ($po_header) {
+		if ($po_hide=="Y") continue;
+		//$po_image_link=vp_attachment_view_link($po_header->UniqueAttchID);
+		$po_image_link=vp_attachment_view_link($po_header->po_attach_id);
+		$po_link="<a href=\"$pagename?mode=report_show&report_name=po_show&return_to_url=$return_to_url&po_number=$po_header->PO\"><img border=0 src=/images/tiny_paper.jpg></a>&nbsp;";
+		}
+	$row->InvTotal=round($row->InvTotal,2);
+	echo "<tr><td>
+				$row->udJOB
+			</td><td>
+				$row->Name / $row->Vendor
+			</td><td>
+				$row->APRef
+			</td><td>
+				$row->Description
+			</td><td>
+				$po_link$po_image_link
+			</td><td>
+				$row->InvTotal
+			</td><td>
+				$row->Notes&nbsp;
+			</td><td>
+				";$link=vp_attachment_view_link("$row->apuiattach");echo "
+				$link
+			</td></tr>";
+	}
+echo "</table></center>";
+
+
+
+
+mh_navs_footer();
+
+?>

@@ -1,0 +1,37 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+//@mysql_select_db('mysql');
+//tabledump("show triggers");
+$res=@mysql_query("show triggers");
+echo "<table border=1 cellspacing=0 cellpadding=5>";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr bgcolor=$fd_color_4><td valign=top>
+			<b>Trigger:</b> $row->Trigger
+		</td><td valign=top>
+			<b>Table:</b> $row->Table
+		</td><td valign=top>
+			<b>Event:</b> $row->Timing $row->Event
+		</td></tr>
+		
+		<tr><td colspan=3>
+<pre>
+drop trigger if exists $row->Trigger;
+delimiter |
+
+create trigger $row->Trigger $row->Timing $row->Event on $row->Table
+for each row $row->Statement
+|
+delimiter ;
+</pre>
+</td></tr>
+";
+	}
+echo "</table>";
+mh_navs_footer();
+//tabledump("select * from proc");
+?>

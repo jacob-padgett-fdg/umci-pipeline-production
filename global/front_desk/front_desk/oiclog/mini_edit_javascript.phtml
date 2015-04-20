@@ -1,0 +1,39 @@
+<?
+$devel="-devel";
+echo "
+function fd_doc_submit_oic_number(doc_id,oiclog_id) {
+	obj=document.getElementById('doc_box_oic_number');
+	sub_value=encodeURI(obj.value);
+	ajaxManager('load_page','/global$devel/oiclog$devel/?mode=mini_edit&doc_id=' + doc_id + '&gcrfi_num_submitted=' + sub_value + '&gcrfi_id=' + gcrfi_id,'fd_document_box');
+	}
+
+function create_new_oiclog(doc_id) {
+	one_selection_only=document.getElementById('fd_document_box_opt_one_selection_only').value;
+	oic_num=encodeURI(document.getElementById('doc_box_oic_number').value);
+	if (oic_num=='') {
+		alert('Please fill in the new OIC Number');
+		return 0;
+		}
+    ajaxManager('load_page','/global$devel/oiclog$devel/?mode=mini_edit_create&oic_num=' + oic_num + '&doc_id=' + doc_id + '&one_selection_only=' + one_selection_only,'fd_document_box');
+	}
+
+function fd_doc_change_oic_number(doc_id,doc_edit_id) {
+	obj=document.getElementById('doc_box_oic_number');
+	obj.style.background='yellow';
+	//alert('test');
+	newval=encodeURI(obj.value);
+	ajaxManager('load_page','/global$devel/oiclog$devel/?mode=mini_edit_update_oic_number&doc_id=' + doc_id + '&doc_edit_id=' + doc_edit_id + '&oic_number=' + newval,'fd_document_box_oic_number_cell');
+	}
+
+function fd_doc_change_description(doc_id,doc_edit_id) {
+	obj=document.getElementById('doc_box_description');
+	obj.style.background='yellow';
+	newval=encodeURI(obj.value);
+	ajaxManager('load_page','/global$devel/oiclog$devel/?mode=mini_edit_update_description&doc_id=' + doc_id + '&doc_edit_id=' + doc_edit_id + '&description=' + newval,'fd_document_box_description_cell');
+	}
+
+ajaxManager('load_js','/javascript/urlencode.js');
+ajaxManager('load_js','/javascript/contacts_new.js');
+ajaxManager('load_js','/javascript/cal2.js');
+";
+?>

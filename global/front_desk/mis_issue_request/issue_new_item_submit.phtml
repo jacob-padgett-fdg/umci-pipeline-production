@@ -1,0 +1,30 @@
+<?
+require_once('querylib.inc');
+
+$it_category_id=addslashes($it_category_id);
+$priority=addslashes($priority);
+$name=addslashes($name);
+$description=addslashes($description);
+$requested_completion=vali_date($requested_completion);
+$can_not_slide_date=checkfix($can_not_slide_date);
+
+
+if (eregi("help",$name)) die("ERROR: A Subject containing the word \"help\" is probably not very \"help\"ful. All IT requests are ususaly some form of help request. Please tell us just the \"with what\" part.<p>Please <a href=javascript:history.go(-1)>go back</a> and try again.");
+
+
+$query="insert into mis_issue_index set it_category_id = '$it_category_id',priority='$priority',name='$name',description='$description',issue_create_date = now(),requested_completion='$requested_completion',can_not_slide_date='$can_not_slide_date',status='initialized',creator='$global_user_id'";
+
+$res=@mysql_query($query);
+if (!($res)) die("ERROR: Your query failed. Please contact your system administrator.<p>Failed Query:<hr>$query");
+
+//if ($priority<200)
+// GPH MARK - absolute path
+include("/data/web/pipeline/global/mis_issue_tracking/new_items_remind.phtml");
+
+if ($application_name!="mis_issue_request") {
+	forward("category_show&it_category_id=$it_category_id");
+	} else {
+	forward("main");
+	}
+
+?>

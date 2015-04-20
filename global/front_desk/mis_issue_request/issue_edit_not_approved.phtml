@@ -1,0 +1,30 @@
+<?
+$today=date('Y-m-d');
+$project_status="active";
+
+$issue_id=escapeshellcmd($issue_id);
+add_note($issue_id,"Issue rejected as complete by user");
+
+$query="update mis_issue_history set status = 'current' where issue_id = '$issue_id' and current_hist_item = 'Y'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query");
+
+$query="update mis_issue_index set status = '$project_status',expected_completion = '$expected_completion' where issue_id = '$issue_id'";
+$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+
+$children_res=@mysql_query("select * from mis_issue_index where reference_this_issue = '$issue_id'");
+while ($child=@mysql_fetch_object($children_res)) {
+	$issue_id=$child->issue_id;
+	
+	add_note($issue_id,"Issue rejected as complete by user");
+	$query="update mis_issue_history set status = 'current' where issue_id = '$issue_id' and current_hist_item = 'Y'";
+	$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query");
+	
+	$query="update mis_issue_index set status = '$project_status' where issue_id = '$issue_id'";
+	$res=@mysql_query($query);if(!($res)) die("ERROR: Query failed. Contact you sys admin.<p>failed query<hr>$query.");
+	}
+
+//exec("/home/web/umci.com/php/global/mis_issue_tracking/mail_for_changes.py $issue_id");
+exec("/home/web/umci.com/php/global/mis_issue_tracking/mail_for_changes.php $issue_id $global_user_id");
+forward("issue_edit&issue_id=$issue_id");
+
+?>

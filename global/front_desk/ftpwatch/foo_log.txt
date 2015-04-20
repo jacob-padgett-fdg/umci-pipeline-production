@@ -1,0 +1,2488 @@
+directory: /data/acad_ftp
+directory: wsecu
+directory: bldg_b
+directory: wrightrunstad
+directory: ..
+directory: .
+directory: umc
+directory: superplot
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/superplot/wsecu, pkg, 6th floor coord sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/superplot/wsecu, pkg, 5th floor coord sign-off.pdf
+directory: ..
+directory: .
+directory: sheetmetal
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/sheetmetal/mh_b_01.dwg
+directory: ..
+directory: .
+directory: plumb
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/plumb/mp_b_ug.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/plumb/mp_b_06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/plumb/mp_b_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/plumb/mp_b_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/plumb/mp_b_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/plumb/mp_b_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/plumb/mp_b_01.dwg
+directory: ..
+directory: .
+directory: navisworks
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/navisworks/parking garage.nwf
+directory: nwd
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/navisworks/nwd/parking garage.nwd
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: for dave
+directory: 5040
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/x-ar-rf (modified).dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/x-ar-rf (modified).bak
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/x-ar-rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/x-arch-rf-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/plot.log
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf elevation.bak
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf.bak
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf2.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf2.bak
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf1rev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf1rev.bak
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m-rf1.bak
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/mr01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m5.ri.pdf
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m2.r2.pdf
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/m2.r1.pdf
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/grid rf-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/ahu tie ins.pdf
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/ahu tie ins mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/5040/ahu tie ins maj.maj
+directory: ..
+directory: .
+directory: 4540 bldg b - mech
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - mech/mh_b_06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - mech/mh_b_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - mech/mh_b_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - mech/mh_b_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - mech/mh_b_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - mech/mh_b_01.dwg
+directory: ..
+directory: .
+directory: 4540 bldg b - arch
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/x-ar-b-p01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/x-ar-b-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/x-ar-b-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/x-ar-b-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/x-ar-b-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/x-ar-b-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/x-ar-b-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/west elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/south elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/north elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/east-west section.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/east-west section_2.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4540 bldg b - arch/east elevation.dwg
+directory: ..
+directory: .
+directory: 4500 bldg b - mech
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - mech/mh_b_06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - mech/mh_b_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - mech/mh_b_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - mech/mh_b_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - mech/mh_b_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - mech/mh_b_01.dwg
+directory: ..
+directory: .
+directory: 4500 bldg b - arch
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-b-grid-48.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-p01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-match.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-07.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/x-ar-b-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/for dave/4500 bldg b - arch/wsecu-bldg-b-30x42.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: coordination
+history:   /misc/acad_ftp/wsecu/bldg_b/umc/coordination/wsecu parking garage underground sign-off scan.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: struct
+history:   /misc/acad_ftp/wsecu/bldg_b/struct/x-st-b-06-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/struct/x-st-b-05-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/struct/x-st-b-04-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/struct/x-st-b-03-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/struct/x-st-b-03-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/struct/x-st-b-02-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/struct/x-st-b-00-3d.dwg
+directory: ..
+directory: .
+directory: smithfire
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/tc8409 hq sprinkler basement ti.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/fp_b_ug.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/fp_b_detail.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/fp_b_06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/fp_b_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/fp_b_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/fp_b_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/fp_b_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/smithfire/fp_b_01.dwg
+directory: ..
+directory: .
+directory: sequoyah
+history:   /misc/acad_ftp/wsecu/bldg_b/sequoyah/e-park_site_sog.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/sequoyah/e-park_600_sog.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/sequoyah/e-park_600 roof.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/sequoyah/e-park_500_sog.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/sequoyah/e-park_400_sog.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/sequoyah/e-park_300_sog.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/sequoyah/e-park_200_sog.dwg
+directory: ..
+directory: .
+directory: navisworks
+history:   /misc/acad_ftp/wsecu/bldg_b/navisworks/full garage.nwf
+history:   /misc/acad_ftp/wsecu/bldg_b/navisworks/2008.07.03 parking garage.nwd
+directory: ..
+directory: .
+directory: goudy
+directory: ..
+directory: .
+directory: arch
+history:   /misc/acad_ftp/wsecu/bldg_b/arch/x-b-grid-48.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/arch/x-ar-b-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/arch/x-ar-b-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/arch/x-ar-b-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/arch/x-ar-b-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/arch/x-ar-b-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_b/arch/x-ar-b-01.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: bldg_a
+directory: wrightrunstad
+directory: ..
+directory: .
+directory: umc
+directory: superplot
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/wsecu, hq, underground signed-off 2008-08-20.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/wsecu-hq ti_basement coordination_2009_06-23_sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/wsecu, hq, basement coordination 2008-11-19 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/wsecu, hq, 5th story coordination 2008-12-03 first pass.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/wsecu, hq, 3rd story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/wsecu, hq, 2nd story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/wsecu, hq, 1st story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/wsecu, hq, 1st story coordination 2008-11-19 sign-off.pdf
+directory: T.I.
+directory: T.I
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby.zip
+directory: hq-ti_bsmt-lobby
+directory: superplot
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/splt_level 4 coordination 7-20-09.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/plot.log
+directory: level5
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level5/splt_level 5 coordination 07-20-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level5/splt_level 5 coordination 07-20-09.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level5/splt_level 5 coordination 07-14-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level5/splt_level 5 coordination 07-14-09.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level5/splt_level 5 coordination 07-07-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level5/splt_level 5 coordination 07-07-09.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level5/sav5433.tmp
+directory: ..
+directory: .
+directory: level4
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level4/splt_level 4 coordination 7-20-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level4/splt_level 4 coordination 7-20-09.bak
+directory: ..
+directory: .
+directory: level1
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level1/splt_level 1coordination 7-20-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level1/splt_level 1coordination 7-14-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level1/splt_level 1coordination 7-14-09.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level1/splt_level 1coordination 6-30-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level1/splt_level 1coordination 6-30-09.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level1/splt_level 1coordination 6-23-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level1/splt_level 1coordination 6-23-09.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/level1/plot.log
+directory: ..
+directory: .
+directory: basement
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/basement/splt_bsmt-lobby coordination.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/basement/splt_bsmt-lobby coordination 6-9-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/basement/splt_bsmt-lobby coordination 6-23-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/basement/splt_bsmt-lobby coordination 6-22-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/basement/splt_bsmt-lobby coordination 6-16-09.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/superplot/basement/plot.log
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: struct
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/struct/x-st-a-01.dwg
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/splt_bsmt-lobby coordination.txt
+directory: sheetmetal
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/sheetmetal/mh_a_00.dwg
+directory: ..
+directory: .
+directory: plumb
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/plumb/mp_a_bsmt.dwg
+directory: ..
+directory: .
+directory: PlotCfgs
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/PlotCfgs/hp1050c.pc3
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/PlotCfgs/color.stb
+directory: ..
+directory: .
+directory: mech
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/mech/m2.0b_branch.dwg
+directory: ..
+directory: .
+directory: fire
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/fire/x-fp-ti-a-00 [modified].dwg
+directory: ..
+directory: .
+directory: elec
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/elec/x-e-a-bsmt.dwg
+directory: ..
+directory: .
+directory: arch rcp
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/arch rcp/x-rcp-ti-00.dwg
+directory: ..
+directory: .
+directory: arch
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/arch/x-grid-a-48.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/arch/x-ar-a-rcp-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/arch/x-ar-a-00.dwg
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./T.I/hq-ti_bsmt-lobby/acad.fmp
+directory: ..
+directory: .
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/T.I./hq-ti_bsmt-lobby.zip
+directory: ..
+directory: .
+directory: sign-off
+directory: sign-off
+directory: underground
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/underground/splt_ug (signed off 2008-08-20).pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/underground/splt_ug (signed off 2008-08-20).dwg
+directory: ..
+directory: .
+directory: basement
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/basement/wsecu, hq, basement sign-off 2008-11-19.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/basement/wsecu, hq, basement coordination 2008-11-19 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/basement/splt_bsmt 2008-11-19.dwg
+directory: ..
+directory: .
+directory: 5th story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/wsecu, hq, 5th story coordination 2008-12-10 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/wsecu, hq, 5th story coordination 2008-12-03 first pass.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/splt_05 (binded).dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/splt_05 (before binding).dwg
+directory: sign-off
+directory: underground
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/underground/splt_ug (signed off 2008-08-20).pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/underground/splt_ug (signed off 2008-08-20).dwg
+directory: ..
+directory: .
+directory: basement
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/basement/wsecu, hq, basement sign-off 2008-11-19.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/basement/wsecu, hq, basement coordination 2008-11-19 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/basement/splt_bsmt 2008-11-19.dwg
+directory: ..
+directory: .
+directory: 5th story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/5th story/wsecu, hq, 5th story coordination 2008-12-10 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/5th story/wsecu, hq, 5th story coordination 2008-12-03 first pass.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/5th story/splt_05 (binded).dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/5th story/splt_05 (before binding).dwg
+directory: ..
+directory: .
+directory: 4th story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/4th story/wsecu, hq, 4th story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/4th story/splt_04 sign-off [binded].dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/4th story/splt_04 [before binding].dwg
+directory: ..
+directory: .
+directory: 3rd story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/3rd story/wsecu, hq, 3rd story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/3rd story/splt_03 sign-off [binded].dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/3rd story/splt_03 [before binding].dwg
+directory: ..
+directory: .
+directory: 2nd story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/2nd story/wsecu, hq, 2nd stroy coordination 2008-11-19.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/2nd story/wsecu, hq, 2nd story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/2nd story/splt_02 sign-off [binded].dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/2nd story/splt_02 [before binding].dwg
+directory: ..
+directory: .
+directory: 1st story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/1st story/wsecu, hq, 1st story sign-off 2008-11-19.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/1st story/wsecu, hq, 1st story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/1st story/wsecu, hq, 1st story coordination 2008-11-19 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/1st story/splt_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/5th story/sign-off/1st story/splt_01 2008-11-19.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: 4th story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/4th story/wsecu, hq, 4th story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/4th story/splt_04 sign-off [binded].dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/4th story/splt_04 [before binding].dwg
+directory: ..
+directory: .
+directory: 3rd story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/3rd story/wsecu, hq, 3rd story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/3rd story/splt_03 sign-off [binded].dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/3rd story/splt_03 [before binding].dwg
+directory: ..
+directory: .
+directory: 2nd story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/2nd story/wsecu, hq, 2nd stroy coordination 2008-11-19.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/2nd story/wsecu, hq, 2nd story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/2nd story/splt_02 sign-off [binded].dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/2nd story/splt_02 [before binding].dwg
+directory: ..
+directory: .
+directory: 1st story
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/1st story/wsecu, hq, 1st story sign-off 2008-11-19.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/1st story/wsecu, hq, 1st story coordination 2008-12-03 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/1st story/wsecu, hq, 1st story coordination 2008-11-19 sign-off.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/1st story/splt_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/superplot/sign-off/sign-off/1st story/splt_01 2008-11-19.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: sheetmetal
+directory: ticket drawings
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ticket drawings/mh_a_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ticket drawings/mh_a_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ticket drawings/acad.err
+directory: ..
+directory: .
+directory: T.I.
+directory: T.I
+directory: ticket drawings
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/ticket drawings/mh_a_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/ticket drawings/mh_a_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/ticket drawings/exh lvl 1 maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/ticket drawings/acad.err
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/plot.log
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_.05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_.05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_04d.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_01d.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_00d.nwc
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_00d.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/T.I./T.I/mh_a_00.bak
+directory: ..
+directory: .
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/mh_a_rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/mh_a_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/mh_a_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/mh_a_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/mh_a_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/mh_a_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/mh_a_00.dwg
+directory: _hq-2 ti
+directory: sheets
+directory: SM HQ 2 TI
+directory: ISSUED FOR REVIEW
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.54 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.53 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.52 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.51 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.44 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.43 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.42 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.41 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.14 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.13 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.12 re-issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.12 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.11 issued for review.pdf
+directory: ..
+directory: .
+directory: ISSUED FOR CONSTRUCTION
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.54 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.53 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.52 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.51 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.14 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.13 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.12 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.11 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/f__acad_detailing_wsecu_bldg a_umc_superplot_t.pdf
+directory: ..
+directory: .
+directory: DIMENSIONED
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/DIMENSIONED/m2.54 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/DIMENSIONED/m2.53 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/DIMENSIONED/m2.52 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/SM HQ 2 TI/DIMENSIONED/m2.51 issued for review dims..pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: sketches
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/sketches/framing access for ftu b04.pdf
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/scrap.shs
+directory: plumbing
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp3_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_54.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_53.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_52.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_51.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_44.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_43.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_42.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_41.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_34.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_33.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_32.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_31.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_14.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_13.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_12.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_11.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp2_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plumbing/mp1_00.dwg
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/plot.log
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_42.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_41.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_34.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_33.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_32.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_31.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_14.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_13.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_12.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_11.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_02.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p2_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/p_201.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_54.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_53.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_52.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_51.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_44.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_43.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_42.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_41.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_34.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_33.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_32.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_31.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_14.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_13.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_12.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_11.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_02.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp2_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/mp1_00.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m3_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m_300.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_54.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_54.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_53.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_53.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_52.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_52.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_51.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_51.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_44.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_44.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_43.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_43.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_42.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_42.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_41.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_41.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_14.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_14.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_13.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_13.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_12.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_12.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_11.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_11.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m_205.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_02.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m2_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m1_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m1_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m1_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m0_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/m0_00.dwg
+directory: archive
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/p_300.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/p_205.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/p_204.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/p_203.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/p_201.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/p_200.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/p_100.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/m_300.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/m_205.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/m_204.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/m_101.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/m_100.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/m_001.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/m0_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheets/archive/m_000.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: sheetmetal
+directory: ISSUED FOR REVIEW
+directory: TICKETS
+directory: LVL 5
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/mplvl 5 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/mplvl 5 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/mplvl 5 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/mplvl 5 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/mplvl 5 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/mplvl 5 north maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/lp lvl 5 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/lp lvl 5 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/lp lvl 5 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/lp lvl 5 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/lp lvl 5 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/lp lvl 5 north maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/exh lvl 5 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/exh lvl 5 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/exh lvl 5 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/exh lvl 5 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/exh lvl 5 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 5/exh lvl 5 north maj.maj
+directory: ..
+directory: .
+directory: LVL 4
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/mp lvl 4 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/mp lvl 4 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/mp lvl 4 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/mp lvl 4 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/mp lvl 4 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/mp lvl 4 north maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/lp lvl 4 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/lp lvl 4 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/lp lvl 4 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/lp lvl 4 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/lp lvl 4 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/lp lvl 4 north maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/exh lvl 4 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/exh lvl 4 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/exh lvl 4 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/exh lvl 4 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/exh lvl 4 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 4/exh lvl 4 north maj.maj
+directory: ..
+directory: .
+directory: LVL 1 ADD
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1 ADD/lp rev lvl1.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1 ADD/lp rev lvl1 mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1 ADD/lp rev lvl1 maj.maj
+directory: ..
+directory: .
+directory: LVL 1
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/mp lvl 1 sw.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/mp lvl 1 sw mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/mp lvl 1 sw maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/mp lvl 1 ne.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/mp lvl 1 ne mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/mp lvl 1 ne maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/lp lvl 1 sw.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/lp lvl 1 sw mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/lp lvl 1 sw maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/lp lvl 1 ne.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/lp lvl 1 ne mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/lp lvl 1 ne maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/exh lvl 1.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/exh lvl 1 mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/ISSUED FOR REVIEW/TICKETS/LVL 1/exh lvl 1 maj.maj
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set.zip
+directory: hq2 cd set
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/p_205.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/p_204.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/p_203.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/p_201.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/p_200.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/p_100.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/m_300.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/m_205.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/m_204.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/m_201.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/m_101.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/m_100.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/m_001.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/hq2 cd set/m_000.pdf
+directory: ..
+directory: .
+directory: DIMENSIONED
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/DIMENSIONED/m2.54 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/DIMENSIONED/m2.53 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/DIMENSIONED/m2.52 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/DIMENSIONED/m2.51 issued for review dims..pdf
+directory: ..
+directory: .
+directory: coordintation only
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/coordintation only/m2.01.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/sheetmetal/coordintation only/m2.01a.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: plumb
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/p2.0b.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/p2.05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/p2.04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/p2.03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/p2.01.bak
+directory: contract shell
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/contract shell/p2.0b.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/contract shell/p2.05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/contract shell/p2.04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/contract shell/p2.03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/plumb/contract shell/p2.01.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: lights
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-lights-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-lights-5.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-lights-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-lights-4.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-lights-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-lights-1.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-light-5.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-light-4.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/x-light-1.bak
+directory: old
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/old/x-lights-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/old/x-light-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/old/x-light-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/lights/old/x-light-1.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: arch
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-5(modified)dwg.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-5(modified)dwg.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-4(modified).dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-4(modified).bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-4.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-1(modified)dwg.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-1(modified)dwg.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-rcp-1.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-furn-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-furn-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/x-furn-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/plot.log
+directory: old
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/old/x-rcp-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/old/x-rcp-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/old/x-rcp-4.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/old/x-rcp-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/old/x-furn-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/old/x-furn-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/_hq-2 ti/arch/old/x-furn-1.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: asbuilt
+directory: ticket drawings
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/woodie duct.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/woodie duct.bak
+directory: Woddies duct
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/Woddies duct/woodies duct.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/Woddies duct/woodies duct mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/Woddies duct/woodies duct .maj
+directory: ..
+directory: .
+directory: sheets
+directory: SM TI BRANCH
+directory: ISSUED FOR REVIEW
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR REVIEW/m2.04 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR REVIEW/m2.03 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR REVIEW/m2.02 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR REVIEW/m2.01 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR REVIEW/f__acad_detailing_4540_sheetmetal_mh_a_00 detailing only (1).pdf
+directory: ..
+directory: .
+directory: ISSUED FOR CONSTRUCTION
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR CONSTRUCTION/m2.14 issued for construction rev 2.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR CONSTRUCTION/m2.14 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR CONSTRUCTION/m2.04 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR CONSTRUCTION/m2.03 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR CONSTRUCTION/m2.02 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM TI BRANCH/ISSUED FOR CONSTRUCTION/m2.01 issued for construction.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: SM HQ 2 TI
+directory: ISSUED FOR REVIEW
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.54 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.53 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.52 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.51 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.44 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.43 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.42 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.41 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.14 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.13 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.12 re-issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.12 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/m2.11 issued for review.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR REVIEW/f__acad_detailing_wsecu_bldg a_umc_superplot_t.pdf
+directory: ..
+directory: .
+directory: ISSUED FOR CONSTRUCTION
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.54 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.53 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.52 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.51 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.44 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.43 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.42 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.41 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.14 issued for construction rev 2.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.14 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.13 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.12 issued for construction rev 2.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.12 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/m2.11 issued for construction.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/ISSUED FOR CONSTRUCTION/f__acad_detailing_wsecu_bldg a_umc_superplot_t.pdf
+directory: ..
+directory: .
+directory: DIMENSIONED
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/DIMENSIONED/m2.54 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/DIMENSIONED/m2.53 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/DIMENSIONED/m2.52 issued for review dims..pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/SM HQ 2 TI/DIMENSIONED/m2.51 issued for review dims..pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: sketches
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/sketches/framing access for ftu b04.pdf
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/scrap.shs
+directory: plumbing
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp3_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_54.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_53.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_52.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_51.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_44.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_43.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_42.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_41.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_34.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_33.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_32.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_31.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_14.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_13.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_12.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_11.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp2_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plumbing/mp1_00.dwg
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/plot.log
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p3_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_g4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_g3.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_g2.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_g1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_42.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_41.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_34.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_33.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_32.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_31.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_14.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_13.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_12.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_11.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_02.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p2_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p_201.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/p1_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_54.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_53.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_52.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_51.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_44.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_43.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_42.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_41.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_34.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_33.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_32.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_31.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_14.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_13.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_12.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_11.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_02.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp2_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/mp1_00.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m3_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m_300.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_g4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_g4.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_g3.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_g3.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_g2.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_g2.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_g1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_g1.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_54.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_54.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_53.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_53.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_52.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_52.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_51.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_51.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_44.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_44.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_43.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_43.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_42.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_42.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_41.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_41.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_14.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_14.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_13.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_13.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_12.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_12.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_11.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_11.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m_205.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_02.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m2_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m1_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m1_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m1_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m0_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/m0_00.dwg
+directory: archive
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/p_300.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/p_205.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/p_204.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/p_203.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/p_201.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/p_200.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/p_100.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/m_300.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/m_205.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/m_204.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/m_101.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/m_100.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/m_001.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/m0_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/sheets/archive/m_000.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/plot.log
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/mh_a_.05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/mh_a_.05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/mh_a_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/mh_a_04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/mh_a_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/mh_a_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/mh_a_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/mh_a_00.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/asbuilt/ticket drawings/acad.err
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ACCUDUCT
+directory: Woddies duct
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/Woddies duct/woodies duct.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/Woddies duct/woodies duct mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/Woddies duct/woodies duct .maj
+directory: ..
+directory: .
+directory: LVL 5
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/mplvl 5 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/mplvl 5 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/mplvl 5 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/mplvl 5 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/mplvl 5 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/mplvl 5 north maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/lp lvl 5 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/lp lvl 5 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/lp lvl 5 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/lp lvl 5 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/lp lvl 5 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/lp lvl 5 north maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/exh lvl 5 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/exh lvl 5 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/exh lvl 5 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/exh lvl 5 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/exh lvl 5 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 5/exh lvl 5 north maj.maj
+directory: ..
+directory: .
+directory: LVL 4
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/mp lvl 4 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/mp lvl 4 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/mp lvl 4 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/mp lvl 4 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/mp lvl 4 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/mp lvl 4 north maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/lp lvl 4 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/lp lvl 4 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/lp lvl 4 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/lp lvl 4 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/lp lvl 4 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/lp lvl 4 north maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/exh lvl 4 south.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/exh lvl 4 south mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/exh lvl 4 south maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/exh lvl 4 north.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/exh lvl 4 north mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 4/exh lvl 4 north maj.maj
+directory: ..
+directory: .
+directory: LVL 1 ADD
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1 ADD/lp rev lvl1.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1 ADD/lp rev lvl1 mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1 ADD/lp rev lvl1 maj.maj
+directory: ..
+directory: .
+directory: LVL 1
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/mp lvl 1 sw.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/mp lvl 1 sw mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/mp lvl 1 sw maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/mp lvl 1 ne.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/mp lvl 1 ne mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/mp lvl 1 ne maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/lp lvl 1 sw.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/lp lvl 1 sw mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/lp lvl 1 sw maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/lp lvl 1 ne.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/lp lvl 1 ne mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/lp lvl 1 ne maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/exh lvl 1.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/exh lvl 1 mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/LVL 1/exh lvl 1 maj.maj
+directory: ..
+directory: .
+directory: BRANCH TICKETS
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/lvl 1 lp branch.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/lvl 1 lp branch mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/lvl 1 lp branch maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement mp.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement mp mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement mp maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement lp.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement lp mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement lp maj.maj
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement exh.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement exh mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/BRANCH TICKETS/basement exh maj.maj
+directory: ..
+directory: .
+directory: baby steps job # 5040
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/baby steps job # 5040/ahu tie ins.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/baby steps job # 5040/ahu tie ins mat.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/sheetmetal/ACCUDUCT/baby steps job # 5040/ahu tie ins maj.maj
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: plumb
+directory: T.I.
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/plumb/mp_a_ug.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/plumb/mp_a_rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/plumb/mp_a_bsmt.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/plumb/mp_a_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/plumb/mp_a_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/plumb/mp_a_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/plumb/mp_a_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/plumb/mp_a_01.dwg
+directory: ..
+directory: .
+directory: navisworks
+directory: ..
+directory: .
+directory: for dave
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/x-grid-a-48.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/x-fp-ti-a-00 [modified].dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/x-ar-a-match.dwg
+directory: for steve b
+directory: for steve b
+directory: ..
+directory: .
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/e-_hed-ti_base-.dwg
+directory: 4540 - WSECU TI
+directory: struct
+directory: bldg b
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-grid.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-06-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-05-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-04-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-03-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-03-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-02-3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-00.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg b/x-st-b-00-3d.dwg
+directory: archive
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: bldg a
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-06_3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-05_3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-04_3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-03_3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-02_3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-01_3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-00.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/struct/bldg a/x-st-a-00_3d.dwg
+directory: archive
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: sheetmetal
+directory: vav zone map
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/vav zone map/plot.log
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/vav zone map/fourth story.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/vav zone map/first story.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/vav zone map/basement.dwg
+directory: ..
+directory: .
+directory: shop drawings
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/shop drawings/mh_a_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/shop drawings/mh_a_05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/shop drawings/mh_a_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/shop drawings/mh_a_04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/shop drawings/mh_a_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/shop drawings/mh_a_01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/shop drawings/mh_a_00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/shop drawings/mh_a_00.bak
+directory: ..
+directory: .
+directory: hq-2 ti
+directory: sheetmetal
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/hq-2 ti/sheetmetal/m2.05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/hq-2 ti/sheetmetal/m2.05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/hq-2 ti/sheetmetal/m2.04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/hq-2 ti/sheetmetal/m2.04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/hq-2 ti/sheetmetal/m2.01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/hq-2 ti/sheetmetal/m2.01.bak
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: branch ti
+directory: sheetmetal
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/branch ti/sheetmetal/m2.0b_branch.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/branch ti/sheetmetal/m2.0b_branch.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/branch ti/sheetmetal/m2.01_branch.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/sheetmetal/branch ti/sheetmetal/m2.01_branch.bak
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: plumb
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.0b.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.0b.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/p2.01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/branch_p2.0b.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/plumb/branch_p2.0b.bak
+directory: ..
+directory: .
+directory: fire
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/x-fp-a-00.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/tc8409 hq ti sprinkler.zip
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/plot.log
+directory: archive
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/archive/x-fp-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/archive/x-fp-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/archive/x-fp-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/archive/x-fp-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/archive/x-fp-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/fire/archive/x-fp-a-00.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: arch
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-b.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-b.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-5.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-4.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-1_branch.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-1_branch.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-rcp-1.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-furn-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-furn-5.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-furn-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-furn-4.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-furn-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-furn-1.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-frun-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-frun-4.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-ar-b.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/x-ar-b.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/wsecu tb info-ti.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/wsecu tb info-ti.bak
+directory: sheet logos
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/sheet logos/wsecuseal_2c.jpg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/sheet logos/wrlogo.jpg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/sheet logos/thumbs.db
+directory: ..
+directory: .
+directory: recieved
+directory: ..
+directory: .
+directory: pdf zones map
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/wsecut ti - zone plans.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/wsecut ti - zone plans 11x17.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/wsecu ti - kickoff meeting.doc
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/wsecu ti areas.xls
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/wsecu ti areas.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/ta-204_ti_level5-001.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/ta-203_ti_level3-001.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/ta-202_ti_level2-001.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/ta-201_ti_level1-001.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/ta-200_ti_ground-001.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/pdf zones map/2008-09-09-wsecu ti - kickoff meeting.pdf
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/nbbj branch-30x42 tb-ti.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/nbbj branch-30x42 tb-ti.bak
+directory: branch add set
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-900_br_door schedule & details.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-805_br_ interior details.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-804_br_ interior details.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-803_br_ interior details.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-802_br_ interior details.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-801_br_ interior details.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-703_br_interior elevations.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-702_br_interior elevations.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-701_br_interior elevations.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-700_br_interior elevations.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-630_br_ typical ceiling details.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-601_br_ground floor room finish plan.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-600_br_ground floor furniture plan.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-500_br_ground floor finish plan.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-300_br_ground floor rcp.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-201_br_enlarged plans.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-200_br_ground floor plan.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-1000_br_partition types.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-002_br_sheet index_ada notes & details.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-001_br_sheet index_abbreviations_graphic symbols.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/ta-000_br_coversheet.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/a-1_001cs.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/a-1_000cs.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/branch add set/01_6119 _l&b_ color and material index.pdf
+directory: ..
+directory: .
+directory: bldg b
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-b-grid-96.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-p01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-p01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/x-ar-b-01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/west elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/thumbs.db
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/south elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/plot.log
+directory: old
+directory: 06-27-08
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/06-27-08/x-ar-b-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/06-27-08/x-ar-b-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/06-27-08/x-ar-b-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/06-27-08/x-ar-b-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/06-27-08/x-ar-b-02.dwg
+directory: ..
+directory: .
+directory: 05-02-08
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/x-b-grid-96.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/x-ar-b-p01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/x-ar-b-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/x-ar-b-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/x-ar-b-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/x-ar-b-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/x-ar-b-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/x-ar-b-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/west elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/south elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/north elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/east-west section.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/east-west section_2.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/old/05-02-08/east elevation.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/north elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/east-west section.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/east-west section_2.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/east elevation.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg b/acad.err
+directory: ..
+directory: .
+directory: bldg a
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-sections.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-rcp-a-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-rcp-a-00.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-grid-a-b1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-grid-a-96.nwc
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-grid-a-96.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-grid-a-96.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-s-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-se-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-nw-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-05.nwc
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-05.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-04.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-03.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-02.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-01.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/x-ar-a-00.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/thumbs.db
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/plot.log
+directory: archive
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-sections.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-rcp-a-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-grid-a-b1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-grid-a-96.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-s-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-se-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-nw-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-a-rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/x-ar-a-00.dwg
+directory: 09-01-08 xrefs
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/09-01-08 xrefs/x-ar-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/09-01-08 xrefs/x-ar-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/09-01-08 xrefs/x-ar-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/09-01-08 xrefs/x-ar-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/09-01-08 xrefs/x-ar-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/09-01-08 xrefs/x-ar-a-00.dwg
+directory: ..
+directory: .
+directory: 06-27-08
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/06-27-08/x-ar-a-rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/06-27-08/x-ar-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/06-27-08/x-ar-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/06-27-08/x-ar-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/06-27-08/x-ar-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/06-27-08/x-ar-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/bldg a/archive/06-27-08/x-ar-a-00.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: archive
+directory: 2009_06-09
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/archive/2009_06-09/wsecu tb info-ti.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540 - WSECU TI/arch/archive/2009_06-09/nbbj branch-30x42 tb-ti.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: 4540-arch
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-rcp-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-rcp-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-rcp-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-rcp-1_branch.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-furn-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-furn-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-furn-1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-frun-4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/x-ar-b.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/wsecu tb info-ti.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/nbbj hq2-30x42 tb-ti.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/nbbj branch-30x42 tb-ti.dwg
+directory: bldg a
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-sections.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-rcp-a-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-grid-a-b1.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-grid-a-96.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-grid-a-48.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-s-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-se-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-nw-elev.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-match.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-match.bak
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4540-arch/bldg a/x-ar-a-00.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: 4500 bldg a - mech
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - mech/mh_a_rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - mech/mh_a_main riser.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - mech/mh_a_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - mech/mh_a_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - mech/mh_a_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - mech/mh_a_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - mech/mh_a_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - mech/mh_a_00.dwg
+directory: ..
+directory: .
+directory: 4500 bldg a - arch
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-rcp-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-rcp-3_4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-rcp-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-rcp-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/x-ar-a-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/wsecu-bldg-a-30x42.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/a-404_enlarged plans.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/a-402_enlarged plans.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/for dave/4500 bldg a - arch/a-401_enlarged plans.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: coordination
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/coordination/wsecu, hq, level 4 coordination 2008-11-12.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/coordination/wsecu, hq, level 3 coordination 2008-11-12.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/coordination/wsecu, hq, level 2 coordination 2008-11-12.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/coordination/wsecu, hq, level 1 coordination 2008-11-12.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/coordination/wsecu, hq, first pass underground mep coordiantion.pdf
+history:   /misc/acad_ftp/wsecu/bldg_a/umc/coordination/wsecu, hq, basement coordination 2008-11-12.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: struct
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-06.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-02_3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-01_3d.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/struct/x-st-a-00_3d.dwg
+directory: ..
+directory: .
+directory: smithfire
+directory: T.I.
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/T.I./tc8409 hq sprinkler basement ti.dwg
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/ibv
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/fp_a_ug.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/fp_a_05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/fp_a_04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/fp_a_03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/fp_a_02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/fp_a_01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/smithfire/fp_a_00.dwg
+directory: ..
+directory: .
+directory: sequoyah
+directory: T.I.
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/sequoyah/e-_hed-ti_base-.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/sequoyah/e-_hed_third_sog.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/sequoyah/e_hed_site_ug.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/sequoyah/e-_hed_forth_sog.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/sequoyah/e-_hed_fifth_sog.dwg
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wsecu/bldg_a/object enabler (autocad 2007-2009 _ 32bit).exe
+directory: goudy
+directory: ..
+directory: .
+directory: arch
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-grid-a-48.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-rf.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-rcp-5.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-rcp-3_4.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-rcp-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-rcp-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-rcp-00.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-match.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-05.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-04.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-03.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-02.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-01.dwg
+history:   /misc/acad_ftp/wsecu/bldg_a/arch/x-ar-a-00.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: wheeler
+directory: umc
+history:   /misc/acad_ftp/wheeler/umc/wheeler-all.nwd
+directory: sheetmetal
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/ub-b-hvac_slv L-1 Slab.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/ub-b-hvac.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/ub-1-hvac.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/is-b-hvac.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/is-a-hvac.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/dc-rf-hvac.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/dc-b-hvac_slv  L-1 Slab.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/dc-b-hvac.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/dc-2-hvac.dwg
+history:   /misc/acad_ftp/wheeler/umc/sheetmetal/dc-1-hvac.dwg
+directory: ..
+directory: .
+directory: plumb
+history:   /misc/acad_ftp/wheeler/umc/plumb/Y.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/UB-U-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/ub-b-plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/ub-b-pipe_future.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/ub-b-pipe.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/ub-1-plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/ub-1-pipe_future.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/ub-1-pipe.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/mp-enlarged.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-U-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-B-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-A-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-A-Plumb_civil.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-6-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-5-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-4-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-3-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-2-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/IS-1-Plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/DC-U-Pipe.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-rf-plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-rf-pipe_future.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-rf-pipe.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-b-plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-2-plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-2-pipe_future.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-2-pipe.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-1-plumb.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-1-pipe_future.dwg
+history:   /misc/acad_ftp/wheeler/umc/plumb/dc-1-pipe.dwg
+directory: ..
+directory: .
+directory: navisworks
+history:   /misc/acad_ftp/wheeler/umc/navisworks/UB-B-Coordination.nwf
+history:   /misc/acad_ftp/wheeler/umc/navisworks/UB-1-Coordination.nwf
+history:   /misc/acad_ftp/wheeler/umc/navisworks/IS UG Coordiantion.nwf
+history:   /misc/acad_ftp/wheeler/umc/navisworks/IS B Coordiantion.nwf
+history:   /misc/acad_ftp/wheeler/umc/navisworks/IS A Coordiantion.nwf
+history:   /misc/acad_ftp/wheeler/umc/navisworks/Eddie Review.nwd
+history:   /misc/acad_ftp/wheeler/umc/navisworks/DC-UG Coordination.nwf
+history:   /misc/acad_ftp/wheeler/umc/navisworks/DC-U-CIVL.nwd
+history:   /misc/acad_ftp/wheeler/umc/navisworks/DC-B-Coordination.nwf
+history:   /misc/acad_ftp/wheeler/umc/navisworks/DC-1-Coordination.nwf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: submittals
+directory: Wheeler Submittal Logs
+history:   /misc/acad_ftp/wheeler/submittals/Wheeler Submittal Logs/5177_Wheeler_Submittal_Pkg_Log_010510.xls
+history:   /misc/acad_ftp/wheeler/submittals/Wheeler Submittal Logs/5177_Wheeler_Complete_Specifications_Submittal Log_010510.xls
+directory: ..
+directory: .
+history:   /misc/acad_ftp/wheeler/submittals/Submittal Summary.xls
+directory: Office Bldg
+directory: Office Un-approved Submittals
+directory: 23 7413_packaged outdoor hvac equipment
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 7413_packaged outdoor hvac equipment/23 7413 - SPN 52, SN 219-220 - IS-RTU-01&03.pdf
+directory: ..
+directory: .
+directory: 23 6513_fluid cooler
+directory: ..
+directory: .
+directory: 23 3600_air terminal units
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 3600_air terminal units/23 3600 - Submittal Pkg No. 22 - Re-Submittal #157.1 Fan Powered Terminal Units.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 3600_air terminal units/23 3600 - SPN 22, SN 157.2 - Re-Submittal Fan Powered Terminal Units.pdf
+directory: ..
+directory: .
+directory: 23 3113_metal ducts
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 3113_metal ducts/23 3113 - SPN 61, SN 235 - Metal Duct Materials Product Data.pdf
+directory: ..
+directory: .
+directory: 23 2500_hvac water treatment
+directory: ..
+directory: .
+directory: 23 1123_natural gas
+directory: 2 & smaller_above grnd
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2 & smaller_above grnd/pipe_a53.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2 & smaller_above grnd/pacific seismic 300.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2 & smaller_above grnd/nibco ts58570ul.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2 & smaller_above grnd/dormont flexible gas appliance connection .pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2 & smaller_above grnd/anvil fittings - general specification.pdf
+directory: ..
+directory: .
+directory: 2.5 & larger_above grnd
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2.5 & larger_above grnd/welded a234 carbon steel fittings.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2.5 & larger_above grnd/weldbend 150 lb flanges.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2.5 & larger_above grnd/teadit na1001 non asbestos gasket material.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2.5 & larger_above grnd/pipe_a53.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2.5 & larger_above grnd/nordstrom 143 gas cock flngd.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/23 1123_natural gas/2.5 & larger_above grnd/cain bolt & gasket a307_grade b_bolts.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: 23 0900_instrumentation and controls for hvac
+directory: ..
+directory: .
+directory: 23 0719_duct insulation for mechanical systems
+directory: ..
+directory: .
+directory: 23 0713_insulation for mechanical piping
+directory: ..
+directory: .
+directory: 23 0593_testing,adjusting and balancing for mechanical
+directory: ..
+directory: .
+directory: 23 0548_vibration and seismic
+directory: ..
+directory: .
+directory: 23 0533_heat trace
+directory: ..
+directory: .
+directory: 23 0523_general-duty valves for mechanical piping
+directory: ..
+directory: .
+directory: 23 0515_variable frequency drives
+directory: ..
+directory: .
+directory: 22 1429_sump pumps
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/22 1429_sump pumps/22 1429 - Submittal Pkg No. 41 - Sump Pumps.pdf
+directory: ..
+directory: .
+directory: 22 1329_sanitary sewage pumps
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/22 1329_sanitary sewage pumps/22 1329 - Submittal Pkg No. 40 - Sanitary Sewage Pumps.pdf
+directory: ..
+directory: .
+directory: 22 1116 Domestic Water Expansion Tanks
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Un-approved Submittals/22 1116 Domestic Water Expansion Tanks/22 1116 - SPN 26, SN 224 - Domestic Water Expansion Tanks IS-ET-1&2.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: Office Approved Submittals
+history:   /misc/acad_ftp/wheeler/submittals/Office Bldg/Office Approved Submittals/5177_Wheeler Office_Approved Submittals_010510.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: Electrical Submittals
+directory: Data Center
+directory: Generators
+history:   /misc/acad_ftp/wheeler/submittals/Electrical Submittals/Data Center/Generators/SDOC0391.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Electrical Submittals/Data Center/Generators/SDOC0390.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Electrical Submittals/Data Center/Generators/SDOC0389.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Electrical Submittals/Data Center/Generators/SDOC0387.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Electrical Submittals/Data Center/Generators/SDOC0386.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Electrical Submittals/Data Center/Generators/SDOC0385.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Electrical Submittals/Data Center/Generators/Generator Submittal.msg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: Data Center
+directory: DC Un-approved Submittals
+directory: 238146_water-source unitary heat pumps
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/238146_water-source unitary heat pumps/23 8146 - Submittal Pkg No. 3 - Re-Submittal #197.pdf
+directory: ..
+directory: .
+directory: 237413_custom air handling units
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/237413_custom air handling units/wheeler - dc - ahu proposal evaluation 2009_0921.xls
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/237413_custom air handling units/Steve review 23 7413 hakkon air handlers.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/237413_custom air handling units/23 7413 - Submittal Pkg No. 54 - AHU-A-1 thru AHU-E-4, AHU-A-5,6, AHU-C-5,6.pdf
+directory: ..
+directory: .
+directory: 233300_Air Duct Accessories
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/233300_Air Duct Accessories/23 3300 - Submittal Pkg No  44 - Duct-mounted AD's & MVD's.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/233300_Air Duct Accessories/23 3300 - Submittal Pkg No  44 - Damper Types only.pdf
+directory: ..
+directory: .
+directory: 233113_metal ducts
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/233113_metal ducts/23 3113 - SPN 60, SN 234 - Metal Duct Materials Product Data.pdf
+directory: ..
+directory: .
+directory: 232500_hvac water treatment
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/232500_hvac water treatment/23 2500 - SPN 62, SN 237 - WS-1,2 & F-1,2.pdf
+directory: ..
+directory: .
+directory: 230900_instrumrentation and controls for hvac
+directory: ..
+directory: .
+directory: 230719_duct insulation for mechanical systems
+directory: ..
+directory: .
+directory: 230713_pipe insulation for mechanical piping
+directory: ..
+directory: .
+directory: 230593_testing,adjusting, and balancing for mechanical
+directory: ..
+directory: .
+directory: 230533_heat trace
+directory: ..
+directory: .
+directory: 230523_general duty valves for mechanical piping
+directory: ..
+directory: .
+directory: 230515_variable frequency drives
+directory: ..
+directory: .
+directory: 230500_common mechanical materials and methods
+directory: ..
+directory: .
+directory: 221513_general service compressed air
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/weiss 4pg-1.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/teadit na1001 non asbestos gasket material.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/nibco ts58570fp.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/nibco ts 413.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/nibco ts 211bi.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/nibco sp-106 #150 copper flange.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/nibco copper fitting specs.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/fnw_fig.421.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/englehard silvabrite 100.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/copper tube spec.pdf
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Un-approved Submittals/221513_general service compressed air/cain bolt & gasket a307_grade b_bolts.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: DC Approved Submittals
+history:   /misc/acad_ftp/wheeler/submittals/Data Center/DC Approved Submittals/5177_Data Center Approved Submittals_010510.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: struct
+history:   /misc/acad_ftp/wheeler/struct/x-st-rf.dwg
+history:   /misc/acad_ftp/wheeler/struct/x-st-phrf.dwg
+history:   /misc/acad_ftp/wheeler/struct/X-ST-B.dwg
+history:   /misc/acad_ftp/wheeler/struct/x-st-a.dwg
+history:   /misc/acad_ftp/wheeler/struct/x-st-06.dwg
+history:   /misc/acad_ftp/wheeler/struct/x-st-05.dwg
+history:   /misc/acad_ftp/wheeler/struct/x-st-04.dwg
+history:   /misc/acad_ftp/wheeler/struct/x-st-03.dwg
+history:   /misc/acad_ftp/wheeler/struct/x-st-02.dwg
+history:   /misc/acad_ftp/wheeler/struct/X-ST-01.dwg
+history:   /misc/acad_ftp/wheeler/struct/IS-U-STRU-SC.dwg
+history:   /misc/acad_ftp/wheeler/struct/IS-B-STRU-SC.dwg
+history:   /misc/acad_ftp/wheeler/struct/IS-A-STRU-SC.dwg
+history:   /misc/acad_ftp/wheeler/struct/IS-2-STRU.dwg
+history:   /misc/acad_ftp/wheeler/struct/IS-1-STRU-SC.dwg
+history:   /misc/acad_ftp/wheeler/struct/IS-1-STRU.dwg
+history:   /misc/acad_ftp/wheeler/struct/DC-U-STRU.dwg
+history:   /misc/acad_ftp/wheeler/struct/DC-B-STRU.dwg
+history:   /misc/acad_ftp/wheeler/struct/DC-1-STRU.dwg
+history:   /misc/acad_ftp/wheeler/struct/2009-10-01 - DIS Wheeler - Current Structural Model.dwg
+directory: ..
+directory: .
+directory: infinite
+history:   /misc/acad_ftp/wheeler/infinite/ub-b-hvac.dwg
+history:   /misc/acad_ftp/wheeler/infinite/ub-1-hvac.dwg
+history:   /misc/acad_ftp/wheeler/infinite/is-b-hvac.dwg
+directory: ..
+directory: .
+directory: arch
+history:   /misc/acad_ftp/wheeler/arch/x-grid-96.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-grid-48.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-grid-48-3D.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-grid-384.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-grid-24.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-rf.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-match.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-b.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-a.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-06.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-05.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-04.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-03.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-02.dwg
+history:   /misc/acad_ftp/wheeler/arch/x-ar-01.dwg
+history:   /misc/acad_ftp/wheeler/arch/UB - matchline.dwg
+history:   /misc/acad_ftp/wheeler/arch/OFFICE - matchline.dwg
+history:   /misc/acad_ftp/wheeler/arch/OFFICE - matchline 5-RF.dwg
+history:   /misc/acad_ftp/wheeler/arch/DIS Wheeler - Origin Point - Place at Level 1_ACAD 2007.dwg
+history:   /misc/acad_ftp/wheeler/arch/DIS Wheeler - Origin Point.dwg
+history:   /misc/acad_ftp/wheeler/arch/DC - matchline.dwg
+history:   /misc/acad_ftp/wheeler/arch/36 x 48 - UB_TB.dwg
+history:   /misc/acad_ftp/wheeler/arch/36 x 48 - tb info.dwg
+history:   /misc/acad_ftp/wheeler/arch/36 x 48 - OFFICE_TB.dwg
+history:   /misc/acad_ftp/wheeler/arch/36 x 48 - DC_TB.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: umctransfer
+directory: Boeing 05-050 Presentation
+directory: ..
+directory: .
+directory: 4930
+directory: Plumb
+history:   /misc/acad_ftp/umctransfer/4930/Plumb/mp-p2.dwg
+history:   /misc/acad_ftp/umctransfer/4930/Plumb/mp-p1.dwg
+directory: ..
+directory: .
+directory: ed review
+directory: roof
+history:   /misc/acad_ftp/umctransfer/4930/ed review/roof/ed notes 3_roof.dwg
+directory: ..
+directory: .
+directory: pf
+directory: 09-16-09
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_26-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_25-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_24-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_23-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_22-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_21-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_16-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_15-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_14-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_13-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_12-rev00 - qa qc review_09-14-09.pdf
+history:   /misc/acad_ftp/umctransfer/4930/ed review/pf/09-16-09/pf2_11-rev00 - qa qc review_09-14-09.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: level p2
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level p2/ed notes 2_p2.dwg
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level p2/ed notes 1_p2.dwg
+directory: ..
+directory: .
+directory: level p1
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level p1/ed notes 2_p1.dwg
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level p1/ed notes 1_p1.dwg
+directory: ..
+directory: .
+directory: level 2
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level 2/ed notes 3_lvl 2.dwg
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level 2/ed notes 2_lvl 2.dwg
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level 2/ed notes 1_lvl 2.dwg
+directory: ..
+directory: .
+directory: level 1
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level 1/mp-01_ed revision_09-21-09.dwg
+history:   /misc/acad_ftp/umctransfer/4930/ed review/level 1/ed notes 2_lvl 1.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: 4664
+directory: temp
+history:   /misc/acad_ftp/umctransfer/4664/temp/x-ar-west elevation-pct-jon.dwg
+history:   /misc/acad_ftp/umctransfer/4664/temp/x-ar-south elevation-pct-jon.dwg
+history:   /misc/acad_ftp/umctransfer/4664/temp/x-ar-north elevation-pct-jon.dwg
+history:   /misc/acad_ftp/umctransfer/4664/temp/x-ar-east elevation-pct-jon.dwg
+history:   /misc/acad_ftp/umctransfer/4664/temp/sku-547.dwg
+history:   /misc/acad_ftp/umctransfer/4664/temp/sku-367c.dwg
+history:   /misc/acad_ftp/umctransfer/4664/temp/sku-367b.dwg
+history:   /misc/acad_ftp/umctransfer/4664/temp/sku-367a.dwg
+history:   /misc/acad_ftp/umctransfer/4664/temp/mp_04a-pct-east.dwg
+directory: ..
+directory: .
+directory: ed review
+directory: level 5 west
+history:   /misc/acad_ftp/umctransfer/4664/ed review/level 5 west/ed notes 1_lvl 5 west.dwg
+directory: ..
+directory: .
+directory: level 5 east
+history:   /misc/acad_ftp/umctransfer/4664/ed review/level 5 east/ed notes 1_lvl 5 east.dwg
+directory: ..
+directory: .
+directory: level 4 west
+history:   /misc/acad_ftp/umctransfer/4664/ed review/level 4 west/ed notes 1_lvl 4 west.dwg
+directory: ..
+directory: .
+directory: level 4 east
+history:   /misc/acad_ftp/umctransfer/4664/ed review/level 4 east/ed notes 1_lvl 4 east.dwg
+directory: ..
+directory: .
+directory: level 3 west
+history:   /misc/acad_ftp/umctransfer/4664/ed review/level 3 west/ed notes 1_lvl 3 west.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: swedish
+directory: umc
+directory: superplot
+directory: 2009-1211-preliminary patient floor layout
+history:   /misc/acad_ftp/swedish/umc/superplot/2009-1211-preliminary patient floor layout/5131-preliminary patient floor layout.zip
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: sheetmetal
+history:   /misc/acad_ftp/swedish/umc/sheetmetal/H-HE-B.dwg
+directory: ..
+directory: .
+directory: plumb
+history:   /misc/acad_ftp/swedish/umc/plumb/p-he-g.dwg
+history:   /misc/acad_ftp/swedish/umc/plumb/p-he-bu.dwg
+history:   /misc/acad_ftp/swedish/umc/plumb/p-he-b.dwg
+history:   /misc/acad_ftp/swedish/umc/plumb/p-he-05.dwg
+history:   /misc/acad_ftp/swedish/umc/plumb/p-he-04.dwg
+history:   /misc/acad_ftp/swedish/umc/plumb/p-he-03.dwg
+history:   /misc/acad_ftp/swedish/umc/plumb/p-he-02.dwg
+history:   /misc/acad_ftp/swedish/umc/plumb/p-he-01.dwg
+history:   /misc/acad_ftp/swedish/umc/plumb/fnd-all-u.dwg
+directory: ..
+directory: .
+directory: navisworks
+history:   /misc/acad_ftp/swedish/umc/navisworks/Basement Sheetmetal 2010-01-07.nwd
+history:   /misc/acad_ftp/swedish/umc/navisworks/Basement Piping 2010-01-07.nwd
+history:   /misc/acad_ftp/swedish/umc/navisworks/Basement Mech (all) 2010-01-07.nwd
+history:   /misc/acad_ftp/swedish/umc/navisworks/Basement Mech 12_31_09.nwf
+directory: ..
+directory: .
+directory: coordination
+history:   /misc/acad_ftp/swedish/umc/coordination/zoning elevations.dwg
+history:   /misc/acad_ftp/swedish/umc/coordination/umc_coord_stds 3D-90% DRAFT.pdf
+history:   /misc/acad_ftp/swedish/umc/coordination/lvl b - matchlines.pdf
+history:   /misc/acad_ftp/swedish/umc/coordination/lvl1-2 keyplan.pdf
+history:   /misc/acad_ftp/swedish/umc/coordination/issue-track-directions-project name.doc
+history:   /misc/acad_ftp/swedish/umc/coordination/HV2.40C redlines from Max.pdf
+history:   /misc/acad_ftp/swedish/umc/coordination/HV2.40B redlines from Max.pdf
+history:   /misc/acad_ftp/swedish/umc/coordination/HV2.40A redlines from Max.pdf
+history:   /misc/acad_ftp/swedish/umc/coordination/ftp client install setup.doc
+history:   /misc/acad_ftp/swedish/umc/coordination/5131 - smci-shop drawing dwg-sht_num_matrix-REV1.xls
+history:   /misc/acad_ftp/swedish/umc/coordination/5131 smci-shop drawing composite_plot_matrix.xls
+history:   /misc/acad_ftp/swedish/umc/coordination/5131 - SMCI - MEP schedule - Rev-04.xls
+history:   /misc/acad_ftp/swedish/umc/coordination/5131 - SMCI MEP Contacts.pdf
+history:   /misc/acad_ftp/swedish/umc/coordination/5131 - Sleeve Matrix-void.xls
+history:   /misc/acad_ftp/swedish/umc/coordination/5131_OR-LINE.dwg
+history:   /misc/acad_ftp/swedish/umc/coordination/5131 - kick-off mep mtg agenda.doc
+history:   /misc/acad_ftp/swedish/umc/coordination/5131 detailing smci  - responsibility matrix.xls
+history:   /misc/acad_ftp/swedish/umc/coordination/5131 BIM Services Lead Assignments.pdf
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: transvac
+directory: ..
+directory: .
+directory: struct
+history:   /misc/acad_ftp/swedish/struct/X-ST-RF.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-HRF.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-G.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-G-3D.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-FND-3D.dwg
+history:   /misc/acad_ftp/swedish/struct/x-st-cup-fdn-3d.dwg
+history:   /misc/acad_ftp/swedish/struct/x-st-cup-3d.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-B.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-06-3D.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-05.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-05-3D.dwg
+history:   /misc/acad_ftp/swedish/struct/x-st-04.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-04-3D.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-03.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-03-3D.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-02.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-02-3D.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-01.dwg
+history:   /misc/acad_ftp/swedish/struct/X-ST-01-3D.dwg
+directory: ..
+directory: .
+directory: sparling
+directory: ..
+directory: .
+directory: sellen
+directory: Steel Model Updates
+history:   /misc/acad_ftp/swedish/sellen/Steel Model Updates/Swedish Steel IFC 2009-12-18.ifc
+history:   /misc/acad_ftp/swedish/sellen/Steel Model Updates/Swedish_Model_122809_layers_by_zone.dwg
+history:   /misc/acad_ftp/swedish/sellen/Steel Model Updates/D3114_Model_122809.nwc
+history:   /misc/acad_ftp/swedish/sellen/Steel Model Updates/D3114_Model_121009.nwc
+history:   /misc/acad_ftp/swedish/sellen/Steel Model Updates/D3114_Model_121009.dwg
+directory: ..
+directory: .
+history:   /misc/acad_ftp/swedish/sellen/ex-bf sequencing 12-9-09-timeliner.avi
+history:   /misc/acad_ftp/swedish/sellen/ex-bf sequencing 12-11-09.nwd
+directory: 3D Backgrounds
+directory: Structural Steel Framing
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Structural Steel Framing/SF-LG.dwg
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Structural Steel Framing/SF-L6.dwg
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Structural Steel Framing/SF-L5.dwg
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Structural Steel Framing/SF-L4.dwg
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Structural Steel Framing/SF-L3.dwg
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Structural Steel Framing/SF-L2.dwg
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Structural Steel Framing/SF-L1.dwg
+directory: ..
+directory: .
+directory: Structural Concrete
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Structural Concrete/SC-LG.dwg
+directory: ..
+directory: .
+directory: Architectural
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Architectural/AF-LG.dwg
+history:   /misc/acad_ftp/swedish/sellen/3D Backgrounds/Architectural/AF-L1.dwg
+directory: ..
+directory: .
+directory: ..
+directory: .
+directory: 2009-12-18 Updated CAD Backgrounds from 11.23 set
+directory: HAMMES-SHEETS-121809
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.57 Life Safety & Exiting-L5.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.56 Life Safety & Exiting-L4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.55 Life Safety & Exiting-L3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.54 Life Safety & Exiting-L2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.53 Life Safety & Exiting-L1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.52 Life Safety & Exiting-LG.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.51 Life Safety & Exiting-B-CUP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.42  Zoning worksheet.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.41 Code worksheet.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.40 Master Grid Layout.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.3 Symbols, General Notes,.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.2 Project Data, Abbrev., Vicinity Plan.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.1 Drawing Index-VOL3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/_G1.1 Drawing Index-VOL2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A9.11 CAFE SERVERY INTERIOR DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.43 MOB EXTERIOR DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.42 MOB EXTERIOR DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.41 MOB ext dtls.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.27 EXTERIOR ENVELOPE DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.25 EXTERIOR ENVELOPE DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.24 EXTERIOR ENVELOPE DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.23 EXTERIOR ENVELOPE DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.22 EXTERIOR ENVELOPE DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.21 EXTERIOR ENVELOPE DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A8.11 SITE DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.9_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.8_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.7_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.6_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.5_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.4_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.3_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.34 canopies.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.33 MOB north B.5_D.3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.32 MOB east 4.5_3.9_2.9.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.31 MOB east A1.5.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.30 MOB south J-F.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.2_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.29 MOB south J-L.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.28 MOB south L-M.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.27 MOB south M-N.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.26 MOB west 4.4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.25 MOB west 3.4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.24 MOB north P.7_Q.5.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.23 MOB north L.2_N.6.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.22 MOB north G.6_J.3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.21_MOB north F.4_F.8.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.1_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.16_HOSP WALL SECTION WEST BRIDGE.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.15_HOSP WALL SECTION WEST WING & STAIR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.14_HOSP WALL SECTION WEST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.13_HOSP WALL SECTION SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.12_HOSP WALL SECTION SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.11_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A5.10_HOSP WALL SECTION EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.9 CUP-EXTERIOR ELEV & SECT.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.8 MOB-SOUTH ELEV.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.7 MOB-EAST-WEST ELEV.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.6 MOB-NORTH ELEV.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.5 HOSP-BRIDGE & WEST WW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.4 HOSP-EAST EW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.3 HOSP-WEST EW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.31 GARAGE BUILDING SECTIONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.2 COMMONS SOUTH & HOSP EAST WW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.21 BUILDING SECTIONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.1 HOSP-SOUTH EW & SOUTH WW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.12 MOB PARTIAL ELEV.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A4.11 PARTIAL HOSP ELEVATIONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.9 OPENING SCHEDULE-PHASE 2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.8 OPENING SCHEDULE-PHASE 1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.7 OPENING SCHEDULE -PHASE 1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.6 OPENING SCHEDULE-PHASE 1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.62 FINISH SCHEDULE.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.61 FINISH SCHEDULE.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.5 OPENING SCHEDULE-PHASE 1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.56 WINDOW SCHEDULE_MOB INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.55 WINDOW SCHEDULE_MOB INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.50 RELITE SCHEDULE_HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.4 OPENING SCHEDULE-PHASE 1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.41 WINDOW SCHEDULE_MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.40 WINDOW SCHEDULE_MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.3 OPENING SCHEDULE-PHASE 1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.39 WINDOW SCHEDULE_MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.38 WINDOW SCHEDULE_MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.37 WINDOW SCHEDULE_MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.36 WINDOW SCHEDULE_MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.35 WINDOW SCHEDULE_HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.34 WINDOW SCHEDULE_HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.33 WINDOW SCHEDULE_HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.32 WINDOW SCHEDULE_HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.31 WINDOW SCHEDULE_HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.2 OPENING SCHEDULE-PHASE 1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.22 PARTITION DETAILS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.21 INTERIOR PARTITION TYPES.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.1 OPENING SCHED OVERALL GENERAL NOTES.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.13 OPENING SCHEDULE-PHASE 5.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.12 OPENING SCHEDULE-PHASE 3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.11 OPENING SCHEDULE-PHASE 3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A3.10 OPENING SCHEDULE-PHASE 2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.55D LEVEL 5 MOB & COMMONS-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.54D LEVEL 4 MOB & COMMONS-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.54C LEVEL 4 WEST WING-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.54A LEVEL 4 EAST WING-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.53D LEVEL 3 MOB & COMMONS-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.53C LEVEL 3 WEST WING-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.53A LEVEL 3 EAST WING-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.52E LEVEL 2 MOB EAST-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.52D LEVEL 2 MOB WEST-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.52C LEVEL 2 WEST WING-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.52B LEVEL 2 EAST WING SOUTH-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.52A LEVEL 2 EAST WING NORTH-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.51E LEVEL 1 MOB EAST-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.51D LEVEL 1 MOB WEST-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.51C LEVEL 1 WEST WING-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.51B LEVEL 1 EAST & CENTER WING SOUTH-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.51A LEVEL 1 EAST WING NORTH-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.50E LEVEL G MOB EAST-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.50D LEVEL G MOB WEST-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.50C LEVEL G WEST WING -FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.50B LEVEL G EAST & CENTER WING SOUTH-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.50A LEVEL G EAST WING NORTH-FINISH_recover.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.50A LEVEL G EAST WING NORTH-FINISH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.48B LEVEL 2 RCP COMMONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.48A LEVEL 1 RCP COMMONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.45D RCP 5 MOB & COMMONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.44D RCP 4 MOB & COMMONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.44C RCP 4 WEST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.44A RCP 4 EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.43D RCP 3 MOB & COMMONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.43C RCP 3 WEST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.43A RCP 3 EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.42E RCP 2 MOB EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.42D RCP 2 MOB WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.42C RCP 2 WEST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.42B RCP 2 EAST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.42A RCP 2 EAST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.41E RCP 1 MOB EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.41D RCP  1 MOB WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.41C RCP 1 WEST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.41B RCP 1 EAST & CENTER WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.41A RCP 1 EAST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.40E RCP G MOB EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.40D RCP G MOB WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.40C RCP G WEST WING .dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.40B RCP G EAST & CENTER WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.40A RCP G EAST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.37D ROOF PLAN-COMMONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.36 OVERALL ROOF.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.36D ROOF PLAN MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.35 OVERALL L5.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.35K ENLARGED PLAN LEVEL 5 MOB EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.35J ENLARGED PLAN LEVEL 5 MOB CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.35H ENLARGED PLAN LEVEL 5 MOB WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.35C ROOF PLAN WEST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.35A ROOF PLAN EAST WING.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.34 OVERALL L4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.34G ENLARGED PLAN LEVEL 4 WEST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.34F ENLARGED PLAN LEVEL 4 WEST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.34E ENLARGED PLAN LEVEL 4 WEST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.34C ENLARGED PLAN LEVEL 4 EAST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.34B ENLARGED PLAN LEVEL 4 EAST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.34A ENLARGED PLAN LEVEL 4 EAST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33 OVERALL L3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33K ENLARGED PLAN LEVEL 3 MOB EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33J ENLARGED PLAN LEVEL 3 MOB CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33H ENLARGED PLAN LEVEL 3 MOB WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33G ENLARGED PLAN LEVEL 3 WEST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33F ENLARGED PLAN LEVEL 3 WEST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33E ENLARGED PLAN LEVEL 3 WEST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33C ENLARGED PLAN LEVEL 3 EAST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33B ENLARGED PLAN LEVEL 3 EAST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.33A ENLARGED PLAN LEVEL 3 EAST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32 OVERALL L2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32K ENLARGED PLAN LEVEL 2 MOB EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32J ENLARGED PLAN LEVEL 2 MOB CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32H ENLARGED PLAN LEVEL 2 MOB WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32G ENLARGED PLAN LEVEL 2 WEST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32F ENLARGED PLAN LEVEL 2 WEST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32E ENLARGED PLAN LEVEL 2 WEST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32C ENLARGED PLAN LEVEL 2 EAST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32B ENLARGED PLAN LEVEL 2 EAST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.32A ENLARGED PLAN LEVEL 2 EAST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31 OVERALL L1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31K ENLARGED PLAN LEVEL 1 MOB EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31J ENLARGED PLAN LEVEL 1 MOB CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31H ENLARGED PLAN LEVEL 1 MOB WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31G ENLARGED PLAN LEVEL 1 WEST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31F ENLARGED PLAN LEVEL 1 WEST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31E ENLARGED PLAN LEVEL 1 WEST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31D ENLARGED PLAN LEVEL 1 CENTER SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31C ENLARGED PLAN LEVEL 1 EAST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31B ENLARGED PLAN LEVEL 1 EAST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.31A ENLARGED PLAN LEVEL 1 EAST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30 OVERALL G.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30J ENLARGED PLAN LEVEL G MOB CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30H ENLARGED PLAN LEVEL G MOB WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30G ENLARGED PLAN LEVEL G WEST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30F ENLARGED PLAN LEVEL G WEST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30E ENLARGED PLAN LEVEL G WEST WING SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30D ENLARGED PLAN LEVEL G CENTER SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30B ENLARGED PLAN LEVEL G EAST WING CENTER.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.30A ENLARGED PLAN LEVEL G EAST WING NORTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.28B LEVEL 2 COMMONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.28A LEVEL 1 COMMONS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.13 LEVEL B MECH & UTILIDOR FLOOR PLAN.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.12 CUP ROOF PLAN.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.11 CUP FLOOR PLAN.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A2.10 OVERALL B.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A1.3 FIRE DEPT ROADWAY PLAN.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A1.2 OVERALL NW PARKING SITE PLAN.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A1.1 OVERALL SITE PLAN.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.73 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.72 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.71 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.70 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.62 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.61 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.60 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.40ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.35 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.30 ENLARGED PLANS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-SHEETS-121809/A10.20 ENLARGED PLANS.dwg
+directory: ..
+directory: .
+directory: HAMMES-BASES-121809
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/SHI_Contours.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/SHI_Base-Ph1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/SHI_Base.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/MockUpRooms.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/Brum-sp.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-MOB-west.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-MOB-south.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-MOB-north.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-MOB-canopies.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-MOB-AT-east.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-MOB-AD1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-HOSP-WW-WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-HOSP-WW-EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-HOSP-STAIR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-HOSP-SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-HOSP-EW-WEST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-HOSP-EW-SOUTH.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-HOSP-EW-EAST.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC-HOSP-BRIDGE.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-WSEC_CUP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-SITE-SURV.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-SITE-PLAN-loading dock study.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-SITE-PLAN.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-L5-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-L4-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-L4-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-L3-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-L3-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-L2-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-L2-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-L1-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/a-rcpl-l1-hosp.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-G-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-RCPL-G-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-UTILIDOR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-UPPER-ROOF.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-ROOF.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L7-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L6-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L5-MOB-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L5-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L5-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L5-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L4-MOB-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L4-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L4-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L4-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L3-MOB-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L3-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L3-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L3-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L2-MOB-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L2-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L2-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L2-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L1-MOB-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L1-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L1-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-L1-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-G-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-G-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-G-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-CUP-ROOF.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-CUP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-BUGS-OVRL.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-B.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PLAN-B-COMP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH5-PLAN-L4-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH5-PLAN-L2-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH5-ANNO-L4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH5-ANNO-L2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH3-PLAN-L4-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH3-PLAN-L3-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH3-PLAN-L2-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH3-PLAN-L2-ADD.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH3-PLAN-L1-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH3-ANNO-L4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH3-ANNO-L3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH3-ANNO-L2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH2-PLAN-L1-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/a-ph2-plan-g-hosp-intr.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH2-ANNO-L1-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-PLAN-L1-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-PLAN-G-HOSP-INTR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-ANNO-LG.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-ANNO-L5.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-ANNO-L4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-ANNO-L3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-ANNO-L2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-ANNO-L1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-PH1-ANNO-B.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-NOTE-LS-EXIT.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-LGND-PLNS-96.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-LGND-LITE-96.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-LGND-CLNG-96.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVLG.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVLB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL6-ROOF.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL6.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL5-ROOF.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL5.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL5-CMNS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL4-CMNS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL3-CMNS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL2-CMNS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-KPLN-LVL1-CMNS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-GRID-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-GRID-HOSP-WW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-GRID-HOSP-EW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-GRID-CMNS.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-GRID-BRGE.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-GRID-B.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L5-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L4-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L4-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L3-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L3-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L2-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L2-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L1-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-L1-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-FINI-G-HOSP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-W-WW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-W-EW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-S-WW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-S-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-S-EW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-N-MOB.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-MISC.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-E-WW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-E-EW.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-ELEV-CUP.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-DRWG-INDX.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-COLS-L5.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-COLS-L4.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-COLS-L3.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-COLS-L2.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-COLS-L1.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-COLS-G.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-COLS-B.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-BSEC-UTILIDOR.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-BSEC-K.5-W.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-BSEC-K.2-W.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/a-bsec-h5-w.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-BSEC-G.5-W.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-BSEC-F.9-W.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-BSEC-E.8-W_ATRIUM.dwg
+history:   /misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-BSEC-D.7'-W.dwg
+		no exact match: checking history with md5!
+failed insert query:
+insert into filewatch set
+		name = '/misc/acad_ftp/swedish/sellen/2009-12-18 Updated CAD Backgrounds from 11.23 set/HAMMES-BASES-121809/A-BSEC-D.7\'-W.dwg',
+		file_mtime = '1261520588',
+		file_bytes = '391712',
+		newest_version = 'Y',
+		new_entry = 'Y',
+		upload_day = now(),
+		md5_sum = '78ab174d177f47e5ffe536ee21022ba3',
+		extension = '.23 set/HAMMES-BASES-121809/A-BSEC-D.7'-W.dwg'

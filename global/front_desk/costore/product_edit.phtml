@@ -1,0 +1,131 @@
+<?
+// defining the page variable to pass to the header's call to the show_breadcrumb function.
+// Crash & warn if they're not supposed to be here.. 
+if (!($adminuser)) die_security();
+
+require("header.phtml");
+
+if ($product_id!="") {
+	$product_id=addslashes($product_id);
+	$product_info=getoneb("select * from costore_products where product_id = '$product_id'");
+	$product_info->is_clothing=checkbreak($product_info->is_clothing);
+	$product_info->active=checkbreak($product_info->active);
+	$product_info->new_item_flag=checkbreak($product_info->new_item_flag);
+	$product_info->clearance_item_flag=checkbreak($product_info->clearance_item_flag);
+	$product_info->product_name=htmlspecialchars($product_info->product_name);
+	} else {
+	$product_info->active=" checked ";
+	$product_info->new_item_flag=" checked ";
+	$product_info->clearance_item_flag="";
+	}
+
+
+
+echo "
+<style>
+.new_products, product {
+             vertical-align:top;
+}
+.error {
+            color:#ff0000;
+}
+.success {
+            color:#00aa00;
+}
+</style>
+<form name=product_edit method=post action=\"$pagename\">
+<input type=hidden name=mode value=product_submit>
+<input type=hidden name=product_id value=\"$product_info->product_id\">
+<div id=\"content\">
+<span id=\"notification\"></span>
+<table width=100%>
+	<tr><td>
+		Product ID
+	</td><td>
+		$product_info->product_id
+	</td></tr>
+
+	<tr><td>
+		Item Number
+	</td><td>
+		<input type=text size=15 name=item_number value=$product_info->item_number>
+	</td></tr>
+
+	<tr><td>
+		Product Name
+	</td><td>
+		<input type=text name=product_name value=\"$product_info->product_name\" size=20>
+	</td></tr>
+
+	<tr><td>
+		Active
+	</td><td>
+		<input type=checkbox name=active $product_info->active>
+	</td></tr>
+
+	<tr><td>
+		Clothing
+	</td><td>
+		<input type=checkbox name='is_clothing' $product_info->is_clothing>
+	</td></tr>
+
+	<tr><td>
+		Flag as new
+	</td><td>
+		<input type=checkbox name='new_item_flag' $product_info->new_item_flag>
+	</td></tr>
+
+	<tr><td>
+		Flag as clearance item
+	</td><td>
+		<input type=checkbox name='clearance_item_flag' $product_info->clearance_item_flag>
+	</td></tr>
+
+	<tr><td>
+		Description
+	</td><td>
+		<textarea name=description rows=4 cols=30>$product_info->description</textarea>
+	</td></tr>
+
+	<tr><td>
+		Employee Price
+	</td><td>
+		<input type=text name=price value=\"$product_info->price\" size=10>
+	</td></tr>
+
+	<tr><td>
+		Regular Price
+	</td><td>
+		<input type=text name=non_emp_price size=10 value=\"$product_info->non_emp_price\">
+	</td></tr>
+
+
+
+	<tr><td>
+		Image
+	</td><td>
+		";webfilebox($product_info->image_id,'image_id','',1);echo"
+		
+	<tr><td>
+		<input type=submit value='Save'>
+	</td><td>
+		<input type=button value=Cancel onclick='document.location=\"$pagename?mode=main\"'>
+	</td></tr>
+</form>
+	<tr><td>
+		Product Options
+	</td><td>
+		<i><b>Add</b></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<form name=product_option_add method=post action=$pagename>
+		<input type=hidden name=mode value=product_option_add>
+		<input type=hidden name=product_id value=\"$product_info->product_id\">
+		<input type=text size=15 name=option_text onchange=submit()>
+		</form><br>
+		";$poptions_res=@mysql_query("select * from costore_products_options where product_id = '$product_info->product_id' order by option_text");
+		while ($prow=@mysql_fetch_object($poptions_res)) {
+			echo "<a href=$pagename?mode=product_option_delete&option_id=$prow->option_id><i><font color=blue>delete</font></i></a>&nbsp;&nbsp;&nbsp;&nbsp;$prow->option_text<br>";
+			}
+		echo "
+	</td></tr>
+	</table>
+";
+?>

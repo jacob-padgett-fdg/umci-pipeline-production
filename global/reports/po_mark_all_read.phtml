@@ -1,0 +1,32 @@
+<?
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require("report_lib.inc");
+
+if ($job_to_clear!="") $job_to_clear=addslashes($job_to_clear);
+else die("Usage error! Please contact your system administrator!");
+
+$job_to_clear_info=getoneb("select * from jobinfo where contract_num = '$job_to_clear'");
+if (!($job_to_clear_info)) $job_to_clear_info=getoneb("select * from jobinfo where contract_num = '0$job_to_clear'");
+
+if (!($job_to_clear_info)) die("Error locating job. Please contact your system administrator");
+
+//$res=@mysql_query("select jobinfo_id, project_manager_id,contract_num from jobinfo where active = 'Y'");
+//while ($row=@mysql_fetch_object($res)) {
+
+
+//$emp_info=getoneb("select * from contacts where contacts_id = '$job_to_clear_info->project_manager_id'");
+//$emp_info=getoneb("select * from contacts where contacts_id = '$job_to_clear_info->project_manager_id'");
+//if (!($emp_info)) die("Error detecting project manager information!!!");
+//echo "$global_user->employee_num / $job_to_clear_info->jobinfo_id";
+//exit;
+//po_mark_all_viewed($global_user->employee_num,$job_to_clear_info->jobinfo_id);
+po_mark_all_viewed($global_user->employee_num,$job_to_clear_info->jobinfo_id);
+//}
+
+//$total=po_unread_count($global_user->employee_num,$job_to_clear);
+//po_mark_all_viewed($global_user->employee_num,$job_to_clear);
+forward("my_home");
+exit;
+?>

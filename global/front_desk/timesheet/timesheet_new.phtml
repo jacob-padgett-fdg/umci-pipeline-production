@@ -1,0 +1,73 @@
+<?
+$forweek=escapeshellcmd($forweek);
+
+
+$createdate=next_avail_week_end($current_user->employee_num,$forweek);
+$nextdate=next_avail_week_end($current_user->employee_num,next_week_end($createdate,1));
+$lastdate=last_avail_week_end($current_user->employee_num,last_week_end($createdate));
+
+$last_week=vali_date(last_week_end($createdate));
+$last_week_timesheet_query="select * from timesheet_index where employee_id = '$current_user->contacts_id' and week_ending = '$last_week'";
+$last_week_res=getoneb($last_week_timesheet_query);
+
+echo "
+<body bgcolor=#ffffff>
+<center><h2>Create New Timesheet</h2></center><hr>";
+
+if (!($last_week_res))
+	echo "<font color=red><h2><bold>WARNING: Timesheet appears to be out of sequence</bold></h2></font>";
+
+echo "
+<h3>Please select your \"week ending\" date.</h3><p>
+
+<table border=0 cellspacing=0 cellpadding=10 width=20%>
+<tr bgcolor=#dddddd><td>
+	<form name=lastweek action=$pagename method=post>
+	<input type=hidden name=mode value=\"timesheet_new\">
+	<input type=hidden name=forweek value=\"$lastdate\">
+	<input type=submit value=\"<--\">
+	</form>
+</td><td>
+	<font color=black>
+	<center>$createdate</center></font>
+</td><td>
+	<form name=nextweek action=$pagename method=post>
+	<input type=hidden name=mode value=\"timesheet_new\">
+	<input type=hidden name=forweek value=\"$nextdate\">
+	<input type=submit value=\"-->\">
+	</form>
+</td></tr>
+
+<tr><td colspan=3>
+	Employee Name: $current_user->first_name $current_user->last_name
+</td></tr>
+
+<tr><td colspan=3>
+	Employee Number: $current_user->employee_num
+</td></tr>
+
+<tr><td colspan=3>
+	Creator: $global_user->login_name
+</td></tr>
+
+<tr bgcolor=#dddddd><td colspan=3>
+	<table border=0>
+	<tr><td>
+		<form name=cancel method=post action=$pagename>
+		<input type=hidden name=mode value=main>
+		<input type=submit value=Cancel>
+		</form>
+	</td><td width=100% align=right>
+		<form name=timesheet_create action=$pagename method=post>
+		<input type=hidden name=mode value=timesheet_new_submit>
+		<input type=hidden name=employee_num_verify value=\"$current_user->employee_num\">
+		<input type=hidden name=ts_week_ending value=\"$createdate\">
+		<input type=submit value=Create>
+		</form>
+	</td></tr>
+	</table>
+</td></tr>
+</table>
+";
+
+?>

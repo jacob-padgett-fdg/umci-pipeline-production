@@ -1,0 +1,20 @@
+<?
+$reference_issue=addslashes($reference_issue);
+$issue_id=addslashes($issue_id);
+
+$query="update mis_issue_index set reference_this_issue='$reference_issue',status='superceded' where issue_id = '$issue_id'";
+
+//echo "<hr>$query<hr>";
+$res=@mysql_query($query);
+if (!($res)) die ("ERROR: Query failed. Get the admin. <p>Failed Query: <hr>$query");
+
+echo "
+<script>
+opener.document.issue_edit.submit();
+self.close();
+</script>
+
+";
+
+
+?>

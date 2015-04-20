@@ -1,0 +1,34 @@
+<?
+if ($global_user->umc_emp!='Y') die_security();
+
+if ($doc_id!="") $doc_id=addslashes($doc_id);
+//else die('DOC_ID ERROR: Invalid doc_id. Please contact your system administrator!');
+
+$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+
+if (!($doc_info)) die('DOC_ID ERROR: Invalid doc_id. Please contact your system administrator!');
+
+
+echo "<table border=1 cellspacing=0 cellpadding=4 style=\"width: 100%; border: 1px solid black;\">
+<tr><td colspan=3 align=center bgcolor=\"$fd_color_4\" style=\"border: 1px solid black;\">
+<b>$doc_info->doc_type - $doc_info->app_reference review history</b><br>
+<i>Last modified: $doc_info->last_modified</i></td></tr>
+";
+$res=@mysql_query("select * from documents_review_history_nice where doc_id = '$doc_info->doc_id' order by review_time desc");
+echo "
+<tr><td><b>Viewed by</b></td><td><b>Time</b></td><td><b>Last Modified Time When Viewed</b></td></tr>
+";
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			$row->display_name
+		</td><td>
+			$row->review_time
+		</td><td>
+			$row->last_modified_time
+		</td></tr>";
+	}
+echo "</table>";
+
+
+
+?>

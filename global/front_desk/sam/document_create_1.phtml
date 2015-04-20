@@ -1,0 +1,95 @@
+<?
+require('header.phtml');
+
+if ($create_mode=="on") {
+	$customer_contact_id=$contacts_id;
+	$expected_start_date=$start_date;
+	include('svc_agreement_submit.phtml');
+	exit;
+	}
+
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Cancel</font></a><br>
+<h3>Please specify the main information</h3><hr>
+<table border=0>
+<form name=contact_search method=get action=$pagename>
+<input type=hidden name=mode value=document_create_1>
+<tr><td>
+	Company:
+</td><td>";
+contactsbox("select * from contacts where contact_type = 'company' and current = 'Y'",$company_id,"company_id","opener.document.contact_search.submit()","2");
+echo "</td></tr>";
+if ($company_id!="") {
+	if ($contacts_id!="") {
+		$contacts_id=escapeshellcmd($contacts_id);
+		$contact_info=getoneb("select * from contacts where contacts_id = '$contacts_id'");
+		if (!($contact_info)) $contacts_id="";
+		}
+	echo "
+	<tr><td>
+			Site:
+	</td><td>";
+		contactsbox("select * from contacts where (company_id = '$company_id' and contact_type = 'site') or (contacts_id = '$company_id')",$site_id,"site_id","opener.document.contact_search.submit()","2");echo "
+	</td></tr>
+	
+	<tr><td>
+			Contact:
+	</td><td>";
+		contactsbox("select * from contacts where company_id = '$company_id' and contact_type = 'contact'",$contact_info->contacts_id,"contacts_id","opener.document.contact_search.submit()","0");echo "
+	</td></tr>";
+	}
+if ($agreement_type_id!="") $agreement_type_id=escapeshellcmd($agreement_type_id);
+if ($contacts_id!="") {
+	echo "<tr><td>
+			Agreement&nbsp;Type:
+		</td><td>";
+	dropbox("select agreement_type_id,agreement_type from svc_agreement_types order by sort_priority,agreement_type","$agreement_type_id","","submit()",2);
+	echo "</td></tr>";
+
+	if ($years!="") $years=escapeshellcmd($years);
+	if ($agreement_type_id!="") {
+		if ($maint_type_id!="") $maint_type_id=escapeshellcmd($maint_type_id);
+		echo "<tr><td>
+				Term (Years):
+			</td><td>
+			<select name=years onchange=\"submit()\">
+			<option>$years
+			<option>1
+			<option>2
+			<option>3
+			<option>4
+			<option>5
+			</select>
+			</td></tr>";
+		}
+	if ($years!="") {
+		//$start_date=invali_date($start_date);
+		$start_date=escapeshellcmd($start_date);
+		echo "<tr><td>
+				Effective&nbsp;Date:
+			</td><td>";
+		datebox($start_date,"contact_search.start_date");
+		echo "
+		</td></tr>
+		<input type=hidden name=create_mode value=\"off\">
+		<script>
+		function final_submit() {
+			if (document.contact_search.start_date.value==\"\") alert('You must set an effective date first');
+			else {
+				document.contact_search.create_mode.value='on'
+				document.contact_search.submit()
+				}
+			}
+		</script>
+		<tr><td colspan=2 align=right>
+			<input type=button onclick=final_submit() value=\"--Next-->\">
+		</td></tr>	
+		";
+		}
+	}
+echo "</form>
+</table>
+
+";
+?>

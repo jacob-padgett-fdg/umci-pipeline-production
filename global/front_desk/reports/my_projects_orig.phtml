@@ -1,0 +1,358 @@
+<?
+//$query="select * from front_desk_my_projects where owner_id = '2' and complete = 'N' order by sort_priority";
+//excel_dump($query);exit;
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+check_report_permissions();
+mh_navs_header();
+
+echo "<a href=$pagename?mode=my_home><font color=blue>Done</font></a><p>";
+if ($my_projects_user_id=="") $my_projects_user_id=$global_user_id;
+if ($my_projects_user_id_set!="") {
+	session_register('my_projects_user_id');
+	$my_projects_user_id=addslashes($my_projects_user_id_set);
+	$mpui_info=getoneb("select * from contacts where contacts_id = '$my_projects_user_id'");
+	if (!($mpui_info)) $my_projects_user_id=$global_user_id;
+	}
+
+function print_employee_div($display_name,$contact_id) {
+	global $mode,$pagename,$report_name,$fd_color_4,$my_projects_user_id;
+	//echo "$my_projects_user_id / $contact_id<hr>";
+	if ("$my_projects_user_id"=="$contact_id") echo "<div style=\"width: 175px; float: left; border: 1px solid black; background: $fd_color_4; padding: 5px;\">$display_name</div>";
+	else echo "<div style=\"width: 175px; float: left; border: 1px solid black; background: $fd_color_4; padding: 5px;\"><a href=$pagename?mode=$mode&report_name=$report_name&my_projects_user_id_set=$contact_id><font color=blue>$display_name</font></a></div>";
+	}
+
+
+
+if ($adminuser) {
+	$userlist_res=@mysql_query("select contacts.display_name, owner_id from front_desk_my_projects left join contacts on (front_desk_my_projects.owner_id = contacts.contacts_id) group by owner_id order by last_name,first_name,employee_num");
+	//tabledump("select contacts.display_name, owner_id from front_desk_my_projects left join contacts on (front_desk_my_projects.owner_id = contacts.contacts_id) group by owner_id order by last_name,first_name,employee_num");
+	//echo "admin user";
+	if (!($userlist_res)) {
+		die("app error");
+		}
+	echo "<table border=0 cellspacing=0 cellpadding=0><tr><td>";
+	while ($row=@mysql_fetch_object($userlist_res)) {
+		print_employee_div($row->display_name,$row->owner_id);
+		}
+	echo "</td></tr></table>";
+	
+	
+	} else {
+	$msres=@mssql_query("select HRRef as EmployeeNum from HRRM with (NOLOCK) where udsupervisor = '$global_user->employee_num' and HRCo = 1 and ActiveYN = 'Y' order by LastName, FirstName");
+	$mscount=@mssql_num_rows($msres);
+	if ($mscount>0) {
+		echo "<table border=0 cellspacing=0 cellpadding=0><tr><td>";
+		print_employee_div($global_user->display_name,$global_user_id);
+		}
+	while ($msrow=@mssql_fetch_object($msres)) {
+		$underling_info=getoneb("select * from contacts where employee_num = '$msrow->EmployeeNum' and current = 'Y' limit 1");
+		print_employee_div($underling_info->display_name,$underling_info->contacts_id);
+		//echo "$underling_info->display_name<br>";
+		}
+	if ($mscount>0) {
+		echo "</td></tr></table>";
+		}
+
+	}
+
+
+
+function move_up($move_up_id) {
+	global $my_projects_user_id;
+	if ($move_up_id=="") return FALSE;
+	$move_up_id=addslashes($move_up_id);
+	$mu_info=getoneb("select * from front_desk_my_projects where project_id = '$move_up_id'");
+	if (!($mu_info)) {
+		echo "Error: Trying to move invalid project_id.<p>";
+		return FALSE;
+		}
+	$md_info=getoneb("select * from front_desk_my_projects where owner_id = '$mu_info->owner_id' and sort_priority < $mu_info->sort_priority and complete = 'N' order by sort_priority desc limit 1");
+	if (!($md_info)) return FALSE;
+	if ($my_projects_user_id==$mu_info->owner_id) {
+		@mysql_query("update front_desk_my_projects set sort_priority = '$mu_info->sort_priority' where project_id = '$md_info->project_id'");
+		@mysql_query("update front_desk_my_projects set sort_priority = '$md_info->sort_priority' where project_id = '$mu_info->project_id'");
+		return TRUE;
+		} else {
+		echo "Error: Only the owner can change priorities (for now)...<p>";
+		}
+	}
+
+function move_down($move_down_id) {
+	global $my_projects_user_id;
+	if ($move_down_id=="") return FALSE;
+	$move_down_id=addslashes($move_down_id);
+	$md_info=getoneb("select * from front_desk_my_projects where project_id = '$move_down_id'");
+	if (!($md_info)) {
+		echo "Error: Trying to move invalid project_id.<p>";
+		return FALSE;
+		}
+	$mu_info=getoneb("select * from front_desk_my_projects where owner_id = '$md_info->owner_id' and sort_priority > $md_info->sort_priority and complete = 'N' order by sort_priority asc limit 1");
+	if (!($mu_info)) return FALSE;
+	//echo "go";
+	if ($my_projects_user_id==$md_info->owner_id) {
+		@mysql_query("update front_desk_my_projects set sort_priority = '$mu_info->sort_priority' where project_id = '$md_info->project_id'");
+		@mysql_query("update front_desk_my_projects set sort_priority = '$md_info->sort_priority' where project_id = '$mu_info->project_id'");
+		return TRUE;
+		} else {
+		echo "Error: Only the owner can change priorities (for now)...<p>";
+		}
+	}
+
+move_up($move_up_id);
+move_down($move_down_id);
+
+if ($update_project=="1") { 
+	$update_project_id=addslashes($update_project_id);
+	$ud_proj_info=getoneb("select * from front_desk_my_projects where project_id = '$update_project_id'");
+	if ($ud_proj_info->owner_id==$my_projects_user_id) {
+		$project_name=addslashes($project_name);
+		$project_details=addslashes($project_details);
+		$expected_completion_date=vali_date($expected_completion_date);
+		$application=addslashes($application);
+		$report=addslashes($report);
+		
+		$query="update front_desk_my_projects set project_name = '$project_name', project_details = '$project_details', expected_completion_date = '$expected_completion_date', application = '$application', report = '$report' where project_id = '$ud_proj_info->project_id'";
+		$res=@mysql_query($query);
+		if (!($res)) die("Application error: Query failed<hr>$query");
+		} else {
+		echo "Error: You don't own that project";
+		}
+	}
+
+if ($new_project=="1") {
+	//echo "hello $type_of_create";
+	$type_of_create=addslashes($type_of_create);
+	$project_name=addslashes($project_name);
+	$project_details=addslashes($project_details);
+	$expected_completion_date=vali_date($expected_completion_date);
+	$owner_id=$my_projects_user_id;
+	$application=addslashes($application);
+	$report=addslashes($report);
+	$new_id=getoneb("select max(sort_priority) as sort_priority from front_desk_my_projects where owner_id = '$my_projects_user_id'");
+	if (!($new_id)) $priority=1;
+	else $priority=$new_id->sort_priority + 1;
+	
+	@mysql_query("insert into front_desk_my_projects set owner_id = '$my_projects_user_id', sort_priority = '$priority', project_name = '$project_name', project_details = '$project_details', expected_completion_date = '$expected_completion_date', creation_date = now(), application = '$application', report = '$report'");
+	$id=@mysql_insert_id();
+	$moves=0;
+	if ($type_of_create=="Add to top") while (move_up($id)) $moves++;
+	
+	forward("$mode&report_name=$report_name");
+	}
+
+if ($mark_done_id!="") {
+	$mark_done_id=addslashes($mark_done_id);
+	$md_info=getoneb("select * from front_desk_my_projects where project_id = '$mark_done_id'");
+	if ($md_info->owner_id==$my_projects_user_id) {
+		//echo "kill it now";
+		@mysql_query("update front_desk_my_projects set complete = 'Y', completed_at = now() where project_id = '$md_info->project_id'");
+		} else {
+		echo "Error: You're not the owner of that record!<p>";
+		}
+	}
+
+if ($mark_undone_id!="") {
+	$mark_undone_id=addslashes($mark_undone_id);
+	$mud_info=getoneb("select * from front_desk_my_projects where project_id = '$mark_undone_id'");
+	if ($mud_info->owner_id==$my_projects_user_id) {
+		//echo "kill it now";
+		@mysql_query("update front_desk_my_projects set complete = 'N', completed_at = 0 where project_id = '$mud_info->project_id'");
+		} else {
+		echo "Error: You're not the owner of that record!<p>";
+		}
+	}
+
+
+
+if ($view_completed=='Y') {
+	$query="select * from front_desk_my_projects where complete = 'Y' and owner_id = '$my_projects_user_id' order by completed_at desc";
+	//tabledump($query);
+	$res=@mysql_query($query);
+	echo "
+	<a href=$pagename?mode=$mode&report_name=$report_name><font color=blue>Back to normal view</font></a><p>
+	
+	<table border=1 cellspacing=0 cellpadding=5>
+	<tr bgcolor=$fd_color_4><td>
+		<b>Project Name</b>
+	</td><td>
+		<b>Project Details</b>
+	</td><td>
+		<b>Expected Complete</b>
+	</td><td>
+		<b>Created</b>
+	</td><td>
+		<b>Complete Date/Time</b>
+	</td></tr>";
+	while ($row=@mysql_fetch_object($res)) {
+		echo "<tr><td>
+				$row->project_name
+			</td><td>
+				$row->project_details
+			</td><td>
+				" . invali_date($row->expected_completion_date,'/') . "
+			</td><td>
+				" . invali_date($row->creation_date,'/') . "
+			</td><td>
+				$row->completed_at
+			</td></tr>";
+		}
+	echo "</table>";
+	mh_navs_footer();
+	exit;
+	}
+
+
+
+echo "
+<p>&nbsp;<p>
+<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=$fd_color_4><td colspan=2>
+	&nbsp;
+</td><td>
+	<b>Name</b>
+</td><td>
+	<b>Details</b>
+</td><td>
+	<b>App/Rpt</b>
+</td><td>
+	<b>Expected Date</b>
+</td><td>
+	<b>Created</b>
+</td><td>
+	&nbsp;
+</td></tr>
+
+<tr valign=top><form name=new_project method=post action=\"$pagename\"><td colspan=2>
+	<input type=hidden name=mode value=\"$mode\">
+	<input type=hidden name=report_name value=\"$report_name\">
+	<input type=hidden name=new_project value=1>
+</td><td>
+	<input type=text size=20 name=project_name>
+</td><td>
+	<input type=text size=40 name=project_details>
+</td><td>
+	App:&nbsp;";dropbox("select application_name as application,application_name as an from access_applications where application_active = 'Y' order by application_name");echo "<br>
+	Rpt:&nbsp;";dropbox("select report_name as report,report_name as rn from front_desk_reports order by report_name");echo "
+</td><td>
+	";datebox2("","new_project.expected_completion_date");echo "
+</td><td>
+	&nbsp;
+</td><td>
+	<input type=submit name=type_of_create value=\"Add to top\">
+	<input type=submit name=type_of_create value=\"Add to end\">
+</td></form></tr>
+
+";
+
+$count=0;
+$first=TRUE;
+$query="select * from front_desk_my_projects where owner_id = '$my_projects_user_id' and complete = 'N' order by sort_priority";
+//excel_dump($query);
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$count++;
+	if ($first) {
+		$move_up="&nbsp;";
+		$first=FALSE;
+		} else {
+		$move_up="<a href=$pagename?mode=$mode&report_name=$report_name&move_up_id=$row->project_id><font color=blue>/\\</font></a>";
+		}
+	$move_down="<a href=$pagename?mode=$mode&report_name=$report_name&move_down_id=$row->project_id><font color=blue>\\/</font></a>";
+	
+	$bgcolor="#ffffff";
+	if (($row->project_id==$move_up_id)||($row->project_id==$move_down_id)) $bgcolor="#ffffaa";
+	if ($row->project_id==$project_edit_id) {
+		echo "
+		<tr><form name=update_project$row->project_id method=post action=\"$pagename\"><td colspan=2>
+			<input type=hidden name=mode value=\"$mode\">
+			<input type=hidden name=report_name value=\"$report_name\">
+			<input type=hidden name=update_project_id value=\"$row->project_id\">
+			<input type=hidden name=update_project value=1>
+		</td><td>
+			<input type=text size=20 name=project_name value=\"" . htmlspecialchars($row->project_name) . "\">
+		</td><td>
+			<input type=text size=40 name=project_details value=\"" . htmlspecialchars($row->project_details) . "\">
+		</td><td>
+			App:&nbsp;";dropbox("select application_name as application,application_name as an from access_applications where application_active = 'Y' order by application_name",$row->application);echo "<br>
+			Rpt:&nbsp;";dropbox("select report_name as report,report_name as rn from front_desk_reports order by report_name",$row->report);echo "
+		</td><td>
+			";datebox2($row->expected_completion_date,"new_project.expected_completion_date");echo "
+		</td><td>
+			<font size=-1>" . invali_date($row->creation_date,'/') . "&nbsp;</font>
+		</td><td>
+			<input type=submit value=\"Update\"><input type=button value=\"Cancel\" onclick=\"document.location='$pagename?mode=$mode&report_name=$report_name'\">
+		</td></form></tr>";		
+		} else {
+		if ($row->project_name=="") $row->project_name="?????????";
+		echo "
+			<tr bgcolor=\"$bgcolor\"><td>
+				<font size=-1>$move_up&nbsp;&nbsp;$move_down</font>
+			</td><td>
+				<font size=-1>$count</font>
+			</td><td>
+				<font size=-1><a href=$pagename?mode=$mode&report_name=$report_name&project_edit_id=$row->project_id><font color=blue>$row->project_name</font></a></font>
+			</td><td>
+				<font size=-1>$row->project_details</font>
+			</td><td>
+				&nbsp;$row->application<br>$row->report
+			</td><td>
+				<font size=-1>" . invali_date($row->expected_completion_date,'/') . "&nbsp;</font>
+			</td><td>
+				<font size=-1>" . invali_date($row->creation_date,'/') . "&nbsp;</font>
+			</td><td>
+				<font size=-1><a href=$pagename?mode=$mode&report_name=$report_name&mark_done_id=$row->project_id><font color=blue><i>mark completed</i></font></a></font></font>
+			</td></tr>";
+		}
+	}
+
+
+
+
+
+
+
+
+$query="select * from front_desk_my_projects where complete = 'Y' and owner_id = '$my_projects_user_id' order by completed_at desc limit 3";
+//ms_tabledump($query);
+$res=@mysql_query($query);
+$prepend="";
+while ($row=@mysql_fetch_object($res)) {
+	$prepend="<tr bgcolor=$fd_color_1><td colspan=2>
+			&nbsp;
+		</td><td>
+			<font size=-1>$row->project_name</font>
+		</td><td>
+			<font size=-1>$row->project_details</font>
+		</td><td>
+			<font size=-1><i>$row->completed_at</i></font>
+		</td><td>
+			<font size=-1><i>" . invali_date($row->creation_date,'/') . "</i></font>
+		</td><td>
+			<font size=-1><i><a href=\"$pagename?mode=$mode&report_name=$report_name&mark_undone_id=$row->project_id\"><font color=blue>unmark completed</font></a></i></font>
+		</td></tr>" . $prepend;
+	}
+echo $prepend;
+
+
+
+
+
+
+
+
+
+
+
+
+echo "</table>
+<a href=$pagename?mode=$mode&report_name=$report_name&view_completed=Y><font color=blue>View Completed<font></a>
+";
+
+
+
+
+mh_navs_footer();
+?>

@@ -1,0 +1,113 @@
+<?
+$email_link="";
+if ($contact_info->email!="") $email_link="<a href=mailto:$contact_info->email><font color=blue>$contact_info->email</font></a>";
+$company_info=getone("select * from contacts where contacts_id = '$contact_info->company_id'");
+
+
+echo "<table border=1 cellspacing=0 cellpadding=0 width=100%><tr>";
+
+if ($contact_info->photo_file_group_id>0) {
+	$file=getoneb("select * from webfile_files where file_group_id = '$contact_info->photo_file_group_id'");
+	$picurl=webfile_medium_image_icon($file->files_id);
+	echo "<td align=center valign=top bgcolor=white><img border=0 src=\"$picurl\"></td>";
+	}
+
+
+echo"
+<td valign=top bgcolor=#ffffff>
+<table border=0 cellspacing=0 cellpadding=3 width=100%>
+
+<tr><td colspan=2 align=center bgcolor=#dddddd>
+	<b>Site Information</b>
+</td></tr>
+
+<!--<tr bgcolor=\"white\"><td colspan=2 align=center>
+<b>$contact_info->company</b>
+</td></tr>
+--!>
+
+<tr><td valign=top>
+	<b>Company:</b>
+</td><td>
+	";contact_view("",$company_info->contacts_id);echo"
+</td></tr>
+
+<tr ";color_print(); echo"><td valign=top>
+	<b>Site Name:</b>
+</td><td>
+	$contact_info->company
+</td></tr>
+
+
+";
+if ($contact_info->phone!="") { echo "<tr ";color_print(); echo"><td valign=top><b>Phone:</b></td><td>$contact_info->phone&nbsp;$contact_info->phone_ext</td></tr>"; }
+if ($contact_info->phone_fax!="") { echo "<tr ";color_print(); echo"><td valign=top><b>Fax:</b></td><td>$contact_info->phone_fax</td></tr>"; }
+if ($contact_info->phone_cell!="") { echo "<tr ";color_print(); echo"><td valign=top><b>Cell:</b></td><td>$contact_info->phone_cell</td></tr>"; }
+if ($contact_info->phone_page!="") { echo "<tr ";color_print(); echo"><td valign=top><b>Page:</b></td><td>$contact_info->phone_page</td></tr>"; }
+if ($contact_info->address_1!="") { echo "<tr ";color_print(); echo"><td valign=top><b>Address:</b><br>";map_link_this_contact_here($contact_info->contacts_id);echo"</td><td>$contact_info->address_1<br>$contact_info->address_city, $contact_info->address_state $contact_info->address_zip</td></tr>"; }
+if ($email_link!="") { echo "<tr ";color_print(); echo"><td valign=top><b>Email:</b></td><td>$email_link</td></tr>"; }
+echo"</table></td></tr></table>
+<table cellspacing=0 cellpadding=2 border=0 width=100%>
+<tr><td colspan=2 width=50%>&nbsp;</td><td colspan=2 width=50%>&nbsp;</td></tr>
+
+<tr><td valign=top>
+	<b>Current:</b>
+</td><td width=20%>
+	$info->current
+</td><td valign=top>
+	<b>Consultant:</b>
+</td><td width=20%>
+	$info->consultant
+</td></tr>	
+
+<tr><td valign=top>
+	<b>Owner/Cust:</b>
+</td><td width=20%>
+	$info->owner
+</td><td valign=top>
+	<b>General:</b>
+</td><td width=20%>
+	$info->is_general
+</td></tr>	
+
+<tr><td valign=top>
+	<b>Mech Contr:</b>
+</td><td width=20%>
+	$info->mechanical_contractor
+</td><td valign=top>
+	<b>Manufacturer:</b>
+</td><td width=20%>
+	$info->manufacturer
+</td></tr>	
+
+</table>
+<br>";
+
+
+echo "
+<b>Other&nbsp;Sites:</b>
+<table border=0 cellspacing=0 cellpadding=0><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td>
+";
+$sitesres=@mysql_query("select * from contacts where contact_type = 'site' and company_id = '$company_info->contacts_id' and contacts_id != '$contact_info->contacts_id' order by alphasort");
+while ($row=@mysql_fetch_object($sitesres)) {
+	//echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+	contact_view("$row->company<br>",$row->contacts_id);
+	//echo "<br>";
+	}
+echo "</td></tr></table>";
+
+
+//echo "
+//<b>Contacts:</b>
+//<table border=0 cellspacing=0 cellpadding=0><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td>
+//";
+//$sitesres=@mysql_query("select * from contacts where contact_type = 'contact' and company_id = '$contact_info->contacts_id' order by alphasort");
+//while ($row=@mysql_fetch_object($sitesres)) {
+//	//echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+//	contact_view("$row->display_name<br>",$row->contacts_id);
+//	//echo "<br>";
+//	}
+//echo "</td></tr></table>";
+
+
+?>

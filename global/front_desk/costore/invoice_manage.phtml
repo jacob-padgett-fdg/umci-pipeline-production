@@ -1,0 +1,119 @@
+<?
+require("header.phtml");
+if ($invoice_id=="") {
+	echo "Invoice error!";
+	include("footer.phtml");
+	exit;
+	}
+
+
+
+echo "<a href=$pagename?mode=orders_admin><font color=blue>Done</font></a><p>";
+
+$invoice_id=addslashes($invoice_id);
+$invoice_info=getoneb("select * from costore_cart_invoice where invoice_id = '$invoice_id'");
+$user_info=getoneb("select * from contacts where '$invoice_info->contacts_id' = contacts_id");
+
+$invoice_info->invoice_date=invali_date($invoice_info->invoice_date,'/');
+
+if ($invoice_info->cart_count<1) {
+	@mysql_query("delete from costore_cart_invoice where invoice_id = '$invoice_info->invoice_id'");
+	forward('orders_admin');
+	die("Deleting empty cart...");
+	}
+
+if ($set_cart_status!="") {
+	$modify_cart=FALSE;
+	$set_cart_status=addslashes($set_cart_status);
+	if ($adminuser) $modify_cart=TRUE;
+	
+	if ($modify_cart) {
+		@mysql_query("update costore_cart_invoice set cart_status = '$set_cart_status' where invoice_id = '$invoice_info->invoice_id'");
+		@mysql_query("update costore_cart set status = '$set_cart_status' where invoice_id = '$invoice_info->invoice_id'");
+		forward("invoice_manage&invoice_id=$invoice_info->invoice_id");
+		} else {
+		die("Application error. Cart modification permission error!");
+		}
+	exit;
+	}
+
+echo "<b>Current Status: </b> $invoice_info->cart_status<br>";
+if (($invoice_info->cart_status=='processing')&&($adminuser)) {
+	echo "<a href=$pagename?mode=$mode&set_cart_status=accepted&invoice_id=$invoice_info->invoice_id><font color=blue>Mark as Accepted</font></a><p>";
+	}
+
+if (($invoice_info->cart_status=='accepted')&&($adminuser)) {
+	echo "<a href=$pagename?mode=$mode&set_cart_status=complete&invoice_id=$invoice_info->invoice_id><font color=blue>Mark as Complete</font></a><p>";
+	}
+
+if (($invoice_info->cart_status=='PM Approval')&&(($adminuser)||($bjinfo->project_manager_id==$global_user_id))) {
+	echo "<a href=$pagename?mode=$mode&set_cart_status=processing&invoice_id=$invoice_info->invoice_id><font color=blue>Mark as Approved</font></a><p>";
+	}
+
+if (($invoice_info->cart_status == 'new')||($invoice_info->cart_status == 'PM Approval')||($invoice_info->cart_status == 'processing')) {
+	$can_modify=TRUE;
+	} else {
+	$can_modify=FALSE;
+	}
+
+
+echo "
+<b>Ordered By: </b> $user_info->first_name $user_info->last_name<br>
+<b>Invoice Number: </b> $invoice_info->invoice_id<br>
+<b>Invoice Date: </b> $invoice_info->invoice_date<br>
+<b>Total Amt: </b> $invoice_info->cart_total<br>
+<b>Total Qty: </b> $invoice_info->cart_count<br>
+<hr>
+<table border=0 cellspacing=0 cellpadding=3>
+<tr><td>
+	Name
+</td><td>
+	Job
+</td><td>
+	Item #
+</td><td>
+	Size/Opt
+</td><td>
+	Price
+</td><td>
+	Qty
+</td><td>
+	Total
+</td><td>
+	Action
+</td></tr>
+";
+
+$invoice_items=@mysql_query("select * from costore_cart where invoice_id = '$invoice_info->invoice_id'");
+while ($item=@mysql_fetch_object($invoice_items)) {
+	$item_info=getoneb("select * from costore_products where product_id = '$item->product_id'");
+	$price=$item_info->price;
+	//if ($item->product_options=='XXL') $price=$item_info->xxl_price;
+	$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$item->jobinfo_id'");
+	
+	if ($jobinfo) $price=$item_info->non_emp_price;
+	echo "<tr><td>
+			$item_info->product_name
+		</td><td>
+			$jobinfo->contract_num
+		</td><td>
+			$item_info->item_number
+		</td><td>
+			$item->product_options
+		</td><td>
+			$price
+		</td><td>
+			$item->quantity
+		</td><td>
+			$item->total_dollars
+		</td><td>
+			";
+			if ($can_modify) echo "<a href=$pagename?mode=invoice_delete_item&cart_id=$item->cart_id><font color=blue><i>delete</i></font></a>";
+			else echo "&nbsp;";
+			
+			echo "
+		</td></tr>";
+	}
+echo "</table>";
+include("footer.phtml");
+?>

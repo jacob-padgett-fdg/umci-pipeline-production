@@ -1,0 +1,7 @@
+<?
+require("header.phtml");
+if ($contacts_id=="") die("ERROR: No contact specified.. nothing to do..<a href=javascript:history.go(-1)>go back</a>");
+else $contacts_id=addslashes($contacts_id);
+@mysql_query("insert into jobinfo_close_notifications set contacts_id = '$contacts_id'");
+forward('close_notifications_list');
+?>

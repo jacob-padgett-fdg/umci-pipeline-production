@@ -1,0 +1,16 @@
+<?
+//die("hi");
+
+if ($pal_id=='') die('Application error: Pal ID');
+
+$pal_id=addslashes($pal_id);
+$pal_info=getone("select * from pal where pal_id = '$pal_id'");
+//$pri_text_bg='';
+
+//if ($pal_info->priority=='normal') { $newpri='high'; $pri_text_bg='yellow'; }
+//else $newpri='normal';
+
+@mysql_query("update pal set status = 'complete', forced_sign_off_id = '$global_user->contacts_id', pal_sign_off_date = now() where pal_id = '$pal_id'");
+//$pal_info->priority=$newpri;
+echo "Status:&nbsp;complete";
+?> 

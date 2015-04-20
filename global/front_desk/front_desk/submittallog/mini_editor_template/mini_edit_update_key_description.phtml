@@ -1,0 +1,6 @@
+<?
+include ('fd_document_box_header.phtml');
+$key_description=addslashes($key_description);
+@mysql_query("update gcrfilog set key_description = '$key_description' where gcrfi_id = '$doc_edit_info->app_record_id'");
+echo "<input type=text size=13 name=key_description id=doc_box_key_description value=\"$key_description\" onchange=fd_doc_change_key_description('$doc_info->doc_id','$doc_edit_info->doc_id')>";
+?>

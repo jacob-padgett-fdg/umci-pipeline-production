@@ -1,0 +1,27 @@
+<?
+if ($sketchlog_id!="") $sketchlog_id=addslashes($sketchlog_id);
+else die("Application error. No sketch specified!");
+
+$sketch_info=getone("select * from sketchlog where sketchlog_id = '$sketchlog_id'");
+
+
+$rev_date=vali_date($rev_date);
+$sent_to_field_date=vali_date($sent_to_field_date);
+$revision=addslashes($revision);
+$rev_description=addslashes($rev_description);
+
+$query="insert into sketchlog_revs set sketchlog_id = '$sketch_info->sketchlog_id', revision = '$revision', rev_date = '$rev_date', rev_description = '$rev_description', sent_to_field_date = '$sent_to_field_date', creator = '$global_user->contacts_id'";
+@mysql_query($query);
+update_rev($sketch_info->sketchlog_id);
+
+if (($rev_date!="")&&($sent_to_field_date!="")) {
+	if ($rev_date>$sent_to_field_date) {
+		echo "
+		<script>
+		alert(\"Hey, those dates don't make any sense!!!\");
+		</script>";
+		}
+	
+	}
+forward("sketchlog_edit&sketchlog_id=$sketch_info->sketchlog_id");
+?>

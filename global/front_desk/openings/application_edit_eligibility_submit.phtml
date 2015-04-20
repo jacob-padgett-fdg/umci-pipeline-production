@@ -1,0 +1,33 @@
+<?
+
+if ($application_id=="") die("Web Application Error! application_id missing!");
+$application_id=addslashes($application_id);
+	
+$query_start="update ";
+$query_end=" where application_id = '$application_id' ";
+	
+
+if (($init_1!="") && ($init_2!="") && ($init_3!="") && ($init_4!="")) $status="Complete";
+	else $status="Incomplete";
+	
+
+$init_1=addslashes($init_1); 
+$init_2=addslashes($init_2); 
+$init_3=addslashes($init_3); 
+$init_4=addslashes($init_4); 
+
+$query_middle="
+hr_applications set
+init_1 = '$init_1',
+init_2 = '$init_2',
+init_3 = '$init_3',
+init_4 = '$init_4',
+status = '$status'";
+
+$query_full=$query_start . $query_middle . $query_end;
+
+$res=@mysql_query($query_full);
+if (!($res)) die("Web Site Error:<p>We're sorry, there appears to be a programming error on this web page. Please contact the <a href=mailto:webadmin@umci.com>webmaster via email</a> or call 206-364-9900 to report this problem with the web page.<p>Thank you<p>Debug information: database: openings, mode: application_edit_vitals_submit, problem: database insert/update failed.");
+
+include("app_forward_mode.phtml");
+?>

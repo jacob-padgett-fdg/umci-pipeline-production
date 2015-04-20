@@ -1,0 +1,14 @@
+<?
+
+if ($task_list_id=="") die ('ERROR: task_list_id missing. Please contact your system administrator');
+$task_list_id=escapeshellcmd($task_list_id);
+
+
+$info=getoneb("select * from svc_task_lists where task_list_id = '$task_list_id'");
+
+
+task_number_move_up($task_list_id);
+forward("task_item_edit&task_id=$info->task_id");
+
+
+?>

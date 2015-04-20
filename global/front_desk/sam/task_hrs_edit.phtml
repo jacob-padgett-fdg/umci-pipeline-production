@@ -1,0 +1,24 @@
+<?
+require('header.phtml');
+
+if ($task_hrs_id!="") {
+	$task_hrs_id=escapeshellcmd($task_hrs_id);
+	$task_hrs_info=getone("select * from svc_task_hrs where task_hrs_id = '$task_hrs_id'");
+	$task_id=$task_hrs_info->task_id;
+	//tabledump("select * from svc_task_hrs where task_hrs_id = '$task_hrs_id'");
+	}
+if ($task_id=="") die("Application Error: Please contact your system administrator!");
+else $task_id=escapeshellcmd($task_id);
+
+
+echo "
+<form name=task_hrs_edit method=post action=$pagename>
+<input type=hidden name=mode value=task_hrs_submit>
+<input type=hidden name=task_id value=\"$task_id\">
+<input type=hidden name=task_hrs_id value=\"$task_hrs_id\">
+";dropbox("select labor_type_id,labor_type from svc_labor_types order by labor_type",$task_hrs_info->labor_type_id,"","",1);echo"
+<input type=text size=5 name=hrs value=\"$task_hrs_info->hrs\">
+<input type=submit value=\"Save\">
+</form>";
+
+?>

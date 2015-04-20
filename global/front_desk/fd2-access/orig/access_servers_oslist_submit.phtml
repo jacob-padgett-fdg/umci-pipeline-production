@@ -1,0 +1,27 @@
+<?
+if ($os_id=="") {
+	$new=1;
+	$query_start="insert into ";
+	$query_end="";
+	} else {
+	$os_id=addslashes($os_id);
+	$query_start="update ";
+	$query_end=" where os_id = '$os_id'";
+	}
+
+$name=addslashes($name);
+$notes=addslashes($notes);
+$active=checkfix($active);
+
+$query_middle="
+access_servers_oslist set
+name = '$name',
+notes = '$notes',
+active = '$active'
+
+";
+
+$query_full=$query_start . $query_middle . $query_end;
+@mysql_query($query_full);
+forward('server_lookups');
+?>

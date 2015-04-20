@@ -1,0 +1,45 @@
+<?
+set_time_limit("900");
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+include("lam_lib.inc");
+mh_navs_header();
+
+
+
+
+if ($incident_id!="") {
+	$incident_id=addslashes($incident_id);
+	$incident_info=getoneb("select * from front_desk_reports_safety_incidents where incident_id = '$incident_id'");
+	if (!($incident_info)) die("a horrible death...");
+	
+	if ($foreman_id!=$incident_info->foreman_id) {
+		$foreman_id=addslashes($foreman_id);
+		@mysql_query("update front_desk_reports_safety_incidents set foreman_id = '$foreman_id' where incident_id = '$incident_info->incident_id'");
+		$incident_info->foreman_id=$foreman_id;
+		}
+	$query_start="update front_desk_reports_safety_incidents set ";
+	$query_end=" where employee_id = '$incident_info->employee_id' and incident_type = '$incident_info->incident_type' and work_day = '$incident_info->work_day' and week_ending = '$incident_info->week_ending' and description = '$incident_info->description'";
+	} else {
+	$foreman_id=addslashes($foreman_id);
+	$query_start="insert into front_desk_reports_safety_incidents set foreman_id = '$foreman_id', ";
+	$query_end="";
+	}
+
+$employee_id=addslashes($employee_id);
+$date_info=date_info($work_day);
+$incident_type=addslashes($incident_type);
+$work_day=vali_date($work_day);
+$week_ending=$date_info->week_end_mysql;
+$description=addslashes($description);
+
+
+$query_middle="employee_id = '$employee_id', incident_type = '$incident_type', work_day = '$work_day', week_ending = '$week_ending', description = '$description' ";
+
+@mysql_query($query_start . $query_middle . $query_end);
+forward("$mode&report_name=incidents_list");
+
+mh_navs_footer();
+?>

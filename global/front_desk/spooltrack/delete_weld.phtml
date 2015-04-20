@@ -1,0 +1,36 @@
+<?
+$wc_id=addslashes($wc_id);
+$spool_fab_tracking_id=addslashes($spool_fab_tracking_id);
+
+$query="delete from spool_weld_counts where wc_id = '$wc_id'";
+//echo "$query";exit;
+@mysql_query("delete from spool_weld_counts where wc_id = '$wc_id'");
+
+
+$welds=getoneb("select
+    sum(weld_count) as weld_count,
+        sum(weld_inches * weld_count) as weld_diameter_inches,
+            sum(weld_inches * weld_count * PI()) as weld_linear_inches
+            from spool_weld_counts
+            where spool_fab_tracking_id = '$spool_fab_tracking_id'
+            
+            group by spool_fab_tracking_id
+            ");
+            
+$query2="update spool_fab_tracking set 
+weld_count = '$welds->weld_count',
+weld_diameter_inches = '$welds->weld_diameter_inches,
+weld_linear_inches = '$welds->weld_linear_inches
+where spool_fab_tracking_id = '$spool_fab_tracking_id'";
+
+//echo "$query2";exit;
+
+@mysql_query($query2);
+
+forward("spool_fab_edit&spool_fab_tracking_id=$spool_fab_tracking_id");
+
+
+
+
+
+?>

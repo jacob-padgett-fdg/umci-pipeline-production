@@ -1,0 +1,66 @@
+<?
+
+
+
+
+
+
+
+echo "<script>
+document.contact_selection_search.search_text.focus();
+</script>$add_link_text<table border=1 cellspacing=0 cellpadding=0 width=100%><tr><td>
+<table border=0 cellspacing=0 style=\"padding: 0px;\">";
+
+echo "<tr bgcolor=\"#eeeeee\"><td><a href=\"javascript:set_contact('','')\"><font color=\"$display_color\"><i>none</i></font></td><td width=100% valign=top align=right>&nbsp;</td></tr>";
+
+$odd=1;
+
+$resultscount=@mysql_num_rows($res);
+
+while($row=@mysql_fetch_object($res)) {
+	$last_disp=$row->display_name;
+	$last_id=$row->contacts_id;
+	$record_disp=ereg_replace(' ','&nbsp;',$row->display_name);
+	$record_disp=ereg_replace("'",'\&#039;',$record_disp);
+	if ($odd==1) {
+		$cellbg="#ffffff";
+		$odd=0;
+	} else {
+		$cellbg="#eeeeee";
+		$odd=1;
+		}
+	if ($row->current=='Y') $display_color="blue";
+	else $display_color="#aaaaaa";
+	$display_name=ereg_replace(" ","&nbsp;",$row->display_name);
+	if ($row->contact_type=='contact') {
+		$company=ereg_replace(" ","&nbsp;",$row->company);
+		$extra="&nbsp;<font size=-1>($company)</font>";
+		} else {
+		$extra="";
+		}
+	echo "<tr bgcolor=\"$cellbg\"><td><a href=\"javascript:set_contact('$row->contacts_id','$record_disp')\"><font color=\"$display_color\">$display_name$extra</font></td><td width=100% valign=top align=right>";contact_view("<i>View</i>",$row->contacts_id);echo"</td></tr>";
+	}
+
+echo "</table></table>";
+
+if (($resultscount==1)&&(!($no_auto_select))) {
+	//echo "hhhmm.. only one.. maybe we can do something about that..";
+	$contact_name=strtolower($last_disp);
+	$search_name=strtolower($display_name);
+	$search_name=ereg_replace("&nbsp;"," ",$search_name);
+	if ($search_name==$contact_name) {
+		$last_disp=ereg_replace("'","\&#039;",$last_disp);
+		echo "
+		<script>
+		set_contact('$last_id','$last_disp');
+		</script>
+		";
+		}
+	
+	
+	}
+
+
+
+
+?>

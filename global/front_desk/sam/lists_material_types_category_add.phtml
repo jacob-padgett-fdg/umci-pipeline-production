@@ -1,0 +1,29 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation! The authorities have been notified!");
+
+if ($name=="")die("ERROR: Application error! No name has been set, aborting!");
+
+$name=escapeshellcmd($name);
+$type="cat";
+$query="insert into svc_materials_list set type = '$type', name = '$name'";
+$res=@mysql_query($query);
+
+
+$insertid=mysql_insert_id();
+
+
+//echo "<hr>$query<hr>";
+
+if ($material_list_parent=="") $parent_id=$insertid;
+else $parent_id=escapeshellcmd($material_list_parent);
+	
+//else $parent_id=escapeshellcmd($material_list_parent);
+
+
+$query2="update svc_materials_list set material_list_parent = '$parent_id' where material_list_id = '$insertid'";
+//echo "<hr>$query2<hr>";exit;
+$res2=@mysql_query($query2);
+forward("lists_material_types&material_list_id=$insertid");
+
+
+?>

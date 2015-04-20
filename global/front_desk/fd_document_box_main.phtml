@@ -1,0 +1,134 @@
+<?
+$max_list_len=50;
+if ($limit_to_type=="undefined") $limit_to_type="";
+if ($one_selection_only=="undefined") $one_selection_only="";
+
+$doc_id=addslashes($doc_id);
+$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+if ($doc_info) {
+	if ($display_associator!=TRUE) {
+		$add_to_query="";
+		if ($limit_to_type!="") {
+			$add_to_query=" and doc_type = '$limit_to_type' ";
+			}
+		//if ($limit_to_main_types=='Y') {
+		//	$add_to_query=$add_to_query . " and doc_type != 'pal' ";
+		//	}
+		$doc_list_res=@mysql_query("select * from documents_links right join documents on (documents_links.docb = documents.doc_id) where doca = '$doc_info->doc_id' $add_to_query and doc_type != 'pal' and doc_type != 'inbound' order by doc_type, app_reference");
+		$doc_list_count=@mysql_num_rows($doc_list_res);
+		if ($doc_list_count==0) {
+			echo "<a href=javascript:show_doc_dialog($doc_info->doc_id)>Select document</a>";
+			} else {
+			while ($row=@mysql_fetch_object($doc_list_res)) {
+				echo "<div style='height: 16px; float: right; color: white; background: green; border: 1px solid black;'><a target=view_doc_win$row->doc_id href=/global$devel/front_desk$devel/?mode=open_doc&doc_id=$row->doc_id><font size=-1 color=white><b>View</b></font></a></div><div style='height: 16px; float: left;'><img title=\"Unlink Document\" src=\"/global$devel/front_desk$devel/clear_it.png\" onclick=\"javascript:fd_doc_remove_selection($doc_info->doc_id,$row->doc_id,'$limit_to_type')\"></div>&nbsp;<a href=\"javascript:fd_doc_box_load_filtered($doc_info->doc_id,'$row->app_reference','$row->doc_type')\" style=\"font-size: 14px;\">$row->doc_type - $row->app_reference</a><br>";
+				}
+			}
+		}
+} else {
+	echo "<i>no source document</i>";
+	$display_associator=FALSE;
+}
+
+////////////////////////////////////////////////////////////////////////////
+// The selection interface is below....
+////////////////////////////////////////////////////////////////////////////
+if ($display_associator==TRUE) {
+	
+	$select_list_query="select * from front_desk_job_applications natural join front_desk_applications where jobinfo_id = '$doc_info->jobinfo_id' order by sort_priority,app_short_description";
+	$select_list_res=@mysql_query($select_list_query);
+	
+	$base_query="select * from documents right join front_desk_applications on (documents.doc_type = front_desk_applications.app_alias) where jobinfo_id = '$doc_info->jobinfo_id' and doc_type != 'pal' and doc_type != 'inbound' ";
+	$added_query="";
+	$base_order="order by doc_type, app_reference + 0 desc";
+
+	if ($limit_to_type!="") $doc_box_type_selection=$limit_to_type;
+	if ($doc_box_type_selection!="") {
+		$doc_box_type_selection=addslashes($doc_box_type_selection);
+		$added_query=$added_query . " and doc_type = '$doc_box_type_selection'";
+		}
+	
+	if ($doc_box_filter_text!="") {
+		$doc_box_filter_text=addslashes($doc_box_filter_text);
+		$filter_text_array=explode(" ",$doc_box_filter_text);
+		while ($filter=@array_shift($filter_text_array)) {
+			$filter=addslashes($filter);
+			$added_query=$added_query . " and ( app_reference like '%$filter%' or description like '%$filter%' ) ";
+			}
+		}
+	
+	$full_query=$base_query . $added_query . $base_order;
+
+	$last_type="";
+	$res=@mysql_query($full_query);
+	$listcount=@mysql_num_rows($res);
+	
+	$extra_create_button="";
+	if ($listcount==0) {
+		$extra_create_button="
+		0 documents found<br>
+		<a href=\"javascript:doc_box_add_document('$current_type','$doc_info->doc_id')\">
+		create a new document</a> <br>or alter your search.";
+		}
+	
+	if ($listcount>$max_list_len) $showcount=$max_list_len;
+	else $showcount=$listcount;
+	
+	
+	echo "<font size=-1>
+		<table cellspacing=0 border=0 with=100%>
+		<tr id=record_status_indicator bgcolor=$fd_color_3>
+		<td style=\"border-bottom: 0px solid black; font-size: 12px;\">
+			<a href=javascript:hide_doc_dialog($doc_info->doc_id)>Done</a>
+		</td>
+			<td width=100% style=\"font-size: 12px; text-align: right; border-bottom: 1px solid black;\">
+			Showing: $showcount of $listcount
+		</td></tr>
+		</table>
+		
+	<table border=0 width=100% cellspacing=0 cellpadding=0>";
+	if ($limit_to_type=="") {
+		echo "<tr><td><img title=\"Clear field\" onclick=\"document.getElementById('doc_box_type_selection').value='';update_doc_filter($doc_info->doc_id);\" src=/global$devel/front_desk$devel/clear_it.png></td><td><select style=\"font-size: 11px; \" id=\"doc_box_type_selection\" onchange=\"update_doc_filter($doc_info->doc_id)\" name=db_show_doc_type><option></option>";
+		while ($row=@mysql_fetch_object($select_list_res)) {
+			if ($row->app_alias==$doc_box_type_selection) $selected="selected";
+			else $selected="";
+			echo "<option $selected value=\"$row->app_alias\">$row->app_short_description</option>";
+			}
+		echo "</select></td><td><input type=button style=\"border:1px solid; padding: 0px; font-size: 9px;\" onclick=doc_box_add_document('$current_type','$doc_info->doc_id') value='Add'></td></tr>";
+		$current_type=addslashes($doc_box_type_selection);
+		} else {
+		echo "<input id=\"doc_box_type_selection\" type=hidden name=doc_box_type_selection value='$limit_to_type'>
+				<input type=hidden name=limit_to_type value='$limit_to_type'>";
+		$added_query=$added_query . " and doc_type = '$only_show_type'";
+		$current_type=addslashes($only_show_type);
+		}
+	
+	echo "<input type=hidden name=\"fd_document_current_doc_id\" id=\"fd_document_current_doc_id\" value=\"$doc_info->doc_id\">
+	<tr><td valign=bottom><img title=\"Clear field\" onclick=\"document.getElementById('doc_box_search_text').value='';update_doc_filter($doc_info->doc_id);\" src=/global$devel/front_desk$devel/clear_it.png></td><td><input size=10 type=text style=\"font-size: 11px;\" onchange=update_doc_filter($doc_info->doc_id) name=fd_document_search value=\"$doc_box_filter_text\" id=\"doc_box_search_text\">
+	<input type=button style=\"border:1px solid; padding: 0px; font-size: 9px;\" onclick=update_doc_filter($doc_info->doc_id) value=Find>
+	</td><td>
+	<input type=button style=\"border:1px solid; padding: 0px; font-size: 9px;\" onclick=doc_box_add_document('$current_type','$doc_info->doc_id') value='Edit'>
+	</td></tr>
+	<tr><td id=\"current_selected_files\" colspan=4>";include("fd_document_current_selectlist.phtml");echo"</td></tr>
+	</table>";	
+
+	$count=0;
+	while ($row=@mysql_fetch_object($res)) {
+		$count++;
+		if ($count>$max_list_len) break;
+		if ($last_type!=$row->doc_type) {
+			echo "<div width=100% style=\"background: $fd_color_3; text-align: center;\"><b>$row->doc_type</b></div>";
+			$last_type=$row->doc_type;
+			}
+		$short_description=substr($row->description,0,15);
+		$app_color=$fd_color_4;
+		$description_color=$fd_color_1;
+		
+		//echo "<div valign=middle width=100% style=\"cursor: hand; cursor: pointer;\" id=\"fddocsel$row->doc_id\" onclick=\"fd_doc_make_selection($doc_info->doc_id,$row->doc_id,this)\" title=\"$row->description\">";
+		echo "<div valign=middle width=100% style=\"cursor: hand; cursor: pointer;\" id=\"fddocsel$row->doc_id\" title=\"$row->description\">";
+		fd_document_box_show_doc_line($doc_info->doc_id,$row->doc_id,"3","","N","$only_show_type");
+		echo "</div>";
+		}
+	echo "$extra_create_button";
+	echo "</font>";
+	}
+?>

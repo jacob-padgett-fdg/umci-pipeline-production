@@ -1,0 +1,140 @@
+<?
+$fd_manager=fd_manager($global_jobinfo_id,$global_user_id);
+
+if (!((fd_manager($global_jobinfo_id))||(pm_for_this_job())||($adminuser))) {
+//if (!(($adminuser)||(pm_for_this_job())||($fd_manager))) {
+	die_security();
+	}
+
+
+
+
+if ($issuance_id!="") {
+	$issuance_id=addslashes($issuance_id);
+	$issuance_info=getoneb("select * from cnstdwglog_issuances where issuance_id = '$issuance_id'");
+	} else {
+	$new=1;
+	$sp=getoneb("select ifnull(max(sort_priority),0) + 1 as next from cnstdwglog_issuances where jobinfo_id = '$global_jobinfo_id'");
+	$construction=getoneb("select * from cnstdwglog_issuances where jobinfo_id = '$global_jobinfo_id' and issuance_type = 'Construction' limit 1");
+	if ($construction) {
+		$issuance_info->issuance_type="Construction";
+		} else {
+		$issuance_info->issuance_type="Design";
+		}
+	$issuance_info->sort_priority=$sp->next;
+	$issuance_info->issuance_date=date('Y-m-d');
+	}
+
+
+include("header.phtml");
+fd_navs_header();
+echo "<table border=0 cellspacing=0 cellpadding=4>
+<tr><td valign=top>";
+if ($new==1) {
+	$ilres=@mysql_query("select * from cnstdwglog_issuances where jobinfo_id = '$global_jobinfo_id' and section = '$current_cnstdwglog_section' order by issuance_type desc,issuance_date,sort_priority,name,issuance_id");
+	echo "<table border=1 cellspacing=0 cellpadding=1\">
+	<tr><td colspan=4 bgcolor=$fd_color_4 align=center><b>Current Issuance List</b></td></tr>
+	<tr><td>
+		<b>Issuance&nbsp;Name</b>
+	</td><td>
+		<b>Issuance&nbsp;Date</b>
+	</td><td>
+		<b>Issuance&nbsp;Type</b>
+	</td><td>
+		<b>Sort&nbsp;Priority</b>
+	</td></tr>
+	";
+	while ($ilrow=@mysql_fetch_object($ilres)) {
+		echo "<tr><td>
+				<a href=$pagename?mode=issuance_edit&issuance_id=$ilrow->issuance_id><font size=-1 color=blue>$ilrow->name</font></a>
+			</td><td>
+				<font size=-1>" . invali_date($ilrow->issuance_date,'/') . "</font>
+			</td><td>
+				<font size=-1>$ilrow->issuance_type
+			</td><td>
+				<font size=-1>$ilrow->sort_priority</font>
+			</td></tr>
+			";
+		}
+	echo "</table>";
+	}
+echo "</td><td valign=top>";
+
+
+echo "
+
+<form name=issuance_edit method=post action=$pagename>
+<input type=hidden name=mode value=issuance_submit>
+<input type=hidden name=issuance_id value=\"$issuance_info->issuance_id\">
+<input type=hidden name=global_jobinfo_id_set value=\"$global_jobinfo_id\">
+
+<table border=1 cellspacing=0 cellpadding=4>
+
+<tr><td colspan=2 align=center bgcolor=$fd_color_4>
+	<b>Issuance Information</b>
+</td></tr>
+
+<tr><td>
+	<b>Issuance Name</b>
+</td><td>
+	<input type=text name=name value=\"$issuance_info->name\">
+</td></tr>
+
+<tr><td>
+	<b>Issuance Date</b>
+</td><td>
+	";datebox($issuance_info->issuance_date,"issuance_edit.issuance_date");echo"
+</td></tr>";
+
+if ($issuance_info->issuance_type!="IFC") {
+	echo "
+	<tr><td>
+		<b>Issuance Type</b>
+	</td><td>
+		<select name=issuance_type>
+		<option>$issuance_info->issuance_type</option>
+		<option>Design</option>
+		<option>Construction</option>
+		<option>Construction Orig Issue</option>
+		</select>
+	</td></tr>
+	";
+	}
+echo "
+
+<tr><td>
+	<b>Sort Priority</b>
+</td><td>
+	<input type=text size=5 name=sort_priority value=\"$issuance_info->sort_priority\"> <font color=red><b><i>Don't mess with this unless you're sure you need to!</i></b></font>
+</td></tr>
+
+<tr><td>
+	<b>Description/Notes</b>
+</td><td>
+	<textarea name=description rows=5 cols=60>$issuance_info->description</textarea>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+</td></tr>
+</form>
+</table>
+
+</td></table>
+";
+
+
+
+
+
+
+
+
+
+
+
+
+
+fd_navs_footer();
+
+?>

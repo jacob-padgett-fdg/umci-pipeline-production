@@ -1,0 +1,28 @@
+<?
+require('header.phtml');
+
+echo "<a href=$pagename?mode=main><font color=blue>Main Menu</font></a><br>";
+
+
+echo "<h2>Exception List 1:</h2><hr>
+Employees that don't have employee numbers.<br>";
+contact_table("select * from contacts where umc_emp = 'Y' and (employee_num = '' or employee_num is null) order by alphasort");
+
+echo "<h2>Exception List 2:</h2><hr>
+Contacts without any displayable name.<br>";
+contact_table("select * from contacts where display_name = '' or display_name is null order by alphasort");
+
+echo "<h2>Exception List 3:</h2><hr>
+Contacts without a &quot;contact_type&quot; setting.<br>";
+contact_table("select * from contacts where contact_type = '' or contact_type is null order by alphasort");
+
+
+
+
+
+
+
+
+
+
+?>

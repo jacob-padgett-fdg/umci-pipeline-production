@@ -1,0 +1,21 @@
+<?
+$truck_charge=45;
+if ($agreement_id=="") die("Application error! No agreement_id specified! Please contact your system administrator.");
+
+$yearly_visits=yearly_visits($agreement_id);
+$truck_charges=$yearly_visits * $truck_charge * $agreement_info->years;
+
+$option_message =addslashes("Truck charges based on yearly visits ($yearly_visits) * truck charge ($truck_charge) * agreement term ($agreement_info->years)."); 
+
+$query="insert into svc_agreement_additional_options set
+agreement_id = '$agreement_id',
+option_type = 'truck_charges',
+option_description = 'Truck Charges',
+calculation_notes = '$option_message',
+cost = '$truck_charges',
+markup = 'N'";
+
+@mysql_query("delete from svc_agreement_additional_options where option_type = 'truck_charges' and agreement_id = '$agreement_id'");
+@mysql_query($query);
+
+?>

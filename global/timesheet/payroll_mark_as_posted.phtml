@@ -1,0 +1,22 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+//$query="update timesheet_index set status = 'posted' where status = 'processing' and employee_group = '$current_employee_group'";
+//$query="select * from timesheet_index left join contacts on (contacts.contacts_id = timesheet_index.employee_id) where timesheet_index.status = 'processing' and contacts.timesheet_payroll_sequence_num = '$payroll_seq'";
+$query="update timesheet_index left join contacts on (contacts.contacts_id = timesheet_index.employee_id) set timesheet_index.status = 'posted' where timesheet_index.status = 'processing' and contacts.timesheet_payroll_sequence_num = '$payroll_seq'";
+//$query2="update timesheet_time set timesheet_status = 'posted' where timesheet_status = 'processing' and employee_group = '$current_employee_group'";
+//$query2="select * from timesheet_time left join contacts on (contacts.contacts_id = timesheet_time.employee_id ) where timesheet_status = 'processing' and contacts.timesheet_payroll_sequence_num = '$payroll_seq'";
+$query2="update timesheet_time left join contacts on (contacts.contacts_id = timesheet_time.employee_id ) set timesheet_status = 'posted' where timesheet_status = 'processing' and contacts.timesheet_payroll_sequence_num = '$payroll_seq'";
+
+//tabledump($query);
+//tabledump($query2);
+//exit;
+
+$res=@mysql_query($query);
+if (!($res)) die("fatal error: first stage mark for process. Please contact your system administrator.");
+$res=@mysql_query($query2);
+if (!($res)) die("fatal error: second stage mark for process. Please contact your system administrator.");
+
+forward('payroll_timesheet_selection');
+
+?>

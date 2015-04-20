@@ -1,0 +1,41 @@
+<?
+$agreement_info=load_agreement_info($agreement_id);
+$newterm=addslashes($newterm);
+
+
+///////////////////////////////////////////////
+// first determine what the new cutoff date is...
+///////////////////////////////////////////////
+	$start_date=$agreement_info->expected_start_date;
+	$last_year_dates=agreement_year_dates($agreement_info->agreement_id,$newterm);
+	$end_date=invali_date($last_year_dates->end);
+	$end_date_mysql=vali_date($end_date);
+
+
+///////////////////////////////////////////////
+// Then fix the term in the agreement index...
+///////////////////////////////////////////////
+$testres=@mysql_query("update svc_agreement_index set years = '$newterm' where agreement_id = '$agreement_info->agreement_id'");
+if (!($testres)) die("Error! Failed to set term. Please contact your system administrator!");
+///////////////////////////////////////////////
+// Next Step through each piece of equipment..
+///////////////////////////////////////////////
+$res=@mysql_query("select * from svc_agreement_equip_list where agreement_id = '$agreement_info->agreement_id'");
+while ($row=@mysql_fetch_object($res)) {
+	// run through the schedules for that equipment
+	$res2=@mysql_query("select * from svc_equip_sched_index where el_id = '$row->el_id'");
+	while ($row2=@mysql_fetch_object($res2)) {
+		@mysql_query("delete from svc_equip_sched_items where sched_index_id = '$row2->sched_index_id' and maint_date > '$end_date_mysql'");
+		}
+	@mysql_query("delete from svc_agreement_equipment_events where el_id = '$row->el_id' and event_date > '$end_date_mysql'");
+	}
+
+@mysql_query("delete from svc_agreement_additional_options where agreement_id = '$agreement_info->agreement_id'");
+
+require('header.phtml');
+echo "<p><h2>Warning. Any non-equipment based options have been deleted or reset!</h2><p>";
+flush();
+sleep(10);
+forward("svc_agreement_edit_new&agreement_id=$agreement_info->agreement_id");
+
+?>

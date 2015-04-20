@@ -1,0 +1,34 @@
+<?
+
+require('header.phtml');
+require_once('viewpoint_libs.inc');
+fd_navs_header();
+
+include("main_tabs.phtml");
+
+	echo "
+	<table border=1 cellspacing=0 cellapdding=3>
+		<tr><td bgcolor=$fd_color_4 align=center>
+			<font size=-1><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Job Reports&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></font>
+		</td></tr>
+		<tr><td>";
+	
+		$report_list="select * from front_desk_reports where report_type = 'job' and open_to_everyone = 'Y' order by report_display_name";
+		$rep_list_res=@mysql_query($report_list);
+
+		while ($reprow=@mysql_fetch_object($rep_list_res)) {
+			echo "<a href=$pagename?mode=report_show&report_name=$reprow->report_name&jobinfo_id=$global_jobinfo->jobinfo_id><font color=blue>$reprow->report_display_name</font></a><br>";
+			}
+	
+	
+	if (pm_for_this_job()||member_of_global_group_named("IT")) {
+		$reprow=getoneb("select * from front_desk_reports where report_name = 'job_permission_details' and report_type = 'job'");
+		if ($reprow) echo "<a href=$pagename?mode=report_show&report_name=$reprow->report_name&jobinfo_id=$global_jobinfo->jobinfo_id><font color=blue>$reprow->report_display_name</font></a><br>";
+		}
+	
+	echo "</td></tr></table>";
+
+
+fd_navs_footer();
+
+?>

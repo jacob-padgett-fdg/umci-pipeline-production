@@ -1,0 +1,24 @@
+<?
+
+
+$new_category_name=addslashes($new_category_name);
+$category_id=addslashes($category_id);
+if ($category_id=="") $category_id=0;
+$parent_category_info=getoneb("select * from front_desk_reference_categories where category_id = '$category_id'");
+
+$writing=FALSE;
+if ($adminuser) $writing=TRUE;
+if ($global_user_id==$parent_category_info->owner) $writing=TRUE;
+if ($parent_category_info->others_get_write=="Y") $writing=TRUE;
+$idiot=getoneb("select * from front_desk_reference_proven_idiots where idiot_id = '$global_user_id' limit 1");
+if ($idiot) $writing=FALSE;
+if ($writing) {
+	$query="insert into front_desk_reference_categories set parent_id = '$parent_category_info->category_id', category_name = '$new_category_name', sort_priority = 20, owner = '$global_user_id', creator = '$global_user_id', others_get_write = 'N'";
+	$res=@mysql_query($query);
+	if (!($res)) die("query error: <hr>$query<hr>");
+	//$id=@mysql_insert_id();
+	forward("my_reference_center_manage&category_id=$parent_category_info->category_id");
+	} else {
+	forward("my_reference_center_manage&category_id=$category_id");
+	}
+?>

@@ -1,0 +1,14 @@
+<?
+//require('querylib.inc');
+if (!(is_admin())) die_security();
+
+if ($fk_list_id=="") die("Application error: fk_list_id missing");
+else $fk_list_id=addslashes($fk_list_id);
+
+
+$info=getone("select * from contacts_fk_list where fk_list_id = '$fk_list_id'");
+
+tabledump("describe $info->db_table");
+tabledump("select $info->table_field from $info->db_table limit 1000");
+
+?>

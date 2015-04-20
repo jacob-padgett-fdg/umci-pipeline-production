@@ -1,0 +1,136 @@
+<?
+$scope_res=@mysql_query("select * from subcontractor_scope_definitions where subcontractor_type_id = '$subcontracts_info->subcontractor_type_id' order by sort_priority");
+echo "<table border=0 cellspacing=0 cellpadding=2>";
+
+while ($row=@mysql_fetch_object($scope_res)) {
+	$current=getoneb("select * from subcontractor_scope_selections where subcontracts_id = '$subcontracts_id' and scope_type_id = '$row->scope_type_id'");
+	if (!($current)) {
+		@mysql_query("delete from subcontractor_scope_selections where subcontracts_id = '$subcontracts_id' and scope_type_id = '$row->scope_type_id'");
+		$row->description=addslashes($row->description);
+		mysql_query("insert into subcontractor_scope_selections set subcontracts_id = '$subcontracts_id',scope_type_id = '$row->scope_type_id', description = '$row->description', sort_priority = '$row->sort_priority', subcontractor_type_id = '$row->subcontractor_type_id'");
+		}
+	$current=getoneb("select * from subcontractor_scope_selections where subcontracts_id = '$subcontracts_id' and scope_type_id = '$row->scope_type_id'");
+	if (!($current)) {
+		die("Application error! Serious application error when trying to initialize or read scope item!");
+		}
+	}
+
+$scope_res=@mysql_query("select * from subcontractor_scope_selections where subcontractor_type_id = '$subcontracts_info->subcontractor_type_id' and subcontracts_id = '$subcontracts_info->subcontracts_id' order by sort_priority");
+
+echo "<tr><td></td><td></td><td><table border=0 cellspacing=0 cellpadding=2>
+	<tr><td style=\"width: 40px;\">Y</td>
+	<td style=\"width: 40px;\">N</td>
+	<td style=\"width: 40px;\">N/A</td></table></td></tr>";
+while ($current=@mysql_fetch_object($scope_res)) {
+	$ysel="";
+	$nsel="";
+	$msel="";
+	$bgcolor="#ffffff";
+	if ($current->in_scope=="Yes") $ysel="checked"; 
+	if ($current->in_scope=="No") $nsel="checked";
+	if ($current->in_scope=="N/A") $msel="checked";
+	
+	//if ($current->in_scope=="") $bgcolor="#ffffaa";
+	if ($current->in_scope=="") $bgcolor=$fd_color_6;
+	if ($current->custom_scope_item=="Y") {
+		$rowbg="#bb77bb";
+		
+		$del_link="&nbsp;&nbsp;&nbsp;<a href=\"javascript:scope_selection_delete($current->selections_id,this)\"><font color=blue><i>delete</i></font></a>";
+		//<a href=$pagename?mode=scope_selection_delete&
+		} else {
+		$rowbg="#ffffff";
+		$del_link="";
+		}
+	echo "<tr bgcolor=\"$rowbg\"><td valign=top align=right>
+			$current->sort_priority.
+		</td><td valign=top>
+			$current->description$del_link
+		</td><td valign=top id=scope_selection_$current->selections_id align=right bgcolor=\"$bgcolor\">
+			<table border=0 cellspacing=0 cellpadding=2><tr>
+			<td style=\"width: 40px;\"><input onchange=\"update_scope_selection($current->selections_id)\" type=radio name=radio$current->selections_id value='Yes' $ysel></td>
+			<td style=\"width: 40px;\"><input onchange=\"update_scope_selection($current->selections_id)\" type=radio name=radio$current->selections_id value='No' $nsel></td>
+			<td style=\"width: 40px;\"><input onchange=\"update_scope_selection($current->selections_id)\" type=radio name=radio$current->selections_id value='N/A' $msel></td>
+			</tr></table>
+		</td></tr>";
+	$next_sort_priority=$current->sort_priority + 1;
+	}
+
+if ($subcontracts_info->subcontractor_type_id==10) {
+	check_register_subcontract_part($subcontracts_info->subcontracts_id,1);
+	} else { 
+	check_unregister_subcontract_part($subcontracts_info->subcontracts_id,1);
+	}
+
+echo "
+
+
+<tr><td align=right id=other_sort_priority>
+	??.
+</td><td id=other_scope_cell>
+	&nbsp;<input type=text name=other_scope id=other_scope_description size=20 value=Other>
+</td><td id=other_scope_cell2>
+	<a href=javascript:add_other_scope()><font color=blue>Add</font></a>
+</td></tr>
+
+<tr><td colspan=3>
+	";
+	show_variables_editors($subcontracts_id);
+	echo "
+</td></tr>
+
+
+
+
+
+
+</table>
+
+<script>
+
+function scope_selection_delete(selections_id) {
+	ajaxManager('load_page','$pagename?mode=scope_selection_delete&selections_id=' + selections_id,'scope_selections_output');
+	}
+
+function rewrite_other_scope(description) {
+	st=document.getElementById('other_scope_description');
+	oc=document.getElementById('other_scope_cell');
+	oc.innerHTML=st.value;
+	//document.getElementById('other_sort_priority').innerHTML='$next_sort_priority.';
+	}
+
+function add_other_scope() {
+	st=document.getElementById('other_scope_description');
+	oc=document.getElementById('other_scope_cell');
+	oc2=document.getElementById('other_scope_cell2');
+	oc2.ajax_trigger=rewrite_other_scope();
+	description=urlencode(st.value);
+	if (st.value!='Other') {
+		ajaxManager('load_page','$pagename?mode=add_other_scope&subcontracts_id=$subcontracts_info->subcontracts_id&subcontractor_type_id=$subcontracts_info->subcontractor_type_id&description=' + description + '&sort_priority=$next_sort_priority','scope_selections_output');
+		} else {
+		alert('Please fill in a description first!');
+		}
+	}
+
+function update_scope_selection_old(selobj,sel_id) {
+	selobj.style.background='yellow';
+	ajaxManager('load_page','$pagename?mode=update_scope&selections_id=' + sel_id + '&in_scope=' + selobj.value,'scope_selection_' + sel_id);
+	}
+
+function update_scope_selection(sel_id) {
+	container_name='scope_selection_' + sel_id;
+	container=document.getElementById(container_name);
+	container.style.background='yellow';
+	eval ('rbut=document.subcontract_edit.elements.radio' + sel_id + ';');
+	count=0;
+	while (count<rbut.length) {
+		if (rbut[count].checked) val=rbut[count].value;
+		count = count + 1;
+		}
+	if (val=='') return 0;
+	container.ajax_trigger_function='document.getElementById(\'scope_selection_' + sel_id + '\').style.background=\'white\'';
+	ajaxManager('load_page','$pagename?mode=update_scope&selections_id=' + sel_id + '&in_scope=' + val,'scope_selection_' + sel_id);
+	}
+
+</script>
+";
+?>

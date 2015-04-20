@@ -1,0 +1,165 @@
+<?
+
+
+echo"
+	<input type=hidden name=proposal_form_project_data value=true>
+	<table border=1 cellpadding=0 cellspacing=0 width=100% class=\"tableobj\">
+	
+	<tr><td bgcolor=$table_dark colspan=4>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%><tr style=\"color: $table_title\"><td><b>Project Data</b></td><td align=right>Months:$bid_info->duration_months&nbsp;&nbsp;&nbsp;Days:$bid_info->duration&nbsp;</td></tr></table>
+
+	</td></tr>	
+	
+	<tr><th colspan=2>
+		<font style=\"color: red; font-weight: bold;\">Start Date</font>
+	</th><td colspan=2>
+		";datebox($bid_info->start_date,"bidlist_edit.start_date");echo"
+	</td></tr>
+	
+	<tr><th colspan=2>
+		<font style=\"color: red; font-weight: bold;\">Completion Date</font>
+	</th><td colspan=2>
+		";datebox($bid_info->complete_date,"bidlist_edit.complete_date");echo"
+	</td></tr>
+	
+	<tr><th>
+		Bldg&nbsp;Sq.&nbsp;Feet&nbsp;
+	</th><td>
+		<input type=text size=8 name=bld_square_feet value=\"$bid_info->bld_square_feet\">
+	</td><th>
+		&nbsp;Stories&nbsp;
+	</th><td>
+		<input type=text size=3 name=bld_stories value=\"$bid_info->bld_stories\">
+	</td></tr>
+	
+	<tr><th colspan=2>
+		Probability
+	</th><td colspan=2>
+		";
+		//<input type=text size=3 name=probability value=\"$bid_info->probability\">%
+		echo "
+		<select name=probability>
+			<option>$bid_info->probability_raw</option>
+			<option></option>
+			<option>0</option>
+			<option>25</option>
+			<option>50</option>
+			<option>75</option>
+			<option>100</option>
+		</select>%
+	</td></tr>";
+	
+	if (!($lead_mode))
+	echo "
+	<tr><th colspan=2>
+	Engineer Budget \$
+	</th><td colspan=2>
+	<input type=text size=8 name=engineer_budget value=\"$bid_info->engineer_budget\">
+	</td></tr>";
+	else echo "<input type=hidden name=engineer_budget value=\"$bid_info->engineer_budget\">";
+	
+	echo "
+	<tr><td colspan=4 bgcolor=$table_dark>
+	<b>";
+		//if(!($lead_mode)) echo "ROM $ / Hrs</b>";
+		//else echo "<b>Approx Values</b>";
+	echo "
+		<b>Approx Values</b>
+	</td></tr>
+	
+	<tr><th>
+		";
+		//if(!($lead_mode)) echo "ROM $"; else echo "Approx Mech Value";
+	echo "
+		<font style=\"color: red; font-weight: bold;\">Approx Mech \$</font>
+	</th><td>
+		<input type=text size=8 name=rom value=\"$bid_info->rom\">
+	</td>";
+	if (!($lead_mode)) echo "
+	<th>
+		Plumb hrs
+	</th><td>
+		<input type=text size=5 name=rom_hrs_plumb value=\"$bid_info->rom_hrs_plumb\">
+	</td></tr>	
+	
+	<tr><th>
+		Fitter hrs
+	</th><td>
+		<input type=text size=5 name=rom_hrs_fit value=\"$bid_info->rom_hrs_fit\">
+	</td><th>
+		S/M hrs
+	</th><td>
+		<input type=text size=5 name=rom_hrs_sheet value=\"$bid_info->rom_hrs_sheet\">
+	</td></tr>	
+	
+	<tr><th>
+		Carpenter hrs
+	</th><td>
+		<input type=text size=5 name=rom_hrs_carpenter value=\"$bid_info->rom_hrs_carpenter\">
+	</td><th>
+		Millwrights hrs
+	</th><td>
+		<input type=text size=5 name=rom_hrs_mill_rights value=\"$bid_info->rom_hrs_mill_rights\">
+	</td></tr>	
+	
+	<tr><th>
+		Iron Worker hrs
+	</th><td>
+		<input type=text size=5 name=rom_hrs_iron value=\"$bid_info->rom_hrs_iron\">
+	</td><th>
+		Misc Trades hrs
+	</th><td>
+		<input type=text size=5 name=rom_hrs_misc value=\"$bid_info->rom_hrs_misc\">
+	</td></tr>";
+	
+	else echo "
+	</tr>
+	
+	
+	
+	<input type=hidden name=rom_hrs_plumb value=\"$bid_info->rom_hrs_plumb\">
+	<input type=hidden name=rom_hrs_fit value=\"$bid_info->rom_hrs_fit\">
+	<input type=hidden name=rom_hrs_sheet value=\"$bid_info->rom_hrs_sheet\">
+	<input type=hidden name=rom_hrs_carpenter value=\"$bid_info->rom_hrs_carpenter\">
+	<input type=hidden name=rom_hrs_mill_rights value=\"$bid_info->rom_hrs_mill_rights\">
+	<input type=hidden name=rom_hrs_iron value=\"$bid_info->rom_hrs_iron\">
+	<input type=hidden name=rom_hrs_misc value=\"$bid_info->rom_hrs_misc\">
+	";	
+	
+	
+	echo "
+	
+	<tr><th>
+		Approx Total \$
+	</th><td>
+		<input type=text size=8 name=approx_total_budget value=\"$bid_info->approx_total_budget\">
+	</td></tr>";
+	
+	if (!($lead_mode)) echo "
+	<tr><td colspan=4 bgcolor=$table_dark align=center>
+		<b>Edit Bidlist Comment</b>
+	</td></tr>
+	
+	<tr><td colspan=4>
+		<input maxlength=40 name=comments rows=2 style=\"width: 100%;\" value=\"$bid_info->comments\">
+	</td></tr>";
+	else echo "<input type=hidden name=comments style=\"width: 100%;\" value=\"$bid_info->comments\">";
+	
+	if (!($lead_mode)) {
+		echo "
+		<tr><td colspan=4 bgcolor=$table_dark align=center>
+			<b>Record Note Log</b>
+		</td></tr>
+	
+		<tr><td colspan=4><textarea name=proposal_notes rows=2 style=\"width: 100%;\"></textarea></td></tr>
+		<input type=hidden name=bidlist_log_type value=proposal_comments>";
+		//if ($lead_mode) echo "<input type=hidden name=bidlist_log_type value=lead_comments>";
+		//else echo "<input type=hidden name=bidlist_log_type value=proposal_comments>";
+		
+		}
+	
+	echo "
+	</table>
+";
+?>
+

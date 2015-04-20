@@ -1,0 +1,13 @@
+<?
+
+if ($batch_number!="") $batch_number=addslashes($batch_number);
+else die("Error: Invalid batch number! (Application error?)");
+
+$batch_info=getoneb("select * from positivepay_batch_history where batch_number = '$batch_number'");
+log_batch_activity($batch_info->batch_id,"Batch and transaction history deleted");
+
+
+@mysql_query("delete from positivepay_trans_history where batch_number = '$batch_number'");
+@mysql_query("delete from positivepay_batch_history where batch_number = '$batch_number'");
+forward('batch_mgmt');
+?>

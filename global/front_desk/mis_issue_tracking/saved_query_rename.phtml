@@ -1,0 +1,43 @@
+<?
+require_once('querylib.inc');
+$query_id=addslashes($query_id);
+
+$query_info=getone("select * from mis_issue_saved_queries where query_id = '$query_id' and contacts_id = '$global_user_id'");
+
+echo "
+<html>
+<head>
+<title>MIS Issue - Query rename form</title>
+</head>
+<body bgcolor=#ffffff>
+<form name=query_rename method=post action=$pagename>
+<input type=hidden name=mode value='saved_query_rename_submit'>
+<input type=hidden name=query_id value='$query_id'>
+<table border=0>
+<tr><td colspan=2>
+	<h2>Enter query name</h2>
+</td></tr>
+
+<tr><td>
+	Query Name:
+</td><td>
+	<input type=text size=30 name=query_name value='$query_info->query_name'>
+</td></tr>
+
+<tr><td>
+	&nbsp;
+</td><td>
+	<input type=submit value=Save>
+</td></tr>
+
+</form>
+</body>
+</html>
+";
+
+
+
+
+
+
+?>

@@ -1,0 +1,28 @@
+<?
+$agreement_id=escapeshellcmd($agreement_id);
+$age=escapeshellcmd($age);
+$agreement_info=load_agreement_info($agreement_id);
+$category_id=escapeshellcmd($category_id);
+require('header.phtml');
+
+$query="select * from svc_equip_types,svc_task_items where svc_task_items.equip_type_id = svc_equip_types.equip_type_id and category_id = '$category_id' and agreement_type_id = '$agreement_info->agreement_type_id' group by svc_equip_types.equip_type_id order by type";
+$res=@mysql_query($query);
+$rowcount=@mysql_num_rows($res);
+
+if ($rowcount<1) {
+	echo "<b>No matching options available...</b>";
+	} else {
+	while($row=@mysql_fetch_object($res)) {
+		$row->type=htmlspecialchars($row->type);
+		if ($row->approval_required_age <= $age) $linkcolor="yellow";
+		else $linkcolor="blue";
+		echo "<a href=$pagename?mode=svc_agreement_equipment_add_4&agreement_id=$agreement_id&category_id=$category_id&age=$age&equip_type_id=$row->equip_type_id>
+		<font color=$linkcolor>
+		$row->type
+		</font></a><br>
+		";
+		}
+	}
+	
+
+?>

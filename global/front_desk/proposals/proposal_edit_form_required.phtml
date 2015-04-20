@@ -1,0 +1,304 @@
+<?
+if ($form_mode!="search") {
+if (($bid_info->umcgroups_id=="")||($bid_info->umcgroups_id=="0")) $umcgroups_id_marker="<font color=red>*</font>";
+if ($bid_info->projtype=="") $projtype_marker="<font color=red>*</font>";
+if (($bid_info->proposal_type=="")||($bid_info->proposal_type=="0")) $proposal_type_marker="<font color=red>*</font>";
+if (($bid_info->project=="")||($bid_info->project=="0")) $project_marker="<font color=red>*</font>";
+if (($bid_info->location=="")||($bid_info->location=="0")) $location_marker="<font color=red>*</font>";
+if (($bid_info->contract_type=="")||($bid_info->contract_type=="0")) $contract_type_marker="<font color=red>*</font>";
+if (($bid_info->bid_date=="")||($bid_info->bid_date=="0")) $bid_date_marker="<font color=red>*</font>";
+if (!(getoneb("select * from bidlist_bid_projtypes where bidlist_id = '$bidlist_id' and project_type_id >0 limit 1"))) $type_marker="<font color=red>*</font>";
+
+
+if (($bid_info->design_process=="")||($bid_info->design_process=="0")) $design_process_marker="<font color=red>*</font>";
+}
+
+echo "
+	<input type=hidden name=proposal_form_required value=true>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+
+	<tr><td>&nbsp;
+	
+
+	</td><td align=right width=100%>";
+		if ($bid_info->status!="Lead") {
+			if ($form_mode!="search")
+				echo "<p>&nbsp;<br><b>&nbsp;<font color=red>Display&nbsp;in&nbsp;Bid&nbsp;List:</font></b>&nbsp;<input type=checkbox name=show_in_bidlist $bid_info->show_in_bidlist>";
+			else
+				echo "<b>&nbsp;Display&nbsp;in&nbsp;Bid&nbsp;List:</b>&nbsp;Y<input type=radio name=show_in_bidlist value='Y'>N<input type=radio name=show_in_bidlist value='N'>";
+		} 
+	echo "</td></tr>";
+	
+	
+	if (($bid_info->revision!="")||($bid_info->supersedes_me_id!=0)) {
+		include('proposal_edit_form_revision_warning.phtml');
+		}
+	
+	
+	//include('proposal_edit_form_associated.phtml');
+	
+	echo "</table>
+	<table border=10 cellpadding=0 cellspacing=0 width=100% class=\"required_info\" style=\"border-style: solid; border-top: 1px solid $required_bordercolor;\" title=\"Required Information Section\">
+	<tr><td bgcolors=blue>
+	<table border=0 cellspacing=0 cellpadding=3 width=100%>
+		
+		<tr valign=bottom><td>";
+			if ($form_mode!="search") echo "Record Creator:&nbsp;<font style=\"background: white; border: solid thin #000000;\">&nbsp;$bid_info->record_owner_first_name $bid_info->record_owner_last_name&nbsp;</font>";echo"
+		</td><td>
+			Group:&nbsp;";dropbox("select umcgroups_id as 'umcgroups_id$dropboxvaradd',name from bidlist_umcgroups order by name",$bid_info->umcgroups_id,"$dropboxsize","",1,"$dropboxmode");echo"$umcgroups_id_marker
+		</td><td valign=middle>";
+			
+			if (!($lead_mode)) {
+			echo"Prop&nbsp;Type:&nbsp;";dropbox("select proposal_type as 'proposal_type$dropboxvaradd',proposal_type from bidlist_proptypes order by proposal_type",$bid_info->proposal_type,"$dropboxsize","",1,$dropboxmode);
+			echo"$proposal_type_marker";
+			} else { echo "<input type=hidden name=proposal_type value=\"$bid_info->proposal_type\">"; }
+		echo "
+		</td><td>";
+			if (!($lead_mode)) 
+			echo "
+			Contract&nbsp;Type:&nbsp;<select name=contract_type$dropboxvaradd $dropboxmode size=$dropboxsize>
+			<option>$bid_info->contract_type</option>
+			<option>Cost+</option>
+			<option>Fixed Price</option>
+			<option>GMAX</option>
+			<option>T & M</option>
+			<option>RFQ Only</option>
+			</select>$contract_type_marker";
+			else echo "<input type=hidden name=contract_type value=\"$bid_info->contract_type\">";
+		echo "
+		</td></tr>
+		
+		<tr><td colspan=3>
+			Project:&nbsp;<input style=\"background-color: #ffdd88;\" type=text size=30 name=project "; if ($browser=="IE") echo "onmouseover=focus();"; echo " maxlength=39 value=\"$bid_info->project\">$project_marker
+			&nbsp;Location:&nbsp;<input type=text size=15 name=location value=\"$bid_info->location\">$location_marker";
+			
+			if (!($lead_mode)) {
+			if ($form_mode!="search") echo "&nbsp;&nbsp;GC/CM&nbsp;<input type=checkbox name=gccm $bid_info->gccm>&nbsp;&nbsp;UMC&nbsp;G/C&nbsp;(<i>Prime</i>)&nbsp;<input type=checkbox name=umc_gc_prime $bid_info->umc_gc_prime>&nbsp;&nbsp;</td><td align=right>Public&nbsp;<input type=checkbox name=public $bid_info->public>&nbsp;&nbsp;Private&nbsp;<input type=checkbox name=private $bid_info->private>"; 
+			} else {
+			if ($bid_info->umc_gc_prime==" checked") {
+				$bid_info->umc_gc_prime="on";
+				}
+			else $bid_info->umc_gc_prime="";
+			if ($form_mode!="search") echo "&nbsp;&nbsp;GC/CM&nbsp;<input type=checkbox name=gccm $bid_info->gccm>&nbsp;&nbsp;<input type=hidden name=umc_gc_prime value=\"$bid_info->umc_gc_prime\">&nbsp;&nbsp;</td><td align=right>Public&nbsp;<input type=checkbox name=public $bid_info->public>&nbsp;&nbsp;Private&nbsp;<input type=checkbox name=private $bid_info->private>"; 
+			}
+			
+			
+			echo "
+		</td></tr>
+		
+		<tr><td colspan=2>
+			<table border=0 cellspacing=0 cellpadding=0><tr><td>
+			";
+			if (!($lead_mode)) { 
+			echo "
+			<font style=\"background-color: #884444; color: white;\">Bid&nbsp;Date:</font>&nbsp;";
+			echo "</td><td>";datebox($bid_info->bid_date,"bidlist_edit.bid_date","","",1);
+			echo"</td><td valign=top>$bid_date_marker";
+			if ($form_mode=="search") {
+				echo "<table border=0 cellspacing=0 cellpadding=0><tr valign=top><td>&nbsp;<input type=hidden name=bid_date_radio value=range>&nbsp;to&nbsp;</td><td>";
+				datebox($bid_info->bid_date,"bidlist_edit.bid_date_range_end");
+				echo "</td></tr></table>";
+				} else {
+				echo "&nbsp;/&nbsp;Time:&nbsp;<input type=text size=12 name=bid_time value=\"$bid_info->bid_time\">";
+				}
+			} else {
+				echo "<input type=hidden name=bid_date value=\"$bid_info->bid_date\"><input type=hidden name=bid_time value=\"$bid_info->bid_time\">";
+				}
+			echo "
+			</td></tr></table><input type=hidden name=bid_date_is_date value=1>
+		</td><td>";
+		include("viewpoint_connect_ro.phtml");
+		include("viewpoint_libs.inc");
+		$projtypelist=@mssql_query("select Description from udIndustry with (NOLOCK) order by Description");
+		$projtypelist_array=array();
+		$projtypelist_array[]="";
+		while ($projtype_item=@mssql_fetch_object($projtypelist)) {
+			$projtypelist_array[]=$projtype_item->Description;
+			}
+		echo "Industry&nbsp;";
+		dropbox_array($projtypelist_array,"projtype",$bid_info->projtype);
+		
+		//$tempres=@mysql_query("select * from bidlist_bid_projtypes order by project_type_id desc");
+		/*
+		$tempres1=@mysql_query("select * from bidlist");
+		while ($temprow1=@mysql_fetch_object($tempres1)) {
+		//if ($temprow1->proposal_num==0) continue;
+		//echo "Proposal Num: $temprow1->proposal_num<br><ul>";
+		$newtype="";
+		$tempres2=@mysql_query("select * from bidlist_bid_projtypes where bidlist_id = '$temprow1->bidlist_id' order by project_type_id desc");
+		//tabledump("select * from bidlist_bid_projtypes where bidlist_id = '$temprow1->bidlist_id'");
+		while ($temprow=@mysql_fetch_object($tempres2)) {
+		//while (FALSE) {
+			$ptype=getoneb("select * from bidlist_projecttypes where project_type_id = '$temprow->project_type_id'");
+			//echo "$ptype->project_type<br>";
+			switch ($ptype->project_type) {
+				////////////////////////////////////////////////////////
+				case "Data Center/Hi-Tech":
+				$newtype="Data Center";break;
+				////////////////////////////////////////////////////////
+				case "Hotel":
+				$newtype="Hotel/Assist Living";break;
+				////////////////////////////////////////////////////////
+				case "Clean Room":
+				case "Laboratory/Biotech":
+				$newtype="Laboratory";break;
+				////////////////////////////////////////////////////////
+				case "Mixed Use":
+				case "Office":	
+				$newtype="Office/Mixed Use (<3 Stories)";break;
+				////////////////////////////////////////////////////////
+				case "High-Rise":
+				$newtype="Office/Mixed Use (High Rise)";break;
+				////////////////////////////////////////////////////////
+				case "Airport":
+				case "Parking Garage":
+				$newtype="Transport (Parking/Airport/Rd)";break;
+				////////////////////////////////////////////////////////
+				case "Residential (High-End)":
+				$newtype="High Rise Residential/Condo";break;
+				////////////////////////////////////////////////////////
+				case "Restaurant/Food/Kitchen":
+				case "Retail":
+				$newtype="Retail/Restaurant";break;
+				////////////////////////////////////////////////////////
+				case "Casino":
+				case "Sports Facility/Health Club":
+				case "Theater/Entertainment":
+				$newtype="Sports/Recreation";break;
+				////////////////////////////////////////////////////////
+				case "Childcare":
+				case "Education/University":
+				case "Training Center":
+				$newtype="Education (Classroom)";break;
+				////////////////////////////////////////////////////////
+				case "Chemical/Gas":
+				$newtype="Chemical/Refinery";break;
+				////////////////////////////////////////////////////////
+				case "Power Plant":
+				$newtype="Power Generation";break;
+				////////////////////////////////////////////////////////
+				case "Pulp/Paper":
+				$newtype="Pulp & Paper";break;
+				////////////////////////////////////////////////////////
+				case "Pump Station":
+				case "Water Treatment":
+				case "Waste Water":
+				$newtype="Water/Waste Treatment";break;
+				////////////////////////////////////////////////////////
+				case "Hospital/Medical":
+				case "Mission Critical/Life Safety":
+				case "Dental Office":
+				$newtype="Medical/Health Facilities";break;
+				////////////////////////////////////////////////////////
+				case "Convention Center":
+				case "Prison/Justice Center":
+				case "Municipal Facility":
+				case "Museum":
+				case "Military":
+				$newtype="Institutional/Government";break;
+				////////////////////////////////////////////////////////
+				case "Steel":
+				$newtype="Steel/Metals Foundry";break;
+				////////////////////////////////////////////////////////
+				case "Boeing":
+				case "Semi-Conductor":
+				case "Can/Bottling":
+				$newtype="Manufacturing (Boeing, Misc)";break;
+				////////////////////////////////////////////////////////
+				case "Central Plant":
+				case "Piping Replacement":
+				case "Equipment Replacement":
+				case "Equipment Installation":
+				case "Renovation":
+				case "Remodel":
+				case "TI":
+				$newtype="XXXXX";break;
+				////////////////////////////////////////////////////////
+				default: 	$newtype="";
+				}
+			if ($newtype=="") {
+				echo "No match: $ptype->project_type<br>";
+				$tempres=FALSE;
+				}
+			
+			$typematch=ms_getoneb("select * from udIndustry where Description = '$newtype'");
+			if ((!($typematch))&&($newtype!="XXXXX")) {
+				echo "Bad Match: $newtype<br>";
+				$tempres=FALSE;
+				}
+			
+			if ($newtype=="XXXXX") {
+				//$hopeless=getoneb("select * from bidlist where bidlist_id = '$temprow->bidlist_id' limit 1");
+				$morecount=getoneb("select sum(1) as total from bidlist_bid_projtypes where project_type_id = '$ptype->project_type_id'");
+				echo "First handy <a href=$pagename?mode=proposal_edit&bidlist_id=$temprow->bidlist_id>hopeless record</a> of type $ptype->project_type <i>($morecount->total more)</i>";
+				$tempres=FALSE;
+				}
+			
+			}
+			@mysql_query("update bidlist set projtype = '$newtype' where bidlist_id = '$temprow1->bidlist_id'");
+			//echo "</ul>";
+			}
+		
+		*/
+		
+		/*
+		dropbox_array(array(
+		"Medical/Health Facilities",
+		"Laboratory",
+		"Manufacturing (Boeing, Misc)",
+		"Office/Mixed Use (<3 Stories)",
+		"Office/Mixed Use (High Rise)",
+		"Data Center",
+		"High Rise Residential/Condo",
+		"Hotel/Assist Living",
+		"Retail/Restaurant",
+		"Sports/Recreation",
+		"Education (Classroom)",
+		"Transport (Parking/Airport/Rd)",
+		"Institutional/Government",
+		"Steel/Metals Foundry",
+		"Pulp & Paper",
+		"Power Generation",
+		"Water/Waste Treatment",
+		"
+		)
+		,"projtype");
+		*/
+		/*
+		if ($form_mode!="search") {
+			list_projtypes($bidlist_id);
+			list_projsubtypes($bidlist_id);
+			}
+		else {
+			echo "Proj Types: ";
+			dropbox("select project_type_id as 'project_type_id$dropboxvaradd',project_type from bidlist_projecttypes order by projgroup",$bid_info->type,"$dropboxsize","",2,$dropboxmode);
+			}
+		
+			echo"$projtype_marker
+		*/
+		echo "
+		</td><td>
+			Design Process: <select name=design_process$dropboxvaradd $dropboxmode size=$dropboxsize>
+			<option>$bid_info->design_process</option>
+			<option>Design Assist</option>
+			<option>Design Build</option>
+			<option>Plan/Spec</option>
+			</select>$design_process_marker
+		</td></tr>
+		
+	</table>
+	</td></tr>
+	</table>
+";
+
+
+if (($failed_required=="true")&&($bid_info->status!="Lead")) {
+	echo "<script>
+	alert('You did not fill in all required fields. Please look for a \"*\" next to items in the required information section!');
+	</script>
+	";
+	}
+
+
+?>
+

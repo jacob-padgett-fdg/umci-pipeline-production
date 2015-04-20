@@ -1,0 +1,546 @@
+<?
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+job_financial_summary('04664-');
+
+
+
+
+
+
+/*
+$netcashflow = $results->receivedamt - $results->paidtodate;
+
+$netcashflow = JCCM.ReceivedAmt - $results->paidtodate;
+
+$netcashflow = JCCM.ReceivedAmt - ($results->actualcost - $paid_to_date_diff->total);
+
+$netcashflow = JCCM.ReceivedAmt - ((sum(JCCP.ActualCost) - $paid_to_date_diff->total);
+
+$netcashflow = JCCM.ReceivedAmt - ((sum(JCCP.ActualCost) - (sum(APTD.Amount)));
+
+*/
+
+
+
+/*
+select 
+sum(JCCP.OrigEstHours) as OrigEstHours, 
+sum(JCCP.CurrEstHours) as CurrEstHours, 
+sum(JCCP.ActualHours) as ActualHours, 
+sum(JCCP.CurrEstCost) as CurrEstCost, 
+sum(JCCP.RemainCmtdCost) as RemainCmtdCost, 
+sum(JCCP.ActualCost) as ActualCost 
+from JCCP with (NOLOCK) 
+where JCCo = 1 and Job like '$contract_number%' group by JCCo  
+*/
+
+
+/*
+	(SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract) AS OpenAP,
+*/
+
+$query="
+SELECT 
+	CONTRACTLIST.Contract,
+	max(CONTRACTLIST.ReceivedAmt) as ReceivedAmt,
+	(max(CONTRACTLIST.ReceivedAmt) - ((sum(JCCP.ActualCost)) - 
+		(SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract))
+			) as CashFlow,
+	
+	sum(JCCP.OrigEstHours) as OrigEstHours,
+	sum(JCCP.CurrEstHours) as CurrEstHours,
+	sum(JCCP.ActualHours) as ActualHours,
+	sum(JCCP.CurrEstCost) as CurrEstCost,
+	sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+	sum(JCCP.ActualCost) as ActualCost,
+	(SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract) AS OpenAP
+	
+	
+		
+	FROM JCCM AS CONTRACTLIST 
+	LEFT OUTER JOIN JCJM AS JOBLIST ON CONTRACTLIST.Contract = JOBLIST.Contract
+	LEFT OUTER JOIN JCCP on (
+		JCCP.JCCo = CONTRACTLIST.JCCo and 
+		JCCP.Job = JOBLIST.Job )
+	WHERE 
+		(CONTRACTLIST.ContractStatus = 1) AND 
+		(CONTRACTLIST.JCCo = 1) AND 
+		(CONTRACTLIST.Contract LIKE '0%') AND 
+		(CONTRACTLIST.Contract <> '00000-')
+	GROUP BY CONTRACTLIST.Contract
+	ORDER BY CashFlow 
+";
+$query="
+SELECT 
+	CONTRACTLIST.Contract,
+	max(CONTRACTLIST.ReceivedAmt) as ReceivedAmt,
+	(max(CONTRACTLIST.ReceivedAmt) - ((sum(JCCP.ActualCost)) - 
+		ISNULL((SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract),0))
+			) as CashFlow,
+	
+	sum(JCCP.OrigEstHours) as OrigEstHours,
+	sum(JCCP.CurrEstHours) as CurrEstHours,
+	sum(JCCP.ActualHours) as ActualHours,
+	sum(JCCP.CurrEstCost) as CurrEstCost,
+	sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+	sum(JCCP.ActualCost) as ActualCost,
+	ISNULL((SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract),0) AS OpenAP
+	
+	
+		
+	FROM JCCM AS CONTRACTLIST 
+	LEFT OUTER JOIN JCJM AS JOBLIST ON CONTRACTLIST.Contract = JOBLIST.Contract
+	LEFT OUTER JOIN JCCP on (
+		JCCP.JCCo = CONTRACTLIST.JCCo and 
+		JCCP.Job = JOBLIST.Job )
+	WHERE 
+		(CONTRACTLIST.ContractStatus = 1) AND 
+		(CONTRACTLIST.JCCo = 1) AND 
+		(CONTRACTLIST.Contract LIKE '0%') AND 
+		(CONTRACTLIST.Contract <> '00000-')
+	GROUP BY CONTRACTLIST.Contract
+	ORDER BY CashFlow 
+";
+$query="
+SELECT 
+	CONTRACTLIST.Contract,
+	max(CONTRACTLIST.ReceivedAmt) as ReceivedAmt,
+	(max(CONTRACTLIST.ReceivedAmt) - ((sum(JCCP.ActualCost)) - 
+		ISNULL((SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract),0))
+			) as CashFlow,
+	
+	sum(JCCP.OrigEstHours) as OrigEstHours,
+	sum(JCCP.CurrEstHours) as CurrEstHours,
+	sum(JCCP.ActualHours) as ActualHours,
+	sum(JCCP.CurrEstCost) as CurrEstCost,
+	sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+	sum(JCCP.ActualCost) as ActualCost,
+	ISNULL((SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract),0) AS OpenAP
+	
+	
+		
+	FROM JCCM AS CONTRACTLIST 
+	LEFT OUTER JOIN JCJM AS JOBLIST ON ( CONTRACTLIST.Contract = JOBLIST.Contract and CONTRACTLIST.JCCo = JOBLIST.JCCo) 
+	LEFT OUTER JOIN JCCP on (
+		JCCP.JCCo = CONTRACTLIST.JCCo and 
+		JCCP.Job = JOBLIST.Job )
+	WHERE 
+		(CONTRACTLIST.ContractStatus = 1) AND 
+		(CONTRACTLIST.JCCo = 1) AND 
+		(CONTRACTLIST.Contract LIKE '0%') AND 
+		(CONTRACTLIST.Contract <> '00000-')
+	GROUP BY CONTRACTLIST.Contract
+	ORDER BY CashFlow 
+";
+$query="
+SELECT 
+	CONTRACTLIST.Contract,
+	max(CONTRACTLIST.JCCo) as JCCo,
+	max(CONTRACTLIST.Description) as Description,
+	max(CONTRACTLIST.Department) as Department,
+	max(JCDM.Description) as DPDesc,
+	max(CONTRACTLIST.OrigContractAmt) as OrigContractAmt,
+	max(CONTRACTLIST.ContractAmt) as ContractAmt,
+	max(CONTRACTLIST.BilledAmt) as GrossBilledAmt,
+	(max(CONTRACTLIST.BilledAmt)-max(CONTRACTLIST.CurrentRetainAmt)) as NetBilledAmt,
+	max(CONTRACTLIST.CurrentRetainAmt) as CurrentRetainAmt,
+	max(CONTRACTLIST.ReceivedAmt) as ReceivedAmt,
+	(max(CONTRACTLIST.ReceivedAmt) - ((sum(JCCP.ActualCost)) - 
+		ISNULL((SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract),0))
+			) as CashFlow,
+	( sum(JCCP.ActualCost) -
+		ISNULL(
+			(SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract)
+			,0)
+			
+			) as PaidToDate,
+	
+	sum(JCCP.OrigEstHours) as OrigEstHours,
+	sum(JCCP.CurrEstHours) as CurrEstHours,
+	sum(JCCP.ActualHours) as ActualHours,
+	sum(JCCP.CurrEstCost) as CurrEstCost,
+	sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+	sum(JCCP.ActualCost) as ActualCost,
+	ISNULL((SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract),0) AS OpenAP
+	
+	
+		
+	FROM JCCM AS CONTRACTLIST 
+	LEFT OUTER JOIN JCJM AS JOBLIST ON ( CONTRACTLIST.Contract = JOBLIST.Contract and CONTRACTLIST.JCCo = JOBLIST.JCCo) 
+	LEFT OUTER JOIN JCCP on (
+		JCCP.JCCo = CONTRACTLIST.JCCo and 
+		JCCP.Job = JOBLIST.Job )
+	LEFT OUTER JOIN JCDM on (
+		JCDM.JCCo = CONTRACTLIST.JCCo and
+		JCDM.Department = CONTRACTLIST.Department
+		)
+	WHERE 
+		(CONTRACTLIST.ContractStatus = 1) AND 
+		(CONTRACTLIST.JCCo = 1) AND 
+		(CONTRACTLIST.Contract LIKE '0%') AND 
+		(CONTRACTLIST.Contract <> '00000-')
+	GROUP BY CONTRACTLIST.Contract,CONTRACTLIST.Department
+	ORDER BY Department,CashFlow 
+";
+$query="
+SELECT 
+	CONTRACTLIST.Contract,
+	max(CONTRACTLIST.JCCo) as JCCo,
+	max(CONTRACTLIST.Description) as Description,
+	max(CONTRACTLIST.Department) as Department,
+	max(CONTRACTLIST.udpm1) as PM,
+	max(HRRM.FirstName) as PMFirstName,
+	max(HRRM.LastName) as PMLastName,
+	max(JCDM.Description) as DPDesc,
+	max(CONTRACTLIST.OrigContractAmt) as OrigContractAmt,
+	max(CONTRACTLIST.ContractAmt) as ContractAmt,
+	max(CONTRACTLIST.BilledAmt) as GrossBilledAmt,
+	(max(CONTRACTLIST.BilledAmt)-max(CONTRACTLIST.CurrentRetainAmt)) as NetBilledAmt,
+	max(CONTRACTLIST.CurrentRetainAmt) as CurrentRetainAmt,
+	max(CONTRACTLIST.ReceivedAmt) as ReceivedAmt,
+	(max(CONTRACTLIST.ReceivedAmt) - ((sum(JCCP.ActualCost)) - 
+		ISNULL((SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract),0))
+			) as CashFlow,
+	( sum(JCCP.ActualCost) -
+		ISNULL(
+			(SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract)
+			,0)
+			
+			) as PaidToDate,
+	
+	sum(JCCP.OrigEstHours) as OrigEstHours,
+	sum(JCCP.CurrEstHours) as CurrEstHours,
+	sum(JCCP.ActualHours) as ActualHours,
+	sum(JCCP.CurrEstCost) as CurrEstCost,
+	sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+	sum(JCCP.ActualCost) as ActualCost,
+	ISNULL((SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract),0) AS OpenAP,
+	rank() over (partition by CONTRACTLIST.Department order by (
+		max(CONTRACTLIST.ReceivedAmt) - ((sum(JCCP.ActualCost)) - ISNULL((SELECT SUM(APTD.Amount) 
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE   (APTD.APCo = 1) AND 
+		(APTD.Status = 1 OR APTD.Status = 2) AND 
+		(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract),0))
+		)) as DeptRankBad,
+	rank() over (partition by CONTRACTLIST.Department order by (
+		max(CONTRACTLIST.ReceivedAmt) - ((sum(JCCP.ActualCost)) - ISNULL((SELECT SUM(APTD.Amount) 
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE   (APTD.APCo = 1) AND 
+		(APTD.Status = 1 OR APTD.Status = 2) AND 
+		(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract),0))
+		) desc) as DeptRankGood
+		
+	FROM JCCM AS CONTRACTLIST 
+	LEFT OUTER JOIN JCJM AS JOBLIST ON ( CONTRACTLIST.Contract = JOBLIST.Contract and CONTRACTLIST.JCCo = JOBLIST.JCCo) 
+	LEFT OUTER JOIN JCCP on (
+		JCCP.JCCo = JOBLIST.JCCo and 
+		JCCP.Job = JOBLIST.Job )
+	LEFT OUTER JOIN JCDM on (
+		JCDM.JCCo = CONTRACTLIST.JCCo and
+		JCDM.Department = CONTRACTLIST.Department
+		)
+	LEFT OUTER JOIN HRRM on (
+		CONTRACTLIST.JCCo = HRRM.HRCo and 
+		CONTRACTLIST.udpm1 = HRRM.HRRef
+		)
+	WHERE 
+		(CONTRACTLIST.ContractStatus = 1) AND 
+		(CONTRACTLIST.JCCo = 1) AND 
+		(CONTRACTLIST.Contract LIKE '0%') AND 
+		(CONTRACTLIST.Contract <> '00000-')
+	GROUP BY CONTRACTLIST.Contract,CONTRACTLIST.Department
+	ORDER BY Department,DeptRankBad,CashFlow 
+";
+
+//ms_tabledump("select * from udIndustry");
+//ms_tabledump("select * from JCDM");
+//$query="select sum(CashFlow) as CashFlow,Department,max(DPDesc) as DPDesc from UMC_Financial_Summary_By_Contract group by Department order by CashFlow,Department";
+//echo "<hr>$query<hr>";
+//ms_tabledump("select top 1 * from HRRM");
+
+//ms_tabledump($query);exit;
+
+$query="select sum(CashFlow) as CashFlow,Department,max(DPDesc) as DPDesc from UMC_Financial_Summary_By_Contract group by Department order by CashFlow,Department";
+ms_tabledump($query);
+
+$query="select sum(CashFlow) as CashFlow,PMFirstName,PMLastName from UMC_Financial_Summary_By_Contract group by PM,PMFirstName,PMLastName order by CashFlow,PMLastName,PMFirstName";
+ms_tabledump($query);
+
+$query="select CFRanked.* from (select *,rank() over (partition by Department order by CashFlow) as DeptRankBad from UMC_Financial_Summary_By_Contract) CFRanked where DeptRankBad < 6 order by Department,CashFlow";
+ms_tabledump($query);
+
+
+//$query="select *, rank() over (partition by Department order by CashFlow) as DeptRank from UMC_Financial_Summary_By_Contract order by Department";
+//ms_tabledump($query);
+
+
+
+
+/*
+	
+	(SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract) AS PaidToDate,
+	
+	(SELECT SUM(APTD.Amount) as total 
+		FROM APTD with (NOLOCK) 
+		RIGHT OUTER JOIN APTL with (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE  	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND
+				(JCJM.Contract = CONTRACTLIST.Contract)  
+		GROUP BY JCJM.Contract) AS PaidToDateDiff,
+	
+*/	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//echo "<hr>$query<hr>";
+//	,
+//	(
+//	select Sum(APTD.Amount) as total 
+//	from APTD with (NOLOCK) 
+//	RIGHT OUTER JOIN APTL with (NOLOCK) ON 
+//		APTD.APCo = APTL.APCo and 
+//		APTD.Mth = APTL.Mth and 
+//		APTD.APTrans = APTL.APTrans and 
+//		APTD.APLine = APTL.APLine 
+//	where (APTD.APCo = 1) AND (APTL.Job = JOBLIST.Job) AND (APTD.Status = 1 OR APTD.Status = 2)
+//	) AS PaidToDateDiff
+	
+	
+		
+exit;
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// This one figures out the ReceivedAmt by contract.. 
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+ms_tabledump("
+SELECT 
+	CONTRACTLIST.Contract,
+	(SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract) AS ReceivedAmt
+
+
+
+
+
+
+		
+		
+	FROM JCCM AS CONTRACTLIST 
+	LEFT OUTER JOIN JCJM AS JOBLIST ON CONTRACTLIST.Contract = JOBLIST.Contract
+	WHERE 
+		(CONTRACTLIST.ContractStatus = 1) AND 
+		(CONTRACTLIST.JCCo = 1) AND 
+		(CONTRACTLIST.Contract LIKE '0%') AND 
+		(CONTRACTLIST.Contract <> '00000-')
+	GROUP BY CONTRACTLIST.Contract
+	ORDER BY ReceivedAmt DESC
+");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exit;
+ms_tabledump("
+
+select * from JCCM
+
+
+
+select APTL.Job,Sum(APTD.Amount) as total 
+
+from APTD with (NOLOCK) 
+RIGHT OUTER JOIN APTL with (NOLOCK) ON 
+APTD.APCo = APTL.APCo and 
+APTD.Mth = APTL.Mth and 
+APTD.APTrans = APTL.APTrans and 
+APTD.APLine = APTL.APLine 
+where 
+(APTD.APCo = 1) AND 
+(APTD.Status = 1 OR APTD.Status = 2) group by APTL.Job order by APTL.Job )
+                        
+                        ");
+
+
+
+ms_tabledump("select APTL.Job,Sum(APTD.Amount) as total 
+        		from APTD with (NOLOCK) 
+                RIGHT OUTER JOIN APTL with (NOLOCK) ON 
+                			APTD.APCo = APTL.APCo and 
+                			APTD.Mth = APTL.Mth and 
+                			APTD.APTrans = APTL.APTrans and 
+                			APTD.APLine = APTL.APLine 
+                        where 
+                        (APTD.APCo = 1) AND 
+                        (APTD.Status = 1 OR APTD.Status = 2) group by APTL.Job order by APTL.Job");
+
+
+
+
+
+
+
+
+
+
+
+
+//JCCM.receivedamt - sum(JCCP.ActualCost 
+
+
+
+
+
+
+
+
+
+
+
+
+mh_navs_footer();
+?>

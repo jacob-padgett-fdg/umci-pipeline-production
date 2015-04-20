@@ -1,0 +1,51 @@
+<?
+if ($agreement_id=="") die("ERROR: Application error. Please call your system administrator!");
+$agreement_info=load_agreement_info($agreement_id);
+if (!($agreement_info)) die("ERROR: Invalid agreement. Application error! Please contact your system administrator!");
+if ($agreement_info->status!="New") {
+	forward("svc_agreement_edit_finalize&agreement_id=$agreement_id");
+	exit;
+	}
+
+$filename="equipment_list.csv";
+//header("Content-type: application/octet-stream");
+header("Content-type: text/csv");
+header("Content-Disposition: attachment; filename=$filename");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+
+$query="select el_id,supervisor_approved,age from svc_agreement_equip_list 
+left join svc_equip_categories using (category_id) 
+left join svc_equip_types on svc_agreement_equip_list.equip_type_id = svc_equip_types.equip_type_id
+where agreement_id = '$agreement_info->agreement_id' 
+order by svc_equip_categories.category,svc_equip_types.type,svc_agreement_equip_list.el_id ";
+//tabledump($query);
+echo "Equip Type,Mfg,Model,Age,Tag Num,Serial Num,Location\r\n";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$equip_info=load_equip_info($row->el_id);
+	echo "$equip_info->class,$equip_info->mfg_name,$equip_info->model_number,$equip_info->age_text,$equip_info->tag_num,$equip_info->serial_num,$equip_info->location\r\n";
+	}
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

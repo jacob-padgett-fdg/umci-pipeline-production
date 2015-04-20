@@ -1,0 +1,33 @@
+<?
+
+if ($employee_num_verify!=$current_user->employee_num) {
+	echo "Error: Employee Number submitted doesn't match sessions current employee!<p>
+	This error was probably caused by trying to edit or alter more than one timesheet at a time. Please only
+	modify timesheets for a single employee at a time. If this is a continuing problem, please contact your
+	system administrator.<p>
+	<a href=$pagename>Main Menu</a>
+	";
+	exit;
+	}
+
+$creator=$global_user->contacts_id;
+$employee_id=$current_user->contacts_id;
+$employee_num=$current_user->employee_num;
+$status="new";
+$week_ending=vali_date($ts_week_ending);
+
+$query="insert into timesheet_index (creator,employee_id,employee_num,employee_group,week_ending,status)
+	values ('$creator','$employee_id','$employee_num','$current_user->employee_group','$week_ending','$status')";
+	
+$res=@mysql_query($query);
+
+if (!($res)) {
+	echo "Error with query:<hr>$query<hr>";
+	exit;
+	} else {
+	session_register('week_ending_preferred');
+	$week_ending_preferred=invali_date($week_ending);
+	$new_ts=@mysql_insert_id();
+	forward("timesheet_edit&timesheet_id_new=$new_ts");
+	}
+?>

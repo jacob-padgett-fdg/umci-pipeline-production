@@ -1,0 +1,18 @@
+<?
+if ($group_member_id!="") $group_member_id=escapeshellcmd($group_member_id);
+	else die("ERROR: No group_member_id specified. Please contact your system administrator, or try again (start over)");
+
+$group_member_info=getone("select * from timesheet_group_members where group_member_id = '$group_member_id'");
+$group_info=getone("select * from timesheet_foreman_groups where group_id = '$group_member_info->group_id'");
+
+if ($group_info->foreman_id!=$global_user->contacts_id)
+	die ("ERROR: Security Violation! The authorities have been notified!");
+
+
+$query="delete from timesheet_group_members where group_member_id = '$group_member_info->group_member_id'";
+$res=@mysql_query($query);
+
+if (!($res)) die ("ERROR: Update Failed! Contact the system administrator or try again (start over)<br>Failed Query:<hr>$query");
+forward("foreman_group_edit&group_id=$group_info->group_id");
+
+?>

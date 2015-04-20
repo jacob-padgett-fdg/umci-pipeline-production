@@ -1,0 +1,40 @@
+<?
+include("../webfile$devel/storage_settings.cfg");
+
+$gcrfi_id=addslashes($gcrfi_id);
+$gcrfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$gcrfi_id'");
+if (!($gcrfi_info)) {
+	$doc_id=addslashes($doc_id);
+	$doc_info=getoneb("select * from documents where doc_id = '$doc_id' and doc_type = 'gcrfi'");
+	$gcrfi_info=getoneb("select * from gcrfilog where gcrfi_id = '$doc_info->app_record_id'");
+	if (!($gcrfi_info)) die("ERR(2)");
+	}
+//if (!($gcrfi_info)) die("Application error! Ivalid GCRFI specified($gcrfi_id).");
+if (!($gcrfi_info)) die("ERR(1)");
+$job=getoneb("select * from jobinfo where jobinfo_id = '$gcrfi_info->jobinfo_id'");
+
+$sequence=ereg_replace("[^0-9]","",$sequence);
+//if ($sequence=="") die("Application error! (seq error)");
+if ($sequence=="") die("ERR(3)");
+$sequence=addslashes($sequence); // Shouldn't really be needed, should always be the same, but why not..
+$seq_pretty=sprintf("%'04d",$sequence);
+
+$files_res=@mysql_query("select * from webfile_files where file_group_id = '$gcrfi_info->gcrfi_image_id' and mime_type like '%pdf%'");
+$file_letter="a";
+@mkdir("/tmp/front_desk");
+@mkdir("/tmp/front_desk/cook_a_batch");
+@mkdir("/tmp/front_desk/cook_a_batch/$global_user->login_name");
+@mkdir("/tmp/front_desk/cook_a_batch/$global_user->login_name/$job->contract_num");
+@chdir("/tmp/front_desk/cook_a_batch/$global_user->login_name/$job->contract_num");
+
+while ($row=@mysql_fetch_object($files_res)) {
+	if ($row->file_group_id==0) die("ERR(99) - No File");
+	$gcrfi_info->gcrfi_num=ereg_replace("[ /]","_",$gcrfi_info->gcrfi_num);
+	$file_name=$seq_pretty . $file_letter . "-_$job->contract_num_-_gcrfi_-_$gcrfi_info->gcrfi_num.pdf";
+	copy("$storage_root$row->file_path",$file_name);
+	if (!(is_file($file_name))) die("ERR(4)");
+	$file_letter++;
+	}
+echo "OK";
+exit;
+?>

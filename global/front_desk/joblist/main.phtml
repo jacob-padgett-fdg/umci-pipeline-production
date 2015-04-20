@@ -1,0 +1,30 @@
+<?
+require('header.phtml');
+
+echo "
+<h2><center>Job Database Maintenance</center></h2><hr>
+Options:<p>
+
+<a href=$pagename?mode=search_form><font color=blue>Search</font></a><br>
+
+<a href=javascript:popjobwin();><font color=blue>Jump directly to job</font></a><br>
+<a href=$pagename?mode=active_jobs><font color=blue>Active Jobs List</font></a><br>
+<a href=$pagename?mode=jobinfo_edit><font color=blue>Create a new job</font></a><br>
+
+<a href=$pagename?mode=sync_active_jobs><font color=blue>Update active jobs from Viewpoint</font></a><br>
+<a href=$pagename?mode=close_notifications_list><font color=blue>Update Job Close Notifications List</font></a><br>
+
+<a href=$pagename_up><font color=blue>EXIT</font></a><br>
+<hr>
+<a href=$pagename?kill_session_info=1><font color=blue>LOG OUT</font></a><br>
+
+<script>
+function popjobwin () {
+	open(\"$pagename?mode=gotojobform\",\"testwindows\",\"height=150,width=300\");
+}
+</script>
+";
+
+
+require('footer.phtml');
+?>

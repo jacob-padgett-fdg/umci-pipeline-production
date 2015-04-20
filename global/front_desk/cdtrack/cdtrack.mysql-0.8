@@ -1,0 +1,97 @@
+#
+# Table structure for table 'cdinfo'
+#
+drop table if exists cdinfo;
+
+CREATE TABLE cdinfo (
+  cdinfo_id int(11) NOT NULL auto_increment,
+  dbnames_id int(11) DEFAULT '0' NOT NULL,
+  serial_num char(40),
+  create_date date,
+  description char(100),
+  department int(11),
+  creator char(50),
+  customer int(11),
+  project char(50),
+  date_begin date,
+  date_end date,
+  copies int(11),
+  PRIMARY KEY (cdinfo_id),
+  UNIQUE serial_num (serial_num)
+);
+
+
+#
+# Table structure for table 'customers'
+#
+drop table if exists customers;
+
+CREATE TABLE customers (
+  customer_id int(11) NOT NULL auto_increment,
+  customer_name char(100) DEFAULT '' NOT NULL,
+  PRIMARY KEY (customer_id,customer_name)
+);
+
+#
+# Table structure for table 'dbnames'
+#
+drop table if exists dbnames;
+
+CREATE TABLE dbnames (
+  dbnames_id int(11) NOT NULL auto_increment,
+  dbname char(50),
+  PRIMARY KEY (dbnames_id)
+);
+
+	#
+	# Data for table 'dbnames'
+	#
+	
+	INSERT INTO dbnames VALUES (1,'UMC CD\'s (DET)');
+	INSERT INTO dbnames VALUES (2,'Consultants (CON)');
+	INSERT INTO dbnames VALUES (3,'UMC CD\'s (DSG)');
+	INSERT INTO dbnames VALUES (4,'Misc (MSC)');
+
+#
+# Table structure for table 'department'
+#
+drop table if exists department;
+
+CREATE TABLE department (
+  department_id int(11) NOT NULL auto_increment,
+  department_name char(50) DEFAULT '' NOT NULL,
+  PRIMARY KEY (department_id)
+);
+
+	#
+	# Data for table 'department'
+	#
+	
+	INSERT INTO department VALUES (1,'Detailing');
+	INSERT INTO department VALUES (2,'Design Build');
+	INSERT INTO department VALUES (3,'Accounting');
+
+#
+# Table structure for table 'jobinfo'
+#
+drop table if exists jobinfo;
+
+CREATE TABLE jobinfo (
+  jobinfo_id int(11) NOT NULL auto_increment,
+  cdinfo_id int(11) DEFAULT '0' NOT NULL,
+  job_num char(30),
+  job_name char(100),
+  customer int(11),
+  manager char(50),
+  year_ended int(11),
+  b_dwg char(4),
+  b_txt char(4),
+  b_jpg char(4),
+  b_tif char(4),
+  b_bmp char(4),
+  b_oth char(4),
+  PRIMARY KEY (jobinfo_id)
+);
+
+
+

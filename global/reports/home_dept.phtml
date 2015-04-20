@@ -1,0 +1,259 @@
+<?
+$employee_group=1;
+
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+check_report_permissions();
+if ($dept!="") $dept=addslashes($dept);
+$dept_info=ms_getoneb("select * from PRDP with (NOLOCK) where PRCo = 1 and PRDept = '$dept'");
+
+
+
+////////////////////////////////////////////////////////////////////////
+//	LDAP Testing
+////////////////////////////////////////////////////////////////////////
+/*
+//I get actual data from this on our new virtualized web server, so I'm 
+//pretty sure it's a fine place to start.. still don't know how to check
+//a name organization wide (regardless of OU=Mukilteo IT etc..)
+
+
+$dn="OU=Administrators Only,OU=Mukilteo IT,DC=umci,DC=com";
+$dn="OU=Mukilteo IT,DC=umci,DC=com";
+$filter="samaccountname=jeffb";
+$con1=ldap_connect("ldap://10.0.0.34") or die("Cout not connect to AD");
+$bind=ldap_bind($con1,"administrator@umci.com","witchisdead");
+$search_results=ldap_search($con1,"$dn","$filter");
+$info = ldap_get_entries($con1, $search_results);
+echo "<pre>";
+print_r($info);
+echo "</pre>";
+exit;
+*/
+
+
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+// All the other ldap crap below is probably just that... crap.
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+
+
+//$dn="DC=umci,DC=com";
+//$dn="OU=Users,OU=Mukilteo Office,DC=umci,DC=com";
+//$filter="(samaccountname=KBOX_USER)";
+//$filter="samaccountname=KBOX_USER";
+//$filter="name=Jeff";
+
+//$filter="cn=Curtis Watson";
+//$filter="givenname=Curtis";
+//$filter="samaccountname=jeffb";
+//$dn="DN=umci,DN=com,c=US";
+
+
+//print_r($search_results);
+//$info = ldap_get_entries($con1, $search_results);
+//print_r($info);
+//$info = ldap_get_entries($con1, $search_results);
+//print_r($info);
+//$info = ldap_get_entries($con1, $search_results);
+//print_r($info);
+//$info = ldap_get_entries($con1, $search_results);
+//print_r($info);
+
+
+//$dn="DC=umci,DC=com";
+//$filter="(objectclass=*)";
+
+
+
+
+//$dn="DC=umci,DC=com";
+//$filter="(objectclass=*)";
+//$connection=ldap_connect("selby",389);
+//$bind=ldap_bind($connection,"UMC\\administrator","witchisdead");
+//$search_results=ldap_search($connection,"$dn","$filter");
+//exit;
+
+
+
+
+
+//$con1=ldap_connect("selby",389) or die("Cout not connect to Selby (AD Server)");
+//ldap_set_option($con1, LDAP_OPT_PROTOCOL_VERSION, 3);
+//$bd=ldap_bind($con1,"UMC\\jeffb","m30m4014") or die("Could not bind to ad server");
+//$bd=ldap_bind($con1,"UMC\\administrator","witchisdead") or die("Could not bind to ad server");
+//if (!($ads)) die("Could not connect to an ADS server... aborting..");
+//$attributes="";
+//$attributes = array("displayname", "l");
+
+//$justthese = array("ou", "sn", "givenname", "mail");
+//$search_output=ldap_search($con1,$dn,$filter,$justthese);
+//$search_output=ldap_search($con1,$dn,$filter,$attributes);
+//$search_output=ldap_search($con1,"$dn","$filter");
+//$error=ldap_error($con1);
+
+
+
+//$info = ldap_get_entries($ds, $search_output);
+
+/*
+$entries = ldap_get_entries($con1, $search_output);
+
+for ($i=0; $i<$entries["count"]; $i++) {
+	echo $entries[$i]["displayname"][0]."(".$entries[$i]["l"][0].")<br/>";
+	}
+*/
+
+//print_r($info);
+//echo "error: $error<p>
+//info [count]: " . $info["count"] . "
+//<p>
+//done";
+//mh_navs_footer();
+//die();
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+//	END LDAP Testing
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+echo "<form name=select_dept method=get action=$pagename>
+<input type=hidden name=mode value=\"$mode\">
+<input type=hidden name=report_name value=\"$report_name\">
+<select name=dept onchange=\"submit()\">
+<option value=\"$dept_info->PRDept\">$dept_info->Description</option>
+";
+
+$res=mssql_query("select * from PRDP with (NOLOCK) where PRCo = 1 order by Description");
+
+while ($row=@mssql_fetch_object($res)) {
+	echo "<option value=\"$row->PRDept\">($row->PRDept) $row->Description</option>";
+	}
+echo"
+</select>
+</form>
+";
+
+
+
+if ($dept_info!="") {
+	//$dept=addslashes($dept);
+	$query="select * from PREH with (NOLOCK) where PRCo = 1 and PRDept = '$dept' and ActiveYN = 'Y' order by LastName, FirstName ";
+	$res=@mssql_query($query);
+	echo "<table border=1 cellspacing=0 cellpadding=4>
+	<tr><td colspan=4 bgcolor=$fd_color_4 align=center>
+		<b>Employees Assigned to $dept_info->Description ($dept_info->PRDept)</b>
+	</td></tr>
+	<tr bgcolor=$fd_color_1><td>Employee</td><td>Emp&nbsp;#</td><td>Craft</td><td>Hire&nbsp;Date</td></tr>
+		
+	";
+	while ($row=@mssql_fetch_object($res)) {
+		echo "<tr><td>
+				$row->LastName, $row->FirstName
+			</td><td>
+				$row->Employee
+			</td><td>
+				$row->Craft
+			</td><td>
+				$row->HireDate
+			</td></tr>";
+		}
+	echo "</table>";
+	
+	}
+
+
+
+
+
+
+mh_navs_footer();
+exit;
+
+
+// Check if it's closed yet using prpc
+$payroll_closed=ms_getoneb("select * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = $employee_group and PREndDate = '$we_date' and Status = 1");
+
+if (!($payroll_closed)) {
+	echo "<h3><font color=red>Warning! It looks like payroll for this week is still open and subject to change!!!!</font></h3>";
+	}
+
+// Cycle through the list of whatever viewpoint has for the week...
+$query="select Employee,sum(Hours) as JobHours, Job from PRTH with (NOLOCK) where (PREndDate = '$we_date') and 
+		(Job is not null) and (PRCo =1) and Hours > 0
+		group by Employee,Job
+		order by Employee,sum(Hours) desc";
+                
+$we_date_mysql=vali_date($we_date);
+@mysql_query("delete from vp_locator_cache where week_ending = '$we_date_mysql'");
+$last_emp='0';
+$res=@mssql_query($query);
+while ($row=@mssql_fetch_object($res)) {
+	if ($last_emp==$row->Employee) continue;
+	$emp_info=getoneb("select * from contacts where employee_num = '$row->Employee'");
+	$last_emp=$row->Employee;
+	$job=substr($row->Job,0,5);
+	$hours=round($row->JobHours);
+	$craft=$emp_info->employee_trade;
+	$class_text=$emp_info->employee_class;
+	$insres=@mysql_query("insert into vp_locator_cache set
+					employee_num = '$row->Employee',
+					hours = '$hours',
+					job = '$job',
+					week_ending = '$we_date_mysql',
+					craft_text = '$craft', 
+					class_text = '$class_text'");
+	if (!($insres)) die("foo inserting data");
+	}
+
+$lastjob="";
+$lastcraft="";
+$lastclass="";
+echo "<table border=0 cellspacing=0 cellpadding=2 style=\"border: 1px solid black;\">";
+$query="select * from vp_locator_cache left join contacts on (vp_locator_cache.employee_num = contacts.employee_num) where employee_group = $employee_group and week_ending = '$we_date_mysql' order by job,craft_text,class_text,alphasort";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	if ($lastjob!=$row->job) {
+		$contract_num=$row->job + 1;
+		$contract_num=$contract_num - 1;
+		$lastcraft="";
+		$lastclass="";
+		$jobinfo=getoneb("select * from jobinfo where contract_num = '$contract_num'");
+		if ($jobinfo->display_name=="") $jobinfo->display_name = $jobinfo->job_name;
+		
+		$job_head_count=getoneb("select sum(1) as total from vp_locator_cache left join contacts on (vp_locator_cache.employee_num = contacts.employee_num) where employee_group = $employee_group and week_ending = '$we_date_mysql' and job = '$row->job'");
+
+		
+		echo "<tr bgcolor=$fd_color_4><td style=\"border: 1px solid black;\" colspan=5 align=center>$row->job - $jobinfo->display_name ($job_head_count->total)</td></tr>";
+		$lastjob=$row->job;
+		}
+	if ($row->craft_text!=$lastcraft) {
+		$craft_count=getoneb("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and craft_text = '$row->craft_text'");
+		$lastcraft=$row->craft_text;
+		$lastclass="";
+		echo "<tr><td><b>$row->craft_text ($craft_count->total):</b>&nbsp;";
+		}
+	if ($row->class_text!=$lastclass) {
+		$lastclass=$row->class_text;
+		echo "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>$row->class_text:</b> ";
+		}
+	echo "&nbsp;$row->first_name $row->last_name,";
+	}
+echo "</table>";
+mh_navs_footer();
+?>

@@ -1,0 +1,108 @@
+<?
+$jobinfo_id=addslashes($global_jobinfo_id);
+if ($transmittal_id!="") {
+	$transmittal_id=addslashes($transmittal_id);
+	$transmittal_info=getoneb("select * from transmittals where transmittal_id = '$transmittal_id'");
+	$transmittal_num=$transmittal_info->transmittal_num;
+	$jobinfo_id=$transmittal_info->jobinfo_id;
+	$query_start="update";
+	$query_end="where transmittal_id = '$transmittal_info->transmittal_id'";
+	} else {
+	$query_start="insert into";
+	$transmittal_info->transmittal_date=date('Y-m-d');
+	$query_end=", creator = '$global_user->contacts_id'";
+	$max_num=getoneb("select max(transmittal_num) as max_num from transmittals where jobinfo_id = '$jobinfo_id' and section = '$current_transmittals_section'");
+	$transmittal_num=$max_num->max_num + 1;
+	$jobinfo_id=$global_jobinfo_id;
+	if ($global_jobinfo_id=="") die("ERROR: Why aren't we in a specific job?!?!?!");
+	}
+
+$section=addslashes($current_transmittals_section);
+$company_id=addslashes($company_id);
+$site_id=addslashes($site_id);
+$attention_to_id=addslashes($attention_to_id);
+$cc_to_id=addslashes($cc_to_id);
+$creator=addslashes($global_user->contacts_id);
+$subject=addslashes($subject);
+$transmitted_via=addslashes($transmitted_via);
+$transmitted=addslashes($transmitted);
+$comments=addslashes($comments);
+$sent=checkfix($sent);
+$use_contact_addr_when_available=checkfix($use_contact_addr_when_available);
+
+//creator = '$global_user->contacts_id',
+$query_middle=" transmittals set
+jobinfo_id = '$jobinfo_id',
+section = '$current_transmittals_section',
+transmittal_num = '$transmittal_num',
+transmittal_date = '$transmittal_info->transmittal_date',
+company_id = '$company_id',
+site_id = '$site_id',
+attention_to_id = '$attention_to_id',
+cc_to_id = '$cc_to_id',
+subject = '$subject',
+transmitted_via = '$transmitted_via',
+transmitted = '$transmitted',
+comments = '$comments',
+sent = '$sent',
+use_contact_addr_when_available = '$use_contact_addr_when_available'
+";
+
+$query=$query_start . $query_middle . $query_end;
+
+$res=@mysql_query($query);
+if (!($res)) die("ERROR: Database update failed. Debug information:<hr>$query");
+if ($transmittal_id=="") {
+	$transmittal_info->transmittal_id=@mysql_insert_id();
+	$transmittal_id=$transmittal_info->transmittal_id;
+	}
+if ($subtype=="Save and Clone") {
+	$query_start="insert into";
+	$transmittal_info->transmittal_date=date('Y-m-d');
+	$query_end="";
+	$max_num=getoneb("select max(transmittal_num) as max_num from transmittals where jobinfo_id = '$jobinfo_id' and section = '$current_transmittals_section'");
+	$transmittal_num=$max_num->max_num + 1;
+	$query_middle=" transmittals set
+	jobinfo_id = '$jobinfo_id',
+	section = '$current_transmittals_section',
+	transmittal_num = '$transmittal_num',
+	transmittal_date = '$transmittal_info->transmittal_date',
+	company_id = '$company_id',
+	site_id = '$site_id',
+	attention_to_id = '$attention_to_id',
+	cc_to_id = '$cc_to_id',
+	creator = '$global_user->contacts_id',
+	subject = '$subject',
+	transmitted_via = '$transmitted_via',
+	transmitted = '$transmitted',
+	comments = '$comments',
+	sent = 'N'
+	";
+	@mysql_query($query_start . $query_middle . $query_end);
+	$new_id=@mysql_insert_id();
+	$res=@mysql_query("select * from transmittal_documents where transmittal_id = '$transmittal_id' order by trans_doc_id");
+	//tabledump("select * from transmittal_documents where transmittal_id = '$transmittal_id' order by trans_doc_id");exit;
+	while ($row=@mysql_fetch_object($res)) {
+		$row->description=addslashes($row->description);
+		//echo "insert into transmittal_documents set transmittal_id = '$new_id', quantity = '$row->quantity', description = '$row->description', doc_date = '$row->doc_date'<hr>";
+		@mysql_query("insert into transmittal_documents set transmittal_id = '$new_id', quantity = '$row->quantity', description = '$row->description', doc_date = '$row->doc_date'");
+		}
+	//exit;
+	forward("transmittal_edit&transmittal_id=$new_id");
+	//forward("transmittal_edit&transmittal_to_clone=$transmittal_info->transmittal_id");
+	exit;
+	}
+if ($subtype=="Save and New") {
+	forward("transmittal_edit");
+	exit;
+	}
+if ($subtype=="Save and Add Files") {
+	forward("transmittal_edit&transmittal_id=$transmittal_info->transmittal_id");
+	exit;
+	}
+if ($subtype=="Apply") {
+	forward("transmittal_edit&transmittal_id=$transmittal_info->transmittal_id");
+	exit;
+	}
+forward("main");
+?>

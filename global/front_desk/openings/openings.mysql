@@ -1,0 +1,51 @@
+
+
+create table hr_openings (
+	hr_openings_id int not null auto_increment,
+	active char(5) not null default 'Y',
+	job_title char(100) not null,
+	hr_job_categories_id int not null,
+	site_id int not null,
+	job_description_text char(255) not null,
+	salary_doe char(5) not null default 'N',
+	salary int not null,
+	deadline date,
+	
+	section_1_on char(5) not null default 'Y',
+	section_2_on char(5) not null default 'Y',
+	section_3_on char(5) not null default 'Y',
+	section_4_on char(5) not null default 'Y',
+	section_5_on char(5) not null default 'Y',
+	primary key (hr_openings_id)
+	);
+	
+
+create table hr_opening_bullets (
+	hr_opening_bullets_id int not null auto_increment,
+	hr_openings_id int not null,
+	bullet_category char(20) not null,
+	bullet_text char(255) not null,
+	primary key (hr_opening_bullets_id)
+	);
+
+create table hr_job_categories (
+	hr_job_categories_id int not null auto_increment,
+	name char(30),
+	description char(255),
+	primary key (hr_job_categories_id)
+	);
+	
+create table hr_applications (
+	hr_applications_id int not null auto_increment,
+	hr_openings_id int not null,
+	reviewed char(5) not null default 'N',
+	follow_up_flag char(5) not null default 'N',
+	section_1_on char(5) not null default 'Y',
+	section_2_on char(5) not null default 'Y',
+	section_3_on char(5) not null default 'Y',
+	section_4_on char(5) not null default 'Y',
+	section_5_on char(5) not null default 'Y',
+	primary key (hr_applications_id)
+	);
+	
+	

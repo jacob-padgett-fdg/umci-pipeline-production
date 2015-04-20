@@ -1,0 +1,53 @@
+<?
+if (!($admin_check)) die ("ERROR: Security Violation! The authorities are being notified!");
+
+$query="select timesheet_type_id,login_name, first_name,last_name,timesheet_types.contact_type as group_name from timesheet_types,contacts where timesheet_types.contacts_id = contacts.contacts_id order by last_name,first_name,contacts.contacts_id,group_name";
+
+echo "<body bgcolor=#ffffff>
+<a href=$pagename?mode=main><font color=blue>Return to main page</font></a>
+<table border=1 cellspacing=0 cellpadding=4 width=100%>
+<tr><td align=center width=100% bgcolor=#dddddd><h2>User Permissions</h2></td></tr></table>
+<form name=admin_add_perms method=post action=$pagename>
+<input type=hidden name=mode value=admin_timesheet_types_modify_submit>
+<table border=0><tr><td><h3>User: </h3></td><td>";
+dropbox("select contacts_id,last_name,', ',first_name from contacts where umc_emp = 'Y' and current = 'Y' order by last_name,first_name","","","",1);
+echo "</td><td>
+<select name=contact_type>
+<option></option>
+<option>admin</option>
+<option>billing</option>
+<option>payroll</option>
+<option>suid</option>
+<option>timesheet_data_entry</option>
+</select>
+</td><td>
+<input type=submit value=Add>
+</form>
+</td></tr></table>
+
+";
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	if ($row->login_name!=$last_login)
+		echo "<h3>$row->last_name, $row->first_name</h3>";
+	echo "<table border=0><tr><td width=50></td>
+	<td width=200><li>$row->group_name</li></td><td><i><a href=$pagename?mode=admin_timesheet_types_delete&timesheet_type_id=$row->timesheet_type_id><font color=blue>Delete</font></a><i></ul></td></tr></table>";
+	$last_login=$row->login_name;
+	}
+
+
+
+//tabledump("select contacts_id,last_name,', ',first_name from contacts where umc_emp = 'Y' and current = 'Y' order by last_name,first_name");
+
+
+
+
+
+echo "</body>";
+
+
+
+
+
+?>

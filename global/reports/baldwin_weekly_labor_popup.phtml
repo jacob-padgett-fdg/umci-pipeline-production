@@ -1,0 +1,274 @@
+<?
+//include('baldwin_weekly_labor_orig.phtml');exit;
+//die($week_ending);
+//die("hello");
+session_write_close();
+require('header.phtml');
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+$report_name="baldwin";
+if (!(pm_for_this_job())) check_report_permissions();
+
+$ecarray[1]='ST';
+$ecarray[2]='OT';
+$ecarray[3]='DT';
+
+if ($week_ending=="") {
+	die("Application error! Please contact your system administrator!");
+	}
+$date_info=date_info($week_ending);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+$query="select PREH.Employee,PREH.FirstName,PREH.LastName,PRTH.Hours as Hours,PRTH.Job,PRTH.Phase,PRTH.EarnCode,PRTH.PREndDate,PRTH.PostDate
+from PRTH with (NOLOCK) 
+	left join PREH with (NOLOCK) on (PREH.PRCo = PRTH.PRCo and PREH.Employee = PRTH.Employee)
+where 
+	PRTH.PRCo = 1 and 
+	PRTH.Hours != 0 and
+	PRTH.Employee = '" . mysql_real_escape_string($employee_num) . "' and 
+		(
+			(
+			PRTH.PostDate >= '$date_info->week_start' and 
+			PRTH.PostDate <= '$date_info->week_end'
+			) 
+			or 
+			(
+			PRTH.PREndDate  >= '$date_info->week_start' and
+			PRTH.PREndDate <= '$date_info->week_end'
+			)
+		)
+	
+	order by PRTH.PREndDate,PRTH.PostDate
+	";
+$res=@mssql_query($query);
+echo "<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=$fd_color_4><td>
+	<b>Emp#</b>
+</td><td>
+	<b>Name</b>
+</td><td>
+	<b>Job</b>
+</td><td>
+	<b>Phase</b>
+</td><td>
+	<b>Hours</b>
+</td><td>
+	<b>Type</b>
+</td><td>
+	<b>Date</b>
+</td><td>
+	<b>Week&nbsp;Ending</b>
+</td></tr>
+
+
+";
+while ($row=@mssql_fetch_object($res)) {
+	if ($row->EarnCode>1) $color="red";
+	else $color="black";
+	echo "<tr style=\"color: $color;\"><td>
+			$row->Employee
+		</td><td>
+			$row->LastName, $row->FirstName
+		</td><td>
+			$row->Job
+		</td><td>
+			$row->Phase
+		</td><td>
+			$row->Hours
+		</td><td>
+			" . $ecarray[$row->EarnCode] . "
+		</td><td>
+			" . date('D',strtotime("$row->PostDate")) . ",&nbsp;
+			" . date('m/d/Y',strtotime("$row->PostDate")) . "
+		</td><td>
+			" . date('m/d/Y',strtotime("$row->PREndDate")) . "
+		</td></tr>
+	";
+	}
+echo "</table>";
+//ms_tabledump($query);
+//echo "<hr>$query<hr>";
+exit;
+
+//echo "<hr>$query<hr>";
+//ms_tabledump($query);exit;
+
+
+function init_stats() {
+	global $wh;
+	$wh="";
+	
+	$wh->first_name="";
+	$wh->last_name="";
+	$wh->sunday="";
+	$wh->monday="";
+	$wh->tuesday="";
+	$wh->wednesday="";
+	$wh->thursday="";
+	$wh->friday="";
+	$wh->saturday="";
+	$wh->total="";
+
+	$wh->sunday_other="";
+	$wh->monday_other="";
+	$wh->tuesday_other="";
+	$wh->wednesday_other="";
+	$wh->thursday_other="";
+	$wh->friday_other="";
+	$wh->saturday_other="";
+	$wh->total_other="";
+	$wh->other_other="";
+	}
+
+function print_other($hours) {
+	if ($hours=="") return "";
+	return "<font style=\"background: yellow;\">&nbsp;*$hours</font>";
+	}
+
+function print_past($hours) {
+	if ($hours=="") return "";
+	return "<font style=\"background: #dd8888;\">&nbsp;$hours</font>";
+	}
+
+function print_row() {
+	global $wh,$earncodelast,$employeelast,$ecarray,$fd_color_1,$fd_color_2,$fd_color_3,$fd_color_4,$week_ending;
+	if (($earncodelast=="")||($employeelast=="")) {
+		return 0;
+		}
+	$ectext=$ecarray[$earncodelast];
+	$color="#000000";
+	if ($earncodelast>1) {
+		$color="red";
+		}
+	$contact_info=getoneb("select * from contacts where employee_num = '$employeelast'");
+	echo "<tr style=\"color: $color;\"><td style=\"border-top: 1px solid black;\">
+			$employeelast
+		</td><td style=\"border-top: 1px solid black;\">
+			"; contact_view("$wh->last_name, $wh->first_name",$contact_info->contacts_id); echo "
+		</td><td style=\"border-top: 1px solid black;\">
+			" . $ecarray[$earncodelast] . "
+		</td><td align=right style=\"cursor: hand; cursor: pointer; border-top: 1px solid black;\" onclick=\"baldwin_weekly_labor_popup('$employeelast','$week_ending')\">
+			$wh->total" . print_other($wh->total_other) . "
+		</td><td align=right style=\"border-top: 1px solid black;\">
+			" . print_past($wh->other_other) . "
+		</td><td style=\"text-align: center; background: $fd_color_1; border-top: 1px solid black;\">
+			$wh->sunday" . print_other($wh->sunday_other) . " 
+		</td><td style=\"text-align: center; border-top: 1px solid black;\">
+			$wh->monday" . print_other($wh->monday_other) . " 
+		</td><td style=\"text-align: center; background: $fd_color_1; border-top: 1px solid black;\">
+			$wh->tuesday" . print_other($wh->tuesday_other) . " 
+		</td><td style=\"text-align: center; border-top: 1px solid black;\">
+			$wh->wednesday" . print_other($wh->wednesday_other) . " 
+		</td><td style=\"text-align: center; background: $fd_color_1; border-top: 1px solid black;\">
+			$wh->thursday" . print_other($wh->thursday_other) . " 
+		</td><td style=\"text-align: center; border-top: 1px solid black;\">
+			$wh->friday " . print_other($wh->friday_other) . "
+		</td><td style=\"text-align: center; background: $fd_color_1; border-top: 1px solid black;\">
+			$wh->saturday" . print_other($wh->saturday_other) . " 
+		</td></tr>";
+	}
+
+//ms_tabledump($query);exit;
+
+echo "
+<table border=0 cellspacing=0 cellpadding=2 style=\"width: 550px; border: 1px solid black;\">
+<tr><td colspan=11 align=center><font size=+2>Weekly Labor Report</font></td></tr>
+<tr><td colspan=11 align=center>
+<a href=/global/front_desk$devel/?mode=main_financial_summary&report_mode=baldwin_weekly_labor&week_ending=$date_info->last_week_end>&lt;</a>
+<i>Week Ending $date_info->week_end_slashes
+<a href=/global/front_desk$devel/?mode=main_financial_summary&report_mode=baldwin_weekly_labor&week_ending=$date_info->next_week_end>&gt;</a>
+</td></tr>
+
+<tr><td>
+	<a href=/global/front_desk$devel/?mode=main_financial_summary&report_mode=baldwin_weekly_labor&week_ending=$week_ending&order_by=Employee><font color=blue>Emp#</font></a>
+</td><td>
+	<a href=/global/front_desk$devel/?mode=main_financial_summary&report_mode=baldwin_weekly_labor&week_ending=$week_ending&order_by=Name><font color=blue>Name</font></a>
+</td><td>
+	<a href=/global/front_desk$devel/?mode=main_financial_summary&report_mode=baldwin_weekly_labor&week_ending=$week_ending&order_by=Type><font color=blue>Type</font></a>
+</td><td>
+	Total
+</td><td>
+	Past
+</td><td>
+	Sun
+</td><td>
+	Mon
+</td><td>
+	Tue
+</td><td>
+	Wed
+</td><td>
+	Thu
+</td><td>
+	Fri
+</td><td>
+	Sat
+</td></tr>
+";
+//$compare_start_date=date('Ymd',$date_info->week_start_unixtime);
+//$compare_end_date=date('Ymd',$date_info->week_end_unixtime);
+$compare_start_date=date('Ymd',strtotime($date_info->week_start_mysql));
+$compare_end_date=date('Ymd',strtotime($date_info->week_end_mysql));
+
+$res=@mssql_query($query);
+while ($row=@mssql_fetch_object($res)) {
+	if (($row->EarnCode!=$earncodelast) || ($row->Employee!=$employeelast)) {
+		print_row();
+		init_stats();
+		}
+	//$ts_prenddate=;
+	//$ts_postdate=strtotime($row->PostDate);
+	$compare_date=date('Ymd',strtotime($row->PostDate));
+	//$compare_start_date=date('Ymd',strtotime($date_info->week_start_mysql));
+	//$compare_end_date=date('Ymd',strtotime($date_info->week_end_mysql));
+	
+	$dow_text=date('D',strtotime($row->PostDate));
+	$pre_date=date('Y-m-d',strtotime($row->PREndDate));
+	$earncodelast=$row->EarnCode;
+	$employeelast=$row->Employee;
+	$wh->first_name=$row->FirstName;
+	$wh->last_name=$row->LastName;
+	//echo "<tr><td>$dow_text</td></tr>";
+	
+	if ($pre_date!=$date_info->week_end_mysql) {
+		$wh->total_other=$wh->total_other + $row->Hours;
+		switch ($dow_text) {
+			case "Sun":		$wh->sunday_other=$wh->sunday_other + $row->Hours; break;
+			case "Mon":		$wh->monday_other=$wh->monday_other + $row->Hours; break;
+			case "Tue":		$wh->tuesday_other=$wh->tuesday_other + $row->Hours; break;
+			case "Wed":		$wh->wednesday_other=$wh->wednesday_other + $row->Hours; break;
+			case "Thu":		$wh->thursday_other=$wh->thursday_other + $row->Hours; break;
+			case "Fri":		$wh->friday_other=$wh->friday_other + $row->Hours; break;
+			case "Sat":		$wh->saturday_other=$wh->saturday_other + $row->Hours; break;
+			}
+	} else {
+		if (($compare_date>$compare_end_date)||($compare_date<$compare_start_date)) {
+			$wh->other_other=$wh->other_other + $row->Hours;
+			
+			//die("<script>alert('hello');</script>");
+			//die("$compare_start_date / $compare3D_date / $compare_end_date<hr>
+			//$date_info->week_start / $compare_date / $date_info->week_end");
+			//echo "<div style=\"background: orange; width: 500px height: 500px;\">&nbsp;$row->FirstName $row->LastName<p>
+			//$wh->other_other=$wh->other_other + $row->Hours;
+			//</div>";
+			//die();
+		} else {
+			$wh->total=$wh->total + $row->Hours;
+			switch ($dow_text) {
+				case "Sun":		$wh->sunday=$wh->sunday + $row->Hours; break;
+				case "Mon":		$wh->monday=$wh->monday + $row->Hours; break;
+				case "Tue":		$wh->tuesday=$wh->tuesday + $row->Hours; break;
+				case "Wed":		$wh->wednesday=$wh->wednesday + $row->Hours; break;
+				case "Thu":		$wh->thursday=$wh->thursday + $row->Hours; break;
+				case "Fri":		$wh->friday=$wh->friday + $row->Hours; break;
+				case "Sat":		$wh->saturday=$wh->saturday + $row->Hours; break;
+				}
+			}
+		}
+	}
+print_row();
+echo "</table>";
+
+//ms_tabledump($query);
+?>

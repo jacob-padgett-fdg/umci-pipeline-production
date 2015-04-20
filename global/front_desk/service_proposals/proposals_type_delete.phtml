@@ -1,0 +1,31 @@
+<?
+if (!($adminuser)) {
+	echo "ERROR: Security Violation Attempt! The authorities have been notified.     
+	Go away now. If you believe this is in error, then contact your system administrator.";
+	exit;
+	}
+
+//require_once('querylib.inc');
+
+if ($svc_proposals_type_id!="") {
+	$svc_proposals_type_id=escapeshellcmd($svc_proposals_type_id);
+	$query="delete from svc_proposals_type where svc_proposals_type_id = '$svc_proposals_type_id'";
+	} else {
+	echo "Error: Nothing to do! Aborting. Please contact your system administrator.";
+	exit;
+	}
+
+
+//echo "$query";exit;
+
+$res=@mysql_query($query);
+if (!($res)) {
+	echo "ERROR submitting your query. Please contact your system administrator. The query that failed is printed
+	below. Please keep this on the screen or print it so that your system amdinistrator may examine it.<hr>$query";
+	exit;
+	}
+
+
+forward('proposals_type_maint');
+
+?>

@@ -1,0 +1,10 @@
+<?
+//echo "edit note";
+//echo "$REQUEST_URI test";
+$lam_id=ereg_replace("^.*_","",$object_id);
+$lam_id=ereg_replace("[^0-9]","",$lam_id);
+$lam_info=getoneb("select * from lam where lam_id = '$lam_id'");
+$note=htmlspecialchars($lam_info->lam_note);
+echo "<input style=\"height: 20px;\" value=\"$note\" type=text size=30 onchange=\"notes_save('$lam_info->lam_id',this.value)\" onblur=\"notes_save('$lam_info->lam_id',this.value)\" onmouseover=\"focus()\">";
+//echo "edit your notes here...";
+?>

@@ -1,0 +1,122 @@
+<?
+$my_jobs_query="select 
+	jobinfo.jobinfo_id as charge_jobinfo_id,contract_num, ' - ', substring(display_name,1,20)
+	from jobinfo 
+	left join contacts_groups on (jobinfo.jobinfo_id = contacts_groups.jobinfo_id) 
+	left join contacts_groups_members on (contacts_groups.group_id = contacts_groups_members.group_id) 
+	left join front_desk_job_admins on (jobinfo.jobinfo_id = front_desk_job_admins.jobinfo_id) 
+	left join front_desk_job_foreman on (jobinfo.jobinfo_id = front_desk_job_foreman.jobinfo_id)
+	where jobinfo.active = 'Y' and
+	( contacts_groups_members.contacts_id = '$global_user_id' or
+	jobinfo.project_manager_id = '$global_user_id' or
+	jobinfo.detailing_lead_id = '$global_user_id' or
+	front_desk_job_admins.contacts_id = '$global_user_id' or 
+	front_desk_job_foreman.foreman_id = '$global_user_id' or
+	jobinfo.contract_admin = '$global_user_id'
+	
+	) 
+	group by charge_jobinfo_id
+	order by contract_num
+	";
+$my_jobs_query="select jobinfo.jobinfo_id as charge_jobinfo_id,contract_num, ' - ', substring(display_name,1,20)
+	from jobinfo where active = 'Y' order by contract_num";
+
+include("header.phtml");
+$imagesize="250";
+if ($product_id=="") die("application error");
+$product_id=addslashes($product_id);
+$product_info=getone("select * from costore_products where product_id = '$product_id'");
+if (!($product_info)) die("oops");
+$image_info=getoneb("select * from webfile_files where file_group_id = '$product_info->image_id'");
+$imgurl=webfile_image_icon($image_info->files_id,array('height'=>"$imagesize",'width'=>"$imagesize"));
+if ($cart_id!="") {
+	$cart_id=addslashes($cart_id);
+	$cart_info=getoneb("select * from costore_cart where cart_id = '$cart_id' and contacts_id = '$global_user_id'");
+	//if ($cart_info->product_options='XXL') {
+	//	$cart_info->price=$product_info->xxl_price;
+	//	} else {
+	$cart_info->price=$product_info->price;
+	//	}
+	} else {
+		$cart_info->quantity=1;
+	}
+
+
+//<div style=\"position: relative; border: 1px solid black; height: 400px;\">
+echo "
+<center>
+<table border=0 cellspacing=0 style=\"width: ${imagesize}px; height: 400px;\"><tr><td>
+<form name=product_view method=post action=$pagename>
+<input type=hidden name=mode value=product_add_to_cart>
+<input type=hidden name=cart_id value=\"$cart_info->cart_id\">
+<input type=hidden name=product_id value=\"$product_info->product_id\">
+<h2>$product_info->product_name</h2>
+<table border=0 cellspacing=0 cellpadding=3>
+<tr><td colspan=2 width=100%>
+	";
+	if ($product_info->new_item_flag=='Y') echo "<img style=\"position: absolute;\" src=new.gif>";
+	echo "
+	<img src=$imgurl>
+</td></tr>	
+
+<tr><td colspan=2>
+	$product_info->product_name<br>
+</td></tr>	
+
+<tr><td colspan=2>
+	$product_info->description<br>
+</td></tr>	
+	
+<tr><td>
+	Employee&nbsp;Price 
+</td><td>
+	$product_info->price
+</td></tr>
+
+<tr><td>
+	Regular Price
+</td><td>
+	$product_info->non_emp_price
+</td></tr>
+";
+
+if (getoneb("select * from costore_products_options where product_id = '$product_info->product_id' limit 1")) {
+	echo "
+	<tr><td>
+		Option
+	</td><td>";
+		//tabledump("select * from costore_products_options where product_id = '$product_info->product_id' limit 1");
+		dropbox("select option_text as product_options,option_text from costore_products_options where product_id = '$product_info->product_id'","$cart_info->product_options");
+		echo "
+	</td></tr>";
+	}
+
+echo "
+<tr><td>
+	Job
+</td><td>
+	";
+	dropbox($my_jobs_query);
+	
+	//dropbox("select jobinfo_id as charge_jobinfo_id, contract_num , ' - ' , substring(display_name,1,20) from jobinfo where active = 'Y' order by length(contract_num), contract_num","");
+	echo "
+</td></tr>
+
+<tr><td>
+	Quantity
+</td><td width=100%>
+	<input type=text size=3 name=quantity value=\"$cart_info->quantity\">
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=\"Add to cart\">
+</td></tr>
+</table>
+</form>
+
+</center></table>";
+
+include("footer.phtml");
+
+
+?>

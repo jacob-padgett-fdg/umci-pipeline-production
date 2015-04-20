@@ -1,0 +1,18 @@
+<?
+require('header.phtml');
+echo "<a href=$pagename?mode=proposal_search><font color=blue>Return to Search Options</font></a><br>";
+
+$bid_date_1=vali_date($bid_date_1);
+$bid_date_2=vali_date($bid_date_2);
+
+if ($bid_date_1=='') die ('ERROR: You must specify both dates for the range');
+if ($bid_date_2=='') die ('ERROR: You must specify both dates for the range');
+
+$query="select * from bidlist where bid_date > '$bid_date_1' and bid_date < '$bid_date_2' order by bidlist_id";
+proposal_search_output_1($query);
+
+
+
+
+
+?>

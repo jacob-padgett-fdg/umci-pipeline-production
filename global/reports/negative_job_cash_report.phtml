@@ -1,0 +1,381 @@
+<?
+require("header.phtml");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+require('mh_lib.inc');
+require('report_lib.inc');
+mh_navs_header();
+check_report_permissions();
+//$adminuser=FALSE;
+//$query="select * from UMC_Financial_Summary_By_Contract order by CustomerName";ms_tabledump($query);exit;
+//$global_user->employee_num="2571"; $global_user->display_name="Smith, Doug";$adminuser=TRUE;
+//$global_user->employee_num="9033"; $global_user->display_name="Locke, Scott";$adminuser=FALSE;
+//$global_user->employee_num="4511"; $global_user->display_name="Damitio, Pat";$adminuser=FALSE;
+//$global_user->employee_num="6389"; $global_user->display_name="Russo, Steve";$adminuser=FALSE;
+//$global_user->employee_num="9177"; $global_user->display_name="Shaeffer, Ralph";$adminuser=FALSE;
+//$global_user->employee_num="8810"; $global_user->display_name="Lynn, Ryan";$adminuser=FALSE;
+//$global_user->employee_num="9157"; $global_user->display_name="Lowery, Troy";$adminuser=FALSE;
+//$global_user->employee_num="8947"; $global_user->display_name="Nichols, Marshal";
+//$global_user->employee_num="7008"; $global_user->display_name="Boyer, Maria";
+//$global_user->employee_num="5605"; $global_user->display_name="Eppler, Bryan";$adminuser=FALSE;
+//$global_user->employee_num="5002"; $global_user->display_name="Endres, Brett";$adminuser=FALSE;
+//$global_user->employee_num="6085"; $global_user->display_name="Brooks, Steve";
+//ms_tabledump("select * from UMC_Financial_Summary_By_Contract where Contract = '05131-' order by Contract");exit;
+
+
+//ms_tabledump("select * from UMC_Financial_Summary_By_Contract order by PM");exit;
+//ms_tabledump("select TOP 100 * from UMC_Aging_By_Contract where Contract = '05131-' order by Contract Desc");exit;
+//ms_tabledump("select * from UMC_Financial_Summary_By_Contract");exit;
+
+$standard_width="400px";
+$standard_height="180px";
+$cf_column_width="80px";
+
+echo "
+<style>
+table.cf {
+	width: 100%;
+	border: 0px solid black;
+	border-spacing: 0px;
+	}
+table.cf td {
+	font: 13px helvetica;
+	border: 0px solid black;
+	padding: 1px;
+	}
+div.cf {
+	float: left;
+	border: 1px solid black;
+	height: $standard_height;
+	width: $standard_width;
+	overflow: auto;
+	}
+</style>
+<div style=\"width: 820px;\">
+<center><font size=+2><b>Negative Cash Flow Report</b></font><br><i><font size=-1>(Created for $global_user->display_name on " . date('m/d/y @ H:i:s') . ")</font></i></center>
+";
+
+//ms_tabledump("select sum(CashFlow) as Cashflow from UMC_Financial_Summary_By_Contract group by JCCo");
+//mssql_query("select * from UMC_Financial_Summary_By_Contract");
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Admin user interface..
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//ms_tabledump("select * from UMC_Financial_Summary_By_Contract order by PM");
+if ($adminuser) {
+// Cash flow by department div
+$query="select sum(CashFlow) as CashFlow,Department,max(DPDesc) as DPDesc from UMC_Financial_Summary_By_Contract where CashFlow < 0 group by Department order by CashFlow,Department";
+$res=@mssql_query($query);
+$id=rand();$CSSum=0;
+echo "<div class=cf><table class=cf>
+<tr class=cf><td colspan=2 bgcolor=$fd_color_4><div id=\"$id\" style=\"float: right;\"></div><b>Cash Flow by Department</td></tr>";
+
+while ($row=@mssql_fetch_object($res)) {
+	$CSSum=$CSSum + $row->CashFlow;
+	echo "<tr><td width=$cf_column_width align=right>" . gap_num($row->CashFlow) . "&nbsp;&nbsp;&nbsp;</td><td>$row->DPDesc</td></tr>";
+	}
+echo "<script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+echo "</table></div>";
+
+// Cash flow by PM div
+$query="select sum(CashFlow) as CashFlow,PMFirstName,PMLastName from UMC_Financial_Summary_By_Contract where CashFlow < 0 group by PM,PMFirstName,PMLastName order by CashFlow,PMLastName,PMFirstName";
+$res=@mssql_query($query);
+$id=rand();$CSSum=0;
+echo "<div class=cf><table class=cf>
+<tr><td colspan=2 bgcolor=$fd_color_4><div id=\"$id\" style=\"float: right;\"></div><b>Cash Flow by Project Manager</td></tr>";
+while ($row=@mssql_fetch_object($res)) {
+	$CSSum=$CSSum + $row->CashFlow;
+	echo "<tr><td width=$cf_column_width align=right>" . gap_num($row->CashFlow) . "&nbsp;&nbsp;&nbsp;</td><td>$row->PMFirstName $row->PMLastName</td></tr>";
+	}
+echo "<script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+echo "</table></div>";
+
+// Cash flow by Customer
+$query="select sum(CashFlow) as CashFlow,CustomerName from UMC_Financial_Summary_By_Contract where CashFlow < 0 group by CustomerName order by CashFlow,CustomerName";
+$res=@mssql_query($query);
+$id=rand();$CSSum=0;
+echo "<div class=cf><table class=cf>
+<tr><td colspan=2 bgcolor=$fd_color_4><div id=\"$id\" style=\"float: right;\"></div><b>Cash Flow by Customer</td></tr>";
+while ($row=@mssql_fetch_object($res)) {
+	$CSSum=$CSSum + $row->CashFlow;
+	echo "<tr><td width=$cf_column_width align=right>" . gap_num($row->CashFlow) . "&nbsp;&nbsp;&nbsp;</td><td>$row->CustomerName</td></tr>";
+	}
+echo "<script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+echo "</table></div>";
+
+
+// Cash flow by contract in departments
+//$query="select CFRanked.* from (select *,rank() over (partition by Department order by CashFlow) as DeptRankBad from UMC_Financial_Summary_By_Contract) CFRanked where DeptRankBad < 6 order by Department,CashFlow";
+$query="select * from UMC_Financial_Summary_By_Contract where CashFlow < 0 order by Department,CashFlow";
+$res=@mssql_query($query);
+$last_dept="";
+$close_div="";
+while ($row=@mssql_fetch_object($res)) {
+	if ($row->DPDesc!=$last_dept) {
+		if ($close_div!="") {
+			echo "<script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+			}
+		$id=rand();$CSSum=0;
+		echo "$close_div<div style=\"float: left; border: 1px solid black; width: $standard_width; height: $standard_height; overflow: auto;\"><table class=cf width=100% border=0 cellspacing=0 cellpadding=1>
+		<tr><td colspan=2 bgcolor=$fd_color_4><div id=\"$id\" style=\"float: right;\"></div><b>Cash Flow by Contract for $row->DPDesc</td></tr>";
+		$close_div="</table></div>";
+		}
+	$CSSum=$CSSum + $row->CashFlow;
+	echo "<tr><td width=$cf_column_width align=right>" . gap_num($row->CashFlow) . "&nbsp;&nbsp;&nbsp;</td><td>$row->Contract $row->Description</td></tr>";
+	$last_dept=$row->DPDesc;
+	}
+echo "<script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+echo "$close_div";
+//echo "</div>";
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PM View
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//echo "$global_user->employee_num";
+$is_real_pm=ms_getoneb("select top 1 * from JCCM where ContractStatus = 1 and JCCo = 1 and udpm1 = '$global_user->employee_num' and Contract not like 'AA%' and Contract not like 'BB%' and Contract not like 'CC%' and Contract not like 'DD%'");
+if ($is_real_pm) {
+// Cash flow by Customer
+$query="select * from UMC_Financial_Summary_By_Contract where PM = '$global_user->employee_num' and CashFlow < 0 order by CashFlow";
+$res=@mssql_query($query);
+$id=rand();$CSSum=0;
+echo "<div class=cf><table class=cf>
+<tr><td colspan=2 bgcolor=$fd_color_4><div id=\"$id\" style=\"float: right;\"></div><b>Cash Flow by Project for $global_user->display_name</td></tr>";
+while ($row=@mssql_fetch_object($res)) {
+	$CSSum=$CSSum + $row->CashFlow;
+	echo "<tr><td width=$cf_column_width align=right>" . gap_num($row->CashFlow) . "&nbsp;&nbsp;&nbsp;</td><td>$row->Contract $row->Description</td></tr>";
+	}
+echo "<script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+echo "</table></div>";
+// Total Negative cash flow for PM
+/*$query="select sum(CashFlow) as CashFlow from UMC_Financial_Summary_By_Contract where PM = '$global_user->employee_num' and CashFlow < 0 order by CashFlow";
+$res=@mssql_query($query);
+$id=rand();$CSSum=0;
+echo "<div class=cf><table class=cf>
+<tr><td colspan=2 bgcolor=$fd_color_4><div id=\"$id\" style=\"float: right;\"></div><b>Total Negative Cash Flow for $global_user->display_name</td></tr>";
+while ($row=@mssql_fetch_object($res)) {
+	$CSSum=$CSSum + $row->CashFlow;
+	echo "<tr><td width=$cf_column_width align=right>" . gap_num($row->CashFlow) . "&nbsp;&nbsp;&nbsp;</td><td>All Negative Cash Flow Projects</td></tr>";
+	}
+echo "<script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+echo "</table></div>";
+*/
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Department Head View
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Cash flow by contract in departments
+/////////////////////////////////////////////////////////
+// Pat Damitio is also in charge of special projects even
+// though he is not listed on it.
+/////////////////////////////////////////////////////////
+$dh_query_add="";
+if ($global_user->employee_num=="4511") $dh_query_add=" or DPDesc = 'Major Projects' ";
+$query="select * from UMC_Financial_Summary_By_Contract where CashFlow < 0 and DepartmentHead = '$global_user->employee_num' $dh_query_add order by Department,CashFlow";
+/////////////////////////////////////////////////////////
+$res=@mssql_query($query);
+$last_dept="";
+$close_div="";
+while ($row=@mssql_fetch_object($res)) {
+	if ($row->DPDesc!=$last_dept) {
+	$id=rand();$CSSum=0;
+	echo "$close_div";
+		// The List by PM for Department
+		$query="select sum(CashFlow) as CashFlow,PMFirstName,PMLastName from UMC_Financial_Summary_By_Contract where CashFlow < 0 and Department = '$row->Department' group by PM,PMFirstName,PMLastName order by CashFlow";
+		$res2=@mssql_query($query);
+		echo "<div class=cf><table class=cf>
+		<tr><td colspan=2 bgcolor=$fd_color_4><div id=\"$id\" style=\"float: right;\"></div><b>Cash Flow by PM in $row->DPDesc</td></tr>
+		<tr><td colspan=2 align=center><font color=red><i>(Only reflects PM's $row->DPDesc jobs)</i></font></td></tr>
+		";
+		while ($row2=@mssql_fetch_object($res2)) {
+			$CSSum=$CSSum + $row2->CashFlow;
+			echo "<tr><td width=$cf_column_width align=right>" . gap_num($row2->CashFlow) . "&nbsp;&nbsp;&nbsp;</td><td>$row2->PMFirstName $row2->PMLastName</td></tr>";
+		}
+		echo "<script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+		echo "</table></div>";
+		///////////////////////////////////
+		
+		// Start the List by Contract for Department
+		$id=rand();$CSSum=0;
+		echo "<div style=\"float: left; border: 1px solid black; width: $standard_width; height: $standard_height; overflow: auto;\"><table class=cf width=100% border=0 cellspacing=0 cellpadding=1>
+		<tr><td colspan=2 bgcolor=$fd_color_4><div id=\"$id\" style=\"float: right;\"></div><b>Cash Flow by Contract for $row->DPDesc</td></tr>";
+		
+		}
+	$CSSum=$CSSum + $row->CashFlow;
+	$close_div="</table></div><script>document.getElementById('$id').innerHTML=\"" . gap_num($CSSum) . "\";</script>";
+	echo "<tr><td width=$cf_column_width align=right>" . gap_num($row->CashFlow) . "&nbsp;&nbsp;&nbsp;</td><td>$row->Contract $row->Description</td></tr>";
+	$last_dept=$row->DPDesc;
+	}
+echo "$close_div";
+
+///////////////////////////////////////////////////////////////////////////////////
+// Close up the div that is used to limit width (create 2 columns of smaller divs)
+///////////////////////////////////////////////////////////////////////////////////
+echo "</div>";
+
+
+
+
+
+
+
+$query="
+SELECT 
+	CONTRACTLIST.Contract,
+	max(CONTRACTLIST.JCCo) as JCCo,
+	max(CONTRACTLIST.Description) as Description,
+	max(CONTRACTLIST.Department) as Department,
+	max(CONTRACTLIST.udpm1) as PM,
+	max(HRRM.FirstName) as PMFirstName,
+	max(HRRM.LastName) as PMLastName,
+	max(CONTRACTLIST.Customer) as CustomerNumber,
+	max(ARCM.Name) as CustomerName,
+	max(JCDM.Description) as DPDesc,
+	max(CONTRACTLIST.OrigContractAmt) as OrigContractAmt,
+	max(CONTRACTLIST.ContractAmt) as ContractAmt,
+	max(CONTRACTLIST.BilledAmt) as GrossBilledAmt,
+	(max(CONTRACTLIST.BilledAmt)-max(CONTRACTLIST.CurrentRetainAmt)) as NetBilledAmt,
+	max(CONTRACTLIST.CurrentRetainAmt) as CurrentRetainAmt,
+	max(CONTRACTLIST.ReceivedAmt) as ReceivedAmt,
+	max(OVERHEAD.Contract) as OverHeadJob,
+	max(OVERHEAD.udpm1) as DepartmentHead,
+	(max(CONTRACTLIST.ReceivedAmt) - ((sum(JCCP.ActualCost)) - 
+		ISNULL((SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract),0))
+			) as CashFlow,
+	( sum(JCCP.ActualCost) -
+		ISNULL(
+			(SELECT SUM(APTD.Amount) 
+			FROM APTD WITH (NOLOCK) 
+			RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+			LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+			WHERE 	(APTD.APCo = 1) AND 
+			(APTD.Status = 1 OR APTD.Status = 2) AND 
+			(JCJM.Contract = CONTRACTLIST.Contract)
+			GROUP BY JCJM.Contract)
+			,0)
+			
+			) as PaidToDate,
+	
+	sum(JCCP.OrigEstHours) as OrigEstHours,
+	sum(JCCP.CurrEstHours) as CurrEstHours,
+	sum(JCCP.ActualHours) as ActualHours,
+	sum(JCCP.CurrEstCost) as CurrEstCost,
+	sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+	sum(JCCP.ActualCost) as ActualCost,
+	ISNULL((SELECT SUM(APTD.Amount) AS total
+		FROM APTD WITH (NOLOCK) 
+		RIGHT OUTER JOIN APTL WITH (NOLOCK) ON APTD.APCo = APTL.APCo AND APTD.Mth = APTL.Mth AND APTD.APTrans = APTL.APTrans AND APTD.APLine = APTL.APLine 
+		LEFT OUTER JOIN JCJM ON APTL.APCo = JCJM.JCCo AND APTL.Job = JCJM.Job
+		WHERE 	(APTD.APCo = 1) AND 
+				(APTD.Status = 1 OR APTD.Status = 2) AND 
+				(JCJM.Contract = CONTRACTLIST.Contract)
+		GROUP BY JCJM.Contract),0) AS OpenAP
+	FROM JCCM AS CONTRACTLIST 
+	LEFT OUTER JOIN JCJM AS JOBLIST ON ( CONTRACTLIST.Contract = JOBLIST.Contract and CONTRACTLIST.JCCo = JOBLIST.JCCo) 
+	LEFT OUTER JOIN JCCP on (
+		JCCP.JCCo = JOBLIST.JCCo and 
+		JCCP.Job = JOBLIST.Job )
+	LEFT OUTER JOIN JCDM on (
+		JCDM.JCCo = CONTRACTLIST.JCCo and
+		JCDM.Department = CONTRACTLIST.Department
+		)
+	LEFT OUTER JOIN HRRM on (
+		CONTRACTLIST.JCCo = HRRM.HRCo and 
+		CONTRACTLIST.udpm1 = HRRM.HRRef
+		)
+	LEFT OUTER JOIN ARCM on (
+		CONTRACTLIST.JCCo = ARCM.CustGroup and
+		CONTRACTLIST.Customer = ARCM.Customer
+		)
+	LEFT OUTER JOIN JCCM AS OVERHEAD ON (
+		CONTRACTLIST.JCCo = OVERHEAD.JCCo AND 
+		CONTRACTLIST.Department = OVERHEAD.Department AND
+		(
+		OVERHEAD.Contract like 'AA%' or 
+		OVERHEAD.Contract like 'BB%' or 
+		OVERHEAD.Contract like 'CC%' or 
+		OVERHEAD.Contract like 'DD%' 
+		)
+		and OVERHEAD.Contract NOT like '%-999'
+		)
+	WHERE 
+		(CONTRACTLIST.ContractStatus = 1) AND 
+		(CONTRACTLIST.JCCo = 1) AND 
+		(CONTRACTLIST.Contract LIKE '0%') AND 
+		(CONTRACTLIST.Contract <> '00000-')
+	GROUP BY CONTRACTLIST.Contract,CONTRACTLIST.Department
+	ORDER BY Department,CashFlow
+";
+$query="
+SELECT 
+	CONTRACTLIST.Contract,
+	max(CONTRACTLIST.JCCo) as JCCo,
+	max(CONTRACTLIST.Description) as Description,
+	max(CONTRACTLIST.Department) as Department,
+	max(CONTRACTLIST.udpm1) as PM,
+	max(HRRM.FirstName) as PMFirstName,
+	max(HRRM.LastName) as PMLastName,
+	max(CONTRACTLIST.Customer) as CustomerNumber,
+	max(ARCM.Name) as CustomerName,
+	max(CONTRACTLIST.OrigContractAmt) as OrigContractAmt,
+	max(CONTRACTLIST.ContractAmt) as ContractAmt,
+	max(CONTRACTLIST.BilledAmt) as GrossBilledAmt,
+	(max(CONTRACTLIST.BilledAmt)-max(CONTRACTLIST.CurrentRetainAmt)) as NetBilledAmt,
+	max(CONTRACTLIST.CurrentRetainAmt) as CurrentRetainAmt,
+	max(CONTRACTLIST.ReceivedAmt) as ReceivedAmt,
+	sum(JCCP.OrigEstHours) as OrigEstHours,
+	sum(JCCP.CurrEstHours) as CurrEstHours,
+	sum(JCCP.ActualHours) as ActualHours,
+	sum(JCCP.CurrEstCost) as CurrEstCost,
+	sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+	sum(JCCP.ActualCost) as ActualCost
+	FROM JCCM AS CONTRACTLIST 
+	LEFT OUTER JOIN JCJM AS JOBLIST ON ( CONTRACTLIST.Contract = JOBLIST.Contract and CONTRACTLIST.JCCo = JOBLIST.JCCo) 
+	LEFT OUTER JOIN JCCP on (
+		JCCP.JCCo = JOBLIST.JCCo and 
+		JCCP.Job = JOBLIST.Job )
+	LEFT OUTER JOIN JCDM on (
+		JCDM.JCCo = CONTRACTLIST.JCCo and
+		JCDM.Department = CONTRACTLIST.Department
+		)
+	LEFT OUTER JOIN HRRM on (
+		CONTRACTLIST.JCCo = HRRM.HRCo and 
+		CONTRACTLIST.udpm1 = HRRM.HRRef
+		)
+	LEFT OUTER JOIN ARCM on (
+		CONTRACTLIST.JCCo = ARCM.CustGroup and
+		CONTRACTLIST.Customer = ARCM.Customer
+		)
+		
+	WHERE 
+		(CONTRACTLIST.ContractStatus = 1) AND 
+		(CONTRACTLIST.JCCo = 1)
+	GROUP BY CONTRACTLIST.Contract,CONTRACTLIST.Department
+";
+
+
+//		AND OVERHEAD.Contract = 'Nacho'
+
+//ms_tabledump("select CustGroup from ARCM group by CustGroup");
+//echo "<hr>$query<hr>";
+//ms_tabledump($query);
+//ms_tabledump("select top 5 * from ARCM");
+//ms_tabledump("select top 1 * from JCCM");
+
+
+
+mh_navs_footer();
+?>

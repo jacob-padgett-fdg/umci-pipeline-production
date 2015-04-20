@@ -1,0 +1,15 @@
+<?
+if (($doca=="") || ($docb=="")) die('document link/unlink error!');
+$doca=addslashes($doca);
+$docb=addslashes($docb);
+$current_link=getoneb("select * from documents_links where doca = '$doca' and docb = '$docb'");
+if ($current_link) @mysql_query("call doc_link_delete('$doca','$docb')");
+	else {
+		if ($one_selection_only=='Y') {
+			$doclistres=@mysql_query("select * from documents_links where doca = '$doca'");
+			while ($dlres=@mysql_fetch_object($doclistres)) @mysql_query("call doc_link_delete('$dlres->doca','$dlres->docb')");
+			}
+		@mysql_query("call doc_link('$doca','$docb','$global_user_id','doc_linker2')");
+		}
+fd_document_box_show_doc_line($doca, $docb,3,"","Y");
+?>

@@ -1,0 +1,9 @@
+<?
+$address_id=addslashes($address_id);
+$address_info=getoneb("select * from jobinfo_addresses where address_id = '$address_id'");
+$show_jobinfo_id=addslashes($show_jobinfo_id);
+if ($address_info->is_ups=='Y') $ups='N';
+else $ups='Y';
+@mysql_query("update jobinfo_addresses set is_ups = '$ups' where address_id = '$address_id'");
+include("other_addresses.phtml");
+?>

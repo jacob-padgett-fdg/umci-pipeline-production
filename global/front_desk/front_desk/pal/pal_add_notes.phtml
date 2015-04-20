@@ -1,0 +1,26 @@
+<?
+if ($pal_id=="") die("Application Error! Pal ID error.");
+else $pal_id=addslashes($pal_id);
+$pal_info=getone("select * from pal where pal_id = '$pal_id'");
+
+if ($pal_note_to_add!="") {
+	$pal_note_to_add=addslashes($pal_note_to_add);
+	@mysql_query("insert into pal_log set pal_id = '$pal_info->pal_id', owner_id = '$global_user->contacts_id', notes = '$pal_note_to_add', note_date = now(), note_time = now()");
+	@mysql_query("update pal_assignments set viewed = 'N' where pal_id = '$pal_info->pal_id' and owner_id != '$global_user_id'");
+	@mysql_query("update pal set creator_review_required = 'Y' where pal_id = '$pal_info->pal_id' and creator_id != '$global_user_id'");
+	}
+$res=@mysql_query("select * from pal_log where pal_id = '$pal_info->pal_id' order by note_date desc, note_time desc, pal_log_id desc");
+echo "<div style=\"border: 1px solid black; border-left: 0px solid black; border-right: 0px solid black; background: $fd_color_4;\"><font size=-1><center><b>Response/Comments</b></center></font></div>";
+while ($row=@mysql_fetch_object($res)) {
+	$contact_info=getone("select * from contacts where contacts_id = '$row->owner_id'");
+	$date=invali_date($row->note_date);
+	$row->notes=ereg_replace("\n","<br>",$row->notes);
+	echo "<div style=\"background: $fd_color_3; color: black; border: 1px solid black; border-left: 0px solid black; border-right: 0px solid black; width: 100%;\">
+	<div style=\"float: right;\">$date $row->note_time</div><div>By:&nbsp;$contact_info->display_name</div>
+	<div style=\"background: $fd_color_1; width: 100%; border-top: 2px solid black;\">$row->notes</div>
+	</div>";
+	}
+echo "<div style=\"overflow: auto; width: 100%;\"><font size=-1>";
+echo "<center><textarea onchange=\"javascript:pal_add_note($pal_info->pal_id);\" id=\"pal_note_box$pal_info->pal_id\" name=pal_notes_entry rows=2 style=\"width: 98%;\"></textarea></center>";
+echo "</font></div>";
+?>

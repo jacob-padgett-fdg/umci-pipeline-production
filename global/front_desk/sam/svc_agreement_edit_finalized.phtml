@@ -1,0 +1,179 @@
+<?
+require('header.phtml');
+if ($agreement_id!="") $agreement_id=escapeshellcmd($agreement_id);
+else die("ERROR: Applicaton error, agreement_id is empty or null! Please contact your system administrator!");
+
+$agreement_info=load_agreement_info($agreement_id);
+
+//echo "$agreement_info->current_doc_revision/$next_doc_revision";exit;
+
+if ($agreement_info->status=="Finishing") {
+	/////////////////////////////////////////////////////////////////////////
+	// Calculate final "optional items" cost, and sum them all up
+	// and update the index to reflect that.
+	/////////////////////////////////////////////////////////////////////////
+	$opt_query="select * from svc_agreement_additional_options where agreement_id = '$agreement_id' order by option_type,agreement_options_id";
+	$opt_res=@mysql_query($opt_query);
+	while ($opt_row=@mysql_fetch_object($opt_res)) {
+		if ($opt_row->markup=='Y') $new_value=$opt_row->cost * $agreement_info->markup_percent;
+		else $new_value=$opt_row->cost;
+		
+		@mysql_query("update svc_agreement_additional_options set value = '$new_value' where agreement_options_id = '$opt_row->agreement_options_id'");
+		}
+	$total_opts=getoneb("select sum(value) as value, sum(cost) as cost from svc_agreement_additional_options where agreement_id = '$agreement_id'");
+	if (!($total_opts)) {
+		$total_opts->value="0.00";
+		$total_opts->cost="0.00";
+		}
+	@mysql_query("update svc_agreement_index set total_options_cost = '$total_opts->cost', total_options_value = '$total_opts->value' where agreement_id = '$agreement_id'");
+	$agreement_info=load_agreement_info($agreement_id);
+	/////////////////////////////////////////////////////////////////////////
+	// Figure out equipment cost to customer (value is the term I've been using)
+	/////////////////////////////////////////////////////////////////////////
+	$total_equipment_value=agreement_customer_cost($agreement_id);
+	$query="update svc_agreement_index set status = 'Complete', total_equipment_value = '$total_equipment_value' where agreement_id = '$agreement_info->agreement_id'";
+	@mysql_query($query);
+	$agreement_info=load_agreement_info($agreement_id);
+	/////////////////////////////////////////////////////////////////////////
+	// Sum up the final agreement total, both for cost and for "value"/charges 
+	// and update the agreement index to reflect that.
+	/////////////////////////////////////////////////////////////////////////
+	$total_agreement_cost=$agreement_info->total_equipment_cost + $agreement_info->total_options_cost;
+	$total_agreement_value=$agreement_info->total_equipment_value + $agreement_info->total_options_value;
+	@mysql_query("update svc_agreement_index set total_cost = '$total_agreement_cost', total_value = '$total_agreement_value' where agreement_id = '$agreement_id'");
+	$agreement_info=load_agreement_info($agreement_id);
+	include("svc_agreement_pdf_create.phtml");
+	$next_doc_revision=$agreement_info->current_doc_revision;
+	$next_doc_revision++;
+	@mysql_query("update svc_agreement_index set current_doc_revision = '$next_doc_revision' where agreement_id = '$agreement_info->agreement_id'");
+	}
+
+
+if ($agreement_id!="") $agreement_id=escapeshellcmd($agreement_id);
+else die("ERROR: Application error! Please contact your system administrator! No agreement_id specified!");
+$ag_type_info=getone("select * from svc_agreement_types where agreement_type_id = '$agreement_info->agreement_type_id'");
+
+if ($markup_percent!="") {
+	$markup_percent=escapeshellcmd($markup_percent);
+	$markup_percent=clean_float($markup_percent);
+	if ($markup_percent < $ag_type_info->min_markup_percent) $markup_percent=$ag_type_info->min_markup_percent;
+	@mysql_query("update svc_agreement_index set markup_percent = '$markup_percent' where agreement_id = '$agreement_info->agreement_id'");
+	$agreement_info->markup_percent=$markup_percent;
+	}
+
+
+
+echo "
+<a href=$pagename?mode=main>
+<font color=blue>Cancel</font>
+</a>
+
+<table border=1 cellspacing=0 cellpadding=3 align=right><tr><td bgcolor=blue>
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td bgcolor=#ffffaa><b>Status Changes</b></td></tr>
+<tr><td bgcolor=#ffffff><a href=$pagename?mode=svc_agreement_transfer&agreement_id=$agreement_info->agreement_id><font color=blue>Change Owner</font></a></td></tr>
+<tr><td bgcolor=#aaffaa><a href=$pagename?mode=svc_agreement_copy&agreement_id=$agreement_info->agreement_id><font color=blue>Copy Agreement</font></a></td></tr>
+
+<tr><td bgcolor=#ffaaaa>
+<a href=$pagename?mode=mark_agreement_new&agreement_id=$agreement_info->agreement_id><font color=blue>Return to new status</font></a><br>
+</td></tr>
+
+<tr><td bgcolor=#ffffff>
+<a href=$pagename?mode=mark_agreement_dead&agreement_id=$agreement_info->agreement_id><font color=blue>Mark Status Dead</font></a><br>
+</td></tr>
+
+<tr><td bgcolor=#ffffff>
+<a href=$pagename?mode=mark_agreement_presenting&agreement_id=$agreement_info->agreement_id><font color=blue>Presenting Agreement</font></a><br>
+</td></tr>
+
+
+</table>
+</td></tr></table>
+
+
+<form name=saefinal method=post action=$pagename>";
+agreement_summary_box($agreement_id,1);
+echo "
+</form>
+<h2>Final Agreement Data</h2>
+<hr>
+<table border=0>
+
+<tr><td>
+	Markup Multiplier
+</td><td>
+	$agreement_info->markup_percent
+</td></tr>
+
+<tr><td>
+	Total S/A Cost w/o Truck & Options
+</td><td>
+	$agreement_info->total_equipment_cost
+</td></tr>
+
+<tr><td>
+	Total S/A Sell w/o Truck & Options
+</td><td>
+	$agreement_info->total_equipment_value
+</td></tr>
+
+<tr><td>
+	Total Truck & Options Cost
+</td><td>
+	$agreement_info->total_options_cost
+</td></tr>
+
+<tr><td>
+	Total Truck & Options Sell
+</td><td>
+	$agreement_info->total_options_value
+</td></tr>
+
+<tr bgcolor=#eeeeee><td colspan=2 align=center><b>The bottom line</b></td></tr>
+
+<tr><td>
+	Total S/A Cost w/ Truck & Options
+</td><td>
+	$agreement_info->total_cost
+</td></tr>
+
+<tr><td>
+	Total S/A Sell w/ Truck & Options
+</td><td>
+	$agreement_info->total_value
+</td></tr>
+
+</table>
+<hr>
+</form>
+
+";
+
+if (is_admin()) {
+	echo "<a href=$pagename?mode=svc_agreement_executive_summary&agreement_id=$agreement_info->agreement_id><font color=blue>Download Executive Summary</font></a><br>";
+	echo "<a target=_pdf_agreement_win href=$pagename?mode=show_inspection_summary_pdf&show_turnover_info=1&agreement_id=$agreement_info->agreement_id&blah=blah/inspection_summary-$agreement_id.pdf><font color=blue>Download Turnover Document</font></a><br>";
+	}
+
+echo "
+<script>
+function load_note_editor(sa_document_id) {
+	cell=document.getElementById('doclist_notes_' + sa_document_id);
+	cell.onclick_old=cell.onclick;
+	cell.onclick='';
+	ajaxManager('load_page','$pagename?mode=doclist_note_editor&sa_document_id=' + sa_document_id,'doclist_notes_' + sa_document_id);
+	}
+
+function save_notes(sa_document_id) {
+	obj=document.getElementById('doclist_notes_textarea_' + sa_document_id);
+	cell=document.getElementById('doclist_notes_' + sa_document_id);
+	newval=encodeURIComponent(obj.value);
+	cell.onclick=cell.onclick_old;
+	ajaxManager('load_page','$pagename?mode=doclist_note_editor_save&sa_document_id=' + sa_document_id + '&doclist_notes=' + newval,'doclist_notes_' + sa_document_id);
+	}
+</script>
+";
+
+ajax_load();
+include("svc_agreement_edit_doclist.phtml");
+
+?>

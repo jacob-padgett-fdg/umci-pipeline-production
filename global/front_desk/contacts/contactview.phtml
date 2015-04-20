@@ -1,0 +1,12 @@
+<?
+//session_name("global");
+//session_start();
+require("settings.cfg");
+$auth_object->require_employee='N';
+require_once("global_connect_rw.phtml");
+
+//if ($global_user_id==2) include("../contacts-devel/contactview_show.phtml");
+//else include("contactview_show.phtml");
+include("../contacts${devel}/contactview_show.phtml");
+
+?>

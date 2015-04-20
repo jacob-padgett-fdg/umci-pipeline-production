@@ -1,0 +1,15 @@
+<?
+if (!($issue_res_admin)) die("ERROR: Security Violation! The authorities are being notified.");
+
+$jobinfo_id=escapeshellcmd($jobinfo_id);
+$query="update jobinfo set issue_res_tracking = 'Y' where jobinfo_id = '$jobinfo_id'";
+
+$res=@mysql_query($query);
+
+if (!($res)) {
+	echo "Error: Unable to perform operation! Please contact your system administrator.<hr>Failed Query: $query";
+	exit;
+	}
+	
+forward("admin_job_activate");	
+?>

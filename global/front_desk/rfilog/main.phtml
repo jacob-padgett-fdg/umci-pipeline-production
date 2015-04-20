@@ -1,0 +1,130 @@
+<?
+require("header.phtml");
+fd_navs_header();
+
+
+if ($global_jobinfo) {
+	echo "<style type=\"text/css\">
+	@media print {
+		tr.noprint { display: table-row; visibility: hidden; width: 1px; height: 1px; }
+		td.noprint { display: table-cell; visibility: hidden; width: 1px; height: 1px; }
+		}
+	</style>
+	";
+	
+	
+	
+	
+	/*
+	echo "
+	<style type=\"text/css\">
+    @media screen {
+		div#printme { display: none; }
+    	}
+    
+    
+    @media print {
+	div#noprint { display: none; }
+	a#noprint2 { display: none; }
+        th { font-family: arial; font-size: 8pt; }
+        td { font-family: arial; font-size: 8pt; }
+        div.noprint { display: none; }
+        a.noprint { display: none; }
+        font.noprint { display: none; }
+        br.noprint { display: none; }
+        }
+
+
+
+	</style>";
+	*/
+	/*
+	$query_search_add="";
+	if ($search_text != "") {
+		$search_text=addslashes($search_text);
+		$query_search_add=" and (
+		rfi_num like '%$search_text%' or 
+		key_description like '%$search_text%' or 
+		question like '%$search_text%' or 
+		solution like '%$search_text%' or 
+		reply like '%$search_text%' or 
+		spec like '%$search_text%' or 
+		bldg like '%$search_text%' or 
+		floor like '%$search_text%' or 
+		sub_rfi_num like '%$search_text%' or 
+		cpm_schedule_id like '%$search_text%' or 
+		attached_sheet_name like '%$search_text%' or 
+		pm_notes like '%$search_text%'
+		)";
+		}
+	*/
+	$query_search_add=query_search_add_text();
+	$query="select * from rfilog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '$current_rfilog_section' $query_search_add order by rfi_num desc";
+	
+	//echo "<hr>$query<hr>";
+	if ($filter_mode!="") {
+		session_register('rfi_filter_mode');
+		if ($filter_mode=="All") $rfi_filter_mode="";
+		else $rfi_filter_mode=$filter_mode;
+		}
+	
+	if ($filter_mode=="") {
+		if ($rfi_filter_mode!="") $filter_mode=$rfi_filter_mode;
+		}
+	
+	if ($filter_mode=='Open') 
+		$query="select * from rfilog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '$current_rfilog_section' and pm_complete_date = '0000-00-00' $query_search_add order by rfi_num desc";
+	if ($filter_mode=='Pending') 
+		$query="select * from rfilog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '$current_rfilog_section' and reply_date = '0000-00-00' $query_search_add order by rfi_num desc";
+	if ($filter_mode=='Overdue') 
+		$query="select * from rfilog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '$current_rfilog_section' and reply_date = '0000-00-00' and response_needed_date < now() $query_search_add order by rfi_num desc";
+
+	if ($filter_mode=='Detailing Incomplete') 
+		$query="select * from rfilog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '$current_rfilog_section' and det_complete_date = '0000-00-00' $query_search_add order by rfi_num desc";
+	if ($filter_mode=='Cad Not Updated') 
+		$query="select * from rfilog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '$current_rfilog_section' and ( det_cfu_ref_files = '' or det_cfu_pp_files = '' or det_cfu_duct_files = '' ) $query_search_add order by rfi_num desc";
+	if ($filter_mode=='Detailing Required') {
+		$query="select * from rfilog 
+			left join documents on (documents.app_record_id = rfilog.rfi_id and doc_type = 'rfi' )
+			left join rfi_record_dwg_posting on (documents.doc_id = rfi_record_dwg_posting.doc_id )
+			
+			where rfilog.jobinfo_id = '$global_jobinfo->jobinfo_id' and rfilog.section = '$current_rfilog_section' and 
+			( 
+			arch = '' or struct = '' or mech = '' or other = '' or
+			arch is NULL or struct is NULL or mech is NULL or other is NULL or 
+			det_cfu_ref_files = '' or det_cfu_pp_files = '' or det_cfu_duct_files = '' or 
+			det_complete_date = '0000-00-00'
+			) $query_search_add group by rfi_num order by rfi_num desc";
+			
+		}
+	
+	$rs_options="";
+	$rsres=@mysql_query("select * from front_desk_record_sets where jobinfo_id = '$global_jobinfo->jobinfo_id' order by record_set_id");
+	while ($rsrow=@mysql_fetch_object($rsres)) {
+		if ($filter_mode=="Postings Incomplete - $rsrow->record_set_name") {
+			$query="select * from rfilog 
+			left join documents on (documents.app_record_id = rfilog.rfi_id and doc_type = 'rfi' )
+			left join rfi_record_dwg_posting on (documents.doc_id = rfi_record_dwg_posting.doc_id and record_set_id = '$rsrow->record_set_id' )
+
+			where rfilog.jobinfo_id = '$global_jobinfo->jobinfo_id' and rfilog.section = '$current_rfilog_section' and 
+			( 
+			arch = '' or struct = '' or mech = '' or other = '' or
+			arch is NULL or struct is NULL or mech is NULL or other is NULL 
+			
+			) $query_search_add group by rfi_num order by rfi_num desc";
+			$fselect="selected";
+			} else {
+				$fselect="";
+			}
+		$rs_options=$rs_options . "<option $fselect>Postings Incomplete - $rsrow->record_set_name</option>";
+		
+		}
+	$res=@mysql_query($query);
+
+	if ($view=="") $view="normal";
+	if ($view=="normal") { include("view_normal.phtml"); }
+	if ($view=="full_detail") { include("view_full_detail.phtml"); }
+	}
+//echo "</div></div></div></div>";
+fd_navs_footer();
+?>

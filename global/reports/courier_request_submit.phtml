@@ -1,0 +1,116 @@
+<?
+$employee_group=1;
+
+
+$global_user->contacts_id=addslashes($global_user->contacts_id);
+$jobinfo_id=addslashes($jobinfo_id);
+$action=addslashes($action);
+$address=addslashes($address);
+$contact_name=addslashes($contact_name);
+$contact_phone=addslashes($contact_phone);
+
+$delivery_address=addslashes($delivery_address);
+$delivery_contact_name=addslashes($delivery_contact_name);
+$delivery_contact_phone=addslashes($delivery_contact_phone);
+
+$description=addslashes($description);
+$time_sensitive=addslashes($time_sensitive);
+$deadline=addslashes($deadline);
+$additional_notes=addslashes($additional_notes);
+$confidential=addslashes($confidential);
+if($courier_request_id!="") {
+	$courier_request_id=addslashes($courier_request_id);
+	$courier_request_info=getoneb("select * from courier_request_log where courier_request_id = '$courier_request_id'");
+	}
+
+if ($courier_request_info) {
+	$query_start="update ";
+	$query_end=" where courier_request_id = '$courier_request_info->courier_request_id'";
+	$new=FALSE;
+	} else {
+	$query_start="insert into ";
+	$query_end=",owner = '$global_user_id', creation_time = now()";
+	$courier_request_id="";
+	$new=TRUE;
+	}
+
+$query_middle="
+courier_request_log set 
+jobinfo_id = '$jobinfo_id',
+action = '$action',
+address = '$address',
+contact_name = '$contact_name',
+contact_phone = '$contact_phone',
+delivery_address = '$delivery_address',
+delivery_contact_name = '$delivery_contact_name',
+delivery_contact_phone = '$delivery_contact_phone',
+description = '$description',
+time_sensitive = '$time_sensitive',
+deadline = '$deadline',
+confidential = '$confidential',
+additional_notes = '$additional_notes'
+";
+
+
+//die($query_start . $query_middle . $query_end);
+
+
+
+
+
+@mysql_query($query_start . $query_middle . $query_end);
+
+
+if ($new) {
+	$rjob_info=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+	$job_num=$rjob_info->contract_num;
+	$courier_request_id=@mysql_insert_id();
+	if ($time_sensitive=='Y') $urgent="TIME SENSITIVE ";
+if (($action=="Pick Up From")&&($delivery_address!="")&&($delivery_address!="optional")) {
+	$extra_address="...and deliver to
+$delivery_address
+(contact: $delivery_contact_name @ $delivery_contact_phone)
+";
+	}
+	
+
+$message="<pre>
+${urgent}Courier request $courier_request_id has been requested by $global_user->first_name $global_user->last_name.
+
+$action
+
+$address
+(contact: $contact_name @ $contact_phone)
+
+$extra_address
+
+Description: $description
+
+$urgent delivery.
+
+Deliver by: $deadline
+
+Charge to: $job_num
+
+Additional Notes: $additional_notes
+
+
+--------------------------------
+Requestor contact info:
+
+$global_user->display_name
+Phone:	$global_user->phone
+Ext: 	$global_user->phone_ext
+Cell:	$global_user->phone_cell
+Email: 	$global_user->email
+
+</pre>
+";
+	$subject="Courier request from $global_user->first_name $global_user->last_name";
+	//queue_email(2,$subject,$message,"Y");
+	queue_email(307,$subject,$message,"Y");
+	exec("/usr/local/sbin/run_webmail_queue");
+	//queue_email(307,"Courier request #$courier_request_id",$message,"Y");
+	}
+forward("$mode&report_name=courier_request");
+?>

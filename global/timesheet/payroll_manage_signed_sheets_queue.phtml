@@ -1,0 +1,153 @@
+<?
+require('header.phtml');
+// GPH MARK - absolute path
+require_once("/data/web/pipeline/global/webfile/local.inc");
+
+if (!($payroll_check)) die_security();
+
+$qid=$storage_queues['signed_web_timesheet'];
+
+$queue_info=load_file_group_info($qid);
+$file_list_res=@mysql_query("select * from webfile_files where file_group_id = '$queue_info->file_group_id' order by last_touched");
+
+$file_list_count=mysql_num_rows($file_list_res);
+
+if ($payroll_showing_file_set!="") {
+	$payroll_showing_file=addslashes($payroll_showing_file_set);
+	}
+
+
+if ($file_list_count > 0) {
+	if ($payroll_showing_file=="") {
+		session_register('payroll_showing_file');
+		$payroll_showing_file="1";
+		}
+	if ($payroll_showing_file>$file_list_count) {
+		session_register('payroll_showing_file');
+		$payroll_showing_file="1";
+		}
+	if ($payroll_showing_file<1) {
+		session_register('payroll_showing_file');
+		$payroll_showing_file="1";
+		}
+	if ($payroll_showing_file==1) {
+		$payroll_previous_file=$file_list_count;
+		} else {
+		$payroll_previous_file=$payroll_showing_file - 1;
+		}
+	if ($payroll_showing_file==$file_list_count) {
+		$payroll_next_file="1";
+		} else {
+		$payroll_next_file=$payroll_showing_file + 1;
+		}
+	
+	
+	
+	}
+
+
+
+if ($file_list_count < 1) {
+	include("header.phtml");
+	echo "<center><h3>Sorry, no files in the queue to show.<p>This page will refresh itself every 15 seconds until there are files available to process.</h3></center>
+	
+	<p>&nbsp;
+	<p>&nbsp;
+	<p>&nbsp;
+	<p>&nbsp;
+	<a href=$pagename?mode=main><font color=blue size=+2>Click here to exit</font></a>
+	<p>&nbsp;
+	<p>&nbsp;
+	<p>&nbsp;
+	<p>&nbsp;
+	<p>&nbsp;
+	<p>&nbsp;
+	<p>&nbsp;
+	<p>&nbsp;
+	";
+	forward("$mode",15);
+	exit;
+	}
+
+
+
+
+echo "
+<style>
+html,body{
+	margin:0;
+	padding:0;
+	height:100%;
+	border:none
+	}
+</style>
+
+<script>
+function webdelfile(files_id) {
+	if (confirm('Permenantly delete file from database?')) open('$pagename?mode=payroll_delete_file_popup&files_id=' + files_id,'webfile_del_pu','width=20,height=20');
+	}
+function apply_changes() {
+	document.location.reload();
+	}
+</script>
+<table border=0 cellspacin=0 cellpadding=0 style=\"height: 100%; width: 100%;\">
+<tr><td valign=top>
+<a href=$pagename?mode=main><font color=blue>Main&nbsp;Menu</font></a>
+<table style='border-style: solid' cellspacing=0 cellpadding=5>";
+$count="1";
+while ($row=@mysql_fetch_object($file_list_res)) {
+	$link=webfile_view_link($row->files_id);
+	$imgsrc=webfile_medium_image_icon($row->files_id);
+	$imgsrc="/global/webfile/index.html/images/image$row->files_id.jpg?mode=webfile_preview&files_id=$row->files_id&width=200";
+	if ($payroll_showing_file==$count) {
+		$payroll_showing_files_id=$row->files_id;
+		echo "
+		<tr bgcolor=$umc_standard_blue><td style='border-style: solid; border-width: 2'>
+			<a href=$link target='viewport'><img border=0 src=$imgsrc></a>
+		</td></tr>
+		<tr bgcolor=$umc_standard_blue><td style='border-style: solid; border-width: 1' valign=top>
+			<table border=0 cellspacing=0 cellpadding=2 width=100%>
+			<tr><td bgcolor=white>
+				<a href=$pagename?mode=$mode&payroll_showing_file_set=$payroll_previous_file><font size=+2><b>&lt;</b></font></a>
+			</td><td align=center>
+				<a href=javascript:webdelfile('$row->files_id')><font color=blue>Delete</font></a>
+			</td><td align=right bgcolor=white>
+				<a href=$pagename?mode=$mode&payroll_showing_file_set=$payroll_next_file><font size=+2><b>&gt;</b></font></a>
+			</td></tr></table>
+		</td></tr>
+		";
+		$show_item=$link;
+		}
+	$count++;
+	}
+echo "
+<tr><td bgcolor=white align=center>
+	Showing $payroll_showing_file of $file_list_count
+</td></tr>
+	
+</table>
+
+<div style=\"height: 600px; overflow: auto;\">
+";
+require("payroll_timesheet_safety_status_report.phtml");
+echo"
+</div>
+
+
+</td><td valign=top width=100% height=100%>
+<iframe name=viewport width=100% height=98%>No file loaded</iframe>
+<script>
+viewport.resizeTo(200,200);
+//viewport.height.value=window.outerHeight;
+</script>
+</td></tr></table>
+";
+
+if ($show_item!="") {
+	echo "
+	<script>
+	viewport.location=\"$show_item\"
+	</script>
+	";
+	}
+?>

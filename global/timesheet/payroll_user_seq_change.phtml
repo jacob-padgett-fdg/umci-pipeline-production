@@ -1,0 +1,24 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+if ($payroll_seq_user_id=="") die("ERROR: Missing important thing. Please contact your system administrator!");
+else $payroll_seq_user_id=addslashes($payroll_seq_user_id);
+
+$contact_info=getone("select * from contacts where contacts_id = '$payroll_seq_user_id'");
+
+require('header.phtml');
+
+echo "<h2>$contact_info->display_name</h2><hr>
+<form name=new_payroll_seq method=post action=$pagename>
+<input type=hidden name=mode value=payroll_user_seq_change_submit>
+<input type=hidden name=payroll_seq_user_id value=\"$payroll_seq_user_id\">
+Payroll Sequence #: 
+";dropbox("select seq as timesheet_payroll_sequence_num,seq,' ',description from timesheet_payroll_sequences where active = 'Y' and payroll_group = '$contact_info->employee_group' order by seq",$contact_info->timesheet_payroll_sequence_num);echo"
+<br><input type=submit value=Save>
+</form>
+<a href=$pagename?mode=main><font color=blue>Cancel</font></a>
+<script>
+document.new_payroll_seq.timesheet_payroll_sequence_num.focus();
+</script>
+";
+?>

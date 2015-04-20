@@ -1,0 +1,58 @@
+<?
+require('header.phtml');
+if (!($adminuser)) die_security();
+$queue_info=load_file_group_info($qid);
+$file_list_res=@mysql_query("select * from webfile_files where file_group_id = '$queue_info->file_group_id' order by last_touched");
+
+echo "
+
+<style>
+html,body{
+	margin:0;
+	padding:0;
+	height:100%;
+	border:none
+	}
+</style>
+
+<script>
+function webdelfile(files_id) {
+	if (confirm('Permenantly delete file from database?')) open('$pagename?mode=delete_file_popup&files_id=' + files_id,'webfile_del_pu','width=20,height=20');
+	}
+function apply_changes() {
+	document.location.reload();
+	}
+</script>
+<table border=0 cellspacin=0 cellpadding=0 style=\"height: 100%; width: 100%;\">
+<tr><td valign=top>
+<a href=$pagename?mode=list_queues><font color=blue>Queue&nbsp;List</font></a>
+<table style='border-style: solid' cellspacing=0 cellpadding=5>";
+while ($row=@mysql_fetch_object($file_list_res)) {
+	$file_name_short=ereg_replace("multipage","mp",$row->file_name);
+	$file_name_short=ereg_replace("singlepage","sp",$file_name_short);
+	$file_name_short=substr($file_name_short,0,25);
+	$link=webfile_view_link($row->files_id);
+	$imgsrc=webfile_medium_image_icon($row->files_id);
+	echo "
+	<tr bgcolor=#8caede><td style='border-style: solid; border-width: 2'>
+		<a href=$link target='viewport'><img border=0 src=$imgsrc></a>
+	</td><td style='border-style: solid; border-width: 1' valign=top>
+		Scan&nbsp;Date:&nbsp;$row->upload_date<br>
+		File&nbsp;Name:&nbsp;<font size=-1>$file_name_short</font><br>
+		Size:&nbsp;$row->file_size<br>
+		Page&nbsp;Count:&nbsp;$row->page_count<br>
+	</td><td style='border-style: solid; border-width: 1' valign=top>
+		<a href=javascript:webdelfile('$row->files_id')><font color=blue>Delete</font></a>
+	</td></tr>
+	";
+	}
+echo "</table>
+</td><td valign=top width=100% height=100%>
+<iframe name=viewport width=100% height=100%>No file loaded</iframe>
+<script>
+viewport.resizeTo(200,200);
+//viewport.height.value=window.outerHeight;
+</script>
+</td></tr></table>
+";
+?>

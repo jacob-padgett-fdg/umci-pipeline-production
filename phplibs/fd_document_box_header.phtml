@@ -1,0 +1,28 @@
+<?
+if ($fd_document_gox_header_print_loaded!=1) {
+function fd_document_box_header_print($doc_id,$doc_type,$doc_edit_id="") {
+	global $fd_color_1,$fd_color_2,$fd_color_3,$fd_color_4;
+	echo "<div onload=\"doc_box_test_js_load('$doc_type')\" style=\"border-bottom: 2px solid black; background: $fd_color_3; width: 100%; font-size: 11px;\">";
+	if ($doc_edit_id!="") {
+		echo "<div style=\"float: right; font-size: 11px;\"><a target=\"full_doc_edit$doc_edit_id\" href=\"/global$devel/front_desk$devel/?mode=open_doc&doc_id=$doc_edit_id\"><font color=blue>Full Editor</font></a></div>";
+		}
+	echo "<a href=javascript:show_doc_dialog('$doc_id','$doc_type')>Done</a></div>";
+	}
+	$fd_document_gox_header_print_loaded=1;
+	}
+//////////////////////////////////////////////////
+//	$doc_info
+//////////////////////////////////////////////////
+$doc_id=addslashes($doc_id);
+$doc_info=getoneb("select * from documents where doc_id = '$doc_id'");
+if (!($doc_info)) die ("Document ID Error!");
+
+if (!($doc_edit_info)) {
+	if ($doc_edit_id!="") {
+	//echo "ccccccccccccc";
+		$doc_edit_id=addslashes($doc_edit_id);
+		$doc_edit_info=getoneb("select * from documents where doc_id = '$doc_edit_id'");
+		}
+	}
+$basic_url="/global$devel/front_desk$devel/${doc_type}$devel/?doc_id=$doc_info->doc_id&doc_edit_id=$doc_edit_info->doc_id";
+?>

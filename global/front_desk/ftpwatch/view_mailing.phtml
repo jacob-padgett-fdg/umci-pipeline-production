@@ -1,0 +1,122 @@
+<?
+$webmail_queue_id=addslashes($webmail_queue_id);
+$message_info=getoneb("select * from webmail_queue where subject = 'Updated files on UMC\'s FTP Site' and webmail_queue_id = '$webmail_queue_id'");
+$contact_info=getoneb("select * from contacts where contacts_id = '$message_info->contacts_id'");
+
+
+
+echo "
+
+<a href=javascript:history.go(-1)><font color=blue>Back to Search</font></a><br>
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+	<b>Message Details</b>
+</td></tr>
+
+<tr><td>
+	To
+</td><td>
+	$contact_info->display_name (contact_id: $contact_info->contacts_id)
+</td></tr>
+
+<tr><td>
+	Email used (this message)
+</td><td>
+	$message_info->email
+</td></tr>
+
+<tr><td>
+	Name used (this message)
+</td><td>
+	$message_info->display_name
+</td></tr>
+
+<tr><td>
+	Subject
+</td><td>
+	$message_info->subject
+</td></tr>
+
+<tr><td>
+	Message text
+</td><td>
+	$message_info->message
+</td></tr>
+
+<tr><td title=\"If delayed, message will be part of a daily summary email unless an urgent message is sent before that, then it will be included with it.\">
+	Don't delay
+</td><td>
+	$message_info->send_now
+</td></tr>
+
+<tr><td>
+	Create time
+</td><td>
+	$message_info->create_time
+</td></tr>
+
+<tr><td>
+	Last Change (usually time message was actually sent)
+</td><td>
+	$message_info->modify_time
+</td></tr>
+
+<tr><td>
+	Sent
+</td><td>
+	$message_info->sent
+</td></tr>
+	
+
+
+</table>
+
+
+
+";
+
+
+
+
+
+exit;
+echo "<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=$fd_color_4><td>
+	Contact
+</td><td>
+	Email
+</td><td>
+	Subject
+</td><td>
+	Created
+</td><td>
+	Sent
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	$contact=getoneb("select * from contacts where contacts_id = '$row->contacts_id'");
+	echo "<tr><td>
+			$contact->display_name
+		</td><td>
+			$row->email
+		</td><td>
+			<a href=$pagename?mode=view_mailing&webmail_queue_id=$row->webmail_queue_id><font color=blue>$row->subject</font></a>
+		</td><td>
+			$row->create_time
+		</td><td>
+			$row->sent
+		</td></tr>";
+	}
+
+echo "</table>";
+
+
+
+
+
+
+
+
+?>

@@ -1,0 +1,98 @@
+<?
+
+$customer=getoneb("select * from contacts where contacts_id = '$jobinfo->general_id'");
+
+echo "
+<input type=hidden name=jobinfo_form_info value=true>
+<center><b><font size=+1>$jobinfo->job_name</font></b></center>
+<table border=0>
+<tr><td>
+	Contract Number:
+</td><td>
+	$jobinfo->contract_num
+</td></tr>
+
+<tr><td>
+	Active:
+</td><td>
+	$jobinfo->active
+</td></tr>
+
+<tr><td>
+	";$cg_name=contact_view("Customer/General",$jobinfo->general_id);echo"
+</td><td>
+	$cg_name
+</td></tr>
+
+<tr><td valign=top>
+	";$owner_name=contact_view("Owner",$jobinfo->owner_id);echo"
+</td><td>
+	";
+	if (($bid_info)&&($bid_info->owner!=$jobinfo->owner_id)) {
+		echo "<b><font color=red size=+1>Warning: Does not match attached bid!</font></b><br>";
+		}
+	echo "
+	$owner_name
+</td></tr>
+
+<tr><td valign=top>
+	Site Address:
+</td><td>
+	<pre>$jobinfo->job_site_address</pre>
+</td></tr>
+
+<tr><td>
+	";$ca_name=contact_view("Contract Admin",$jobinfo->contract_admin);echo "
+</td><td>
+	$ca_name
+</td></tr>
+
+<tr><td>
+	";$pm_name=contact_view("Project Manager",$jobinfo->project_manager_id);echo"
+</td><td>
+	$pm_name
+</td></tr>
+
+<tr><td>
+	";$foreman_name=contact_view("Project Foreman",$jobinfo->foreman_id);echo"
+</td><td>
+	$foreman_name
+</td></tr>
+";
+
+if ($adminuser) {
+	$jobinfo->contract_amount_orig=intbreak($jobinfo->contract_amount_orig,1);
+	$jobinfo->contract_amount_final=intbreak($jobinfo->contract_amount_final,1);
+	echo "
+	<tr><td>
+		Orig Contract Amt:
+	</td><td>
+		$ $jobinfo->contract_amount_orig
+	</td></tr>
+	
+	<tr><td>
+		Final Contract Amt:
+	</td><td>
+		$ $jobinfo->contract_amount_final
+	</td></tr>
+	";
+	}
+
+
+
+
+
+
+echo "
+</table>
+
+
+
+
+";
+
+
+
+
+
+?>

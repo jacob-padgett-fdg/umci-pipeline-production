@@ -1,0 +1,6 @@
+<?
+include ('fd_document_box_header.phtml');
+$description=addslashes($description);
+@mysql_query("update oiclog set description = '$description' where oiclog_id = '$doc_edit_info->app_record_id'");
+echo "<input type=text size=13 name=description id=doc_box_description value=\"$description\" onchange=fd_doc_change_description('$doc_info->doc_id','$doc_edit_info->doc_id')>";
+?>

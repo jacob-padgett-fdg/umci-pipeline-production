@@ -1,0 +1,44 @@
+<?
+require_once('querylib.inc');
+echo "<html><head><title>MIS Issues - Priority Maintenance</title></head>
+<body bgcolor=#ffffff>
+
+<a href=$pagename?mode=maintenance><font color=blue>Return to maintenance menus</font></a><p>
+
+<center><h2>MIS Issues - Priority Maintenance</h2></center>
+<hr>
+
+<a href=$pagename?mode=priority_edit><font color=blue>New Priority</font></a><br>
+";
+
+$query="select * from mis_issue_priorities order by priority";
+$res=@mysql_query($query);
+//tabledump($query);
+
+echo "<table border=0 cellpadding=10>
+<tr><td bgcolor=#dddddd colspan=2 align=center><h3>Current Priority Options</h3></td></tr>
+<tr><td>
+	<b>Priority</b>
+</td><td>
+	<b>Priority Text</b>
+</td></tr>
+";
+
+while($row=@mysql_fetch_object($res)) {
+	echo "
+		<tr><td>
+			<a href=$pagename?mode=priority_edit&priority_id=$row->priority_id><font color=blue>
+			$row->priority</a>
+		</td><td>
+			$row->priority_text
+		</td></tr>
+		";
+	
+	}
+
+
+
+
+
+
+?>

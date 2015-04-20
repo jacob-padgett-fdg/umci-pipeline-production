@@ -1,0 +1,7 @@
+<?
+require_once('classes/Authorization/AccessControl.php');
+
+use classes\Authorization\AccessControl;
+
+if (AccessControl::isAdmin($global_user_id)) include('../front_desk-devel/fd_doclist_popup_real.phtml');
+else  include('fd_doclist_popup_real.phtml');?>

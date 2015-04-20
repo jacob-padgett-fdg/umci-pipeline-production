@@ -1,0 +1,126 @@
+<? 
+//if (!(member_of_global_group_named("BIM Admins"))) die_security();
+require('header.phtml');
+fd_navs_header();
+
+$jobinfo=$global_jobinfo;
+
+function switch_date_div($date_input,$date_calc,$javapath,$area_id,$show_sign_off_widget=0) {
+	$divwidth="155";
+	if ($date_input=="0000-00-00") {
+		$di_show="none";
+		$dc_show="block";
+		} else {
+		$di_show="block";
+		$dc_show="none";
+		}
+	$date_calc=invali_date($date_calc,'/');
+	if ($date_input=="0000-00-00") $date_input=$date_calc;
+	
+	$area_info=getoneb("select * from front_desk_bim_areas where area_id = '$area_id'");
+	eval("\$sign_off_user=\$area_info->${javapath}_signoff;");
+	if ($sign_off_user>0) {
+		$so="<img src=/images/gc.png onclick=\"so('$area_id','$javapath');\">";
+		} else {
+		$so="<img src=/images/rc.png onclick=\"so('$area_id','$javapath');\">";
+		}
+	
+	echo "<div id=\"di_div_${area_id}_${javapath}\" style=\"width: ${divwidth}px; display: $di_show;\">";
+	datebox($date_input,$javapath . "_" . $area_id,'',"uf(this.value,'$area_id','$javapath')");
+	echo "&nbsp;$so</div>
+	<div id=\"dc_div_${area_id}_${javapath}\" style=\"width: ${divwidth}px; display: $dc_show;\"><table cellspacing=0 cellpadding=0><tr><td width=100% onclick=\"divswitch('$area_id','$javapath')\">$date_calc&nbsp;</td><td>$so</td></tr></table></div>
+	";
+	}
+
+echo "
+
+</form>
+<table border=1 cellspacing=0 cellpadding=3>
+
+<tr bgcolor=$fd_color_4 style=\"font-size: 10px;\"><td>
+	Area
+</td><td>
+	Modeling Start
+</td><td>
+	First Pass
+</td><td>
+	Second Pass
+</td><td>
+	Final Pass
+</td><td>
+	Sign-off
+</td><td align=center>
+	Field Audit/PM Review<br>(Shop dwgs issued for review)
+</td><td align=center>
+	Date At End Of 2<br>Week Review Timeframe
+</td><td>
+	Issued To Sheet Metal Fabricator<br>For Fabrication
+</td><td align=center>
+	Detailing Complete<br>(Shop Drawings<br>Issued For<br>Construction)
+</td><td>
+	Fabrication<br>Due On Site
+</td><td>
+	# Of Days Until<br>Sleeving/Decking<br>Start
+</td><td>
+	Sleeving/Decking
+</td><td>
+	S/M MEP
+</td><td>
+	Plumbing MEP
+</td></tr>
+
+";
+
+//tabledump("select * from front_desk_bim_areas where jobinfo_id = '$jobinfo->joinfo_id' order by sort_priority");
+$res=@mysql_query("select * from front_desk_bim_areas where jobinfo_id = '$jobinfo->jobinfo_id' order by sort_priority");
+$first=TRUE;
+while ($row=@mysql_fetch_object($res)) {
+	
+	$row->modeling_start=date('Y-m-d',strtotime("-4 weeks",strtotime($row->first_pass)));
+	$row->field_audit=date('Y-m-d',strtotime("+1 weeks",strtotime($row->sign_off)));
+	$row->two_week_review=date('Y-m-d',strtotime("+2 weeks",strtotime($row->field_audit)));
+	$row->sm_fab_issue=date('Y-m-d',strtotime("-2 weeks",strtotime($row->sm_fab_due)));
+	$row->fab_on_site=date('Y-m-d',strtotime("+4 weeks",strtotime($row->sleeving_decking)));
+	$row->detailing_complete=date('Y-m-d',strtotime("+2 weeks",strtotime($row->two_week_review)));
+	
+	$td_1=strtotime($row->detailing_complete);
+	$td_2=strtotime($row->sleeving_decking);
+	$td_diff=$td_2 - $td_1;
+	$days_diff=round($td_diff/24/60/60);
+	
+	echo "<tr><td>
+				$row->name
+			</td><td>
+				" . invali_date($row->modeling_start,"/") . "
+			</td><td>
+				" . invali_date($row->first_pass,"/") . "
+			</td><td>
+				" . invali_date($row->second_pass,"/") . "
+			</td><td>
+				" . invali_date($row->third_pass,"/") . "
+			</td><td>
+				" . invali_date($row->sign_off,"/") . "
+			</td><td>
+				" . invali_date($row->field_audit,"/") . "
+			</td><td>
+				" . invali_date($row->two_week_review,"/") . "
+			</td><td>
+				" . invali_date($row->sm_fab_issue,"/") . "
+			</td><td>
+				" . invali_date($row->detailing_complete,"/") . "
+			</td><td>
+				" . invali_date($row->fab_on_site,"/") . "
+			</td><td>
+				$days_diff
+			</td><td>
+				" . invali_date($row->sleeving_decking,"/") . "
+			</td><td>
+				";contact_view("",$row->sm_mep_id);echo "
+			</td><td>
+				";contact_view("",$row->plumb_mep_id);echo "
+			</td></tr>";
+		
+	}
+echo "</table>";
+fd_navs_footer();
+?>

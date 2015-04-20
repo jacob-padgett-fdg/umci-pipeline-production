@@ -1,0 +1,141 @@
+<?
+
+if ($agreement_id=="") die("ERROR: No agreement_id. Please contact your system administrator!");
+else $agreement_id=addslashes($agreement_id);
+$agreement_info=load_agreement_info($agreement_id);
+
+
+
+$agreement_name=addslashes($agreement_name);
+$new_expected_start_date=vali_date($agreement_info->expected_start_date);
+
+$found_target=FALSE;
+switch ($agreement_type) {
+	case "":
+				$agreement_type=$agreement_info->agreement_type;
+				$agreement_type_id=$agreement_info->agreement_type_id;
+				//$at_info=getone("select * from svc_agreement_types where agreement_type = '$agreement_type'");
+				break;
+
+	case "ISP":
+				if ($agreement_info->agreement_type=="ISP") {
+					$agreement_type_id=$agreement_info->agreement_type_id;
+					$found_target=TRUE;
+					}
+				if ($agreement_info->agreement_type=="ESP") {
+					$at_info=getone("select * from svc_agreement_types where agreement_type = '$agreement_type'");
+					$agreement_type_id=$at_info->agreement_type_id;
+					$found_target=TRUE;
+					}
+				if ($agreement_info->agreement_type=="PSP") {
+					$at_info=getone("select * from svc_agreement_types where agreement_type = '$agreement_type'");
+					$agreement_type_id=$at_info->agreement_type_id;
+					$found_target=TRUE;
+					}
+				if (!($found_target)) die("ERROR: Unknown conversion/copy path ($agreement_info->agreement_type -> $agreement_type). Please contact your system administrator!");
+				break;
+
+	case "PSP":
+				if ($agreement_info->agreement_type=="ISP") {
+					die("I'm sorry, but from $agreement_info->agreement_type -> $agreement_type is an unsupported conversion");
+					}
+				if ($agreement_info->agreement_type=="PSP") {
+					$agreement_type_id=$agreement_info->agreement_type_id;
+					$found_target=TRUE;
+					}
+					
+				if ($agreement_info->agreement_type=="ESP") {
+					$at_info=getone("select * from svc_agreement_types where agreement_type = '$agreement_type'");
+					$agreement_type_id=$at_info->agreement_type_id;
+					$found_target=TRUE;
+					}
+				if (!($found_target)) die("ERROR: Unknown conversion/copy path ($agreement_info->agreement_type -> $agreement_type). Please contact your system administrator!");
+				break;
+
+	case "ESP":
+				if ($agreement_info->agreement_type=="ISP") {
+					die("I'm sorry, but from $agreement_info->agreement_type -> $agreement_type is an unsupported conversion");
+					}
+				if ($agreement_info->agreement_type=="ESP") {
+					$agreement_type_id=$agreement_info->agreement_type_id;
+					$found_target=TRUE;
+					}
+					
+				if ($agreement_info->agreement_type=="PSP") {
+					$at_info=getone("select * from svc_agreement_types where agreement_type = '$agreement_type'");
+					$agreement_type_id=$at_info->agreement_type_id;
+					$found_target=TRUE;
+					}
+				if (!($found_target)) die("ERROR: Unknown conversion/copy path ($agreement_info->agreement_type -> $agreement_type). Please contact your system administrator!");
+				break;
+
+	default:
+				die("ERROR: Unknown agreement_type scenario. Either it's invalid, or not configured yet! Please contact your system adminstrator. Agreement type: ($agreement_type)");
+				break;
+	}
+
+
+
+	//years = '$agreement_info->years',
+	//expected_start_date = '$new_expected_start_date',
+$new_index_query="insert into svc_agreement_index set
+	creator = '$agreement_info->creator',
+	agreement_name = '$agreement_name',
+	status = 'New',
+	customer_contact_id = '$agreement_info->customer_contact_id',
+	site_id = '$agreement_info->site_id',
+	agreement_type_id = '$agreement_type_id',
+	years = '$agreement_info->years',
+	expected_start_date = '$new_expected_start_date',
+	total_cost = '0.00',
+	total_value = '0.00',
+	total_equipment_cost = '0.00',
+	total_equipment_value = '0.00',
+	total_options_cost = '0.00',
+	total_options_value = '0.00',
+	forced_total_value = '0.00',
+	description = '$agreement_info->description',
+	markup_percent = '$agreement_info->markup_percent',
+	billing_frequency = '$agreement_info->billing_frequency'";
+	
+	
+//echo "<hr>$new_index_query<hr>";exit;
+
+$res=@mysql_query($new_index_query);
+$new_id=@mysql_insert_id();
+
+
+if (!($res)) die("ERROR: Failure when creating new agreement! Please contact your system adminstrator!");
+
+
+$res=@mysql_query("select * from svc_agreement_equip_list where agreement_id = '$agreement_info->agreement_id'");
+while($row=@mysql_fetch_object($res)) {
+	copy_equipment($row->el_id,2,$new_id);
+	}
+$res2=@mysql_query("select * from svc_agreement_additional_options where agreement_id = '$agreement_info->agreement_id'");
+while($row2=@mysql_fetch_object($res2)) {
+	$row2->option_type=addslashes($row2->option_type);
+	$row2->option_description=addslashes($row2->option_description);
+	$row2->calculation_notes=addslashes($row2->calculation_notes);
+	$row2->markup=addslashes($row2->markup);
+	
+	$query="insert into svc_agreement_additional_options set 
+	agreement_id = '$new_id',
+	option_type = '$row2->option_type',
+	option_description = '$row2->option_description',
+	markup = '$row2->markup',
+	cost = '$row2->cost',
+	value = '$row2->value'
+	";
+	mysql_query($query);
+	//echo "<hr>$query";
+	}
+//exit;
+forward("svc_agreement_edit&agreement_id=$new_id");	
+
+
+exit;	
+
+
+
+?>

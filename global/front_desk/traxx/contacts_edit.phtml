@@ -1,0 +1,123 @@
+<?
+require("header.phtml");
+if ($contacts_id != "") {
+	$contacts_id=escapeshellcmd($contacts_id);
+	$contact_info=getone("select * from contacts where contacts_id = '$contacts_id'");
+	if ($contact_info->is_company!='Y') {
+		$company_id=$contact_info->company_id;
+		$mode="company_contacts_edit";
+		include('company_contacts_edit.phtml');
+		exit;
+		}
+	$contact_info->is_general=checkbreak($contact_info->is_general);
+	$contact_info->is_reprographics_firm=checkbreak($contact_info->is_reprographics_firm);
+	$contact_info->owner=checkbreak($contact_info->owner);
+	$contact_info->mechanical_contractor=checkbreak($contact_info->mechanical_contractor);
+	$contact_info->consultant=checkbreak($contact_info->consultant);
+	$contact_info->current=checkbreak($contact_info->current);
+	} else {
+	$contact_info->current='checked';
+	}
+
+echo "
+<form name=contact_edit method=get action=$pagename>
+<input type=hidden name=mode value=contacts_submit>
+<input type=hidden name=contacts_id value=\"$contacts_id\">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr><td>
+	<b>Company</b>
+</td><td>";
+	if ($contacts_id=="") echo "<input type=text size=20 name=company>";
+	else echo "$contact_info->company";echo"
+</td><td rowspan=6 valign=top align=center width=100%>
+
+
+<table border=1 cellspacing=0 cellpadding=5>
+
+<tr><td colspan=2 align=center bgcolor=#dddddd>
+<b>Contact Categories</b>
+</td></tr>
+
+<tr><td>
+	Current
+</td><td>
+	<input type=checkbox name=current $contact_info->current>
+</td></tr>
+
+<tr><td>
+	General
+</td><td>
+	<input type=checkbox name=is_general $contact_info->is_general>
+</td></tr>
+
+<tr><td>
+	Reprographics
+</td><td>
+	<input type=checkbox name=is_reprographics_firm $contact_info->is_reprographics_firm>
+</td></tr>
+
+<tr><td>
+	Owner
+</td><td>
+	<input type=checkbox name=owner $contact_info->owner>
+</td></tr>
+
+<tr><td>
+	Mechanical
+</td><td>
+	<input type=checkbox name=mechanical_contractor $contact_info->mechanical_contractor>
+</td></tr>
+
+<tr><td>
+	Consultant
+</td><td>
+	<input type=checkbox name=consultant $contact_info->consultant>
+</td></tr>
+
+</table>
+
+</td></tr>
+
+<tr><td>
+	<b>Phone</b>
+</td><td>
+	<input type=text size=14 name=phone value=\"$contact_info->phone\">
+</td></tr>
+
+<tr><td>
+	<b>Fax</b>
+</td><td>
+	<input type=text size=14 name=phone_fax value=\"$contact_info->phone_fax\">
+</td></tr>
+
+<tr><td valign=top>
+	<b>Address</b>
+</td><td>
+	<textarea name=address_1 rows=3 cols=24>$contact_info->address_1</textarea>
+</td></tr>
+
+<tr><td>
+	City
+</td><td>
+	<input type=text size=15 name=address_city value=\"$contact_info->address_city\">
+</td></tr>
+
+<tr><td>
+	State
+</td><td>
+	<input type=text size=3 name=address_state value=\"$contact_info->address_state\">
+</td></tr>
+
+<tr><td>
+	Zip
+</td><td>
+	<input type=text size=10 name=address_zip value=\"$contact_info->address_zip\">
+</td><td align=center>
+	<input type=submit value=Save>
+</td></tr>
+
+
+</form>
+";
+
+?>

@@ -1,0 +1,42 @@
+<?
+require("timesheet_include.inc");
+if ($current_user->employee_num != "$employee_num") die("FATAL ERROR: Possibly from trying to edit two people's timesheets at the same time. Don't. Please contact your system administrator if this persists.");
+
+$dollars=ereg_replace("[^0-9.]*","",$dollars);
+$dollars++;
+$dollars--;
+if ($dollars<=0) die("FATAL ERROR: Invalid amount! Please try again or contact your system administrator.");
+
+$dollars2=sprintf("%.2f",$dollars);
+
+if ( "$dollars2" != "$dollars" )  die("FATAL ERROR: Invalid amount! Please try again or contact your system administrator (\"$dollars\"!=\"$dollars2\").");
+$comments=addslashes($comments);
+$workday_info=date_info($workday);
+$job_info=is_valid_viewpoint_job(addslashes($job_num));
+if (!($job_info)) die ("ERROR: Invalid job information. Please <a href=\"javascript:history.go(-1)\">go back</a> and try again!.");
+$earnings_code=addslashes($earnings_code);
+$phase_info=is_valid_viewpoint_spt_phase(addslashes($phase),$job_info->job);
+if (!($phase_info)) die ("FATAL ERROR: Phase code error. This job does not accept that phase code for subsistence, parking, or travel. Please <a href=\"javascript:history.go(-1)\">go back</a> and try again.");
+
+if (($earnings_code<5 )||($earnings_code>7 )) die ("FATAL ERROR: Earnings code error. Please contact your system administrator.");
+
+
+if ($earnings_code == 7) {
+	$notes2=addslashes($notes2);
+	$comments="$comments - $notes2";
+	}
+
+$query="insert into timesheet_time (timesheet_id,creator,employee_id,employee_num,employee_group,job_num,job_desc,phase,phase_desc,workday,week_ending,earnings_code,shift,hours,dollars,comments)
+values
+('$timesheet_info->timesheet_id','$global_user->contacts_id','$current_user->contacts_id','$current_user->employee_num','$current_user->employee_group','$job_info->Job','$job_info->Description','$phase_info->phase','SUBSISTENCE, PARKING & TRAVEL','$workday_info->date_mysql','$workday_info->week_end_mysql','$earnings_code','1','0','$dollars2','$comments')";
+$res=@mysql_query($query);
+if (!($res)) die("FATAL ERROR: Could not submit data. Please contact your system administrator.");
+
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+?>

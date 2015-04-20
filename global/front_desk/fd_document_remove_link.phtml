@@ -1,0 +1,15 @@
+<?
+if (($doca=="") || ($docb=="")) die('document unlink error!');
+$doca=addslashes($doca);
+$docb=addslashes($docb);
+$limit_to_type=addslashes($limit_to_type);
+//$current_link=getoneb("select * from documents_links where doca = '$doca' and docb = '$docb'");
+//if ($current_link) 
+@mysql_query("call doc_link_delete('$doca','$docb')");
+//	else @mysql_query("call doc_link('$doca','$docb','$global_user_id','doc_linker2')");
+//fd_document_box_show_doc_line($doca, $docb);
+$doc_id=$doca;
+//echo "<hr>$limit_to_type<hr>";
+// GPH MARK - absolute path
+include("/data/web/pipeline/global$devel/front_desk$devel/fd_document_box_main.phtml");
+?>

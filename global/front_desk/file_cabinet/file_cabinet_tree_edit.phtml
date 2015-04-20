@@ -1,0 +1,37 @@
+<?
+require("header.phtml");
+fd_navs_header();
+
+$file_ro=0;
+
+if ($tree_id!="") {
+	$tree_id=addslashes($tree_id);
+	} else {
+	die("Application error!");
+	}
+$tree_info=getoneb("select * from file_cabinet_tree where tree_id = '$tree_id'");
+if (!($tree_info)) die("Application error. Directory information error!");
+if ($tree_info->free_for_all!="Y") die_security();
+
+
+echo "
+<form name=tree_edit method=post action=\"$pagename\">
+<input type=hidden name=mode value=\"file_cabinet_tree_submit\">
+<input type=hidden name=tree_id value=\"$tree_info->tree_id\">
+Name:&nbsp;&nbsp;&nbsp;<input type=text size=15 name=folder_name value=\"$tree_info->folder_name\">
+<input type=submit value=Save>
+</form>
+";
+
+$child_trees=getoneb("select * from file_cabinet_tree where parent_id = '$tree_info->tree_id' limit 1");
+$child_files=getoneb("select * from file_cabinet where tree_id = '$tree_info->tree_id' limit 1");
+if (!($child_trees)) {
+	if (!($child_files)) {
+		echo "<p><a href=$pagename?mode=file_cabinet_tree_delete&tree_id=$tree_info->tree_id><font color=blue><b>Delete this folder</b></font></a>";
+		}
+	}
+
+
+
+fd_navs_footer();
+?>

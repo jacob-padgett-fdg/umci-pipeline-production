@@ -1,0 +1,10 @@
+<?
+if (!($adminuser)) die ("ERROR: Access violation. The authorities have been notified!");
+require_once('querylib.inc');
+
+$misc_data_id=escapeshellcmd($misc_data_id);
+
+$query="delete from misc_data where misc_data_id = '$misc_data_id'";
+$res=@mysql_query($query);
+forward('userperms');
+?>

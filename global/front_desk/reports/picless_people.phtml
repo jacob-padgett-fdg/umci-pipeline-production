@@ -1,0 +1,16 @@
+<?
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+$query="select * from contacts where umc_emp = 'Y' and current = 'Y' and photo_file_group_id < 1  and ( employee_group = 3 || email != '' ) order by alphasort";
+//tabledump($query);
+$res=@mysql_query($query);
+echo "<center><h3>People without pictures</h3><form name=picless_people_editor method=post action=$pagename>";
+while ($row=@mysql_fetch_object($res)) {
+	contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'",$row->contacts_id,"picfree$row->contacts_id");
+	}
+echo "</form></center>";
+mh_navs_footer();
+?>

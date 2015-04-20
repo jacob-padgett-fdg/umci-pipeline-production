@@ -1,0 +1,153 @@
+<?
+require('header.phtml');
+$today=date('m-d-Y');
+$today_mysql=date('Y-m-d');
+
+require('main_selectbar.phtml');
+$traxx_main_menu_tab='main_bids';
+
+include("column_sorting.phtml");
+
+
+echo "
+<div class=key>
+<table width=100% border=0 cellspacing=0 cellpadding=1>
+<tr><td><font size=-2><b>K</b></font></td><td bgcolor=#ddffdd><font size=-2>Green</font></td><td bgcolor=#ddffdd><font size=-2>Active: Bid date coming</font></td></tr>
+<tr><td><font size=-2><b>e</b></font></td><td bgcolor=#ffdddd><font size=-2>Pink</font></td><td bgcolor=#ffdddd><font size=-2>Active: Bid date past</font></td></tr>
+<tr><td><font size=-2><b>y</b></font></td><td bgcolor=yellow><font size=-2>Yellow</font></td><td bgcolor=yellow><font size=-2>Active: Bidding now</font></td></tr>
+	
+</table>
+</div>
+
+<center> 
+<table border=1 cellspacing=0 cellpadding=0 width=100%><tr><td>
+<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=100% bgcolor=#dddddd align=center colspan=4><table border=1 cellspacing=0 cellpadding=0 width=100%><tr><td align=center><b><font size=+2>Welcome $global_user->first_name</font></b></td></tr></table></td></tr>
+<tr><td colspan=4 align=center><b><font size=+1>TRAXX Main Menu</font></b></td></tr>
+
+<script>
+function confirm_new_proposal() {
+	if (confirm('Create New Proposal. Are you sure?'))
+		document.new_prop.submit();
+		}
+</script>
+";
+
+if ($adminuser) {
+	echo "
+	<tr><td align=center width=25%>
+		<form name=new_prop method=get action=$pagename>
+		<input type=hidden name=mode value=proposal_edit>
+		<input type=button onclick=confirm_new_proposal(); size=40 value=\"New Proposal\">
+		</form>
+	</td><td align=center width=25%>
+		<form name=search_props method=get action=$pagename>
+		<input type=hidden name=mode value=proposal_search>
+		<input type=submit size=40 value=\"Search Proposals\">
+		</form>
+	</td><td align=center width=25%>
+		<form name=goto_reports method=get action=$pagename>
+		<input type=hidden name=mode value=reports>
+		<input type=submit size=40 value=\"Reports\">
+		</form>
+	</td><td align=center width=25%>
+		<form name=new_old_prop method=get action=$pagename>
+		<input type=hidden name=mode value=proposal_edit>
+		<input type=submit size=40 value=\"Load Proposal #:\">
+		<input type=text size=9 name=proposal_num>
+		</form>
+	</td></tr>";
+	}
+
+//	</td><td align=center width=25%>
+//		<form name=new_old_prop method=get action=$pagename>
+//		<input type=hidden name=mode value=new_old_proposal>
+//		<input type=submit size=40 value=\"New Old Proposal\">
+//		</form>
+
+
+
+if (!($adminuser)) {
+	echo "
+	<tr><td align=center colspan=1 width=25%>
+		<form name=new_prop method=get action=$pagename>
+		<input type=hidden name=mode value=proposal_edit>
+		<input type=submit size=40 value=\"New Proposal\">
+		</form>
+	</td><td align=center colspan=1 width=25%>
+		<form name=search_prop method=get action=$pagename>
+		<input type=hidden name=mode value=proposal_search>
+		<input type=submit size=40 value=\"Search Proposals\">
+		</form>
+	</td><td align=center colspan=2 width=50%>		
+		<form name=goto_reports method=get action=$pagename>
+		<input type=hidden name=mode value=reports>
+		<input type=submit size=40 value=\"Reports\">
+		</form>
+	</td></tr>";
+	}
+echo "
+<tr><td colspan=2 width=50%>
+	<table border=1 cellpadding=3 cellspacing=0 width=100%><tr><td width=100% bgcolor=#dddddd align=center><b><font size=+1>Current</font></b></td></tr></table>
+</td><td colspan=2 width=50%>
+	<table border=1 cellpadding=3 cellspacing=0 width=100%><tr><td width=100% bgcolor=#dddddd align=center><b><font size=+1>Past Requiring Maintenance</font></b></td></tr></table>
+</td></tr>
+
+<tr><td colspan=2 valign=top>
+<table border=1 cellspacing=0 cellpadding=0 width=100%>
+	<tr><td>";
+		$mytoday=date('Y-m-d');
+		proposal_list("select bidlist.bidlist_id as bidlist_id,project,bid_date,bid_time from bidlist left join bidlist_permissions using (bidlist_id) 
+		where 
+			(creator = '$global_user_id' or 
+			bidlist_permissions.contact = '$global_user_id' or
+			project_sponsor = '$global_user_id' or
+			to_lead = '$global_user_id' or
+			to_plm = '$global_user_id' or
+			to_htg = '$global_user_id' or
+			to_metal = '$global_user_id' or
+			to_proc = '$global_user_id' or
+			to_prop = '$global_user_id') 
+		and proposal_num > 1
+		and status = 'Active' 
+		and ((bid_date >= '$mytoday') or (bid_date is null)) 
+		and revision = ''
+		group by bidlist_id order by bid_date,bid_time,bidlist.bidlist_id");echo "
+	</td></tr>
+</table>
+</td><td colspan=2 valign=top>
+<table border=1 cellspacing=0 cellpadding=0 width=100%>
+	<tr><td>";
+		proposal_list("select bidlist.bidlist_id as bidlist_id,project,bid_date,bid_time from bidlist left join bidlist_permissions using (bidlist_id) 
+		where 
+		(creator = '$global_user_id' or 
+		to_lead = '$global_user_id' ) 
+		and proposal_num > 1
+		and status = 'Active' and bid_date < '$mytoday' and revision = '' group by bidlist_id order by bid_date,bid_time,bidlist.bidlist_id");echo "
+	</td></tr>
+</table>
+</td></tr>
+
+</table>
+</td></tr>
+";
+
+if ($general_query_order_by=="") $order_by="order by create_date desc,bidlist_id desc";
+	else $order_by=$general_query_order_by;
+
+if ($adminuser) {
+	echo "<tr><td align=center>";
+	$ac_count_showing_res=mysql_query("select sum(1) as count from bidlist_cache where proposal_num > 1 and status = 'Almost Complete' group by bidlist_id limit 20");
+	$ac_count_showing=@mysql_num_rows($ac_count_showing_res);
+	$ac_count_all=getoneb("select sum(1) as count from bidlist_cache where proposal_num > 1 and status = 'Almost Complete'");
+	$ac_title="Almost Complete (showing $ac_count_showing/$ac_count_all->count)";
+	proposal_search_output_1("select * from bidlist_cache where proposal_num > 1 and status = 'Almost Complete' $order_by limit 20",$ac_title);
+	echo "</td></tr>";
+	}
+
+echo "<tr><td align=center>";
+$jbqry="select * from bidlist_cache where status != 'No Bid' and status != 'Lead' and status != 'Dead Lead' and revision = '' order by bidlist_id desc limit 20";
+proposal_search_output_1($jbqry,"20 Most Recently Initiated");
+echo "</td></tr>";
+
+echo "</table></center>";
+?>

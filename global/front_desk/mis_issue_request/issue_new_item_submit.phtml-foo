@@ -1,0 +1,29 @@
+<?
+require_once('querylib.inc');
+
+$it_category_id=escapeshellcmd($it_category_id);
+$priority=escapeshellcmd($priority);
+$name=escapeshellcmd($name);
+$description=escapeshellcmd($description);
+$requested_completion=vali_date($requested_completion);
+$can_not_slide_date=checkfix($can_not_slide_date);
+
+
+$query="insert into mis_issue_index set it_category_id = '$it_category_id',priority='$priority',name='$name',description='$description',requested_completion='$requested_completion',can_not_slide_date='$can_not_slide_date',status='initialized',creator='$global_user_id'";
+
+//echo "<hr>$query<hr>";exit;
+$res=@mysql_query($query);
+if (!($res)) die("ERROR: Your query failed. Please contact your system administrator.<p>Failed Query:<hr>$query");
+
+
+forward("category_show&it_category_id=$it_category_id");
+
+
+
+
+
+
+
+
+
+?>

@@ -1,0 +1,63 @@
+<?
+if ($jobinfo_id=="") die("ERROR: jobinfo seems to have been lost!");
+
+if ($delay==1) sleep(1);
+
+$jobinfo_id=addslashes($jobinfo_id);
+$contacts_id=addslashes($contacts_id);
+
+if ($action!="") {
+	if ($action=="add") {
+		@mysql_query("insert into front_desk_job_admins set jobinfo_id = '$jobinfo_id',contacts_id = '$contacts_id'");
+		security_log_email(
+		$contacts_id,
+		0,
+		$jobinfo_id,
+		"added user as front desk admin",
+		"fd job setup");
+		}
+	if ($action=="remove") {
+		@mysql_query("delete from front_desk_job_admins where jobinfo_id = '$jobinfo_id' and contacts_id = '$contacts_id'");
+		security_log_email(
+		$contacts_id,
+		0,
+		$jobinfo_id,
+		"removed user as front desk admin",
+		"fd job setup");
+		}
+	}
+
+
+
+
+$_contacts_javascript_popup="1";
+$_urlencode_javascript="1";
+
+echo "
+<table border=0 cellspacing=0 cellpadding=1>
+";
+$admin_qry="select * from front_desk_job_admins where jobinfo_id = '$jobinfo_id'";
+$admin_res=@mysql_query($admin_qry);
+while($row=@mysql_fetch_object($admin_res)) {
+	echo "<tr><td>
+			<form name=admin$row->admin_id style=\"display: inline;\">";
+			contactsbox("select * from contacts where 1 = 1",$row->contacts_id,'contacts_id','',"1");
+			echo"</form>
+		</td><td>
+			<a href=javascript:remove_admin($jobinfo_id,$row->contacts_id);><font color=blue><i>Remove</i></font></a>
+		</td></tr>
+		";
+	}
+echo "
+<tr><td>
+	<form style=\"display: inline;\" name=add_admin method=post action=$pagename>";
+	contactsbox("select * from contacts where umc_emp = 'Y' and login_name != ''","",'contacts_id');echo"
+	</form>
+</td><td>
+	&nbsp;&nbsp;<a href=javascript:add_admin($jobinfo_id);><font color=blue><b>ADD</b></font></a>
+</td></tr>
+</table>
+";
+?>
+
+

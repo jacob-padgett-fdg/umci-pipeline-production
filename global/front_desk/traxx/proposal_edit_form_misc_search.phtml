@@ -1,0 +1,31 @@
+<?
+echo "
+<b>Misc</b>
+<input type=hidden name=proposal_form_owner value=true>
+<input type=hidden name=proposal_form_misc value=true>
+<table border=1 cellspacing=0 cellpadding=3>
+<tr><td bgcolor=#eeeeee>
+	<b>Owner</b><br>
+	";dropbox("select contacts_id as owner,left(display_name,20) as display_name from contacts where owner = 'Y' order by alphasort","","","",1);echo "
+	<input type=hidden name=owner_radio value=\"=\">
+</td></tr>
+
+<tr><td bgcolor=#eeeeee>
+	<b>Architect</b><br>
+	";contactsbox("select contacts_id as owner from contacts where 1 = 1","","architect");echo "
+	<input type=hidden name=owner_radio value=\"=\">
+</td></tr>
+
+<tr><td bgcolor=#eeeeee>
+	Job&nbsp;Num&nbsp;Set&nbsp;&nbsp;Y<input type=radio name=jobinfo_id value='Y'>N<input type=radio name=jobinfo_id value='N'>
+</td></tr>
+
+<tr><td bgcolor=#eeeeee>
+<b>Reprographics Firm</b><br>
+";dropbox("select contacts_id as reprographics_company_id, display_name from contacts where is_reprographics_firm = 'Y' order by alphasort","","","","1");echo"
+
+</td></tr>
+</table>
+";
+
+?>

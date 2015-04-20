@@ -1,0 +1,67 @@
+<?
+echo "
+<input type=hidden name=proposal_form_references value=true>
+
+<table border=1 cellspacing=0 cellpadding=2 width=100%>
+<tr><td colspan=3 bgcolor=#dddddd align=center>
+	<b>References</b>
+</td></tr>
+
+";
+
+$refqry="select contacts.contacts_id as contacts_id,display_name,bidlist_references.type as type,bidlist_references.notes as notes from contacts,bidlist_references where bidlist_id = '$bid_info->bidlist_id' and contacts.contacts_id = bidlist_references.contacts_id order by sort_priority,type,alphasort";
+//tabledump($refqry);
+$refres=@mysql_query($refqry);
+$refcount=@mysql_num_rows($refres);
+if ( $refcount > 0 ) {
+	echo "<tr><td bgcolor=#eeeeee><b>Ref Type</b></td><td bgcolor=#eeeeee colspan=2><b>Contact</td></tr>
+	<script>
+	function shownotes(notes) {
+		noteswin=open(\"\",'notes_win','width=500,height=500');
+		noteswin.document.write(notes);
+		}
+	function printnotes(notes) {
+		document.write(notes);
+		}
+	</script>
+	";
+	while ($refrow=@mysql_fetch_object($refres)) {
+		
+		echo "<tr><td>
+					$refrow->type
+				</td><td>
+					$refrow->display_name
+				</td><td align=center>";
+				
+				if ($refrow->notes=="") echo "&nbsp;";
+				else {
+					$refrow->notes=ereg_replace("","<p>",$refrow->notes);
+					$refrow->notes=ereg_replace("\n",'',$refrow->notes);
+					$refrow->notes=ereg_replace("\r",'',$refrow->notes);
+					$refrow->notes=ereg_replace(">",'&gt;',$refrow->notes);
+					$refrow->notes=ereg_replace("<",'&lt;',$refrow->notes);
+					echo "<a href=javascript:shownotes(\"$refrow->notes\");><font color=blue>&para;</font></a>";
+					}
+				
+				echo"
+				</td></tr>";
+		}
+	}
+
+echo"
+
+<tr><td colspan=3>
+	<a href=javascript:add_reference();><font color=blue>Add</font></a>
+</td></tr>
+
+</table>
+
+<script>
+function add_reference() {
+	open(\"$pagename?mode=reference_add&bidlist_id=$bid_info->bidlist_id\",\"reference_win\",\"width=500,height=500\");
+	}
+</script>
+";
+
+
+?>

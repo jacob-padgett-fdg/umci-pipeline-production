@@ -1,0 +1,80 @@
+<?
+if ($bidlist_id=="") die("ERROR: Can't create a new revision without a bidlist_id to start with!");
+else $bidlist_id=addslashes($bidlist_id);
+
+$bid_info=load_proposal_info($bidlist_id);
+
+
+//if ($bid_info->revision!="") die(
+$latest_bid_info=getoneb("select * from bidlist where proposal_num = '$bid_info->proposal_num' order by proposal_revision desc limit 1");
+if ($bid_info->proposal_revision!=$latest_bid_info->proposal_revision) die("ERROR: This doesn't appear to be the most recent version of the proposal! Please base the new proposal on the current proposal!");
+
+$temp_table='bidlist_revision_create_temp_' . $bidlist_id;
+
+//die("everything is ok so far");
+
+
+mysql_query("drop table if exists $temp_table");
+mysql_query("create table $temp_table select * from bidlist where bidlist_id = '$bidlist_id'");
+mysql_query("alter table $temp_table change bidlist_id bidlist_id char(15)");
+mysql_query("update $temp_table set bidlist_id = null");
+
+
+mysql_query("insert into bidlist select * from $temp_table");
+
+$new_id=@mysql_insert_id();
+$new_rev_info=getone("select max(revision) as maxrev from bidlist where proposal_num = '$bid_info->proposal_num'");
+$new_proposal_revision_info=getone("select max(proposal_revision) as maxrev from bidlist where proposal_num = '$bid_info->proposal_num'");
+
+if ($new_rev_info->maxrev=="") {
+	$new_letter="a";
+	} else {
+	$new_letter=$new_rev_info->maxrev;
+	$new_letter++;
+	}
+$new_number=$new_proposal_revision_info->maxrev + 1;
+@mysql_query("update bidlist set proposal_revision = '$new_number',show_in_bid_total_calc = 'Y' where bidlist_id = '$new_id'");
+// Don't forget! We must keep this line below even after the 'old revision'
+// system is gone, so we mark the show_in_bid_total_calc correctly.
+@mysql_query("update bidlist set revision = '$new_letter',show_in_bid_total_calc = 'N' where bidlist_id = '$bid_info->bidlist_id'");
+associate_bidlist_items($bid_info->bidlist_id,$new_id,"Old Revision","Current Revision");
+
+////////////////////////////////////////////////////////////
+// Copy the project type information across
+////////////////////////////////////////////////////////////
+$ptres=@mysql_query("select * from bidlist_bid_projtypes where bidlist_id = '$bid_info->bidlist_id'");
+while ($ptrow=@mysql_fetch_object($ptres)) {
+	@mysql_query("insert into bidlist_bid_projtypes set project_type_id = '$ptrow->project_type_id', bidlist_id = '$new_id'");
+	}
+mysql_query("drop table if exists $temp_table");
+
+@mysql_query("update bidlist 
+	set status = 'Active', 
+	creator = '$global_user_id', 
+	bid_date = '0000-00-00', 
+	bid_time = NULL, 
+	proposal_type = '', 
+	contract_type = '', 
+	design_process = '', 
+	to_plm = 0,
+	to_htg = 0,
+	to_metal = 0,
+	to_proc = 0,
+	to_prop = 0,
+	to_gct = 0,
+	bid_docs = '?',
+	bid_bond = '?',
+	walk_through = '?',
+	awarded = 'P'
+	
+	where bidlist_id = '$new_id'
+	");
+echo "
+<script>
+opener.document.location='$pagename?mode=proposal_edit&bidlist_id=$new_id';
+self.close();
+</script>
+
+";
+
+?>

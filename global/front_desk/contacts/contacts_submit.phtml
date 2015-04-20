@@ -1,0 +1,55 @@
+<?
+//require("querylib.inc");
+
+$realnew=0;
+$new=0;
+if ($contacts_id == "") {
+	$realnew=1;
+	$fotter=getoneb("select * from contacts where company like '00 - delete%' or first_name like '00 - delete%' or last_name like '00 - delete%' limit 1");
+	//tabledump("select * from contacts where company like '00 - delete%' or first_name like '00 - delete%' or last_name like '00 - delete%'");
+	check_contact_kw($first_name,$last_name,$company);
+	
+	if (!($fotter)) {
+		$new=1;
+	} else { 
+		$new=0;
+		if ($fotter->contacts_id < 1) die ("ERROR: FOTTER RECORD ERROR. The record set to be overwritten has a problem. Please contact your system administrator! This should <u>NEVER</u> happen!!!");
+		/////////////////////////////////////////////////////////////
+		// Reset current fotter data to be blank (for the most part)
+		/////////////////////////////////////////////////////////////
+		$reset_fotter_query="update contacts set contact_type = 'company', first_name = '',last_name = '00 delete in progress - $fotter->contacts_id',company = '00 delete in progress - $fotter->contacts_id',display_name = '',alphasort = '',employee_num = 0,initials = '',first_name_real = '',supervisor_employee_num = 0,overtime_exempt = 'N',web_password = '',company = '',company_id = 0,email = '',address_1 = '',address_city = '',address_state = '',address_zip = '',phone = '',phone_ext = '',phone_fax = '',phone_cell = '',phone_home = '',icq_number = '',umc_emp = 'N',is_company = '$contact->is_company',current = 'Y',proj_manager = 'N',proj_sponsor = 'N',gc_proj_manager = 'N',owner = 'N',is_general = 'N',mechanical_contractor = 'N',manufacturer = 'N',consultant = 'N',is_reprographics_firm = 'N',architect = 'N',foreman = 'N',superintendent = 'N',mech_engineer = 'N',proj_engineer = 'N',bidlist_takeoff_lists = 'N',estimator = 'N',head_cheese = 'N',detailer = 'N',contract_admin = 'N',record_creator = '$global_user_id',timesheet_allow_ap_entry = 'N',timesheet_group_one_foreman = 'N',pref_paper_size = 'letter',pref_timesheet_hrs_threshold = '0',pref_timesheet_reminder_hour = '0',pref_timesheet_svl = 3,pref_timesheet_svemail = 'N',pref_timesheet_always_new_toggle = 'N',pref_uslist_exclude = 'N',pref_timesheet_fab_phases_only = 'N',pref_timesheet_fab_phases_warn = 'N',pref_proposals_show_advanced_ownerbox = 'N' where contacts_id = '$fotter->contacts_id'";
+		$rst_fot_res=mysql_query($reset_fotter_query);
+		if (!($rst_fot_res)) die("FOTTER RESET ERROR:<hr>" . $reset_fotter_query);
+		//@mysql_query("update contacts set contact_type = 'company', first_name = '',last_name = '',company = '00 delete in progress - $fotter->contacts_id',display_name = '',alphasort = '',employee_num = 0,initials = '',first_name_real = '',supervisor_employee_num = 0,overtime_exempt = 'N',web_password = '',company = '',company_id = 0,email = '',address_1 = '',address_city = '',address_state = '',address_zip = '',phone = '',phone_ext = '',phone_fax = '',phone_cell = '',phone_home = '',icq_number = '',umc_emp = 'N',is_company = '$contact->is_company',current = 'Y',proj_manager = 'N',proj_sponsor = 'N',gc_proj_manager = 'N',owner = 'N',is_general = 'N',mechanical_contractor = 'N',manufacturer = 'N',consultant = 'N',is_reprographics_firm = 'N',architect = 'N',foreman = 'N',superintendent = 'N',mech_engineer = 'N',proj_engineer = 'N',bidlist_takeoff_lists = 'N',estimator = 'N',head_cheese = 'N',detailer = 'N',contract_admin = 'N',record_creator = '$global_user_id',timesheet_allow_ap_entry = 'N',timesheet_group_one_foreman = 'N',pref_paper_size = 'letter',pref_timesheet_hrs_threshold = '0',pref_timesheet_reminder_hour = '0',pref_timesheet_svl = 3,pref_timesheet_svemail = 'N',pref_timesheet_always_new_toggle = 'N',pref_uslist_exclude = 'N',pref_timesheet_fab_phases_only = 'N',pref_timesheet_fab_phases_warn = 'N',pref_proposals_show_advanced_ownerbox = 'N' where contacts_id = '$fotter->contacts_id'");
+		$contacts_id=$fotter->contacts_id;
+	}
+}
+
+//print_r($fotter);
+if ($contacts_id!="") {
+	$contacts_id=addslashes($contacts_id);
+	$contact=getone("select * from contacts where contacts_id = '$contacts_id'");
+	if (($contact_type!="company")&&(!($fotter))) $c_info=getone("select * from contacts where contacts_id = '$contact->company_id'");
+	}
+if ($contact_type!="") $contact_type=addslashes($contact_type);
+if ($company_id!="") $company_id=addslashes($company_id);
+
+
+
+switch ($contact_type) {
+	case "site":
+			include("contacts_site_submit.phtml");
+			break;;
+			
+	case "company":
+			include("contacts_company_submit.phtml");
+			break;;
+			
+	case "contact":
+			include("contacts_contact_submit.phtml");
+			break;;	
+	
+	default: die("ERROR: Unable to process $contact_type submission. Please contact your system administrator!");
+	}
+
+?>

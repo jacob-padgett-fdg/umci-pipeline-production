@@ -1,0 +1,16 @@
+<?
+if (!($write)) die_security("mode: $mode");
+if ($files_id!="") $files_id=addslashes($files_id);
+$file_info=getoneb("select * from cnstdwglog_files where files_id = '$files_id'");
+
+if ($file_groups_id!="") $file_groups_id=addslashes($file_groups_id);
+else die("Application error. This application has encountered a serious error. Please contact your system administrator");
+
+
+$description=addslashes($description);
+@mysql_query("insert into cnstdwglog_addenda set files_id = '$file_info->files_id', description = '$description', file_groups_id = '$file_groups_id'");
+$id=@mysql_insert_id();
+@mysql_query("update cnstdwglog_addenda set parent_addenda_id = '$id' where addenda_id = '$id'");
+forward("cnstdwglog_edit&cnstdwglog_id=$file_info->cnstdwglog_id");
+
+?>

@@ -1,0 +1,85 @@
+<?
+if ($jobinfo_id=="") die("ERROR: Application error. Please contact your system administrator!");
+
+$jobinfo_id=addslashes($jobinfo_id);
+$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+
+
+
+$issue_res_tracking=checkfix($issue_res_tracking);
+$spool_fab_tracking=checkfix($spool_fab_tracking);
+$exclude_from_reproduction=checkfix($exclude_from_reproduction);
+$tom_pm=checkfix($tom_pm);
+$tom_eng=checkfix($tom_eng);
+$tom_fld=checkfix($tom_fld);
+$svc_agreement_status=addslashes($svc_agreement_status);
+
+$estimator=addslashes($estimator);
+$foreman_id=addslashes($foreman_id);
+$mech_engineer=addslashes($mech_engineer);
+$gc_project_manager_id=addslashes($gc_project_manager_id);
+$superintendent_id=addslashes($superintendent_id);
+$proj_engineer=addslashes($proj_engineer);
+
+$submittals_date=vali_date($submittals_date);
+$permits_due_date=vali_date($permits_due_date);
+$as_builts_date=vali_date($as_builts_date);
+$o_and_m_date=vali_date($o_and_m_date);
+$owner_train_or_service_date=vali_date($owner_train_or_service_date);
+$warranty_start_date=vali_date($warranty_start_date);
+$warranty_end_date=vali_date($warranty_end_date);
+
+$copy_cost1=addslashes($copy_cost1);
+$copy_cost2=addslashes($copy_cost2);
+$copy_cost3=addslashes($copy_cost3);
+$copy_cost4=addslashes($copy_cost4);
+$copy_cost5=addslashes($copy_cost5);
+$copy_color_percent=addslashes($copy_color_percent);
+
+
+
+
+
+$query="update jobinfo set
+
+issue_res_tracking = '$issue_res_tracking',
+spool_fab_tracking = '$spool_fab_tracking',
+exclude_from_reproduction = '$exclude_from_reproduction',
+tom_pm = '$tom_pm',
+tom_eng = '$tom_eng',
+tom_fld = '$tom_fld',
+svc_agreement_status = '$svc_agreement_status',
+
+estimator = '$estimator',
+foreman_id = '$foreman_id',
+mech_engineer = '$mech_engineer',
+gc_project_manager_id = '$gc_project_manager_id',
+superintendent_id = '$superintendent_id',
+proj_engineer = '$proj_engineer',
+
+submittals_date = '$submittals_date',
+permits_due_date = '$permits_due_date',
+as_builts_date = '$as_builts_date',
+o_and_m_date = '$o_and_m_date',
+owner_train_or_service_date = '$owner_train_or_service_date',
+warranty_start_date = '$warranty_start_date',
+warranty_end_date = '$warranty_end_date',
+
+copy_cost1 = '$copy_cost1',
+copy_cost2 = '$copy_cost2',
+copy_cost3 = '$copy_cost3',
+copy_cost4 = '$copy_cost4',
+copy_cost5 = '$copy_cost5',
+copy_color_percent = '$copy_color_percent'
+
+where jobinfo_id = '$jobinfo->jobinfo_id'
+";
+//echo "target tab: $target_tab<p><hr>$query<hr>";exit;
+
+@mysql_query($query);
+if (($target_tab=="exit")||($target_tab=="")) forward('main');
+else {
+	$target_tab=addslashes($target_tab);
+	forward("jobinfo_edit&target_tab=$target_tab&jobinfo_id=$jobinfo->jobinfo_id");
+	}
+?>

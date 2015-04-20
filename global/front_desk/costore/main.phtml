@@ -1,0 +1,52 @@
+<?
+$box_height="160";
+$box_width="160";
+$imagesize="110";
+
+//if (!($adminuser)) die_security();
+require("header.phtml");
+
+$res=@mysql_query("select * from costore_products where active = 'Y' order by clearance_item_flag,item_number,product_name");
+if ($adminuser) {
+	echo "<a href=$pagename?mode=product_edit><font color=blue>Add</font></a>";
+	}
+
+
+
+
+echo "<table style=\"padding-left: 35px;\" border=0>";
+
+$count=0;
+echo "<tr>";
+while ($row=@mysql_fetch_object($res)) {
+	$image_info=getoneb("select * from webfile_files where file_group_id = '$row->image_id'");
+	if ($count==4) { $count=0; echo "</tr><tr>"; }
+	$count++;
+	if ($row->product_name=="") $row->product_name="????";
+	
+	echo "<td valign=top>";
+	if ($adminuser) echo "<div style=\"float:right;\"><a href=$pagename?mode=product_edit&product_id=$row->product_id><font color=blue>edit</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br>";
+	echo "<a href=$pagename?mode=product_view&product_id=$row->product_id>";
+	if ($row->new_item_flag=='Y') {
+		echo "
+		<img border=0 style=\"position: absolute;\" src=new_small.gif>";
+		}
+	echo "<div style=\"height: ${box_height}px; width: ${box_width}px; border: 0px solid black;\">";
+	
+	$imgurl=webfile_image_icon($image_info->files_id,array('height'=>'110','width'=>"$imagesize"));
+	
+	
+	if ($image_info) echo "<img border=0 src=$imgurl>";
+	if ($row->clearance_item_flag=='Y') {
+		echo "
+		<img align=bottem border=0 style=\"position: inline;\" src=wootoff.gif>";
+		}
+	echo"<br>
+	$row->product_name</a>";
+	echo "</div></td>";
+	}
+
+echo "</table>";
+
+require("footer.phtml");;
+?>

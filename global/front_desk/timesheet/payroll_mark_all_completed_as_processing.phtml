@@ -1,0 +1,17 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+$query="update timesheet_index set status = 'processing' where status = 'complete' and timesheet_index.employee_group = '$current_employee_group'";
+$query2="update timesheet_time set timesheet_status = 'processing' where timesheet_time.timesheet_status = 'complete' and timesheet_time.employee_group = '$current_employee_group'";
+//$query="update timesheet_index,contacts set timesheet_index.status = 'processing' where timesheet_index.status = 'complete' and timesheet_index.employee_id = contacts.contacts_id and contacts.employee_group = '$current_employee_group'";
+//$query2="update timesheet_time,contacts set timesheet_time.timesheet_status = 'processing' where timesheet_time.timesheet_status = 'complete' and timesheet_time.employee_id = contacts.contacts_id and contacts.employee_group = '$current_employee_group'";
+
+//echo "integrity check required. please contact jeff buck about this error!!!!<hr>$query<hr>$query2<p>";exit;
+$res=@mysql_query($query);
+if (!($res)) die("fatal error: first stage mark all processing. Please contact your system administrator.");
+$res=@mysql_query($query2);
+if (!($res)) die("fatal error: second stage mark all processing. Please contact your system administrator.");
+
+forward('payroll_timesheet_selection');
+
+?>

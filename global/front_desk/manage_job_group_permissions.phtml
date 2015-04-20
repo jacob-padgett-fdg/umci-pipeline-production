@@ -1,0 +1,114 @@
+<?
+
+if (!(pm_for_this_job())) die_security();
+
+if ($group_id!="") {
+	$group_id=addslashes($group_id);
+	} else {
+	die("Application error! No group_id.");
+	}
+$group_info=getoneb("select * from contacts_groups where group_id = '$group_id' and jobinfo_id > 0");
+if (!($group_info)) {
+	die("Application error! Group lookup failed.");
+	}
+
+$job_info=getoneb("select * from jobinfo where jobinfo_id = '$group_info->jobinfo_id'");
+if (!($job_info)) die("Application error! Job information not found!");
+
+
+
+if ($delete_permission=='Y') {
+	$access_id=addslashes($access_id);
+	$perm_info=getoneb("select * from access where access_id = '$access_id'");
+	//print_r($perm_info);
+	//if ($group_info->jobinfo_id!=$group_info->jobinfo_id) {
+	// echo "$perm_info->jobinfo_id / $group_info->jobinfo_id<hr>";
+		//die_security();
+		//}
+	@mysql_query("delete from access where access_id = '$access_id'");
+	}
+
+if ($add_permission=='Y') {
+	$app_name_add=addslashes($app_name_add);
+	$type=addslashes($type);
+	
+	$insert_query="insert into access set application_name = '$app_name_add', group_id = '$group_info->group_id', type = '$type', rightsmode = 'grant'";
+	
+	$res=@mysql_query($insert_query);
+	if (!($res)) {
+		die("failed insert query:<hr>$insert_query");
+		}
+	}
+
+
+
+
+echo "
+<h2>Job: $job_info->contract_num &nbsp;&nbsp;&nbsp;$job_info->display_name</h2>
+<h3>Group permissions for $group_info->description</h3><hr>
+
+
+
+<form name=new_group_permission method=post action=$pagename>
+<input type=hidden name=mode value=manage_job_group_permissions>
+<input type=hidden name=group_id value=$group_info->group_id>
+<input type=hidden name=add_permission value=Y>
+<table border=0 cellspacing=0 cellpadding=5>
+
+<tr><td>
+
+	<b>Application</b>
+</td><td>
+	<b>Permissions</b>
+</td><td>
+	<b>Action</b>
+</td></tr>
+
+<tr><td>
+	<select name=app_name_add>
+	<option></option>";
+	$devel_add="and devel_only = 'N'";
+	if ($devel=="-devel") $devel_add="";
+	$app_list=@mysql_query("select * from front_desk_applications where current = 'Y' $devel_add and app_name != 'issue_resolution' order by app_short_description");
+	while ($app_row=@mysql_fetch_object($app_list)) {
+		echo "<option value=$app_row->app_name>$app_row->app_short_description</option>";
+		}
+echo "</select>
+</td><td>
+	<select name=type>
+	<option></option>
+	<option value=read_only>Read Only</option>
+	<option value=guest>Guest</option>
+	<option value=full>Full</option>
+	<option value=admin>Admin</option>
+	</select>
+</td><td>
+	<input type=submit value=Add>
+</td></tr>
+
+";
+$current_rights_list=@mysql_query("select * from access where group_id = '$group_info->group_id'");
+while ($row=@mysql_fetch_object($current_rights_list)) {
+	$app_info=getoneb("select * from front_desk_applications where app_name = '$row->application_name'");
+	echo "<tr><td title=\"$row->application_name\">
+				$app_info->app_short_description
+			</td><td>
+				$row->type
+			</td><td>
+				<a href=$pagename?mode=$mode&doc_id=$doc_id&delete_permission=Y&group_id=$group_info->group_id&access_id=$row->access_id><font color=blue><i>delete</i></font></a>
+			</td></tr>
+			";
+	}
+echo "</table>";
+
+//tabledump("select * from access where group_id = '$group_info->group_id'");
+
+
+
+//echo "hi";
+
+
+
+
+
+?>

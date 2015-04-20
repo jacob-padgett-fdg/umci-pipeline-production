@@ -1,0 +1,189 @@
+<?
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Hardwire the connect to both databases
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+require("/home/web/umci.com/global/contacts/settings.cfg");
+require_once('querylib.inc');
+mssql_connect("viewpoint","reddwarf","cl01st3r");
+mssql_select_db("Viewpoint");
+require_once("querylib.inc");
+require_once("viewpoint_libs.inc");
+@mysql_connect("localhost","globalreadwrite","poilkjbnm");
+@mysql_select_db("global");
+
+if ($skip_viewpoint!="true") {
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Synchronize web employee contacts with viewpoint as long as
+//	employee_num has been set to allow us to match the record.
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+$employees_first="select * from contacts where employee_num != '' and umc_emp = 'Y' order by employee_num";
+$emp_first_res=@mysql_query($employees_first);
+
+while ($ef_row=@mysql_fetch_object($emp_first_res)) {
+	$must_update='N';
+	$ms_qry="select * from bHRRM where HRRef = '$ef_row->employee_num'";
+
+	$vp_info=ms_getoneb($ms_qry);
+	if (!(vp_info)) die("FATAL ERROR: No Viewpoint information, but has non-null employee_num!");
+	
+	if ($vp_info->ActiveYN=='Y') $current='Y';
+	else $current='N';
+	if ($vp_info->udNickName!="") { 
+		$first_name=$vp_info->udNickName;
+		$first_name_real=$vp_info->FirstName;
+		} else { 
+		$first_name=$vp_info->FirstName;
+		$first_name_real="";
+		}
+
+	$last_name=$vp_info->LastName;
+	$employee_group=$vp_info->PRGroup;
+	
+	if ($first_name!=$ef_row->first_name) {
+		$must_update='Y';
+		}
+	
+	if ($first_name_real!=$ef_row->first_name_real) {
+		$must_update='Y';
+		}
+	
+	if ($last_name!=$ef_row->last_name) {
+		$must_update='Y';
+		}
+	
+	if ($current!=$ef_row->current) {
+		$must_update='Y';
+		}
+	
+	if ($employee_group!=$ef_row->employee_group) {
+		$must_update='Y';
+		}
+	
+	if ($must_update=="Y") {
+		$query="update contacts set first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , current = '$current' , employee_group = '$employee_group' , umc_emp = 'Y' where contacts_id = '$ef_row->contacts_id'";
+		@mysql_query($query);
+		}
+	}
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Copy down any contacts that are current in Viewpoint, and we don't
+//	already have a record for them.
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+$ms_qry2="select * from bHRRM where ActiveYN = 'Y' order by HRRef";
+$ms_res2=@mssql_query($ms_qry2);
+
+while($vp_info=@mssql_fetch_object($ms_res2)) {
+	if (!(getoneb("select * from contacts where employee_num = '$vp_info->HRRef'"))) {
+		if ($vp_info->ActiveYN=='Y') $current='Y';
+		else $current='N';
+		if ($vp_info->udNickName!="") { 
+			$first_name=$vp_info->udNickName;
+			$first_name_real=$vp_info->FirstName;
+			} else { 
+			$first_name=$vp_info->FirstName;
+			$first_name_real="";
+			}
+		$last_name=$vp_info->LastName;
+		$employee_group=$vp_info->PRGroup;
+		$query="insert into contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , current = '$current' , employee_num = '$vp_info->HRRef' , employee_group = '$employee_group' , umc_emp = 'Y'";
+		@mysql_query($query);
+		}
+	}
+
+}
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Update UMC Employees to have correct company_id and company name.
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+
+$umc_info=getone("select * from contacts where contacts_id = '968'");
+@mysql_query("update contacts set company_id = '968', company = '$umc_info->company' where umc_emp = 'Y'");
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Update UMC Employees to have logins && emails if missing login
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+$umc_login_res=@mysql_query("select * from contacts where umc_emp = 'Y' and current = 'Y' and login_name = '' and employee_num > 0 order by alphasort");
+while($login_row=@mysql_fetch_object($umc_login_res)) {
+	$vp_login_info=ms_getoneb("select udusername,PREmp from bHRRM where PREmp = '$login_row->employee_num' and udusername != ''");
+	if ($vp_login_info) {
+		//ms_tabledump("select udusername,PREmp from bHRRM where PREmp = '$login_row->employee_num'");
+		$email="$vp_login_info->udusername" . "@umci.com";
+		$login_name="$vp_login_info->udusername";
+		$web_login_query="update contacts set login_name = '$login_name', email = '$email' where contacts_id = '$login_row->contacts_id'";
+		@mysql_query($web_login_query);
+		// Queue and email to Chris/Jeff (contacts_id "1/2")
+		queue_email(1,"New UMC Login Detected","A new UMC employee with a login name defined in viewpoint has been detected<hr>Login Name: $login_name<br>Email: $email<br>First Name: $login_row->first_name<br>Real First Name: $login_row->first_name_real<br>Last Name: $login_row->last_name<p>If you need any other information, just ask someone..");
+		queue_email(2,"New UMC Login Detected","A new UMC employee with a login name defined in viewpoint has been detected<hr>Login Name: $login_name<br>Email: $email<br>First Name: $login_row->first_name<br>Real First Name: $login_row->first_name_real<br>Last Name: $login_row->last_name<p>If you need any other information, just ask someone..");
+		}
+	}
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//	Update alphasort and display names for all contacts (or just
+//	some if $reconcile_query is set.
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+if ($reconcile_query=="") $reconcile_query="select * from contacts";
+$res=@mysql_query($reconcile_query);
+if (!($res)) {
+	echo "ERROR: Could not reconcile contact(s) specified by query:<hr>$reconcile_query";
+	}
+
+while($row=@mysql_fetch_object($res)) {
+	$contact_type="";
+	$type="person";
+	$company_info=getoneb("select * from contacts where contacts_id = '$row->company_id'");
+	if ($row->company_id > 0) {
+		$row->company=$company_info->company;
+		} else {
+		$contact_type = 'company';
+		}
+
+	if ( ($row->company!="") && ($row->first_name=="") && ($row->last_name=="") ) {
+		$type="company";
+		$contact_type = 'company';
+		}
+	
+	if ($row->first_name!="") $row->first_name=escapeshellcmd($row->first_name);
+	if ($row->last_name!="") $row->last_name=escapeshellcmd($row->last_name);
+	if ($row->company!="") $row->company=escapeshellcmd($row->company);
+	
+	if ($type=="person") {
+		$contact_type='contact';
+		$alphasort="$row->last_name$row->first_name$row->company$row->employee_num";
+		$display_name="$row->last_name, $row->first_name";
+		$is_company='N';
+		$extra_stuff=",company = '$company_info->company' ";
+		}
+	if ($type=="company") {
+		$contact_type='company';
+		$alphasort="$row->company";
+		$display_name="$row->company";
+		$is_company='Y';
+		$extra_stuff="";
+		}
+	if ($alphasort=="") $alphasort="00000-null_record";
+	if ($display_name=="") $display_name="00-null_record";
+	if ($contact_type=="") die("ERROR: invalid contact fixing/info for contact_id: $row->contacts_id");
+	$query="update contacts set contact_type = '$contact_type', alphasort = '$alphasort', display_name = '$display_name', is_company = '$is_company' $extra_stuff where contacts_id = '$row->contacts_id'";
+	@mysql_query($query);
+	//if ($row->contacts_id==1660) die("found it!!!!!!!!!<p>query:<br>$query<p>");
+	}
+
+forward('main');
+?>

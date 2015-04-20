@@ -1,0 +1,52 @@
+<?
+include("header.phtml");
+echo "<a href=$pagename?mode=notify_edit><font color=blue>New</font></a><br>
+<a href=$pagename?mode=review_mailings><font color=blue>Review the last weeks emails</font></a><p>
+
+<table border=1 cellspacing=0 cellpadding=4>
+<tr bgcolor=#7799ff><td>
+	&nbsp;
+</td><td>
+	<b>Who</b>
+</td><td>
+	<b>Email</b>
+</td><td>
+	<b>What</b>
+</td><td>
+	<b>What Not</b>
+</td><td>
+	<b>Skip UMC?</b>
+</td></tr>
+";
+
+
+$res=@mysql_query("select * from filewatch_notify left join contacts using (contacts_id) where active = 'Y' order by alphasort");
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<a href=$pagename?mode=notify_edit&notify_id=$row->notify_id><font color=blue><i>Edit</i></font></a>
+		</td><td>
+			";contact_view("",$row->contacts_id);echo"
+		</td><td>
+			$row->email
+		</td><td>
+			$row->directory
+		</td><td>
+			$row->filter_folder&nbsp;
+		</td><td>
+			$row->filter_umc_folder
+		</td></tr>
+		";
+	}
+	
+echo "</table>";
+//tabledump("select * from filewatch_notify");
+
+
+
+
+
+
+
+
+
+?>

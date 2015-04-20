@@ -1,0 +1,37 @@
+<?
+require("viewpoint_connect_ro.phtml");
+require("viewpoint_libs.inc");
+require("../webfile$devel/storage_settings.cfg");
+require("../webfile$devel/local.inc");
+
+if ($php_attach_id!="") {
+	$vp_attach_id=vp_attachment_id($php_attach_id);
+	$attachment_info=ms_getoneb("select * from HQAT with (NOLOCK) where UniqueAttchID = '$vp_attach_id'");
+	$attachment_info->DocName=ereg_replace('\\\\','/',$attachment_info->DocName);
+	$filename=basename($attachment_info->DocName);
+	header("location:https://pipeline.umci.com/global/front_desk$devel/index.html?mode=vp_attachment_download&vp_attach_id=$vp_attach_id&b=a/images/$filename");
+	exit;
+	}
+
+if ($vp_attach_id=="") die("Application Error: Lost document information in transit..");
+else $vp_attach_id=addslashes($vp_attach_id);
+
+$attachment_info=ms_getoneb("select * from HQAT with (NOLOCK) where UniqueAttchID = '$vp_attach_id'");
+
+if (!($attachment_info)) die("Error: Could not locate document");
+
+$doc=ereg_replace('\\\\','/',$attachment_info->DocName);
+// GPH MARK - absolute path
+$doc_relative=eregi_replace('//jupiter/data/images/Viewpoint/','',$doc);
+$basename=basename($doc);
+$actual_doc=strtolower($vp_docs_path . $doc_relative);
+$mime_type=mime_type_from_filename($basename);
+header("Content-disposition: inline; filename=\"$basename\"");
+header("Content-type: $mime_type");
+header("Content-Transfer-Encoding: binary");
+//header("Content-Length: $file->file_size");
+header("Expires: 0");
+header("Cache-Control: private");
+header("Pragma: cache");
+readfile($actual_doc);
+?>

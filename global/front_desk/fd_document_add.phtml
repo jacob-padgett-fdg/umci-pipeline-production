@@ -1,0 +1,40 @@
+<?
+if ($load_text!="") $load_text=addslashes($load_text);
+$doc_id=addslashes($doc_id);
+$doc_info=getone("select * from documents where doc_id = '$doc_id'");
+if ($doc_edit_id!="") {
+	$doc_edit_id=addslashes($doc_edit_id);
+	$doc_edit_info=getoneb("select * from documents where doc_id = '$doc_edit_id'");
+	}
+
+if (($doc_type=="")&&($doc_edit_info)) {
+	$doc_type=$doc_edit_info->doc_type;
+	//$doc_edit_id=addslashes($doc_edit_id);
+	//$doc_edit_info=getoneb("select * from documents where doc_id = '$doc_edit_id'");
+	//$doc_type=$doc_edit_info->doc_type;
+	}
+if ($doc_type!="") $doc_type=addslashes($doc_type);
+$app_info=getone("select * from front_desk_applications where app_alias = '$doc_type'");
+$app_name_nice=$app_info->app_short_description;
+$include_file="../$app_info->app_name${devel}/mini_edit.phtml";
+
+if ((!($doc_edit_info))&&($load_text!="")&&($doc_type!="")) $doc_edit_info=getoneb("select * from documents where jobinfo_id = '$doc_info->jobinfo_id' and doc_type = '$doc_type' and section = '$doc_info->section' and app_reference = '$load_text'");
+if ($doc_edit_info) $doc_edit_id=$doc_edit_info->doc_id;
+
+//echo "<hr>$doc_edit_id/$doc_type<hr>";
+//print_r($doc_edit_info);
+if (is_file($include_file)) {
+	include($include_file);
+	} else {
+	echo "<font size=-1>
+	<a href=javascript:show_doc_dialog($doc_info->doc_id,'$doc_type')><font color=blue>Cancel</font></a><hr>
+	Embeded editor for this document type not found.";
+	
+	if ($doc_edit_info) {
+		echo "<p>You may edit this record in it's <a target=edit_$doc_edit_info->doc_id href='/global$devel/front_desk$devel/?mode=open_doc&doc_id=$doc_edit_info->doc_id'><font color=blue>Full Editor</font></a> and close the window to return to this page.";
+		} else {
+		echo "<p>For now you may use the normal <a href=/global$devel/front_desk$devel/$app_info->app_name$devel/><font color=blue>$app_info->app_short_description</font></a> interface and close the window to return to this page.";
+		}
+	echo "</font>";
+	}
+?>

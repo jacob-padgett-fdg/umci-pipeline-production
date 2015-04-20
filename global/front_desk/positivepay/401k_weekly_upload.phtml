@@ -1,0 +1,53 @@
+#!/usr/bin/php
+<?
+// GPH MARK - absolute path
+chdir("/data/web/pipeline/global/positivepay/");
+require('settings.cfg');
+require('settings-auto.cfg');
+require('global-auth.inc');
+
+chdir("files/401k_send");
+$we_date=date('Y-m-d',strtotime('last saturday'));
+///////////////////////////////////////////////////////////////////
+// Tweaks to do bonuses
+//$we_date="2009-01-03";
+//$we_date="2010-12-08";
+///////////////////////////////////////////////////////////////////
+
+$file_date=date('Ymd');
+$file_basename="z_auto_UMC_TM_401K_$file_date";
+$file_textname="$file_basename.TXT";
+exec("wget -O $file_textname http://pipeline.umci.com/global/positivepay/401k_menu.phtml?quiet_mode=on\&week_ending_only=$we_date 2> /dev/null");
+$text_file_size=filesize($file_textname);
+if ($text_file_size<1000) send_error_die('File send aborted! File size seems too small!');
+
+exec("/data/web/pipeline/global/positivepay/401k_files_send");
+$upload_totals=getone("select * from positivepay_401k_totals order by total_id desc limit 1");
+$email_message="
+The automated 401K upload to Trautman Maher has been completed.<p>
+If you are on the mailing list for upload notifications to Trautman Maher, please confirm that
+the upload was successful by verifying recept of a confirmation message from them.<p>
+
+Totals:<br>
+Total Records: $upload_totals->record_count<br>
+Run Time: $upload_totals->run_time<br>
+Employee Contrib Pennies: $upload_totals->employee_contrib_pennies<br>
+Employee Roth Contrib Pennies: $upload_totals->employee_roth_contrib_pennies<br>
+Match Contrib Pennies: $upload_totals->match_contrib_pennies<br>
+Loan Repayment Pennies: $upload_totals->loan_repayment_pennies<p>
+
+";
+
+queue_email(2,'401K Automated Upload Sent',$email_message,'Y');		// Jeff
+queue_email(22,'401K Automated Upload Sent',$email_message,'Y');	// Doug
+queue_email(352,'401K Automated Upload Sent',$email_message,'Y');	// Rick
+queue_email(353,'401K Automated Upload Sent',$email_message,'Y');	// Clarice
+queue_email(2834,'401K Automated Upload Sent',$email_message,'Y');	// Sonja
+queue_email(2995,'401K Automated Upload Sent',$email_message,'Y');	// Rich
+//queue_email(3442,'401K Automated Upload Sent',$email_message,'Y');	// Catherine
+queue_email(5809,'401K Automated Upload Sent',$email_message,'Y');	// Debi Seriales
+
+
+exec("mv * ../401k_sent/");
+
+?>

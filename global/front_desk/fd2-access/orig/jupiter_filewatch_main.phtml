@@ -1,0 +1,132 @@
+<?
+if ($md5_sum!="") $md5_sum=addslashes($md5_sum);
+
+$default_query="select sum(1) as dupecount,name,cleaned_name,md5_sum,file_bytes from jupiter_filewatch group by md5_sum order by dupecount desc limit 100";
+$default_query_text="Top 100 Duplicated";
+if ($use_query=="") $use_query=2;
+
+
+if ($use_query=="1") {
+	$query_text=$default_query_text;
+	$query=$default_query;
+	}
+if ($use_query=="2") {
+	$query_text="100 Largest Dupes";
+	$query="select sum(1) as dupecount,name,cleaned_name,md5_sum,file_bytes from jupiter_filewatch group by md5_sum  having sum(1) > 1 order by file_bytes desc limit 100";
+	}
+if ($use_query=="3") {
+	//echo "looking at dupes via md5_sum";
+	$query_text="File Dupe List ($md5_sum)";
+	$query="select '?' as dupecount,name,cleaned_name,md5_sum,file_bytes from jupiter_filewatch where md5_sum = '$md5_sum' order by name desc limit 100";
+	}
+
+if ($use_query=="4") {
+	$query_text="First 100 Search Results";
+	$query_middle="";
+	$sep=" where ";
+	$order_by="name";
+
+	if ($name!="") {
+		$name=addslashes($name);
+		$query_middle=$query_middle . $sep . " name like '%$name%' ";
+		$order_by = 'name';
+		$sep=' and ';
+		}
+
+	if ($file_bytes!="") {
+		$order_by='file_bytes';
+		$file_bytes=addslashes($file_bytes);
+		if (($size_sign!='') && ($size_sign!='>') && ($size_sign!='<')) die("ERROR: Invalid form entry. Please contact your system administrator!");
+		if ($size_sign=="") $size_sign='=';
+		//$size_sign=addslashes($size_sign);
+		$query_middle=$query_middle . $sep . " file_bytes $size_sign '$file_bytes' ";
+		$sep=' and ';
+		}
+	
+	
+	$query="select '?' as dupecount,name,cleaned_name,md5_sum,file_bytes from jupiter_filewatch " . $query_middle . "order by $order_by limit 100";
+	//echo "<hr>$query<hr>";
+	}
+	
+	//echo "I need to build a query now.. ";
+	//exit;
+	//}
+
+//tabledump($query);
+
+echo "
+<b>Quick links:</b><br>
+<a href=$pagename?mode=$mode&use_query=1><font color=blue>Top 100 Duplicated</font></a><br>
+<a href=$pagename?mode=$mode&use_query=2><font color=blue>100 Largest Dupes</font></a><br>
+
+
+<form name=files_search method=post action=$pagename>
+<input type=hidden name=mode value='$mode'>
+<input type=hidden name=use_query value=4>
+
+<table border=1 cellspacing=0 cellpadding=3>
+<tr bgcolor=#dddddd><td colspan=2 align=center>
+	<b>File Search</b>
+</td></tr>
+
+<tr><td>
+	<tr><td>
+		<b>Name: </b>
+	</td><td>
+		<input type=text name=name value=''>
+	</td></tr>
+	
+	<tr><td>
+		<b>Size: </b>
+	</td><td>
+		&gt;<input type=radio name=size_sign value='>'>&nbsp;&lt;<input type=radio name=size_sign value='<'>
+		<input type=text size=15 name=file_bytes>
+	</td></tr>
+	
+	<tr><td colspan2 align=right><input type=submit></td></tr>
+	</table>
+
+";
+
+//tabledump($query,"1",$query_text);exit;
+
+$res=@mysql_query($query);
+
+echo "<table border=1 cellspacing=0 cellpadding=4>
+	<tr bgcolor=#dddddd><td colspan=4 align=center>
+		<b>$query_text</b>
+	</td></tr>
+	
+	<tr bgcolor=#dddddd><td>
+		<b>Dupes</b>
+	</td><td>
+		<b>Name</b>
+	</td><td>
+		<b>MD5&nbsp;ID</b>
+	</td><td>
+		<b>Size</b>
+	</td></tr>
+	";
+while ($row=@mysql_fetch_object($res)) {
+    // GPH MARK - absolute path
+	$row->name=ereg_replace("/data/shares/","/",$row->name);
+	if ($row->dupecount=='?') {
+		$dupeinfo=getoneb("select sum(1) as dupecount from jupiter_filewatch where md5_sum = '$row->md5_sum' group by md5_sum");
+		$row->dupecount=$dupeinfo->dupecount;
+		}
+	echo "<tr><td>
+			$row->dupecount
+		</td><td>
+			$row->name
+		</td><td>
+			<a href=$pagename?mode=$mode&md5_sum=$row->md5_sum&use_query=3><font color=blue>
+			$row->md5_sum</font></a>
+		</td><td>
+			$row->file_bytes
+		</td></tr>";
+	}
+
+echo "</table>";
+
+
+?>

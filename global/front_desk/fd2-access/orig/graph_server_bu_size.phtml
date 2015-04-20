@@ -1,0 +1,94 @@
+<?php
+include ("graph1/jpgraph.php");
+include ("graph1/jpgraph_line.php");
+include "graph1/jpgraph_canvas.php";
+
+
+if ($server_id=="") die("ERROR: No server id specified. Can not continue.");
+else $server_id=addslashes($server_id);
+
+$server_info=getone("select * from access_servers where server_id = '$server_id'");
+$bu_style_info=getone("select * from access_servers_backup_styles where backup_style_id = '$server_info->backup_style_id'");
+
+if ($bu_style_info->report_backups=='N') {
+	$g = new CanvasGraph(300,210,'auto');
+	$g->SetMargin(5,11,6,11);
+	$g->SetShadow();
+	$g->SetMarginColor("teal");
+	$g->InitFrame();
+	$txt="Backups\nnot\nrequired!";
+	$t = new Text($txt,150,20);
+	$t->SetFont(FF_ARIAL,FS_BOLD,30);
+	$t->Align('center','top');
+	$t->ParagraphAlign('center');
+	//$t->SetBox("white","black","gray");
+	$t->Stroke($g->img);
+	$g->Stroke();
+	exit;
+	}
+
+$ydata=array();
+$ydata2=array();
+$textx=array();
+$max=0;
+
+//$query="select * from access_servers_backup_media_logs where media_tag != 'Mo' and media_tag != 'Tu' and media_tag != 'We' and media_tag != 'Th' and media_tag != 'Fr' order by backup_date";
+$query="select * from access_servers_backup_logs where server_id = '$server_info->server_id' order by logdate";
+//tabledump($query);exit;
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	if ($bu_style_info->name=='Exchange') {
+		array_push($ydata,$row->modified_megs);
+		if ($row->modified_megs > $max) $max=$row->modified_megs;
+		} else {
+		array_push($ydata,$row->backup_megs);
+		if ($row->backup_megs > $max) $max=$row->backup_megs;
+		array_push($ydata2,$row->server_megs);
+		if ($row->server_megs > $max) $max=$row->server_megs;
+		}
+	//if ($row->du_megs > $max) $max=$row->du_megs;
+	//if (($row->du_megs + $row->df_megs) > $max) $max=$row->df_megs + $row->du_megs;
+	//array_push($ydata,$row->du_megs);
+	//array_push($ydata2,$row->du_megs + $row->df_megs);
+	$bu_date=invali_date($row->logdate);
+	$bu_date=ereg_replace("200","0",$bu_date);
+	array_push($textx,$bu_date);
+	}
+
+$graph = new Graph(600,250,"auto");	
+$graph->SetScale("intlin",0,($max * 1.1),0,sizeof($ydata));
+$graph->SetMarginColor("$umc_standard_blue");
+
+// Create the linear plots
+$lineplot=new LinePlot($ydata);
+$lineplot->SetColor("red");
+$lineplot->SetWeight(3);
+$lineplot->SetLegend("Backup Space Used");
+
+if ($bu_style_info->name!='Exchange') {
+	$lineplot2=new LinePlot($ydata2);
+	$lineplot2->SetColor("darkgreen");
+	$lineplot2->SetWeight(3);
+	$lineplot2->SetLegend("Server Space Used");
+	}
+
+$graph->legend->Pos(0.05,0.85,"right","center");
+$graph->xaxis->SetTickLabels($textx);
+$graph->xaxis->SetLabelAngle(90);
+$graph->xaxis->scale->ticks->Set(7,1);
+
+// Add the plot to the graph
+$graph->Add($lineplot);
+if ($bu_style_info->name!='Exchange') $graph->Add($lineplot2);
+//$graph->Add($lineplot2);
+
+$graph->img->SetMargin(80,65,30,65);
+$graph->title->Set("Backup Data: $server_info->name");
+//$graph->xaxis->title->Set("Time");
+$graph->xaxis->SetPos("min");
+$graph->yaxis->title->Set("Megabytes");
+$graph->yaxis->SetTitleMargin(60);
+
+// Display the graph
+$graph->Stroke();
+?>

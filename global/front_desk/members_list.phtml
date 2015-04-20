@@ -1,0 +1,79 @@
+<?
+if ($group_id!="") $group_id=addslashes($group_id);
+else die("Application error: Invalid group_id");
+$group_info=getoneb("select * from contacts_groups where group_id = '$group_id'");
+//tabledump($query);
+
+if ($add_member!="") {
+	$add_member=addslashes($add_member);
+	$tmpqry="insert into contacts_groups_members set group_id = '$group_id', contacts_id = '$add_member'";
+	//@mysql_query("insert into contacts_groups_members set group_id = '$group_id', contacts_id = '$add_member'");
+	@mysql_query($tmpqry);
+	security_log_email(
+		$add_member,
+		$group_id,
+		$group_info->jobinfo_id,
+		"contact added to group",
+		"fd job setup");
+	}
+
+if ($rem_member!="") {
+	$rem_member=addslashes($rem_member);
+	$membership_info=getoneb("select * from contacts_groups_members where membership_id = '$rem_member'");
+	$tmpqry="delete from contacts_groups_members where membership_id = '$rem_member'";
+	//@mysql_query("insert into contacts_groups_members set group_id = '$group_id', contacts_id = '$add_member'");
+	@mysql_query($tmpqry);
+	security_log_email(
+		$membership_info->contacts_id,
+		$group_info->group_id,
+		$group_info->jobinfo_id,
+		"contact removed from group",
+		"fd job setup");
+	}
+
+
+$query="select contacts.display_name,contacts.contacts_id,contacts_groups_members.membership_id,contacts_groups_members.group_id from contacts_groups_members,contacts where contacts_groups_members.contacts_id = contacts.contacts_id and group_id = '$group_id' order by alphasort";
+$res=@mysql_query($query);
+
+echo "<table border=0 cellspacing=0 cellpadding=3>
+<tr><td colspan=2>
+	<b>Members ($group_info->description)</b>
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<form style=\"display: inline;\" name=member$row->membership_id>
+			";contactsbox("select * from contacts where 1 = 1",$row->contacts_id,'contacts_id','',1);echo"
+			</form>
+		</td><td>
+			<a href=javascript:rem_member($row->group_id,$row->membership_id);><font color=blue><i>Remove</i></font></a>
+		</td></tr
+		";
+	}	
+
+echo "
+
+<tr><td>
+	<form style=\"display: inline;\" name=add_member method=post action=$pagename>";
+	contactsbox("select * from contacts where login_name != '' and current = 'Y'","",'contacts_id');echo "
+	</form>
+</td><td>
+	<a href=javascript:add_member($group_id);><font color=blue>ADD</font></a>
+</td></tr>
+
+
+</table>";
+
+
+
+
+
+
+
+
+
+
+
+
+?>

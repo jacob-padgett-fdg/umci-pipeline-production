@@ -1,0 +1,580 @@
+<?
+require('header.phtml');
+fd_navs_header();
+
+/*
+$res=@mysql_query("select * from drawinglog where returned_file_id != 0 order by returned_file_id");
+while ($row=@mysql_fetch_object($res)) {
+	if (!(getoneb("select * from drawinglog where returned_file_id = '$row->returned_file_id'"))) {
+		echo "<hr>$row->drawing_id/$row->returned_file_id";
+		}
+	}
+die();
+*/
+if (($drawing_id=="")&&($drawinglog_id!="")) $drawing_id=$drawinglog_id;
+
+if ($drawing_id!="") {
+	$drawing_id=addslashes($drawing_id);
+	$drawing_info=getone("select * from drawinglog where drawing_id = '$drawing_id'");
+	$jobinfo_id=$drawing_info->jobinfo_id;
+	$drawing_info->submitted_to_umc=checkbreak($drawing_info->submitted_to_umc);
+	$drawing_info->submitted_to_gc=checkbreak($drawing_info->submitted_to_gc);
+	$drawing_info->submitted_to_owner=checkbreak($drawing_info->submitted_to_owner);
+	$drawing_info->submitted_to_consultant=checkbreak($drawing_info->submitted_to_consultant);
+	//$drawing_info->correction_required=checkbreak($drawing_info->correction_required);
+	$drawing_info->lead_engineer_notify=checkbreak($drawing_info->lead_engineer_notify);
+	if($drawing_info) $drawing_info->not_new=TRUE;
+	if ($load_mode=="clone") {
+		$drawing_id="";
+		$drawing_info->drawing_id="";
+		$drawing_info->returned_file_id="";
+		$drawing_info->correction_file_group_id="";
+		$drawing_info->submitted_file_group_id="";
+		$drawing_info->file_group_id="";
+		$drawing_info->not_new=FALSE;
+		}
+	$drawing_info->description=htmlspecialchars($drawing_info->description);
+	}
+if ($jobinfo_id=="") $jobinfo_id=$global_jobinfo_id;
+$jobinfo_id=addslashes($jobinfo_id);
+$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+if (!($jobinfo)) die("ERROR: No job information! Please contact your system administrator!");
+require('header.phtml');
+
+$css_val='visibility';
+$hid_val='hidden';
+$sho_val='visible';
+
+if ($drawing_info) {
+	if (!($write)) {
+		if (!(($guest)&&($drawing_info->creator==$global_user_id))) die_security();
+		}
+	}
+
+if (($drawing_info)&&($adminuser)) {
+	echo "<div style=\"float: right;\"><a href=javascript:mega_warning($drawing_info->drawing_id)><font color=blue><i>Delete Entire Log Entry</i></font></a></div>";
+	}
+
+echo "
+<script>
+
+function check_rev_description_drop() {
+	value=document.dwg_rev_edit.rev_description_drop.value;
+	if (value=='Other') {
+		document.dwg_rev_edit.rev_description.style.visibility='visible';
+		} else {
+		document.dwg_rev_edit.rev_description.style.visibility='hidden';
+		document.dwg_rev_edit.rev_description.value=value;
+		}
+	//alert(value);
+	}
+
+
+function check_sub_status() {
+	currentvalue=document.drawinglog_edit.submittal_status.options[document.drawinglog_edit.submittal_status.selectedIndex].value;
+	if (currentvalue=='') currentvalue=document.drawinglog_edit.submittal_status.options[document.drawinglog_edit.submittal_status.selectedIndex].innerHTML;
+	if (currentvalue==\"N/A\") {
+		document.getElementById('ss1').style.$css_val='$hid_val';
+		document.getElementById('ss2').style.$css_val='$hid_val';
+		document.getElementById('ss3').style.$css_val='$hid_val';
+		document.getElementById('ss4').style.$css_val='$hid_val';
+		document.getElementById('ss5').style.$css_val='$hid_val';
+		document.getElementById('ss6').style.$css_val='$hid_val';
+		document.getElementById('ss7').style.$css_val='$hid_val';
+		document.getElementById('ss8').style.$css_val='$hid_val';
+		document.getElementById('ss9').style.$css_val='$hid_val';
+		document.getElementById('ss10').style.$css_val='$hid_val';
+		} else {
+		document.getElementById('ss1').style.$css_val='$sho_val';
+		document.getElementById('ss2').style.$css_val='$sho_val';
+		document.getElementById('ss3').style.$css_val='$sho_val';
+		document.getElementById('ss4').style.$css_val='$sho_val';
+		document.getElementById('ss5').style.$css_val='$sho_val';
+		document.getElementById('ss6').style.$css_val='$sho_val';
+		document.getElementById('ss7').style.$css_val='$sho_val';
+		document.getElementById('ss8').style.$css_val='$sho_val';
+		document.getElementById('ss9').style.$css_val='$sho_val';
+		document.getElementById('ss10').style.$css_val='$sho_val';
+		}
+	}
+function ajax_trigger() {
+	open('javascript:close();','webfile_popup','');
+	apply_changes();
+	}
+function apply_changes() {
+	document.drawinglog_edit.savemode.value='apply';
+	document.drawinglog_edit.submit();
+	}
+function save_and_clone() {
+	document.drawinglog_edit.savemode.value='clone';
+	document.drawinglog_edit.submit();
+	}
+function save_and_next() {
+	document.drawinglog_edit.savemode.value='next';
+	document.drawinglog_edit.submit();
+	}
+function del_rev(rev) {
+	if(confirm('Are you sure you want to delete this revision?')) 
+		document.location='$pagename?mode=dwg_rev_delete&dwg_rev_id=' + rev;
+	}
+";
+if (($adminuser)&&($drawing_info)) {
+	echo "
+	function mega_warning() {
+		if (confirm('Warning the ENTIRE drawing will be deleted!'))
+			if (confirm(\"...All it's history.. EVERYTHING DELETED!\"))
+				if (confirm('Are you sure?'))
+					document.location='$pagename?mode=drawing_delete&drawing_id=$drawing_info->drawing_id';
+		}
+	";
+	}
+
+echo "
+</script>
+
+<form name=drawinglog_edit method=post action=$pagename>
+<input type=hidden name=mode value=drawinglog_submit>
+<input type=hidden name=drawing_id value=\"$drawing_info->drawing_id\">
+<input type=hidden name=jobinfo_id value=\"$jobinfo_id\">
+<input type=hidden name=savemode value='normal'>
+
+<table border=1 cellspacing=0 cellpadding=3>
+
+<tr><td colspan=4 align=center bgcolor=$fd_color_4>
+	<b>$drawing_info->sheet_num Drawing Record</b>
+</td></tr>
+<tr bgcolor=\"#eeeeee\"><td colspan=2 align=center>
+	<b>Dwg Info</b>
+</td><td colspan=2 align=center>
+	<b>Submittal&nbsp;Tracking</b>
+</td></tr>
+
+<tr><td>
+	<b>Sheet Number:</b>&nbsp;
+</td><td>
+	<input type=text name=sheet_num value=\"$drawing_info->sheet_num\">
+</td><td>
+	<b>Submittal Status:</b>
+</td><td>
+	";if ($drawing_info->submittal_status!="") $extra_submittal_status="<option></option>";
+	else $extra_submittal_status="";
+	echo"
+	<select onchange=\"check_sub_status();\" name=submittal_status>
+	<option selected>$drawing_info->submittal_status</option>$extra_submittal_status
+	<option>No Exceptions Taken</option>
+	<option>Approved</option>
+	<option>Approved as Noted</option>
+	<option>Make Corrections Noted</option>
+	<option>Note Markings; Confirm in Writing</option>
+	<option>Rejected Resubmit, Comments Attached</option>
+	<option>Reviewed for Information Only</option>
+	<option>Confirm in Writing</option>
+	<option>Rejected Resubmit</option>
+	<option>Revise/Resubmit</option>
+	<option>Under Review</option>
+	<option>N/A</option>
+	</select>
+</td></tr>
+
+
+<tr><td rowspan=2 valign=top>
+	<b>Sheet Title</b>
+</td><td rowspan=2 valign=top>
+	<input type=text name=description value=\"$drawing_info->description\">
+</td><td>
+	<b>Current&nbsp;Submittal&nbsp;Date:</b>
+</td><td>
+	";datebox($drawing_info->current_submittal_date,'drawinglog_edit.current_submittal_date');echo"
+</td></tr>
+
+<tr><td>
+	<b>Submitted to:</b>
+</td><td>
+	<i><input type=checkbox name=submitted_to_umc $drawing_info->submitted_to_umc>UMC&nbsp;&nbsp;<input type=checkbox name=submitted_to_gc $drawing_info->submitted_to_gc>GC&nbsp;&nbsp;<input type=checkbox name=submitted_to_owner $drawing_info->submitted_to_owner>Owner&nbsp;&nbsp;<input type=checkbox name=submitted_to_consultant $drawing_info->submitted_to_consultant>Consultant</i>
+</td></tr>
+
+
+<tr><td>
+	<b>DWG Type</b>
+</td><td>
+	<select name=type>
+	<option>$drawing_info->type</option>
+	<option>Sheet Metal</option>
+	<option>Plumb</option>
+	<option>Pipe</option>
+	<option>Plumb/Pipe</option>
+	<option>Med Gas</option>
+	<option>Seismic Design</option>
+	<option>Sleeves / Penetrations</option>
+	<option>Equip Location Plans</option>
+	<option>Equipment-Owner</option>
+	<option>Equipment-UMC</option>
+	<option>Fab Pkg - Plumb</option>
+	<option>Fab Pkg - Pipe</option>
+	<option>Fab Pkg - Sheet Metal</option>
+	<option>Inserts</option>
+	</select> 
+</td><td id='ss1'>
+	<b>Engineer</b>
+</td><td id='ss2'>
+	";contactsbox("select * from contacts where ((umc_emp = 'Y' and employee_group = '3') or consultant = 'Y')",$drawing_info->lead_engineer,'lead_engineer');echo"&nbsp;&nbsp;<b>Notify:</b>&nbsp;<input type=checkbox name=lead_engineer_notify $drawing_info->lead_engineer_notify>
+</td></tr>
+
+<tr><td>
+	<b>Area/Section:</b>
+</td><td>";
+	$area_configured=getoneb("select * from front_desk_bim_areas where jobinfo_id = '$global_jobinfo_id' limit 1");
+	if ($area_configured) {
+		dropbox("select name as area,name from front_desk_bim_areas where jobinfo_id = '$global_jobinfo_id' order by sort_priority",$drawing_info->area,1,'',3);
+		} else {
+		echo "<input type=text size=10 name=area value=\"$drawing_info->area\">";
+		}
+	echo "
+	<input type=text size=10 name=dwg_section value=\"$drawing_info->dwg_section\">
+</td><td id='ss3'>
+	<b>Date Req. by Engineer:</b>
+</td><td id='ss4'>
+	";datebox($drawing_info->engineer_required_date,'drawinglog_edit.engineer_required_date');echo"
+</td></tr>
+
+<tr><td>
+	<b>Issued for:</b>
+</td><td>
+	";if ($drawing_info->issued_for!="") $extra_issue_for="<option></option>";
+	else $extra_issue_for="";
+	echo"
+	<select name=issued_for>
+	<option selected>$drawing_info->issued_for</option>$extra_issue_for
+	<option>Approval</option>
+	<option>Coordination</option>
+	<option>Field use/Construction</option>
+	<option>For their use</option>
+	<option>Returned for review</option>
+	<option>UMC review or coordination</option>
+	</select>
+</td><td valign=top id='ss5' rowspan=2>
+	<b>Submitted to Eng:</b>
+</td><td rowspan=2 id='ss6'>
+	";datebox2($drawing_info->submitted_to_eng,"drawinglog_edit.submitted_to_eng");echo"<br>";
+	webfilebox($drawing_info->submitted_file_group_id,'submitted_file_group_id');
+	echo"
+</td></tr>
+
+<tr><td>
+	<b>Orig&nbsp;Issue</b>
+</td><td>
+	";datebox2($drawing_info->orig_issue,"drawinglog_edit.orig_issue");echo"
+</td></tr>
+
+<tr><td>
+	<b>Originator:</b>
+</td><td>
+	";contactsbox("select * from contacts where ( contact_type = 'company' or contact_type = 'contact') ",$drawing_info->originator,"originator");echo"
+</td><td id='ss7' valign=top rowspan=1>
+	<b>Returned from Eng:</b>
+</td><td id= 'ss8' rowspan=1>
+	";
+	datebox2($drawing_info->returned_from_eng,"drawinglog_edit.returned_from_eng");
+	echo "<br>";
+	webfilebox($drawing_info->returned_file_id,'returned_file_id');
+	//webfilebox($drawing_info->returned_file_id,'returned_file_id');
+	echo"
+</td></tr>
+
+<input type=hidden name=sort_priority value=\"$drawing_info->sort_priority\">
+
+<tr><td valign=top align=center>
+	<b>Issued for const</b>
+</td><td>
+	";datebox2($drawing_info->issued_for_construction_date,"drawinglog_edit.issued_for_construction_date");echo "
+</td><td id='ss9'valign=top rowspan=2>
+	<b>Resubmittal&nbsp;Required</b>
+</td><td id='ss10' valign=top rowspan=2>";
+		ynmselect('correction_required',"$drawing_info->correction_required");
+		echo"&nbsp;<i>resubmitted</i>";datebox2($drawing_info->correction_submitted,"drawinglog_edit.correction_submitted");echo"<br>";
+		webfilebox($drawing_info->correction_file_group_id,'correction_file_group_id');
+		echo"
+</td></tr>
+
+";
+
+
+
+$udcount=0;
+$extra_fields="";
+if ($jobinfo->fd_dwg_cust_1_used=='Y') {
+	if ($jobinfo->fd_dwg_cust_1_size>45) $maxsize=80;
+	else $maxsize=$jobinfo->fd_dwg_cust_1_size;
+	
+	$drawing_info->cust_1=htmlspecialchars($drawing_info->cust_1);
+	$extra_fields=$extra_fields . "
+	<tr bgcolor=#dddddd><td>
+		<b>* $jobinfo->fd_dwg_cust_1_name</b>:
+	</td><td colspan=3>
+		<input type=text size=\"$maxsize\" name=cust_1 value=\"$drawing_info->cust_1\">
+	</td></tr>
+	";
+	} else $udcount++;
+
+if ($jobinfo->fd_dwg_cust_2_used=='Y') {
+	if ($jobinfo->fd_dwg_cust_2_size>45) $maxsize=45;
+	else $maxsize=$jobinfo->fd_dwg_cust_2_size;
+	
+	$drawing_info->cust_2=htmlspecialchars($drawing_info->cust_2);
+	$extra_fields=$extra_fields . "
+	<tr bgcolor=#dddddd><td>
+		<b>* $jobinfo->fd_dwg_cust_2_name</b>:
+	</td><td colspan=3>
+		<input type=text size=\"$maxsize\" name=cust_2 value=\"$drawing_info->cust_2\">
+	</td></tr>
+	";
+	} else $udcount++;
+
+if ($jobinfo->fd_dwg_cust_3_used=='Y') {
+	if ($jobinfo->fd_dwg_cust_3_size>45) $maxsize=45;
+	else $maxsize=$jobinfo->fd_dwg_cust_3_size;
+	
+	$drawing_info->cust_3=htmlspecialchars($drawing_info->cust_3);
+	$extra_fields=$extra_fields . "
+	<tr bgcolor=#dddddd><td>
+		<b>* $jobinfo->fd_dwg_cust_3_name</b>:
+	</td><td colspan=3>
+		<input type=text size=\"$maxsize\" name=cust_3 value=\"$drawing_info->cust_3\">
+	</td></tr>
+	";
+	} else $udcount++;
+
+if ($jobinfo->fd_dwg_cust_4_used=='Y') {
+	if ($jobinfo->fd_dwg_cust_4_size>45) $maxsize=45;
+	else $maxsize=$jobinfo->fd_dwg_cust_4_size;
+	
+	$drawing_info->cust_4=htmlspecialchars($drawing_info->cust_4);
+	$extra_fields=$extra_fields . "
+	<tr bgcolor=#dddddd><td>
+		<b>* $jobinfo->fd_dwg_cust_4_name</b>:
+	</td><td colspan=3>
+		<input type=text size=\"$maxsize\" name=cust_4 value=\"$drawing_info->cust_4\">
+	</td></tr>
+	";
+	} else $udcount++;
+
+if ($jobinfo->fd_dwg_cust_5_used=='Y') {
+	if ($jobinfo->fd_dwg_cust_5_size>45) $maxsize=45;
+	else $maxsize=$jobinfo->fd_dwg_cust_5_size;
+	
+	$drawing_info->cust_5=htmlspecialchars($drawing_info->cust_5);
+	$extra_fields=$extra_fields . "
+	<tr bgcolor=#dddddd><td>
+		<b>* $jobinfo->fd_dwg_cust_5_name</b>:
+	</td><td colspan=3>
+		<input type=text size=\"$maxsize\" name=cust_5 value=\"$drawing_info->cust_5\">
+	</td></tr>
+	";
+	} else $udcount++;
+echo "<tr bgcolor=#dddddd><td colspan=2 align=center><b>$udcount unused custom fields (*)</b></td></tr>";
+echo "
+$extra_fields
+<tr><td colspan=4>
+	<table border=0 cellspacing=0 cellpadding=0 width=100% align=center>
+	<tr><td>
+		<input type=button onclick=save_and_next() value=\"Save and Next\">
+	</td><td>
+		<input type=button onclick=save_and_clone() value=\"Save and Clone\">
+	</td><td>
+		<input type=submit value=Save>
+	</td><td>
+		<input type=button onclick=apply_changes() value=Apply>
+	</td><td>
+		<input type=button onclick=document.location=\"$pagename\" value=\"Cancel\">
+	</td></tr>
+	</table>
+</td></tr>
+</table>
+</form>
+
+";
+
+$rev_query="select * from drawinglog_revs where drawing_id = '$drawing_info->drawing_id' order by revision,rev_date";
+$rev_query_res=@mysql_query($rev_query);
+$rev_query_count=@mysql_num_rows($rev_query_res);
+if (($rev_query_count<1)&&($drawing_info)) {
+	$query="insert into drawinglog_revs set drawing_id = '$drawing_info->drawing_id',revision = '0',rev_date = now(),rev_description = 'Original Issue',sent_to_field_date = '',creator = '$global_user->contacts_id'";
+	@mysql_query($query);
+	update_rev($drawing_info->drawing_id);
+	$rev_query_res=@mysql_query($rev_query);
+	$rev_query_count=@mysql_num_rows($rev_query_res);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+if ($drawing_info->not_new) {
+
+echo "<table border=0 cellspacing=0 cellpadding=5 width=350px><tr><td>";
+
+if ($drawing_id!="") $doc_id=fd_get_doc_id(addslashes($drawing_id));
+pal_box($doc_id);
+    
+echo "</td></tr></table>";
+	
+	
+	
+	
+	
+if ($rev_query_count > 0) {
+	echo "<table border=1 cellspacing=0 cellpadding=4 id=\"ajax_target\">
+		
+	<tr><td colspan=8 align=center bgcolor=$fd_color_4>
+		<b>Drawing Revisions</b>
+	</td></tr>
+	
+	<tr><td>
+		<b>Revision</b>
+	</td><td>
+		<b>Description</b>
+	</td><td>
+		<b>Rev Date</b>
+	</td><td>
+		<b>Sent to Field</b>
+	</td><td>
+		<b>Created by</b>
+	</td><td>
+		<b>File</b>
+	</td><td colspan=2>&nbsp;
+	</td></tr>
+	
+	<script>
+	function apply_webfile_change(dwg_rev_id) {
+		eval('value=document.add_rev_file' + dwg_rev_id + '.attached_file_group_id.value;');
+		ajaxManager('load_page','$pagename?mode=rev_file_submit&attached_file_group_id=' + value + '&dwg_rev_id=' + dwg_rev_id,'ajax_target');
+		foo();
+		}
+	</script>
+	";
+	
+	while ($revrow=@mysql_fetch_object($rev_query_res)) {
+		$revdate=invali_date($revrow->rev_date);
+		$stfdate=invali_date($revrow->sent_to_field_date);
+		$creator=getoneb("select * from contacts where contacts_id = '$revrow->creator'");
+		echo "
+		<tr><td>
+			$revrow->revision&nbsp;
+		</td><td>
+			$revrow->rev_description
+		</td><td>
+			$revdate
+		</td><td>
+			$stfdate&nbsp;
+		</td><td>
+			$creator->display_name
+		</td><form name=\"add_rev_file$revrow->dwg_rev_id\" method=post action=$pagename><td>
+			<input type=hidden name=mode value=rev_file_submit>
+			<input type=hidden name=dwg_rev_id value=\"$revrow->dwg_rev_id\">
+			";webfilebox($revrow->attached_file_group_id,'attached_file_group_id',"opener.apply_webfile_change($revrow->dwg_rev_id)");echo"
+		</td></form><td>
+			<a href=$pagename?mode=dwg_rev_edit&dwg_rev_id=$revrow->dwg_rev_id><font color=blue>Edit</font></a>
+		";
+		if ($adminuser) {
+			echo "</td><td><a href=\"javascript:del_rev('$revrow->dwg_rev_id');\"><font color=blue>Delete</font></a>";
+			}
+		
+		echo "</td></tr>";
+		}
+	$max_rev_info=getoneb("select max(revision) as maxrev from drawinglog_revs where drawing_id = '$drawing_info->drawing_id'");
+	//$new_rev=$max_rev_info->maxrev + 1;
+	$new_rev=$max_rev_info->maxrev;
+	$new_rev++;
+	echo "
+	<script>
+		function show_newrev_form() {
+			document.getElementById('newrev_button').style.display='none';
+			";
+			if ($global_browser=="IE") { 
+				echo "document.getElementById('newrev_form').style.display='inline';";
+			} else {
+				echo "document.getElementById('newrev_form').style.display='table-row';";
+				}
+			echo"
+			}
+	</script>
+	<form name=dwg_rev_edit method=post action=\"$pagename\">
+	<input type=hidden name=mode value=\"dwg_rev_add\">
+	<input type=hidden name=drawing_id value=\"$drawing_info->drawing_id\">
+	
+	<tr style=\"display: none\" id=\"newrev_form\"><td>
+		<input type=text size=3 name=revision value=\"$new_rev\">
+	</td><td>
+		<select name=rev_description_drop onchange=\"check_rev_description_drop()\">
+		<option></option>
+		<option>Original Issue</option>
+		<option>Issued For Review By Architect And Engineer</option>
+		<option>Issued For Construction</option>
+		<option>Issued For As-Built</option>
+		<option>Other</option>
+		</select>
+		
+		<input type=text size=15 style=\"visibility: hidden;\" size=40 name=rev_description value=\"\">
+	</td><td>
+		";datebox2("",'dwg_rev_edit.rev_date');echo"
+	</td><td>
+		";datebox2("",'dwg_rev_edit.sent_to_field_date');echo"
+	</td><td colspan=3 align=center>
+		<input type=submit value=\"Save\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	</td></tr>
+	
+	
+	
+	<tr id=\"newrev_button\"><td colspan=7 align=center>
+		<a href=javascript:show_newrev_form();><font color=blue>Add</font></a>
+	</td></tr>
+
+	</table>
+	</form>
+	";
+	}
+
+
+//if ($drawing_info->not_new) {
+	echo "<p><table border=1 cellspacing=0 cellpadding=4>
+	<tr bgcolor=\"$fd_color_4\"><td align=center>
+		<b>Drawing&nbsp;Notes</b>
+		</td></tr>
+		<tr><td align=center>
+		<i>**Note: Once added notes can not be modified or deleted</i>
+		</td></tr>
+
+		<tr><td>
+		<b>Add:</b><br><form name=dwg_add_notes method=post action=$pagename>
+		<input type=hidden name=mode value=drawing_add_notes>
+		<input type=hidden name=drawing_id value=\"$drawing_info->drawing_id\">
+		<textarea name=notes rows=4 cols=50></textarea><br>
+		<input type=submit value=\"Save Note\">
+		</form>
+	</td></tr>";
+	
+	$notes_query="select * from drawinglog_notes where drawing_id = '$drawing_info->drawing_id' order by note_date desc, dwg_note_id";
+	$notes_res=@mysql_query($notes_query);
+	while ($note=@mysql_fetch_object($notes_res)) {
+		$poster=getone("select * from contacts where contacts_id = '$note->creator'");
+		$ondate=invali_date($note->note_date);
+		$note->notes=ereg_replace("\n",'<p>',$note->notes);
+		echo "<tr bgcolor=$fd_color_4><td><b>Posted by: $poster->display_name on $ondate</b></td></tr>
+		<tr><td>$note->notes</td></tr>";
+		}
+//	}
+echo"</table>
+<script>
+check_sub_status();
+</script>
+";
+}
+fd_navs_footer();
+?>

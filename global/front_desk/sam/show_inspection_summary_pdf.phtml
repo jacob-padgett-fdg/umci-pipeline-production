@@ -1,0 +1,15 @@
+<?
+set_time_limit("900");
+
+if ($agreement_id=="") die ("ERROR: Fatal application error. agreement_id is missing. Pleast contact your system administrator");
+$agreement_id=addslashes($agreement_id);
+
+if ($show_turnover_info=="") $show_turnover_info="0";
+else $show_turnover_info=addslashes($show_turnover_info);
+require_once("pdf_lib2.inc");
+
+$pdf =& new Cezpdf('letter','portrait');
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+$pdf=pdf_equipment_list($agreement_id,$pdf,$show_turnover_info);
+$pdf->ezStream();
+?>

@@ -1,0 +1,120 @@
+<?
+require("../front_desk/mh_lib.inc");
+require("header.phtml");
+mh_navs_header();
+
+//require_once('querylib.inc');
+//require_once('header2.phtml');
+
+///////////////////////////////////////////////////////////////////////////
+//	Automatic query builder settings:
+///////////////////////////////////////////////////////////////////////////
+
+$basequery="select * from contacts where 1 = 1 ";
+$basequery_group_by="";
+$basequery_order_by=""; // This order by will always be used, then whatever was requested
+$basequery_alt_order_by=""; // This is the order by used if nothing else is requested
+$query_order_by_1="alphasort";
+
+$variables=array(
+			"company",
+			"first_name",
+			"last_name",
+			"is_company",
+			"umc_emp",
+			"current"
+			);
+////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////
+//	Automatically build that query now
+////////////////////////////////////////////////////////////////////
+
+$query_order_by_1_direction=escapeshellcmd($query_order_by_1_direction);
+$query_order_by_2_direction=escapeshellcmd($query_order_by_2_direction);
+if ($query_order_by_1!="") {
+	$query_order_by_1=escapeshellcmd($query_order_by_1);
+	$query_order_by_1=ereg_replace("__",".",$query_order_by_1);
+	if ($basequery_order_by=="") $basequery_order_by="order by $query_order_by_1 $query_order_by_1_direction";
+	else $basequery_order_by="$basequery_order_by,$query_order_by_1 $query_order_by_1_direction";
+	if ($query_order_by_2!="") {
+		$query_order_by_1=escapeshellcmd($query_order_by_2);
+		$query_order_by_2=ereg_replace("__",".",$query_order_by_2);
+		$basequery_order_by="$basequery_order_by,$query_order_by_2 $query_order_by_2_direction";
+		}
+	} else { 
+		if ($basequery_order_by=="") $basequery_order_by="order by $basequery_alt_order_by";
+		else $basequery_order_by="$basequery_order_by,$basequery_alt_order_by";
+	}
+	
+
+
+
+foreach($variables as $variable) {
+
+if (${$variable}!="") {
+	//////////////////////////////////////////////////////////////////
+	///	Begin parsing for the multi-select boxen
+	//////////////////////////////////////////////////////////////////
+	if (is_array(${$variable})) {
+		//echo "Multi-select output found: ${$variable}";exit;
+		$basequery=$basequery . " and (";
+		$connector="";
+		foreach(${$variable} as $array_chunk) {
+			$array_chunk=escapeshellcmd($array_chunk);
+			$variable=ereg_replace("__",".",$variable);
+			$basequery=$basequery . " $connector $variable = '$array_chunk'";
+			$connector="or";
+			}
+		$basequery=$basequery . ")";
+	} 
+	//////////////////////////////////////////////////////////////////
+	///	End parsing for the multi-select boxen
+	//////////////////////////////////////////////////////////////////
+	else {
+		//echo "NON Multi-select output found: ${$variable}";exit;
+		$var_is_date=$variable . "_is_date";
+		//echo "$var_is_date<hr>";
+		if (${$var_is_date}!="") {
+			${$variable}=vali_date(${$variable});
+		} else {
+			${$variable}=escapeshellcmd(${$variable});
+		}
+
+
+		$column_name=ereg_replace("__",".",$variable);
+		$var_radio=$variable . "_radio";
+
+		if (${$var_radio}!="") {
+			$sign=${$var_radio};
+			if (($sign!='>') && ($sign!='<') && ($sign!='=')) {
+				//echo "Value: ${$var_radio}";exit;
+				${$var_radio}='=';
+				}
+			$basequery=$basequery . " and $column_name ${$var_radio} '${$variable}'";
+		} else {
+		$var_is_date=${$variable} . "_is_date";
+		
+			$basequery=$basequery . " and $column_name like '%${$variable}%'";
+		}
+		}
+	}
+}
+$basequery=$basequery . $basequery_group_by . $basequery_order_by;
+
+
+//////////////////////////////////////////////////////////////////
+//	End of Generic query builder.. Put your query to use below
+//////////////////////////////////////////////////////////////////
+
+//echo "$basequery<hr>";exit;
+echo "
+<a href=$pagename?mode=main><font color=blue>Contacts Main Menu</font></a><center>";
+//category_show($basequery);
+
+//echo "<hr>$basequery<hr>";
+contact_table($basequery);
+mh_navs_footer();
+echo "</center>";
+?>

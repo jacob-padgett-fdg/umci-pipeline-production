@@ -1,0 +1,130 @@
+<?
+
+if (!($admin_check)) die_security();
+
+
+$suid_year=date('Y');
+$suid_year--;
+$suid_rest=date('m-d');
+$suid_start_date=$suid_year . "-" . $suid_rest;
+
+//$query="select * from timesheet_index where 
+//employee_id = '$current_user_id' and
+//week_ending >= '$suid_start_date' 
+//order by week_ending desc";
+
+if (($start_date=="") || ($end_date=="")) {
+	die("Start end end dates are required (You really don't want to see a report that goes on forever do you?)");
+	}
+
+
+$start_date=vali_date($start_date);
+$end_date=vali_date($end_date);
+
+
+if ($employee=="") {
+$query="select * from timesheet_time left join contacts on (timesheet_time.employee_id = contacts.contacts_id)
+	left join timesheet_index on (timesheet_time.timesheet_id = timesheet_index.timesheet_id)
+where
+	timesheet_index.week_ending >= '$start_date' and
+	timesheet_index.week_ending <= '$end_date' 
+	group by timesheet_index.timesheet_id
+	order by timesheet_index.week_ending desc,alphasort
+";
+} else {
+$query="select * from timesheet_time 
+	left join contacts on (timesheet_time.employee_id = contacts.contacts_id)
+	left join timesheet_index on (timesheet_time.timesheet_id = timesheet_index.timesheet_id)
+where
+	timesheet_index.week_ending >= '$start_date' and
+	timesheet_index.week_ending <= '$end_date' and 
+	timesheet_index.employee_id = '$employee'
+	group by timesheet_index.timesheet_id
+	order by timesheet_index.week_ending desc,alphasort
+";
+}
+//tabledump($query);
+$week_end_last="";
+$res=@mysql_query($query);
+echo "
+<a href=javascript:history.go(-1)><font color=blue>Cancel</font></a>
+
+<center><h2>Timesheet History W/ Summary Info</h2></center>	
+	<table border=0 cellspacing=0 cellpadding=2>
+	<tr><td></td><td>Employee</td><td>ST</td><td>OT</td><td>DT</td><td>V</td><td>S</td><td>H</td><td>Total</td><td>Status</td><td>Week&nbsp;Ending</td></tr>";
+
+while($row=@mysql_fetch_object($res)) {
+	$week_end=invali_date($row->week_ending);
+	if ($row->reviewed=="Y") {
+		$highlight_color="green";
+		$review_text="Approved";
+		} else {
+		$highlight_color="#aaaaaa";
+		$review_text="Unapproved";
+		}
+
+	
+	$ts_info=timesheet_summary_info($row->timesheet_id);
+
+	if (($ts_info->st > 40) && ($row->overtime_exempt=='N')) $highlight_color="red";
+	
+
+		$warn_text_vac="";
+		$warn_text_sick="";
+		if ($ts_info->v > $ts_info->avail_vacation) {
+			$vac_fg_color1="<font color=#11ffff>";
+			$vac_fg_color2="</font>";
+			$vac_bg_color=" bgcolor=#ff1111";
+			$warn_text_vac="<br>Warning! Vacation hours exceed current available balance";
+			} else {
+			$vac_fg_color1="";
+			$vac_fg_color2="";
+			$vac_bg_color="";
+			}
+
+		//if ($ts_info->s > $ts_info->avail_sick) {
+		//	$sick_fg_color1="<font color=#11ffff>";
+		//	$sick_fg_color2="</font>";
+		//	$sick_bg_color=" bgcolor=#ff1111";
+		//	$warn_text_sick="<br>Warning! Sick hours exceed current available balance";
+		//	} else {
+		//	$sick_fg_color1="";
+		//	$sick_fg_color2="";
+		//	$sick_bg_color="";
+		//	}
+
+
+	echo "<tr><td>
+		$ts_info->shift_tag
+		</td><td>";
+			contact_view("$row->display_name ($row->employee_num)",$row->employee_id);
+		//	$row->display_name ($row->employee_num)&nbsp;&nbsp;
+		echo "</td><td>
+			$ts_info->st
+		</td><td>
+			$ts_info->ot
+		</td><td>
+			$ts_info->dt
+		</td><td$vac_bg_color>
+			$vac_fg_color1$ts_info->v$vac_fg_color2
+		</td><td$sick_bg_color>
+			$sick_fg_color1$ts_info->s$sick_fg_color2
+		</td><td>
+			$ts_info->h
+		</td><td>
+			$ts_info->hours
+		</td><td>
+			$row->status/$review_text
+		</td><td>
+			<a href=$pagename?mode=admin_timesheet_load&ts_id=$ts_info->timesheet_id target=_admin_timesheet_review><font color=blue>
+			$week_end
+			</font></a>
+		</td></tr>";
+	}
+echo "</table>";
+
+if ((mysql_num_rows($res)==0)) echo "<b>No Records Found...</b><p>";
+
+
+
+?>

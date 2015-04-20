@@ -1,0 +1,68 @@
+<?
+if (!($billing_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+$default_date=date('Y-m-d',strtotime('last saturday'));
+
+echo "
+
+
+
+
+<body bgcolor=white>
+<a href=$pagename?mode=main><font color=blue>Return to Main</font></a>
+
+<form name=add_time method=post action=\"$pagename\">
+<input type=hidden name=mode value=billing_timesheet_archive_results>
+<input type=hidden name=phase>
+
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td>
+	Week Ending:
+</td><td>";
+	if ($show_all=='Y') $limit="";
+	else $limit="limit 10";
+	$query="select * from timesheet_index  where status = 'posted' group by week_ending order by week_ending desc $limit";
+	$res=@mysql_query($query);
+	echo "<select name=week_ending>";
+	while($row=@mysql_fetch_object($res)) {
+		$we_nice=invali_date($row->week_ending);
+		if (week_fully_posted($row->week_ending)) echo "<option>$we_nice</option>";
+		else $warning_note=$warning_note . "<br>The payroll for the week ending $we_nice is not fully posted yet.<br>";
+		}
+	echo "</select>
+</td></tr>
+<tr><td>
+	<a href=javascript:job_help()>Job:</a><br>
+	<i>Blank=All Cost+</i>
+</td><td valign=top>
+	<input type=text size=10 name=job_num>
+</td></tr>
+
+<tr><td>
+	Hide&nbsp;other&nbsp;Jobs
+</td><td>
+	<input type=checkbox name=\"suppress_other_jobs\" checked>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Search>
+</td></tr>
+</table>
+</form>
+$warning_note
+<script>
+function submit_form() {
+	var url;
+	url='$pagename?mode=billing_timesheet_archive_results&week_ending=' + document.add_time.week_ending.value + '&job_num=' + document.add_time.job_num.value + '&blah=blahberries&foo=fooberries/archive_results.pdf';
+	document.location=url;
+	return false;
+	}
+
+function job_help() {
+	open('$pagename?mode=timesheet_job_popup','timesheet_popup',
+	'height=400,width=400,scrollbars=yes,resizable=yes');
+	}
+</script>
+";
+if ($show_all!='Y') echo "<a href=$pagename?mode=billing_timesheet_archive_selection&show_all=Y><font color=blue>Show all week endings.</font></a> (Warning: A very long list)";
+?>

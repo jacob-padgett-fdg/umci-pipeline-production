@@ -1,0 +1,51 @@
+<?
+
+if ($job_name) $job_name=escapeshellcmd($job_name);
+
+echo "
+<body bgcolor=white>
+<center><b>Job Search</b></center><hr>
+Search Text:<br>
+<form name=job_search action=$pagename method=post>
+<input type=hidden name=mode value=timesheet_job_popup>
+<input type=text name=job_name value=\"$job_name\"><br>
+<input type=button onclick=submit(); value=Search>
+<script>
+window.focus();
+document.job_search.job_name.focus();
+</script>
+";
+
+
+if ($job_name=="") {
+	$query="select top 500 * from JCJM with (NOLOCK) where JobStatus = 1 and JCCo = 1 and Job not like '00000%' and Job not like 'M%' and Job not like 'E%' and Job not like '1%' and Job not like '2%' and Job not like '3%' and Job not like '4%' and Job not like '5%' and Job not like '6%' and Job not like '7%' and Job not like '8%' and Job not like '9%'";
+	} else {
+	$query="select top 500 * from JCJM with (NOLOCK) where JobStatus = 1 and JCCo = 1 and LOWER(Description) LIKE LOWER('%$job_name%')";
+	}
+//$query="select top 500 * from bJCJM where JobStatus = 1 and JCCo = 1 and LOWER(Description) LIKE LOWER('%$job_name%')";
+
+
+echo "<center><b>Search Results</b></center><hr>";
+
+
+echo "<table border=0>
+<script>
+function setvalue(phase) {
+	opener.document.add_time.job_num.value=phase;
+	opener.document.add_time.phase.value='';
+	self.close();
+	}
+</script>
+";
+$res=@mssql_query($query);
+while($row=@mssql_fetch_object($res)) {
+	$row->Job=ereg_replace(" *","",$row->Job);
+	$row->Job=ereg_replace("-*$","",$row->Job);
+	echo "<tr><td>
+			<a href=javascript:setvalue('$row->Job');><font color=blue>$row->Job</a>
+		</td><td>
+			$row->Description
+		</td></tr>";
+	}
+echo "</table></body>";
+?>

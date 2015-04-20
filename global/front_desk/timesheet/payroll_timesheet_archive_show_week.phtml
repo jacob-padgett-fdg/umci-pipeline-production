@@ -1,0 +1,88 @@
+<?
+if (!($payroll_check)) die("ERROR: Security violation! The authorities are being notified!");
+
+session_register('show_week_last');
+if ($show_week=="") $show_week=$show_week_last;
+$show_week_last=$show_week;
+
+$show_week_mysql=vali_date($show_week);
+
+echo "
+<script>
+	function tl(timesheet_id) {
+		document.location='$pagename?mode=timesheet_load&come_back_to=$mode&ts_id=' + timesheet_id;
+	}
+	
+	function process_timesheets() {
+		if (confirm('Are you sure you\'re ready to process the timesheets?'))
+			document.location='$pagename/umc_timesheet-$seq_info->seq_num.csv?mode=payroll_process_timesheets';
+		}
+</script>
+
+<body bgcolor=white>
+<table border=0>
+<tr><td>
+	<a href=javascript:process_timesheets();><font color=blue>(Re) Download Timesheet Data</font></a>
+</td><td>
+	<a href=\"$pagename?mode=payroll_download_week_as_pdf&blah=blah/timesheet_download-archive.pdf\"><font color=blue>Download PDF of Week</font></a>
+</td></tr>";
+
+
+$payroll_seq=addslashes($payroll_seq);
+$seq_info=getoneb("select * from timesheet_payroll_sequences where seq_id = '$payroll_seq'");
+if (!($seq_info)) die("Application error! Sequence error!");
+$current_employee_group=$seq_info->payroll_group;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////                         Show timesheet list
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$query="select * from timesheet_index,contacts where timesheet_index.employee_id = contacts.contacts_id and 
+status = 'posted' and week_ending = '$show_week_mysql' and timesheet_index.employee_group = '$current_employee_group' order by last_name";
+
+$res=@mysql_query($query);
+echo "<table border=1 width=100%><tr><td align=center bgcolor=#dddddd><h2>Timesheets Posted for Week Ending $show_week</h2></td></tr></table><table border=0 cellpadding=3>
+<tr><td>
+	Name
+</td><td>
+	ST
+</td><td>
+	OT
+</td><td>
+	DT
+</td><td>
+	V
+</td><td>
+	S
+</td><td>
+	H
+</td><td>
+	Total
+</td></tr>
+";
+while($row=@mysql_fetch_object($res)) {
+	$week_end=invali_date($row->week_ending);
+	$ts_info=timesheet_summary_info($row->timesheet_id);
+	
+	echo "<tr><td>
+			<a href=javascript:tl($row->timesheet_id);>$row->last_name, $row->first_name</a>
+		</td><td>
+			$ts_info->st
+		</td><td>
+			$ts_info->ot
+		</td><td>
+			$ts_info->dt
+		</td><td>
+			$ts_info->v
+		</td><td>
+			$ts_info->s
+		</td><td>
+			$ts_info->h
+		</td><td>
+			$ts_info->hours
+		</td></tr>";
+	}
+echo "</table>";
+if ((mysql_num_rows($res)==0)) echo "<b>No Records Found...</b><p>";
+
+echo "<hr><a href=$pagename?mode=payroll_timesheet_archive_selection><font color=blue>Return to Payroll Archive</font></a>";
+?>

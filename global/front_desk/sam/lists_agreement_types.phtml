@@ -1,0 +1,27 @@
+<?
+if (!($adminuser)) die("ERROR: Security Violation!!! The authorities have been notified!");
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=admin_settings><font color=blue>Return to admin settings</font></a>
+
+<center><h3>Agreement Types</h3></center><hr>
+<form name=agreement_types method=post action=$pagename>
+<input type=hidden name=mode value=lists_agreement_type_edit>
+<input type=submit value=Add>
+</form>
+";
+
+//tabledump("select * from svc_agreement_types order by sort_priority,agreement_type");
+
+echo "<table border=1 cellspacing=0 cellpadding=3>
+<tr><td bgcolor=#eeeeee><b>Current Agreement Types</b></td></tr>
+
+";
+
+$res=@mysql_query("select * from svc_agreement_types order by sort_priority");
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td><a href=$pagename?mode=lists_agreement_type_edit&agreement_type_id=$row->agreement_type_id><font color=blue>$row->agreement_type</font></a></td></tr>";
+	}
+echo "</table>";
+?>

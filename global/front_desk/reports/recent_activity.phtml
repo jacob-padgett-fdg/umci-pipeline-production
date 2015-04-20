@@ -1,0 +1,256 @@
+<?
+/*
+$query_temp="
+select *,sum(1) as users_per_day from (
+ (select _latin1'document' AS `type`,`documents_review_history_nice`.`doc_id` AS `doc_id`,`documents_review_history_nice`.`doc_type` AS `doc_type`,`documents_review_history_nice`.`app_reference` AS `app_reference`,`documents_review_history_nice`.`description` AS `description`,`documents_review_history_nice`.`review_time` AS `review_time`,`documents_review_history_nice`.`date_as_int` AS `date_as_int`,`documents_review_history_nice`.`display_name` AS `display_name`,`documents_review_history_nice`.`login_name` AS `login_name`,`documents_review_history_nice`.`first_name` AS `first_name`,`documents_review_history_nice`.`last_name` AS `last_name`,`documents_review_history_nice`.`ip_address` AS `ip_address`,`documents_review_history_nice`.`contract_num` AS `contract_num`,`documents_review_history_nice`.`contacts_id` AS `contacts_id`, sum(1) as login_count from `documents_review_history_nice` where date_as_int >= '20100101' and date_as_int <= '20110228' group by documents_review_history_nice.date_as_int,documents_review_history_nice.login_name ) 
+
+
+union all 
+
+
+( select `front_desk_page_history_nice`.`page_type` AS `type`,NULL AS `NULL`,`front_desk_page_history_nice`.`application` AS `doc_type`,`front_desk_page_history_nice`.`app_reference` AS `app_reference`,`front_desk_page_history_nice`.`description` AS `description`,`front_desk_page_history_nice`.`review_time` AS `review_time`,`front_desk_page_history_nice`.`date_as_int` AS `date_as_int`,`front_desk_page_history_nice`.`display_name` AS `display_name`,`front_desk_page_history_nice`.`login_name` AS `login_name`,`front_desk_page_history_nice`.`first_name` AS `first_name`,`front_desk_page_history_nice`.`last_name` AS `last_name`,`front_desk_page_history_nice`.`ip_address` AS `ip_address`,`front_desk_page_history_nice`.`contract_num` AS `contract_num`,`front_desk_page_history_nice`.`contacts_id` AS `contacts_id`, sum(1) as login_count from `front_desk_page_history_nice` where date_as_int >= '20100101' and date_as_int <= '20110228' group by front_desk_page_history_nice.date_as_int,front_desk_page_history_nice.login_name) order by login_count desc,review_time desc
+) as summary_table
+
+group by date_as_int order by users_per_day desc limit 20
+";
+
+
+tabledump($query_temp);
+//excel_dump($query_temp);
+die();
+*/
+
+require("header.phtml");
+require('mh_lib.inc');
+mh_navs_header();
+check_report_permissions();
+
+
+if ($show_date_end!="") $show_date_end=addslashes($show_date_end);
+
+if ($show_date=="") {
+	$date=date('Y-m-d 00:00:00');
+	$date_end=date('Y-m-d 23:59:59');
+	$mysql_date=date('Y-m-d');
+	$show_date_end="";
+	} else { 
+	$date=date('Y-m-d 00:00:00',strtotime($show_date));
+	if ($show_date_end!="") {
+		$show_date_end=$show_date_end=vali_date($show_date_end);
+		$date_end="$show_date_end 23:59:59";
+		} else {
+		$date_end=date('Y-m-d 23:59:59',strtotime($show_date));
+		}
+	$mysql_date=date('Y-m-d',strtotime($show_date));
+	}
+
+
+$query_add="";
+if ($type!="") {
+	$type=addslashes($type);
+	//$query_add=$query_add . " and type = '$type' ";
+	$query_add_documents=$query_add_documents . " and 'document' = '$type' ";
+	$query_add_page=$query_add_page . " and page_type = '$type' ";
+	}
+
+if ($doc_type!="") {
+	$doc_type=addslashes($doc_type);
+	//$query_add=$query_add . " and type = '$type' ";
+	$query_add_documents=$query_add_documents . " and doc_type like '%$doc_type%' ";
+	$query_add_page=$query_add_page . " and application like '%$doc_type%' ";
+	}
+
+if ($show_contact!="") {
+	$show_contact=addslashes($show_contact);
+	$query_add=$query_add . " and contacts_id = '$show_contact' ";
+	}
+
+if ($app_reference!="") {
+	$app_reference=addslashes($app_reference);
+	$query_add=$query_add . " and app_reference like '%$app_reference%' ";
+	}
+
+if ($contract_num!="") {
+	$contract_num=addslashes($contract_num);
+	$query_add=$query_add . " and contract_num = '$contract_num' ";
+	}
+
+if ($ip_address!="") {
+	$ip_address=addslashes($ip_address);
+	$query_add=$query_add . " and ip_address like '%$ip_address%' ";
+	}
+
+$date_as_int=date('Ymd',strtotime($date));
+$date_end_as_int=date('Ymd',strtotime($date_end));
+
+echo "
+<a href=$pagename?mode=$mode&report_name=activity_by_user><font color=blue>Activity summary by user</font></a><br>
+
+<table border=1 cellspacing=0 cellpadding=2><tr bgcolor=$fd_color_4><td colspan=4 align=center>
+	<b>FD Activity Search </b>
+</td></tr>
+
+<tr><td>
+	On/Start:
+</td><td>
+	<form name=fd_activity_date method=get action=$pagename>
+	<input type=hidden name=mode value=$mode>
+	<input type=hidden name=report_name value=$report_name>";
+	datebox($mysql_date, "fd_activity_date.show_date", '', 'document.fd_activity_date.submit();');echo "
+</td><td>
+	To:
+</td><td>";
+	datebox($show_date_end, "fd_activity_date.show_date_end", '', 'document.fd_activity_date.submit();');echo"</td></tr>
+</td></tr>
+
+<tr><td>
+	Type:
+</td><td>
+	<select onchange=\"submit()\" name=type><option>$type</option><option>document</option><option>page</option><option>report</option><option></option></select>
+</td><td>
+	App Ref:
+</td><td> 
+	<input type=text name=app_reference value=\"$app_reference\" onchange=submit()>
+</td></tr>
+
+<tr><td>
+	User:
+</td><td>";
+	contact("select * from contacts where umc_emp = 'Y' and current = 'Y'",$show_contact,'show_contact','document.fd_activity_date.submit()');echo"
+</td><td>
+	IP Addr:
+</td><td>
+	<input type=text size=15 name=ip_address value=\"$ip_address\" onchange=submit()>
+</td></tr>
+
+<tr><td>
+	Doc Type:
+</td><td colspan=3>
+	<input type=text name=doc_type value=\"$doc_type\">
+</td></tr>
+
+<tr><td>
+	Job:
+</td><td colspan=3>
+	";dropbox("select contract_num as contract_num,contract_num as job_num,' - ',display_name from jobinfo where active = 'Y' order by contract_num",addslashes($contract_num),'',"submit()","2");echo"
+</td></tr>
+</form>
+</td></tr></table>
+";
+
+
+
+//if ($contract_num!="") $second_where="where contract_num = '$contract_num'";
+//else $second_where="";
+
+
+$where=" where date_as_int >= '$date_as_int' and date_as_int <= '$date_end_as_int' $query_add ";
+
+$query="
+
+(select _latin1'document' AS `type`,`documents_review_history_nice`.`doc_id` AS `doc_id`,`documents_review_history_nice`.`doc_type` AS `doc_type`,`documents_review_history_nice`.`app_reference` AS `app_reference`,`documents_review_history_nice`.`description` AS `description`,`documents_review_history_nice`.`review_time` AS `review_time`,`documents_review_history_nice`.`date_as_int` AS `date_as_int`,`documents_review_history_nice`.`display_name` AS `display_name`,`documents_review_history_nice`.`login_name` AS `login_name`,`documents_review_history_nice`.`first_name` AS `first_name`,`documents_review_history_nice`.`last_name` AS `last_name`,`documents_review_history_nice`.`ip_address` AS `ip_address`,`documents_review_history_nice`.`contract_num` AS `contract_num`,`documents_review_history_nice`.`contacts_id` AS `contacts_id` 
+from `documents_review_history_nice` $where $query_add_documents)
+
+union all 
+
+(
+select `front_desk_page_history_nice`.`page_type` AS `type`,NULL AS `NULL`,`front_desk_page_history_nice`.`application` AS `doc_type`,`front_desk_page_history_nice`.`app_reference` AS `app_reference`,`front_desk_page_history_nice`.`description` AS `description`,`front_desk_page_history_nice`.`review_time` AS `review_time`,`front_desk_page_history_nice`.`date_as_int` AS `date_as_int`,`front_desk_page_history_nice`.`display_name` AS `display_name`,`front_desk_page_history_nice`.`login_name` AS `login_name`,`front_desk_page_history_nice`.`first_name` AS `first_name`,`front_desk_page_history_nice`.`last_name` AS `last_name`,`front_desk_page_history_nice`.`ip_address` AS `ip_address`,`front_desk_page_history_nice`.`contract_num` AS `contract_num`,`front_desk_page_history_nice`.`contacts_id` AS `contacts_id` 
+
+from `front_desk_page_history_nice` $where $query_add_page
+)
+order by review_time desc
+
+";
+
+
+
+//$query="select *,date(review_time) as rdate from front_desk_activity_log where review_time >= '$date' and review_time <= '$date_end' $query_add order by review_time desc";
+
+//$query="select *,date(review_time) as rdate from front_desk_activity_log where review_time >= '$date' and review_time <= '$date_end' $query_add order by review_time desc";
+//$query="select *,date(review_time) as rdate from front_desk_activity_log where date_as_int >= '$date_as_int' and date_as_int <= '$date_end_as_int' $query_add order by review_time desc";
+//$query="select *,date(review_time) as rdate from front_desk_activity_log where date_as_int >= '$date_as_int' and date_as_int <= '$date_end_as_int' $query_add";
+
+//tabledump("explain $query");echo "<hr>$query<hr>";exit;
+//echo "<hr>$query<hr>";
+$qstime=microtime(TRUE);
+//die($query);
+$res=@mysql_query($query);
+$qftime=microtime(TRUE);
+$qrtime=round($qftime - $qstime,3);
+
+//$query_info=mysql_info();
+$count=@mysql_num_rows($res);
+echo "<b>$count items</b><hr>";
+
+echo "<table border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_4><td>
+	type
+</td><td>
+	doc_id
+</td><td>
+	display_name
+</td><td>
+	doc_type
+</td><td>
+	app_reference
+</td><td>
+	description
+</td><td>
+	review_time
+</td><td>
+	IP Address
+</td><td>
+	Job
+</td></tr>
+";
+
+$rdate_count=0;
+
+while ($row=@mysql_fetch_object($res)) {
+	if ($row->display_name!=$last_display_name) $unique_count++;
+	//$last_display_name=$row->display_name;
+	//continue;
+	if ($row->type=="page") $row->description_text="<font size=-2>$row->description</font>";
+	if ($row->type=="report") $row->description_text="<font size=-2>$row->description</font>";
+	//if ($row->rdate!=$last_rdate) $rdate_count++;
+	if ($row->date_as_int!=$last_rdate) $rdate_count++;
+	$last_rdate=$row->date_as_int;
+	echo "<tr><td>
+			$row->type
+		</td><td>
+			";
+			
+			if ($row->doc_id!="") { 
+				echo "<a href=$pagename?mode=open_doc&doc_id=$row->doc_id&global_jobinfo_id_set=$row->jobinfo_id><font size=-1 color=blue>$row->doc_id</font></a>";
+				} else {
+				
+				echo "<a href=\"$row->description\"><font size=-1 color=blue>link</font></a>";
+				}
+			
+			echo "
+		</td><td>
+			$row->display_name
+		</td><td>
+			$row->doc_type&nbsp;
+		</td><td>
+			$row->app_reference&nbsp;
+		</td><td>
+			$row->description_text&nbsp;
+		</td><td title=$row->date_as_int>
+			$row->review_time
+		</td><td>
+			$row->ip_address
+		</td><td>
+			<a href=$pagename?mode=fd_job_jump&contract_num=$row->contract_num><font color=blue>$row->contract_num</font></a>
+		</td></tr>";
+	}
+
+echo "</table>
+Query run time: $qrtime<br>
+Unique users: $unique_count<br>
+";
+//print_r($query_info);
+if ($rdate_count>1) echo "...on $rdate_count unique dates..";
+
+mh_navs_footer();
+?>

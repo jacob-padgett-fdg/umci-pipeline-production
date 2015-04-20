@@ -1,0 +1,865 @@
+<?
+set_time_limit("1900");
+require("header.phtml");
+require("mh_lib.inc");
+include("viewpoint_connect_ro.phtml");
+include("viewpoint_libs.inc");
+include("lam_lib.inc");
+$labor_manager='371';
+
+function foreman_print_row($fmn,$year) {
+      $month=1;
+      while ($month<=12) {
+         $hours_qry="select 
+            sum(indirect_accumulation) as indirect, 
+            sum(direct_accumulation) as direct, 
+            sum(direct_accumulation + indirect_accumulation + my_time ) as allofthem,
+            
+            sum(recordable_time_loss) as recordable_time_loss,
+            sum(recordable_light_duty) as recordable_light_duty,
+            sum(recordable_medical_only) as recordable_medical_only,
+
+            sum(first_aid_umc) as first_aid_umc,
+            sum(first_aid_reportable) as first_aid_reportable,
+            
+            sum(incidents_first_aid) as incidents_first_aid,
+            sum(incidents_recordable) as incidents_recordable
+         
+         from front_desk_reports_responsibility_accumulation_cache
+            where foreman = '$fmn->contacts_id' and 
+               week_ending >= '$year-$month-01' and
+               week_ending <= '$year-$month-31'
+            group by foreman";
+         $hours=getoneb($hours_qry);
+         $allhours=round($hours->allofthem);
+         echo "<td>$allhours</td><td>$hours->first_aid_umc</td><td>$hours->first_aid_reportable</td><td>$hours->recordable_medical_only</td><td>$hours->recordable_light_duty</td><td>$hours->recordable_time_loss</td>";
+         $month++;
+         }
+      $totalhours_qry=" 
+         select 
+         sum(indirect_accumulation) as indirect, 
+         sum(direct_accumulation) as direct, 
+         sum(direct_accumulation + indirect_accumulation + my_time) as allofthem,
+
+         sum(recordable_time_loss) as recordable_time_loss,
+         sum(recordable_light_duty) as recordable_light_duty,
+         sum(recordable_medical_only) as recordable_medical_only,
+
+         sum(first_aid_umc) as first_aid_umc,
+         sum(first_aid_reportable) as first_aid_reportable,
+
+         sum(incidents_first_aid) as incidents_first_aid,
+         sum(incidents_recordable) as incidents_recordable
+         
+         from front_desk_reports_responsibility_accumulation_cache
+         where foreman = '$fmn->contacts_id' and 
+            week_ending >= '$year-01-01' and
+            week_ending <= '$year-12-31'
+         group by foreman";
+      //echo "$totalhours_qry<hr>";
+      //tabledump($totalhours_qry);exit;
+      //echo "<hr>$totalhours_qry<hr>";
+      $totalhours=getoneb($totalhours_qry);
+      $totalhours->allofthem=round($totalhours->allofthem);
+      
+      
+      $first_aid_rate=round($totalhours->incidents_first_aid * 200000 / $totalhours->allofthem,2);
+      $recordable_rate=round($totalhours->incidents_recordable * 200000 / $totalhours->allofthem,2);
+
+      $first_aid_umc_rate=round($totalhours->first_aid_umc * 200000 / $totalhours->allofthem,2);
+      $first_aid_reportable_rate=round($totalhours->first_aid_reportable * 200000 / $totalhours->allofthem,2);
+
+      $incidents_recordable_rate=round($totalhours->incidents_recordable * 200000 / $totalhours->allofthem,2);
+
+
+      $recordable_medical_only_rate=round($totalhours->recordable_medical_only * 200000 / $totalhours->allofthem,2);
+      $recordable_light_duty_rate=round($totalhours->recordable_light_duty * 200000 / $totalhours->allofthem,2);
+      $recordable_time_loss_rate=round($totalhours->recordable_time_loss * 200000 / $totalhours->allofthem,2);
+      
+      echo "	
+         <td>$totalhours->allofthem</td>
+         <td>$totalhours->first_aid_umc</td>
+         <td>$first_aid_umc_rate</td>
+         <td>$totalhours->first_aid_reportable</td>
+         <td>$first_aid_reportable_rate</td>
+            
+         <td bgcolor=#ffffaa>$totalhours->incidents_recordable</td>
+         <td bgcolor=#ffffaa>$incidents_recordable_rate</td>
+
+         <td>$totalhours->recordable_medical_only</td>
+         <td>$recordable_medical_only_rate</td>
+         <td>$totalhours->recordable_light_duty</td>
+         <td>$recordable_light_duty_rate</td>
+         <td>$totalhours->recordable_time_loss</td>
+         <td>$recordable_time_loss_rate</td>
+         </tr>
+         ";
+   }
+
+function print_report_header($year) {
+   global $fd_color_1;
+   
+   $count=1;
+   echo "
+      <font size=+3 color=darkblue><b>$year UMC Man Hour Report</b></font>
+      <table style=\"font-size: 9pt;\" border=1 cellspacing=0 cellpadding=2>
+      <thead>
+
+      <tr valign=bottom><td>
+         &nbsp;
+      </td><td>";
+         
+      while ($count < 13) {	
+         echo "
+            &nbsp;				
+         </td><td>
+            ";vertical_text("First Aid",11);echo"
+         </td><td>
+            ";vertical_text("Reportable",11);echo"
+         </td><td>
+            ";vertical_text("Recordable",11);echo"
+         </td><td>
+            ";vertical_text("Light Duty",11);echo"
+         </td><td>
+            ";vertical_text("Time Loss",11);echo"
+         </td><td>";
+         $count++;
+      }
+      
+      echo "
+         ";vertical_text("Total Man Hours",11);echo"
+      </td><td>
+         ";vertical_text("First Aid",11);echo"
+      </td><td>
+         ";vertical_text("First Aid Rate",11);echo"
+      </td><td>
+         ";vertical_text("Reportable",11);echo"
+      </td><td>
+         ";vertical_text("Reportable Rate",11);echo"
+      </td><td>
+         ";vertical_text("Total Recordable",11);echo"
+      </td><td>
+         ";vertical_text("Total Recordable Rate",11);echo"
+      </td><td>
+         ";vertical_text("Recordable",11);echo"
+      </td><td>
+         ";vertical_text("Recordable Rate",11);echo"
+      </td><td>
+         ";vertical_text("Light Duty",11);echo"
+      </td><td>
+         ";vertical_text("Light Duty Rate",11);echo"
+      </td><td>
+         ";vertical_text("Time Loss",11);echo"
+      </td><td>
+         ";vertical_text("Time Loss Rate",11);echo"
+      </td></tr>
+      
+      <tr bgcolor=\"$fd_color_1\"><td>
+         &nbsp;
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Jan</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Feb</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Mar</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Apr</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>May</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Jun</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Jul</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Aug</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Sep</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Oct</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Nov</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td style=\"color: white; background: darkblue;\">
+         <b>Dec</b>
+      </td><td colspan=5 style=\"color: white; background: darkblue;\">
+      </td><td colspan=13>
+         &nbsp;
+      </td></tr>
+      </thead>	
+      ";
+      }
+
+function recalc_year($year) {
+   $dates=list_week_ending_dates($year);
+   while ($date=array_shift($dates)) {
+      recalc_week($date);
+      //echo "$date<hr>";flush();
+      }
+   }
+
+function list_week_ending_dates2($year) {
+   $test=1;
+   $test=2;
+
+   
+}
+function list_week_ending_dates($year) {
+   $fdom=0;
+   $count=1;
+   $dates=array();
+   $year_plus_one=$year + 1;
+   while (($fdom<7)&&($day!='Sat')) {
+      $fdom++;
+      $day=date("D",strtotime("$year-01-0$fdom"));
+      //echo "$day/$fdom<hr>";
+      }
+   $saturday=date("Y-m-d",strtotime("$year-01-0$fdom"));
+   $month=date("m",strtotime("$saturday + 1 week"));   
+   while ($saturday<"$year_plus_one-01-01") {
+      
+      if ($month>0) $dates[$count]=$saturday;
+      $count++;
+      $month=date("m",strtotime("$saturday + 1 week"));
+      $saturday=date("Y-m-d",strtotime("$saturday + 1 week"));
+      }
+      //print_r($dates); die;
+      return ($dates);
+      
+
+   }
+
+function recalc_week($date) {
+   global $labor_manager,$sheet_metal_manager,$teamster_manager;
+   echo "$date<br>";flush();
+   $mysql_date=vali_date($date);
+   @mysql_query("delete from front_desk_reports_responsibility_accumulation_cache where week_ending = '$mysql_date'");
+   $vp_query="select * from PRTH with (NOLOCK) where PRCo = 1 and PREndDate= \"$date\" and PRGroup = 1 and EarnCode < 4";
+   $vp_res=@mssql_query($vp_query);
+   $count=@mssql_num_rows($vp_res);
+   $top_lam=find_tree_top(find_default_lamchop($date));
+   if (!($top_lam)) {
+      echo "Missing LAM Data for $date<hr>";
+      return (FALSE);
+      } 
+   while ($row=@mssql_fetch_object($vp_res)) {
+      if ($row->Hours==0) {
+         continue;
+         }
+      $this_lam=pr_info_to_lam($row->Job,$row->Employee,$mysql_date);
+      if (!($this_lam)) {
+         echo "<hr>LAM error on job: Job:$row->Job/Emp:$row->Employee/WE:$mysql_date"; 
+         @mysql_query("insert into debug_log set app = 'incident_rates_rpt', debug_string = 'Hours skipped because job not identified\r\n$row->Job'");
+         continue;
+         }
+      add_hours($this_lam,$row->Hours,'Y');
+      
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      // Add Hours to my own personal record.. 
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      $me=getoneb("select * from contacts where employee_num = '$row->Employee'");
+      if ($me) {
+         $current_me=getoneb("select * from front_desk_reports_responsibility_accumulation_cache where week_ending = '$mysql_date' and foreman = '$me->contacts_id'");
+         if (!($current_me)) {
+            @mysql_query("insert into front_desk_reports_responsibility_accumulation_cache set week_ending = '$mysql_date',foreman = '$me->contacts_id'");
+            $current_me=getoneb("select * from front_desk_reports_responsibility_accumulation_cache where week_ending = '$mysql_date' and foreman = '$me->contacts_id'");
+            }
+         $new_hours=$row->Hours + $current_me->my_time;
+         if (!($current_me)) {
+            die("no current me");
+            }
+         @mysql_query("update front_desk_reports_responsibility_accumulation_cache set my_time = '$new_hours' where cache_id = '$current_me->cache_id'");
+         }
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      // If the hours are sheet metal hours, then Chris gets them all too.. 
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      
+      $emp_info=getoneb("select * from contacts where employee_num = '$row->Employee'");
+      
+      if ($emp_info->employee_trade=="sheet metal workers") {
+         if (!($current_chris)) {
+            $current_chris=getoneb("select * from front_desk_reports_responsibility_accumulation_cache where week_ending = '$mysql_date' and foreman = '$sheet_metal_manager'");
+            if(!($current_chris)) {
+               @mysql_query("insert into front_desk_reports_responsibility_accumulation_cache set week_ending = '$mysql_date',foreman = '$sheet_metal_manager'");
+               $current_chris=getoneb("select * from front_desk_reports_responsibility_accumulation_cache where week_ending = '$mysql_date' and foreman = '$sheet_metal_manager'");
+               if (!($current_chris)) die ("Error: Problem with the sheet metal manager accumulation account!!!");
+               }
+            }
+         $current_chris->direct_accumulation=$current_chris->direct_accumulation + $row->Hours;
+         @mysql_query("update front_desk_reports_responsibility_accumulation_cache set direct_accumulation = '$current_chris->direct_accumulation' where cache_id = '$current_chris->cache_id'");
+         } 	
+      
+      if ($emp_info->employee_trade=="teamster") {
+         if (!($current_gary)) {
+            $current_gary=getoneb("select * from front_desk_reports_responsibility_accumulation_cache where week_ending = '$mysql_date' and foreman = '$teamster_manager'");
+            if(!($current_gary)) {
+               @mysql_query("insert into front_desk_reports_responsibility_accumulation_cache set week_ending = '$mysql_date',foreman = '$teamster_manager'");
+               $current_gary=getoneb("select * from front_desk_reports_responsibility_accumulation_cache where week_ending = '$mysql_date' and foreman = '$teamster_manager'");
+               if (!($current_gary)) die ("Error: Problem with the sheet metal manager accumulation account!!!");
+               }
+            }
+         $current_gary->direct_accumulation=$current_gary->direct_accumulation + $row->Hours;
+         @mysql_query("update front_desk_reports_responsibility_accumulation_cache set direct_accumulation = '$current_chris->direct_accumulation' where cache_id = '$current_chris->cache_id'");
+         }
+      }
+   apply_incidents($date);
+   }
+
+function apply_incidents($date) {
+   $mysql_date=vali_date($date);
+   $query="select * from front_desk_reports_safety_incidents where week_ending = '$mysql_date'";
+   $res=@mysql_query($query);
+      while($row=@mysql_fetch_object($res)) {
+         $rtu_query="select * from front_desk_reports_responsibility_accumulation_cache where foreman = '$row->foreman_id' and week_ending = '$row->week_ending'";
+         $record_to_update=getoneb($rtu_query);
+         $field="";
+         $last_value="0";
+         switch ($row->incident_type) {
+            case "Recordable Time Loss":	$field="recordable_time_loss";
+                                    $last_value=$record_to_update->recordable_time_loss;
+                                    $record_to_update->incidents_recordable++;
+                                    break;;
+            case "Recordable Light Duty":	
+                                    //print_r($record_to_update);
+                                    $field="recordable_light_duty";
+                                    $last_value=$record_to_update->recordable_light_duty;
+                                    $record_to_update->incidents_recordable++;
+                                    break;;
+            case "Recordable Medical Only":	$field="recordable_medical_only";
+                                    $last_value=$record_to_update->recordable_medical_only;
+                                    $record_to_update->incidents_recordable++;
+                                    break;;
+            case "First Aid Reportable":	$field="first_aid_reportable";
+                                    $last_value=$record_to_update->first_aid_reportable;
+                                    $record_to_update->incidents_first_aid++;
+                                    break;;
+            case "First Aid":				$field="x";
+                                    $record_to_update->incidents_first_aid++;
+                                    break;;
+            case "Recordable":				$field="x";
+                                    $record_to_update->incidents_recordable++;
+                                    break;;
+            default:
+            case "First Aid UMC":	$field="first_aid_umc";
+                                    $last_value=$record_to_update->first_aid_umc;
+                                    $record_to_update->incidents_first_aid++;
+                                    break;;
+            }
+         if ($field=="") {
+            continue;
+            } else {
+            if ($field=="x") {
+               $query="update front_desk_reports_responsibility_accumulation_cache set
+                  incidents_first_aid = '$record_to_update->incidents_first_aid',
+                  incidents_recordable = '$record_to_update->incidents_recordable'
+                  where cache_id = '$record_to_update->cache_id'";
+               } else {
+               $new_value=$last_value + 1;
+               $query="update front_desk_reports_responsibility_accumulation_cache set
+                  $field = '$new_value', 
+                  incidents_first_aid = '$record_to_update->incidents_first_aid',
+                  incidents_recordable = '$record_to_update->incidents_recordable'
+                  where cache_id = '$record_to_update->cache_id'";
+               }
+            @mysql_query($query);
+            }
+         }
+   }
+
+
+function pr_info_to_lam ($job,$employee_num,$week_ending_mysql) {
+   $debug=0;
+  // if (($job=="04738-")&&($employee_num=="4865")&&($week_ending_mysql=="2009-01-17")) {
+  // 		echo "spotted the problem child...";
+  // 		$debug=1;
+  // 		}
+   $lamchop=find_default_lamchop($week_ending_mysql);
+   if (!($lamchop)) die("Can't find the default lamchop for $week_ending_mysql");
+   $lamchop_top=find_tree_top($lamchop);
+   if (!($lamchop_top)) die("Can't find the top lam in lamchop $lamchop->lamchop_id for $week_ending_mysql");
+   $lamchop_top_info=getoneb("select * from lam where lam_id = $lamchop_top");
+   $orig_job=$job;
+   $job=ereg_replace("^[ 0]*","",$job);
+   $job=ereg_replace("[ ]*$","",$job);
+   $job=ereg_replace("-.*$","",$job);
+   $len=strlen($job);
+   if ((ereg("^M[0-9]",$job))) {
+      $job="AA300";
+      }
+   $jobinfo=getoneb("select * from jobinfo where contract_num = '$job'");
+   if (!($jobinfo)) {
+      $job=ereg_replace("-.*$","",$job);
+      if (($job>9999)&&($job<99999)) $job="AA300";
+      $jobinfo=getoneb("select * from jobinfo where contract_num = '$job'");
+      if (!($jobinfo)) {
+      	if ($debug==1) die("select * from jobinfo where contract_num = '$job'");
+      	return FALSE;
+      	}
+      }
+   $contact=getoneb("select * from contacts where employee_num = '$employee_num'");
+   if ($contact->contacts_id == $lamchop_top_info->employee_id) return $lamchop_top;
+   //if ($debug==1) {
+   		//echo "It's the captain matey! ($lamchop_top->employee_id/$contact->contacts_id)<br>";
+   		//print_r($lamchop_top);
+   		
+   if (!($contact)) die("Contact error ($employee_num)!!");
+   $exact_match_query="select * from lam where lamchops_id = '$lamchop' and employee_id = '$contact->contacts_id' and jobinfo_id = '$jobinfo->jobinfo_id'";
+   $exact_match_lam=getoneb($exact_match_query);
+   if ($exact_match_lam) {
+      $parent_lam_info=getoneb("select * from lam where lam_id = '$exact_match_lam->parent_lam_id'");
+      if ($parent_lam_info)	return $exact_match_lam->parent_lam_id;
+      else return $exact_match_lam->lam_id;
+      }
+   $trade_match_lam_fmn=getoneb("select * from lam right join contacts on (lam.employee_id = contacts.contacts_id) where 
+   lam_id = '$lamchop' and 
+   jobinfo_id = '$jobinfo->jobinfo_id' and 
+   employee_class = 'Foreman' and
+   employee_trade = '$contact->employee_trade'");
+   
+   $trade_match_lam_gen=getoneb("select * from lam right join contacts on (lam.employee_id = contacts.contacts_id) where 
+   lam_id = '$lamchop' and 
+   jobinfo_id = '$jobinfo->jobinfo_id' and 
+   employee_class = 'General Foreman' and
+   employee_trade = '$contact->employee_trade'");
+   
+   $match_lam_gen=getoneb("select * from lam right join contacts on (lam.employee_id = contacts.contacts_id) where 
+   lam_id = '$lamchop' and 
+   jobinfo_id = '$jobinfo->jobinfo_id' and 
+   employee_class = 'General Foreman'");
+
+   if ($contact->employee_class=="Foreman") {
+   		if ($trade_match_lam_gen) return $trade_match_lam_gen->lam_id;
+   		if ($match_lam_gen) return $match_lam_gen->lam_id;
+	}
+
+	if ($contact->employee_trade=="fitter") {
+		$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo->jobinfo_id' and pipe = 'Y' and foreman_id != '$contact->contacts_id'");
+		}
+	if ($contact->employee_trade=="plumber") {
+		$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo->jobinfo_id' and plumb = 'Y' and foreman_id != '$contact->contacts_id'");
+		}
+	if ($contact->employee_trade=="sheet metal workers") {
+		$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo->jobinfo_id' and sheet = 'Y' and foreman_id != '$contact->contacts_id'");
+		}
+	
+	
+	if ($contact->employee_class=="General Foreman") {
+		if ($sup_may_be) {
+			$sup_lam=getoneb("select * from lam where lamchops_id = '$lamchop' and jobinfo_id = '$jobinfo->jobinfo_id' and employee_id = '$sup_may_be->foreman_id'");
+			if ($sup_lam) {
+				return($sup_lam->lam_id);
+			} else {
+				$sup_may_be=getoneb("select * from front_desk_job_foreman where jobinfo_id = '$jobinfo->jobinfo_id' and general = 'Y' and foreman_id != '$contact->contacts_id'");
+				}
+			
+			return($sup_may_be->lam_id);
+			}
+		if ($gen_may_be) {
+			return($gen_may_be->lam_id);
+			}
+		}
+   
+
+   
+   return $lamchop_top;
+   }
+   
+function add_hours($lam_id,$hours,$direct='N',$depth=0) {
+   global $labor_manager,$sheet_metal_manager;
+   $depth=$depth + 1;
+   //echo "Add hours: ($lam_id/$hours/$direct)<hr>";
+   if ($depth>20) echo "Add hours: ($lam_id/$hours/$direct)<hr>";
+   if ($depth>30) { echo "Aborting probably recursion error!!!<br>"; return (FALSE); }
+   $lam_info=getoneb("select * from lam right join lamchops on (lam.lamchops_id = lamchops.lamchops_id) where lam_id = '$lam_id'");
+   if (!($lam_info)) {
+      echo "Warning: attempt to add hours to an invalid LAM ($lam_id)<br>";
+      return FALSE;
+      }
+   $current=getoneb("select * from front_desk_reports_responsibility_accumulation_cache where week_ending = '$lam_info->week_ending' and foreman = '$lam_info->employee_id'");
+   if (!($current)) {
+      $query_start="insert into ";
+      $query_end="";
+      $current->direct_accumulation="0";
+      $current->indirect_accumulation="0";
+      } else {
+      $query_start="update ";
+      $query_end=" where cache_id = '$current->cache_id'";
+      }
+   if ($direct=="N") $current->indirect_accumulation=$current->indirect_accumulation + $hours;
+   else $current->direct_accumulation=$current->direct_accumulation + $hours;
+
+   $query=$query_start . " front_desk_reports_responsibility_accumulation_cache set week_ending = '$lam_info->week_ending', foreman = '$lam_info->employee_id',direct_accumulation = '$current->direct_accumulation', indirect_accumulation = '$current->indirect_accumulation' " . $query_end;
+   // Do the actual insert, but keeping in mind that sheet metal guys
+   // get automatically counted on the sheet metal manager, so don't
+   // use this system to do it...
+   if (!($lam_info->employee_id==$sheet_metal_manager)) @mysql_query($query);
+   if (($lam_info->employee_id!=$labor_manager) && ($lam_info->jobinfo_id!="0") && ($lam_info->jobinfo_id!="999999")) {
+      add_hours($lam_info->parent_lam_id,$hours,'N',$depth);
+      }
+   }
+
+function display_year($year) {
+   global $fd_color_4,$fd_color_1;
+   $start_date="01/01/$year";
+   $end_date="12/31/$year";
+   $vp_group_1_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where Hours > 0 and PRCo = 1 and PREndDate >= \"$start_date\" and PREndDate <= \"$end_date\" and PRGroup = 1 and EarnCode < 4 group by PRGroup";
+   $vp_group_3_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where PRCo = 1 and PREndDate >= \"$start_date\" and PREndDate <= \"$end_date\" and PRGroup = 3 and EarnCode < 4 group by PRGroup";
+   
+   
+   $vp_group_1_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where PRCo = 1 and PREndDate >= \"$start_date\" and PREndDate <= \"$end_date\" and PRGroup = 1 and EarnCode < 4 group by PRGroup";
+   $vp_group_3_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where PRCo = 1 and PREndDate >= \"$start_date\" and PREndDate <= \"$end_date\" and PRGroup = 3 and EarnCode < 4 group by PRGroup";
+
+
+   $vp_group_1_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where PRCo = 1 and PostDate >= \"$start_date\" and PostDate <= \"$end_date\" and PRGroup = 1 and EarnCode < 4 group by PRGroup";
+   $vp_group_3_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where PRCo = 1 and PostDate >= \"$start_date\" and PostDate <= \"$end_date\" and PRGroup = 3 and EarnCode < 4 group by PRGroup";
+   
+   $total_group_1_hours=ms_getoneb($vp_group_1_hours_query);
+   $total_group_3_hours=ms_getoneb($vp_group_3_hours_query);
+   $total_group_1_hours->Hours=round($total_group_1_hours->Hours);
+   $total_group_3_hours->Hours=round($total_group_3_hours->Hours);
+   
+   $everyone_hours=round($total_group_1_hours->Hours + $total_group_3_hours->Hours);
+   
+   $fmqry="select contacts.
+               contacts_id,
+               display_name,
+               employee_num,
+               employee_class,
+               contacts_id as second_sort,
+               sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time) as totalhrs,
+               sum(direct_accumulation) as direct_accumulation_sum,
+               sum(indirect_accumulation) as indirect_accumulation_sum,
+               sum(my_time) as my_time_sum,
+               
+               sum(incidents_recordable) as incidents_recordable_total,
+               
+               sum(incidents_first_aid) as incidents_first_aid_total,
+               
+               year(front_desk_reports_responsibility_accumulation_cache.week_ending),
+
+               sum(incidents_recordable) * 200000 / (sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time)) as recordable_rate,
+               sum(incidents_first_aid)  * 200000 / (sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time)) as fa_rate,
+
+               case employee_class
+                  when 'General Foreman' then '10'
+                  when 'Foreman' then '20'
+                  when 'Journeyman' then '30'
+                  when 'Apprentice' then '40'
+                  when 'Other' then '50' END as employee_class_sort
+               
+               case contacts_id
+                  when 1 then 999
+                  when 2 then 999
+                  when 0 then 999
+                  when 371 then 1
+                  when 1043 then 2
+                  when > 0 then 10 END as second_sort
+               
+               from front_desk_reports_responsibility_accumulation_cache 
+               left join contacts on (
+                  front_desk_reports_responsibility_accumulation_cache.foreman = contacts.contacts_id
+                  ) 
+               
+               
+               
+               group by year(front_desk_reports_responsibility_accumulation_cache.week_ending), front_desk_reports_responsibility_accumulation_cache.foreman 
+               order by employee_class_sort, second_sort, recordable_rate, fa_rate, totalhrs desc
+               
+                  ";
+   //$year="2008";
+   //echo "<hr>$year<hr>";
+   $fmqry="select contacts.
+               contacts_id,
+               display_name,
+               employee_num,
+               employee_class,
+               sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time) as totalhrs,
+               sum(direct_accumulation) as direct_accumulation_sum,
+               sum(indirect_accumulation) as indirect_accumulation_sum,
+               sum(my_time) as my_time_sum,
+               
+               sum(incidents_recordable) as incidents_recordable_total,
+               
+               sum(incidents_first_aid) as incidents_first_aid_total,
+               
+               year(front_desk_reports_responsibility_accumulation_cache.week_ending),
+
+               sum(recordable_time_loss) * 200000 / (sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time)) as recordable_time_loss_rate,
+               sum(recordable_light_duty) * 200000 / (sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time)) as recordable_light_duty_rate,
+               sum(recordable_medical_only) * 200000 / (sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time)) as recordable_medical_only_rate,
+               sum(first_aid_reportable) * 200000 / (sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time)) as first_aid_reportable_rate,
+               sum(first_aid_umc) * 200000 / (sum(direct_accumulation)  + SUM(indirect_accumulation) + sum(my_time)) as first_aid_umc_rate,
+
+               case employee_class
+                  when 'General Foreman' then '10'
+                  when 'Foreman' then '20'
+                  when 'Journeyman' then '30'
+                  when 'Apprentice' then '40'
+                  when 'Other' then '50' END as employee_class_sort,
+               
+               case contacts_id
+                  when 1 then 999
+                  when 2 then 999
+                  when 0 then 999
+                  when 371 then 2
+                  when 1043 then 1
+                  when 9 then 10 END as second_sort
+               
+               from front_desk_reports_responsibility_accumulation_cache 
+               left join contacts on (
+                  front_desk_reports_responsibility_accumulation_cache.foreman = contacts.contacts_id
+                  ) 
+               
+               where 
+                  front_desk_reports_responsibility_accumulation_cache.week_ending >= '$year/01/01' and
+                  front_desk_reports_responsibility_accumulation_cache.week_ending <= '$year/12/31'
+                  
+               
+               group by year(front_desk_reports_responsibility_accumulation_cache.week_ending), front_desk_reports_responsibility_accumulation_cache.foreman 
+               order by 
+                  employee_class_sort, 
+                  second_sort desc, 
+                  recordable_time_loss_rate,
+                  recordable_light_duty_rate,
+                  recordable_medical_only_rate,
+                  first_aid_reportable_rate,
+                  first_aid_umc_rate,
+      
+            totalhrs desc
+                  ";
+                  
+               //where week_ending >= '$year-01-01' and week_ending <= '$year-12-31' 
+   //tabledump($fmqry);exit;
+   $foremanlist=@mysql_query($fmqry);
+   print_report_header($year);
+   
+   $yearplus=$year + 1;
+   ///////////////////////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Jerry Bush...
+   ///////////////////////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+   $fmn=getoneb("select * from contacts where contacts_id = '3'");
+   echo "<tr><td>$fmn->display_name</td>";
+   $month=1;
+   while ($month<=12) {
+      $monthplus=$month + 1;
+      
+      if ($month != 12) {
+         $tstart_date="$month/01/$year";
+         $tend_date="$monthplus/01/$year";
+         } else {
+         $tstart_date="$month/01/$year";
+         $tend_date="01/01/$yearplus";
+         }
+      $tvp_group_1_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where PRCo = 1 and PREndDate >= '$tstart_date' and PREndDate < '$tend_date' and PRGroup = 1 and EarnCode < 4 group by PRGroup";
+      $tvp_group_3_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where PRCo = 1 and PREndDate >= '$tstart_date' and PREndDate < '$tend_date' and PRGroup = 3 and EarnCode < 4 group by PRGroup";
+      $ttotal_group_1_hours=ms_getoneb($tvp_group_1_hours_query);
+      $ttotal_group_3_hours=ms_getoneb($tvp_group_3_hours_query);
+      $teveryone_hours=round($ttotal_group_1_hours->Hours + $ttotal_group_3_hours->Hours);
+      $tstart_mysql=vali_date($tstart_date);
+      $tend_mysql=vali_date($tend_date);
+
+      $first_aid_umc_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'First Aid UMC' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+      $first_aid_reportable_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'First Aid Reportable' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+      $recordable_time_loss_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'Recordable Time Loss' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+      $recordable_medical_only_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'Recordable Medical Only' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+      $recordable_light_duty_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'Recordable Light Duty' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+
+      $first_aid_umc_count->count=$first_aid_umc_count->count + 0;
+      $first_aid_reportable_count->count=$first_aid_reportable_count->count + 0;
+      $recordable_time_loss_count->count=$recordable_time_loss_count->count + 0;
+      $recordable_medical_only_count->count=$recordable_medical_only_count->count + 0;
+      $recordable_light_duty_count->count=$recordable_light_duty_count->count + 0;
+      
+      echo "<td>$teveryone_hours</td><td>$first_aid_umc_count->count</td><td>$first_aid_reportable_count->count</td><td>$recordable_time_loss_count->count</td><td>$recordable_light_duty_count->count</td><td>$recordable_medical_only_count->count</td>";
+      $month++;
+      }
+   
+   //$total_group_1_hours->count=round($total_group_1_hours->count);
+
+   
+   $tfa_umc=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'First Aid UMC'");
+   $tfa_umc_rate=round($tfa_umc->count * 200000 / $everyone_hours,2);
+   
+   $tfa_reportable=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'First Aid Reportable'");
+   $tfa_reportable_rate=round($tfa_reportable->count * 200000 / $everyone_hours,2);
+   
+   $tr_medical_only=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'Recordable Medical Only'");
+   $tr_medical_only_rate=round($tr_medical_only->count * 200000 / $everyone_hours,2);
+   
+   $tr_light_duty=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'Recordable Light Duty'");
+   $tr_light_duty_rate=round($tr_light_duty->count * 200000 / $everyone_hours,2);
+   
+   $tr_time_loss=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'Recordable Time Loss'");
+   $tr_time_loss_rate=round($tr_time_loss->count * 200000 / $everyone_hours,2);
+   
+   $trec=$tr_time_loss->count + $tr_light_duty->count + $tr_medical_only->count;
+   $trec_rate=round($trec * 200000 / $everyone_hours,2);
+   
+   echo "<td>$everyone_hours</td>
+      <td>$tfa_umc->count</td>
+      <td>$tfa_umc_rate</td>
+      
+      <td>$tfa_reportable->count</td>
+      <td>$tfa_reportable_rate</td>
+      
+      <td bgcolor=#ffffaa>$trec</td>
+      <td bgcolor=#ffffaa>$trec_rate</td>
+      
+      <td>$tr_medical_only->count</td>
+      <td>$tr_medical_only_rate</td>
+      
+      <td>$tr_light_duty->count</td>
+      <td>$tr_light_duty_rate</td>
+      
+      <td>$tr_time_loss->count</td>
+      <td>$tr_time_loss_rate</td>
+      </tr>";
+      
+   ///////////////////////////////////////////////////////////////////////////////////////////
+   //	End of Jerry Bush Section
+   ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Steve Otis
+   ///////////////////////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+   $fmn=getoneb("select * from contacts where contacts_id = '17'");
+   echo "<tr><td>$fmn->display_name</td>";
+   $month=1;
+   while ($month<=12) {
+      $monthplus=$month + 1;
+      
+      if ($month != 12) {
+         $tstart_date="$month/01/$year";
+         $tend_date="$monthplus/01/$year";
+         } else {
+         $tstart_date="$month/01/$year";
+         $tend_date="01/01/$yearplus";
+         }
+      $tvp_group_1_hours_query="select SUM(Hours) as Hours from PRTH with (NOLOCK) where PRCo = 1 and PREndDate >= '$tstart_date' and PREndDate < '$tend_date' and PRGroup = 1 and EarnCode < 4 group by PRGroup";
+      $ttotal_group_1_hours=ms_getoneb($tvp_group_1_hours_query);
+      if ($ttotal_group_1_hours->Hours>1) $teveryone_hours=round($ttotal_group_1_hours->Hours + 174);
+      else $teveryone_hours=0;
+      $tstart_mysql=vali_date($tstart_date);
+      $tend_mysql=vali_date($tend_date);
+
+      $first_aid_umc_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'First Aid UMC' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+      $first_aid_reportable_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'First Aid Reportable' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+      $recordable_time_loss_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'Recordable Time Loss' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+      $recordable_medical_only_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'Recordable Medical Only' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+      $recordable_light_duty_count=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where incident_type = 'Recordable Light Duty' and week_ending >= '$tstart_mysql' and week_ending < '$tend_mysql' and foreman_id = '$fmn->contacts_id'");
+
+      $first_aid_umc_count->count=$first_aid_umc_count->count + 0;
+      $first_aid_reportable_count->count=$first_aid_reportable_count->count + 0;
+      $recordable_time_loss_count->count=$recordable_time_loss_count->count + 0;
+      $recordable_medical_only_count->count=$recordable_medical_only_count->count + 0;
+      $recordable_light_duty_count->count=$recordable_light_duty_count->count + 0;
+      
+      echo "<td>$teveryone_hours</td><td>$first_aid_umc_count->count</td><td>$first_aid_reportable_count->count</td><td>$recordable_time_loss_count->count</td><td>$recordable_light_duty_count->count</td><td>$recordable_medical_only_count->count</td>";
+      $month++;
+      }
+   $tfa=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type like 'First%'");
+   $trec=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type like 'Rec%'");
+   $current_month=date('M');
+   $current_add=$current_month * 174;
+/*	
+   $tfarate=round($tfa->count * 200000 / ($total_group_1_hours->Hours + $current_add),2);
+   $trecrate=round($trec->count * 200000 / ($total_group_1_hours->Hours + $current_add),2);
+   
+   echo "<td>$total_group_1_hours->Hours</td><td>$tfa->count</td><td>$tfarate</td><td>$trec->count</td><td>$trecrate</td></tr>";
+
+*/
+   //$total_group_1_hours->Hours=round($total_group_1_hours->Hours);
+   $tfa_umc=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'First Aid UMC'");
+   $tfa_umc_rate=round($tfa_umc->count * 200000 / $total_group_1_hours->Hours,2);
+   
+   $tfa_reportable=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'First Aid Reportable'");
+   $tfa_reportable_rate=round($tfa_reportable->count * 200000 / $total_group_1_hours->Hours,2);
+   
+   $tr_medical_only=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'Recordable Medical Only'");
+   $tr_medical_only_rate=round($tr_medical_only->count * 200000 / $total_group_1_hours->Hours,2);
+   
+   $tr_light_duty=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'Recordable Light Duty'");
+   $tr_light_duty_rate=round($tr_light_duty->count * 200000 / $total_group_1_hours->Hours,2);
+   
+   $tr_time_loss=getoneb("select sum(1) as count from front_desk_reports_safety_incidents where foreman_id = '$fmn->contacts_id' and week_ending >= '$year-01-01' and week_ending <= '$year-12-31' and incident_type = 'Recordable Time Loss'");
+   $tr_time_loss_rate=round($tr_time_loss->count * 200000 / $total_group_1_hours->Hours,2);
+   
+   $trec=$tr_time_loss->count + $tr_light_duty->count + $tr_medical_only->count;
+   $trec_rate=round($trec * 200000 / $total_group_1_hours->Hours,2);
+   
+   echo "<td>$total_group_1_hours->Hours</td>
+      <td>$tfa_umc->count</td>
+      <td>$tfa_umc_rate</td>
+      
+      <td>$tfa_reportable->count</td>
+      <td>$tfa_reportable_rate</td>
+      
+      <td bgcolor=#ffffaa>$trec</td>
+      <td bgcolor=#ffffaa>$trec_rate</td>
+      
+      <td>$tr_medical_only->count</td>
+      <td>$tr_medical_only_rate</td>
+      
+      <td>$tr_light_duty->count</td>
+      <td>$tr_light_duty_rate</td>
+      
+      <td>$tr_time_loss->count</td>
+      <td>$tr_time_loss_rate</td>
+      </tr>";
+      
+   ///////////////////////////////////////////////////////////////////////////////////////////
+   //	End of Steve Otis Section
+   ///////////////////////////////////////////////////////////////////////////////////////////
+
+   while ($fmn=@mysql_fetch_object($foremanlist)) {
+      if (($fmn->indirect_accumulation_sum<1)&&($fmn->direct_accumulation_sum<1)) continue;
+      if ($fmn->employee_class=="Journeyman") continue;
+      if ($fmn->employee_class=="Apprentice") continue;
+      if ($fmn->employee_class=="Other") continue;
+      if ($last_class!="$fmn->employee_class") {
+         $last_class=$fmn->employee_class;
+         echo "<tr><td colspan=86 align=center bgcolor=\"$fd_color_1\"><b>$fmn->employee_class</b></td></tr>";
+         }
+      echo "<tr><td>
+               $fmn->display_name
+         </td>";
+      // jbtemp
+      foreman_print_row($fmn,$year);
+      }
+
+      //end fmn section
+   echo "
+   </table>
+   <br>total vp group 1 hours: $total_group_1_hours->Hours
+   <br>total vp group 3 hours: $total_group_3_hours->Hours
+   <br>total hours: $everyone_hours
+   ";
+   }
+
+if ($recalc_this_year=="Y") {
+   recalc_year(date('Y'));
+   forward("$mode&report_name=$report_name");
+   exit;
+   }
+mh_navs_header();
+echo "
+<div class=noprint><a href=\"$pagename?mode=$mode&report_name=$report_name&recalc_this_year=Y\"><font color=blue>Recalculate with all available information</font></a></div>
+<div class=noprint><a href=\"$pagename?mode=$mode&report_name=incidents_list\"><font color=blue>Modify incident list</font></a></div>
+";
+display_year(date('Y'));
+mh_navs_footer();
+?>

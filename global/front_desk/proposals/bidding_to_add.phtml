@@ -1,0 +1,66 @@
+<?
+
+if ($bidding_to_id!="") {
+	$bidding_to_id=escapeshellcmd($bidding_to_id);
+	$bidding_to_info=getone("select * from bidlist_bidding_to where bidding_to_id = '$bidding_to_id'");
+	$bidlist_id=$bidding_to_info->bidlist_id;
+	} else {
+	die ("Application error! Not bidding_to_id. Please contact your system administrator!");
+	}
+
+$bid_info=load_proposal_info($bidding_to_info->bidlist_id);
+
+require('header.phtml');
+
+echo "
+<script>
+function company_contacts() {
+	open('$pagename?mode=company_contacts&company_id=$bidding_to_info->general_id','company_contacts_win','height=500,width=500,scrollbars=yes');
+	}
+function btcontacts () {
+	open('$pagename?mode=contacts&contacts_mode=generals','bl_contacts_win','width=500,height=500');
+	}
+function apply_changes() {
+	document.location.reload();
+	}
+</script>
+
+<b><font size=+1>General Info:</font></b>
+
+<form name=bid_add method=post action=$pagename>
+<input type=hidden name=mode value=bidding_to_submit>
+<input type=hidden name=bidding_to_id value=\"$bidding_to_info->bidding_to_id\">
+
+<table border=1 cellpadding=6 cellspacing=0>
+<tr><td valign=top>
+	<b>General</b>
+</td><td valign=top>
+	";
+	contactsbox("",$bidding_to_info->general_id,"irrelevant","",33);echo"
+</td></tr>
+
+<tr><td valign=top>
+	<b>General Contact</b>
+</td><td colspan=2>
+	";
+	$general_contact_count=contactsbox("select * from contacts where company_id = '$bidding_to_info->general_id' and contact_type = 'contact' ",$bidding_to_info->general_contact,"general_contact","opener.document.bid_add.submit();",32);
+	//<a href=javascript:company_contacts();><font color=blue><i>Add</i></font></a>
+	echo"
+</td></tr>
+</table>
+<input type=button onclick=self.close(); value=Cancel>
+
+</form>";
+
+if($bidding_to_info->bidding_to_id!="") {
+echo"
+<form name=bidding_to_delete method=post action=$pagename>
+<input type=hidden name=mode value=bidding_to_delete>
+<input type=hidden name=bidding_to_id value=$bidding_to_info->bidding_to_id>
+<input type=submit value=delete>
+</form>
+";
+}
+
+
+?>

@@ -1,0 +1,47 @@
+<?
+//die("test");
+$contract_num_orig=$contract_num;
+//echo "<hr>$contract_num<hr>";exit;
+if ($contract_num=="") {
+	forward('main');
+	exit;
+	} else {
+	
+	$contract_num=strtoupper($contract_num);
+	$jobinfo=getoneb("select * from jobinfo where contract_num = '$contract_num'");
+	if (!($jobinfo)) {
+		$contract_num=addslashes($contract_num);
+		$contract_num=$contract_num + 1;
+		$contract_num=$contract_num - 1;
+		//if ($contract_num==0) {
+		//	forward('main');
+		//	exit;
+		//	}
+		$contract_num=addslashes($contract_num);
+		$jobinfo=getoneb("select * from jobinfo where contract_num = '$contract_num'");
+		}
+	}
+if (!($jobinfo)) {
+	$contract_num_orig=addslashes($contract_num_orig);
+	$jobinfo=getoneb("select * from jobinfo where active = 'Y' and ( job_name like '%$contract_num_orig%' or display_name like '%$contract_num_orig%')");
+	//echo "didn't find job \"$contract_num_orig\"";
+	//forward('main');
+	//exit;
+	if (!($jobinfo)) {
+		$res=@mysql_query("select * from jobinfo where active = 'Y' and ( job_name like '%$contract_num_orig%' or display_name like '%$contract_num_orig%')");
+		$count=@mysql_num_rows($res);
+		if ($count>1) {
+			//echo "<script>open(\"$pagename/?mode=job_search&display_name=$contract_num\",'fd_search_win','resizable=1,width=400,height=800');</script>";
+			$contract_num_orig=htmlspecialchars($contract_num_orig);
+			forward("job_search&display_name=$contract_num_orig&embeded=Y");
+			//forward('main');
+			exit;
+			}
+		}
+	}
+if (!($jobinfo)) {
+	forward('main');
+	exit;
+	}	
+forward("main&global_jobinfo_id_set=$jobinfo->jobinfo_id");
+?>

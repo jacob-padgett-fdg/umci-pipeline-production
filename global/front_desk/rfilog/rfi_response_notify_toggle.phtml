@@ -1,0 +1,24 @@
+<?
+if ($rfi_id=="") die ("Application error! RFI_ID error!");
+$rfi_id=addslashes($rfi_id);
+
+
+$five_years_from_now_date_mysql=date('Y/m/d',strtotime('+5 years'));
+//echo $five_years_from_now_date_mysql;
+@mysql_query("delete from rfilog_notifications where expires < now()");
+
+$notification=getoneb("select * from rfilog_notifications where contacts_id = '$global_user_id' and notification_sent = 'N' and rfi_id = '$rfi_id'");
+
+if ($notification) {
+	@mysql_query("delete from rfilog_notifications where contacts_id = '$global_user_id' and rfi_id = '$rfi_id'");
+	echo "<a href=javascript:notify_of_rfi_reponse_toggle($rfi_id)><font color=blue><i>Notify me when there's a response</i></font></a>";
+	} else {
+	@mysql_query("insert into rfilog_notifications set rfi_id = '$rfi_id', contacts_id = '$global_user_id', notification_sent = 'N', expires = '$five_years_from_now_date_mysql'");
+	echo "<a href=javascript:notify_of_rfi_reponse_toggle($rfi_id)><font color=blue><i title=\"You're currently going to be notified when a response comes in.\">Cancel response notification</i></font></a>";
+	}
+
+
+
+
+
+?>

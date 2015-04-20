@@ -1,0 +1,42 @@
+<?
+//require_once('querylib.inc');
+if ($eom_id!="") {
+	$eom_id=addslashes($eom_id);
+	$query_start="update ";
+	
+	
+	$query_end=" where eom_id = '$eom_id'";
+	} else {
+	$query_start="insert into ";
+	
+	
+	
+	$query_end="";
+	}
+
+$starting_date=vali_date($starting_date);
+$contacts_id=clean_int($contacts_id);
+$text_blurb=addslashes($text_blurb);
+$text_long=addslashes($text_long);
+$additional_picture=addslashes($additional_picture);
+
+$query_middle="
+contacts_eom set
+starting_date = '$starting_date',
+contacts_id = '$contacts_id',
+text_blurb = '$text_blurb',
+text_long = '$text_long',
+additional_picture = '$additional_picture'";
+
+$query_full=$query_start . $query_middle . $query_end;
+
+//echo "<hr>" . $query_full . "<hr>";
+@mysql_query($query_full);
+forward('eom_list');
+
+
+
+
+
+
+?>

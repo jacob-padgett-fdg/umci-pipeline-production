@@ -1,0 +1,12 @@
+<?
+if ($sched_index_id=="") die("Application Error! \"sched_index_id\" is invalid. Please contact your system administrator!");
+$sched_info=getone("select * from svc_equip_sched_index where sched_index_id = '$sched_index_id'");
+
+$times_a_year=float_clean($times_a_year);
+$special_notes=escapeshellcmd($special_notes);
+$start_date=invali_date(vali_date($start_date));
+
+schedule_equip_index_set($sched_info->el_id,$sched_info->task_id,$times_a_year,$start_date,$special_notes);
+forward("svc_agreement_equipment_edit&el_id=$sched_info->el_id");
+
+?>

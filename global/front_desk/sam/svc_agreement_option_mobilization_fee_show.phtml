@@ -1,0 +1,15 @@
+<?
+require("svc_agreement_option_add_mobilization_fee.phtml");
+
+$query="select * from svc_agreement_additional_options where agreement_id = '$agreement_info->agreement_id' and option_type = 'mobilization_fee' order by agreement_options_id";
+//echo "$query";exit;
+$res=@mysql_query($query);
+$count=@mysql_num_rows($res);
+if ($count != 1) die ("ERROR: Failure to properly calculate mobilization fee! Please contact your system administrator!");
+$row=@mysql_fetch_object($res);
+
+
+//$mandatory_options=$mandatory_options + $row->cost;
+$mobilization_fee=$row->cost;
+
+?>

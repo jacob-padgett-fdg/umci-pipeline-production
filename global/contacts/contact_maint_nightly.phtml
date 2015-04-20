@@ -1,0 +1,22 @@
+#!/usr/bin/php
+<?
+error_reporting(E_ALL);
+session_write_close();
+set_time_limit(900);
+
+include("viewpoint_libs.inc");
+include("contact_maint_support_connect.phtml");
+//require("viewpoint_connect_ro.phtml");
+set_time_limit(900);
+
+////////////////////////
+// General updates	
+$ts_prefix=date('Y-m-d');
+//$ts_prefix=$ts_prefix - 1;
+$reconcile_query="select * from contacts where last_touched > '$ts_prefix 00:01:01%'";
+include("contact_maint_support_employees.phtml");
+////////////////////////
+include("contact_maint_support_specified.phtml");
+
+if ($mode=='contact_maint_nightly') forward('main');
+?>

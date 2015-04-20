@@ -1,0 +1,18 @@
+<?
+
+if ($sa_document_id=="") die("Application error with sa_document_id");
+
+
+$sa_document_id=addslashes($sa_document_id);
+$doclist_info=getoneb("select * from svc_agreement_documents where sa_document_id = '$sa_document_id'");
+
+$doclist_notes=addslashes($doclist_notes);
+@mysql_query("update svc_agreement_documents set notes = '$doclist_notes' where sa_document_id = '$doclist_info->sa_document_id'");
+
+//$agreement_info=load_agreement_info($agreement_info->agreement_id);
+$doclist_info=getoneb("select * from svc_agreement_documents where sa_document_id = '$sa_document_id'");
+
+$doclist_notes=ereg_replace("[\r\n]",'<br>',$doclist_info->notes);
+echo "$doclist_notes";
+
+?>

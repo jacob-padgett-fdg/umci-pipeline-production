@@ -1,0 +1,67 @@
+<?
+require_once('querylib.inc');
+
+if ($access_applications_id=="") {
+	$new=1;
+	} else { 
+	$new=0;
+	$access_applications_id=escapeshellcmd($access_applications_id);
+	$appinfo=getone("select * from access_applications where access_applications_id = '$access_applications_id'");
+	$appinfo->application_active=checkbreak($appinfo->application_active);
+	$appinfo->front_door_open=checkbreak($appinfo->front_door_open);
+	}
+
+echo "
+<html>
+<head><title>access/applications edit</title></head>
+<body bgcolor=#ffffff>
+
+<h3>Application Info</h3><hr>
+
+<form name=application_edit method=post action=$pagename>
+<table border=1 cellspacing=0 cellpadding=5>
+<input type=hidden name=mode value=application_submit>
+<input type=hidden name=access_applications_id value='$access_applications_id'>
+<tr><td>
+	Application Name <font size=-1><i><br>(changing will probably screw things up)</font></i>
+</td><td>
+	<input type=text size=40 maxlength=30 name=application_name_form value='$appinfo->application_name'>
+</td></tr>
+
+<tr><td>
+	Description
+</td><td>
+	<input type=text size=50 maxlength=50 name=application_description value='$appinfo->application_description'>
+</td></tr>
+
+<tr><td>
+	Active
+</td><td>
+	<input type=checkbox name=application_active $appinfo->application_active>
+</td></tr>
+
+<tr><td>
+	Leave the front door open:
+</td><td>
+	<input type=checkbox name=front_door_open $appinfo->front_door_open>
+</td></tr>
+
+<tr><td>
+</td><td>
+	<input type=submit value=Save>
+</td></tr>
+
+
+</table>
+</form>
+
+</body>
+</html>
+";
+
+
+
+
+
+
+?>

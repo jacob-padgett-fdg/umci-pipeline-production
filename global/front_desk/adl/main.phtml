@@ -1,0 +1,47 @@
+<?
+$today=date('m-d-Y');
+echo "
+<form name=adl_search method=post action=$pagename>
+<input type=hidden name=mode value=show_report_html>
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td>
+	<b>Group</b>
+</td><td>
+	<select name=prgroup>
+	<option value=1>Field Employees</option>
+	<option value=3>Admin Employees</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>Run Date</b>
+</td><td>
+	";datebox($today,"adl_search.today");echo"
+</td></tr>
+
+<tr><td>
+	<b>Assigned<br>UMC vehicle</b>
+</td><td>
+	<input type=checkbox name=umc_vehicle_required checked>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Show>
+</td></tr>
+</table>	
+
+
+
+
+
+
+</form>
+
+<a href=$pagename_up><font color=blue>Exit</font><p>
+";
+
+
+
+
+
+?>

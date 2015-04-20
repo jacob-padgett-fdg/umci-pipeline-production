@@ -1,0 +1,17 @@
+<?
+require_once('header.phtml');
+if(!(is_admin())) die("ERROR: Security violation!!! The authorities have been notified.");
+
+
+if ($el_id!="") $el_id=addslashes($el_id);
+else die("ERROR: Application error: el_id is missing! Please contact your system administrator.");
+
+@mysql_query("update svc_agreement_equip_list set supervisor_approved = 'Y' where el_id = '$el_id'");
+//echo "update svc_agreement_equip_lists set supervisor_approved = 'Y' where el_id = '$el_id'<hr>";
+//exit;
+echo "<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+?>

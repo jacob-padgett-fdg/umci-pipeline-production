@@ -1,0 +1,75 @@
+<?
+$issue_information->expected_completion=invali_date($issue_information->expected_completion);
+
+echo "<html><head><title>Viewing issue $issue_information->issue_id - $issue_information->name</title></head><body bgcolor=#ffffff>
+
+<a href=$pagename?mode=main><font color=blue>Return to tasklist</font></a><br>
+
+<table border=0 cellpadding=7 cellspacing=0>
+
+
+"; 
+if ($issue_information->status != "approved") {
+	echo "
+	<tr><td>
+		<form name=issue_status action=$pagename method=post>
+		<input type=hidden name=mode value=issue_edit_submit>
+		<input type=hidden name=issue_id value=$issue_information->issue_id>
+		<input type=hidden name=issue_approved value='Y'>
+		<input type=submit value='Accept as complete'>
+		</form>
+	</td><td>
+		<form name=issue_reject action=$pagename method=post>
+		<input type=hidden name=mode value=issue_edit_submit>
+		<input type=hidden name=issue_id value=$issue_information->issue_id>
+		<input type=hidden name=issue_not_approved value='Y'>
+		<input type=submit value='Reject as complete'>
+		</form>
+	</td></tr>
+	";
+	}
+
+echo "	
+<tr bgcolor=#dddddd><td>
+	<b>Issue #</b> $issue_information->issue_id
+</td><td>
+	<b>Name</a></b> $issue_information->name
+</td></tr>
+
+<tr><td>
+	<b>Initial Description</b>
+</td><td colspan=4>
+	$issue_information->description
+</td></tr>
+
+<tr><td>
+	<b>Priority</b>
+</td><td>
+	";
+	$pri_info=getone("select priority,priority_text from mis_issue_priorities where priority = '$issue_information->priority'");
+	//dropbox("select priority,priority_text from mis_issue_priorities order by priority",$issue_information->priority);
+	echo "$pri_info->priority_text ($pri_info->priority)
+</td></tr>
+
+<tr><td>
+	<b>Expected Completion Date</b><br>
+	<center>$issue_information->expected_completion</center>
+</td><td>
+	<b>Requested Completion Date</b><br>
+	$requested
+</td></tr>
+
+</table>
+	
+";
+
+
+$history_query="select * from mis_issue_history where issue_id = '$issue_id' order by issue_history_id desc";
+$res=@mysql_query($history_query);
+
+echo "<table border=0 cellspacing=0 cellpadding=10>
+<tr bgcolor=#dddddd><td>Next Action</td><td>Notes</td><td>IT Notes</td><td>Status</td><td>Next Action Date</td><td>Completed</td><td>Responsibility</td><td>Users</td><td>IT</td></tr>";
+while($row=@mysql_fetch_object($res)) issue_history_print($row);
+echo "</table>";
+
+?>
