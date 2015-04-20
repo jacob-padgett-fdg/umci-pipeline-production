@@ -70,9 +70,6 @@ $admin_writable=FALSE;
 //echo "<hr>$adminuser<hr>$global_user->display_name";
 if ($adminuser) $writable=TRUE;
 if ($category_info->owner==$global_user_id) $writable=TRUE;
-//
-//DD  2015-04-03  also allow the creator of the top level category to edit sub categories
-//
 if ($category_info->creator==$global_user_id) $writable=TRUE;
 $admin_writable=$writable;
 if ($category_info->others_get_write=="Y") $writable=TRUE;
