@@ -3,8 +3,9 @@
 //session_start();
 require("settings.cfg");
 $auth_object->require_employee='N';
+error_reporting(0);
 require_once("global_connect_rw.phtml");
-
+error_reporting(E_ERROR);
 //if ($global_user_id==2) include("../contacts-devel/contactview_show.phtml");
 //else include("contactview_show.phtml");
 include("../contacts${devel}/contactview_show.phtml");
