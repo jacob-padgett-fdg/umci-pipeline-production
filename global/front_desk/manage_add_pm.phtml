@@ -1,6 +1,9 @@
 <?
+require_once('classes/Authorization/AccessControl.php');
 
-if (($global_jobinfo->project_manager_id!=$global_user_id)&&($global_user_id!=2)&&($global_user_id!=1)&&($global_user_id!=158)&&($global_user_id!=11)&&($global_user_id!=5809)) die_security();
+use classes\Authorization\AccessControl;
+
+if (($global_jobinfo->project_manager_id!=$global_user_id) && !AccessControl::isAdmin($global_user_id)) die_security();
 if ($pm=="") die("Application error!");
 $pm=addslashes($pm);
 

@@ -1,4 +1,8 @@
 <?
+require_once('classes/Authorization/AccessControl.php');
+
+use classes\Authorization\AccessControl;
+
 require('header.phtml');
 fd_navs_header();
 if ($jobinfo_id!="") {
@@ -417,7 +421,7 @@ echo "
 	<form name=fd_jobinfo_form method=post action=$pagename>
 </td></tr>";
 
-if (($global_user_id==$global_jobinfo->project_manager_id)||($global_user_id<3)) { 
+if (($global_user_id==$global_jobinfo->project_manager_id) || AccessControl::isAdmin($global_user_id)) {
 	echo "
 	<tr valign=top><td>
 		<b>Report Permissions</b>

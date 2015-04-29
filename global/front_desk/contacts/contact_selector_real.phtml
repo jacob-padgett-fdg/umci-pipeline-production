@@ -1,4 +1,7 @@
 <?
+require_once('classes/Authorization/AccessControl.php');
+
+use classes\Authorization\AccessControl;
 ////////////////////////////////////////////////////////////
 // Things that this gets passed:
 // $options: 	encoded array.. lots of toggle options with the possiblity of growing 
@@ -150,7 +153,7 @@ function print_mode_tab($mode,$text) {
 		echo "$text</td>";
 	}
 
-if ($global_user_id<3) $devel="-devel";
+if (AccessControl::isAdmin($global_user_id)) $devel="-devel";
 
 if (($display_mode=="project")&&($options['jobinfo_id']=="")) $display_mode="normal";
 

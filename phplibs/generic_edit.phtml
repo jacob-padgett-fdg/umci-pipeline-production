@@ -1,5 +1,10 @@
 <?
-if ($global_user_id!='2') die("Security violation! The authorities have been notified.");
+require_once('classes/Authorization/AccessControl.php');
+
+use classes\Authorization\AccessControl;
+
+if (!AccessControl::isAdmin($global_user_id))
+    die("Security violation! The authorities have been notified.");
 require('header.phtml');
 
 if ($field!="") $field=addslashes($field);

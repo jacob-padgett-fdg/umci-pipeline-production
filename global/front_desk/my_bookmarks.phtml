@@ -1,4 +1,9 @@
 <?
+
+require_once('classes/Authorization/AccessControl.php');
+
+use classes\Authorization\AccessControl;
+
 session_write_close();
 if ($update_bookmark=="true") {
 	//$new_window=addslashes($new_window);
@@ -33,7 +38,7 @@ if ($delete_bookmark=="true") {
 	@mysql_query("delete from my_home_links where link_id = '$link_id'");
 	}
 
-if ($global_user_id<3) {
+if (AccessControl::isAdmin($global_user_id)) {
 	$fork_text="Fork";
 	$fork_description="LINW for users";
 	} else {

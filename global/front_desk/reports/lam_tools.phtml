@@ -4,13 +4,12 @@ require('report_lib.inc');
 include('viewpoint_connect_ro.phtml');
 include('viewpoint_libs.inc');
 include('lam_lib.inc');
+require_once('classes/Authorization/AccessControl.php');
 
-if (
-	($global_user_id<3) ||
-	($global_user_id==$labor_manager) ||
-	($global_user_id=="1018")
-	
-	) $private=TRUE;
+use classes\Authorization\AccessControl;
+
+if ((AccessControl::isAdmin($global_user_id)) || ($global_user_id==$labor_manager))
+    $private=TRUE;
 
 echo "<style>
 .empevents { border-bottom: 1px solid black; }
