@@ -15,10 +15,10 @@ function tcheck($name="Unknown checkpoint") {
 	if ($me_last_time!=0) {
 		$diff=$me_now_time - $me_last_time;
 		$me_total_time=$me_total_time + $diff;
-		echo "<br>Tcheck #$tcheck_count: $diff/$me_total_time ($name)<br>";
-		} else {
-		echo "<br>Tcheck tracking started #$tcheck_count: ($name)<br>";
-		}
+        error_log ( "Tcheck #$tcheck_count: $diff/$me_total_time ($name)");
+    } else {
+        error_log ( "Tcheck tracking started #$tcheck_count: ($name)");
+    }
 	$me_last_time=$me_now_time;
 	}	
 }
@@ -68,7 +68,7 @@ if ($cap_month!="") {
 	$we_compare=date('Ym',strtotime("$date_info->week_end_mysql"));
 	if ($we_compare>$mdate_compare) {
 		$date_info=date_info(date('m/d/Y',strtotime("-1 days",strtotime("+1 month",$mdate_stamp))));
-		$constraint_warning="<font color=red><h2>Note: The 'right side' dates are constrained by the 'left side', so 'right side' dates were modified.</h2></font>";
+		$constraint_warning="<span color=red><h2>Note: The 'right side' dates are constrained by the 'left side', so 'right side' dates were modified.</h2></span>";
 		$week_starting="";
 		} 
 	}
@@ -180,7 +180,7 @@ function print_ct_totals($ct,$job) {
 	}
 
 function print_ct_j_totals($job) {
-	global $ct_j_total_rows,$ct_j_totals,$fd_color_1,$fd_color_5,$lastjob;
+	global $ct_j_total_rows,$ct_j_totals,$fd_color_1,$fd_color_5,$lastjob, $date_starting_info, $date_info;
 	//$ct_j_text=$ct_array[$ct];
 	if (($ct_j_totals->h_act!=0)&&($ct_j_totals->c_act!=0)) {
 		$composite=format_long_decimal($ct_j_totals->c_act/$ct_j_totals->h_act,2);
@@ -276,7 +276,7 @@ echo "
 <table style=\"border: 1px solid black; text-align: right; font-size: 75%; width: 480px;\" cellspacing=0 cellpadding=2><tr bgcolor=$fd_color_4><td colspan=5 align=center>
 
 
-<div style=\"float: right; display: none;\"><a href=\"$pagename?mode=report_show&report_name=foreman_full&jobinfo_id=$global_jobinfo_id\"><font color=blue>Full Detail View</font></a></div>
+<div style=\"float: right; display: none;\"><a href=\"$pagename?mode=report_show&report_name=foreman_full&jobinfo_id=$global_jobinfo_id\"><span color=blue>Full Detail View</span></a></div>
 
 
 
@@ -305,11 +305,11 @@ echo "
 		//echo "$prev_week_ending<br>$next_week_ending<br";
 		echo "	
 			
-			<font onclick=\"document.select_we.week_ending.value='$prev_week_ending';update_foreman(document.select_we.week_ending.value);\" title=\"Previous Week\" style=\"font-weight: bold; color: blue; cursor: hand; cursor: pointer;\">&lt;</font>
+			<span onclick=\"document.select_we.week_ending.value='$prev_week_ending';update_foreman(document.select_we.week_ending.value);\" title=\"Previous Week\" style=\"font-weight: bold; color: blue; cursor: hand; cursor: pointer;\">&lt;</span>
 			&nbsp;&nbsp;&nbsp;
 			Range From/To
 			&nbsp;&nbsp;&nbsp;
-			<font onclick=\"document.select_we.week_ending.value='$next_week_ending';update_foreman(document.select_we.week_ending.value);\" title=\"Previous Week\" style=\"font-weight: bold; color: blue; cursor: hand; cursor: pointer;\">&gt;</font>";
+			<span onclick=\"document.select_we.week_ending.value='$next_week_ending';update_foreman(document.select_we.week_ending.value);\" title=\"Previous Week\" style=\"font-weight: bold; color: blue; cursor: hand; cursor: pointer;\">&gt;</span>";
 		} else {
 			echo "Range From/To";
 		}	
@@ -331,7 +331,7 @@ echo "
 		echo "<br>";
 		datebox2($week_ending_mssql,"select_we.week_ending","update_foreman()");
 		} else {
-		echo "<a href=\"javascript:foreman_both_dates()\"><font color=blue>$ws_short</font></a><br>";
+		echo "<a href=\"javascript:foreman_both_dates()\"><span color=blue>$ws_short</span></a><br>";
 		datebox2($week_ending_mssql,"select_we.week_ending","update_foreman()");
 		} 
 		//else { 
@@ -455,6 +455,8 @@ while ($tbrow=@mssql_fetch_object($tbres)) {
 	add_to_ct_totals($tbrow->CostType);
 	if ($lastjob!=$this_job) {
 		$lastjob=$this_job;
+
+        tcheck('Job ' . $tbrow->Job);
 		$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
 		echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=5><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td></tr>";
 		}
@@ -472,7 +474,7 @@ while ($tbrow=@mssql_fetch_object($tbres)) {
 	echo "
 	<tr><td class=l>";
 		if ($tbrow->Phase==55) {
-			echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->Phase-$category ($cttext)</font></a>";
+			echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><span color=blue>$tbrow->Phase-$category ($cttext)</span></a>";
 			} else {
 			echo "$tbrow->Phase-$category ($cttext)";
 			}
