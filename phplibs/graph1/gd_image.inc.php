@@ -175,7 +175,7 @@ class Image {
 	    imagecopymerge($this->img,$fromImg,$toX,$toY,$fromX,$fromY,$toWidth,$toHeight,$aMix);
 	}
     }
-
+/* not used - and $this not available in static function
     static function GetWidth($aImg=null) {
 	if( $aImg === null ) 
 	    $aImg = $this->img;
@@ -187,7 +187,7 @@ class Image {
 	    $aImg = $this->img;
 	return imagesy($aImg);
     }
-    
+*/
     static function CreateFromString($aStr) {
 	$img = imagecreatefromstring($aStr);
 	if( $img === false ) {
@@ -1554,7 +1554,7 @@ class ImgStreamCache {
 		    return;
 		}
 		else
-		    JpGraphError::RaiseL(25116,$aFile);//(" Cant open file from cache [$aFile]"); 
+		    JpGraphError::RaiseL(25116,$aCacheFileName);//(" Cant open file from cache [$aFile]");
 	    }
 	}
 	elseif( $aInline ) {
