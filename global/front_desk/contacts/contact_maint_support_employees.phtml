@@ -201,6 +201,11 @@ while($vp_info=@mssql_fetch_object($ms_res2)) {
 		} else {
 			echo "getone succeeded..(select * from contacts where employee_num = '$vp_info->HRRef')<br>\r\n";
 		}
+    // FRON-5 Whenever we insert into contacts we need a corresponding record added to
+    // contacts_groups_members, so we will do this now...
+    $groupId = 104;     // GPH TODO: Hardcoded group id for Front Desk Users
+    $query = "insert into contacts_groups_members values(null, $groupId, $new_employee_id)";
+    @mysql_query($query);
 	}
 
 }
