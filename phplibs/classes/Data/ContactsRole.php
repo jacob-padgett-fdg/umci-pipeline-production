@@ -11,7 +11,7 @@ namespace classes\Data;
 require_once('BaseDataAccess.php');
 require_once('Role.php');
 
-class ContactRole extends BaseDataAccess
+class ContactsRole extends BaseDataAccess
 {
     public $table = 'user_role';
     public $primaryKey = 'id';
@@ -50,9 +50,9 @@ SQL;
         $ret = 1;   // assume failure
         $rArr = Role::findByType($role);
         if (!empty($rArr)) {
-            $urArr = ContactRole::findByUserIdRoleId($userId, $rArr[0]->id);
+            $urArr = ContactsRole::findByUserIdRoleId($userId, $rArr[0]->id);
             if(empty($urArr)) {
-                $ur = new ContactRole();
+                $ur = new ContactsRole();
                 $ur->role_id = $rArr[0]->id;
                 $ur->user_id = $userId;
                 $ur->insert();

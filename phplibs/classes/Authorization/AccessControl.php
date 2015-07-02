@@ -12,7 +12,7 @@ require_once('classes/Data/Role.php');
 require_once('classes/Data/ContactsRole.php');
 
 use classes\Data\Role;
-use classes\Data\ContactRole;
+use classes\Data\ContactsRole;
 
 class AccessControl
 {
@@ -27,7 +27,7 @@ class AccessControl
             $userId = $_SESSION['login_id'];
         }
         $roleId = Role::findByType('admin');
-        $contactsRole = ContactRole::findByUserIdRoleId($userId, $roleId[0]->id);
+        $contactsRole = ContactsRole::findByUserIdRoleId($userId, $roleId[0]->id);
         return (empty($contactsRole) ? false : ($contactsRole[0]->user_id == $userId));
     }
 
@@ -43,7 +43,7 @@ class AccessControl
             $userId = $_SESSION['login_id'];
         }
         $roleId = Role::findByType('project manager');
-        $contactsRole = ContactRole::findByUserIdRoleId($userId, $roleId[0]->id);
+        $contactsRole = ContactsRole::findByUserIdRoleId($userId, $roleId[0]->id);
         return (empty($contactsRole) ? false : ($contactsRole[0]->user_id == $userId));
     }
 
@@ -60,7 +60,7 @@ class AccessControl
             $userId = $_SESSION['login_id'];
         }
 
-        $contactsRole = ContactRole::findByColumnsValues(array('user_id' => $userId));
+        $contactsRole = ContactsRole::findByColumnsValues(array('user_id' => $userId));
         return count($contactsRole);
     }
 }
