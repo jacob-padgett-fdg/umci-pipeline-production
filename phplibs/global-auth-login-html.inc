@@ -63,7 +63,7 @@ if (file_exists($dir) && is_dir($dir)) {
 
 <tr><td>
 
-<div style=\"float: right;\"><img src=\"http://www.umci.com/images_umc/page_umcLogo.gif\"></div>
+<div style=\"float: right;\"><img src=\"/images/umc_logo.png\"></div>
 
 <center>
 <div>
