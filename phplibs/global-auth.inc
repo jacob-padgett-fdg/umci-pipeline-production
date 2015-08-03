@@ -13,12 +13,11 @@ if ($debug == 1) {
 require_once('querylib.inc');
 require_once('auth_functions.inc');
 
-// GPH TEMP CODE
-if (!isset($dbserver)) {
+// TBC TEMP CODE
+if (true || !isset($dbserver)) {
     $dbserver = 'localhost:3306';
 }
 //$dbserver='10.0.0.23';
-
 $devel = "";
 //error_reporting(E_ALL ^ E_DEPRECATED ^ E_NOTICE);
 
@@ -141,8 +140,11 @@ if ($auth_object->require_local_networks == 'Y') {
 // If we are, load up the user information into $global_user
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
+//die("before mysql_connect($dbserver, $auth_database_user, $auth_database_pass)");
 if ($auth_backend_user_logged_in == 'authenticated') {
+//die("before mysql_connect($dbserver, $auth_database_user, $auth_database_pass)");
     $global_link_id = @mysql_connect($dbserver, $auth_backend_database_username, $auth_backend_database_password);
+//die("after mysql_connect($dbserver, $auth_database_user, $auth_database_pass)");
     @mysql_select_db($auth_database_name);
     if (!($global_link_id)) {
         $auth_backend_user_logged_in = FALSE;
