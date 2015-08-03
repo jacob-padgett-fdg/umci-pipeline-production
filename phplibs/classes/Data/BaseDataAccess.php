@@ -31,7 +31,8 @@ class BaseDataAccess
     {
         $config = Config::getInstance();
         try {
-            $dbh = new PDO('mysql:host=' . $config['db_host'] . ';dbname=' . $config['db_name'], $config['db_user'], $config['db_pass']);
+            //$dbh = new PDO('mysql:host=' . $config['db_host'] . ';dbname=' . $config['db_name'], $config['db_user'], $config['db_pass']);
+            $dbh = new PDO('mysql:dbname=' . $config['db_name'], $config['db_user'], $config['db_pass']);
             return $dbh;
         } catch (PDOException $e) {
             echo $e->getMessage();
