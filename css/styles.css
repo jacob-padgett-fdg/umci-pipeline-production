@@ -1,0 +1,486 @@
+body {
+    background-color: #FFF;
+    color: #000;
+    margin: 0;
+    font-family: Times;
+}
+img {
+    border: 0;
+}
+.nobr	{ white-space:nowrap; }
+.center {
+    text-align: center;
+    margin: auto auto;
+}
+.left { text-align: left; }
+.right { text-align: right; }
+a:visited { color: blue; }
+
+a.std_link, span.std { color: blue; }
+a.alert_link, span.alert { color: red; }
+span.ok, a.ok_link {color:green;}
+
+div.centered {margin:0 auto;}
+/**
+    /index.php styles
+*/
+.main {
+    width: 600px;
+    border: 1px solid black;
+    margin: auto auto;
+    border-collapse: collapse;
+}
+.title_table {
+    background-color: #ccccff;
+    padding: 5px 0 5px 0;
+}
+.cell {
+    padding: 5px 10px 5px 10px;
+}
+.cell a {
+    color: #000;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/**
+    frontpage styles
+*/
+table.wideprint { border: 2px solid dimgray; border-collapse: collapse; }
+table.wideprint td { border: 2px solid dimgray; padding: 2px 2px 2px 2px;}
+table.wideprint th { background-color: #DDDDDD; border: 2px solid dimgray;}
+table.wideprint th.ext { width:5%; font-weight: bold; }
+table.wideprint th.name { width:28%; font-weight: bold; }
+/*
+@media print {
+    tr.noprint { display: none; }
+    td.noprint { height: 0; width: 0; }
+    div.noprint { display: none; position: relative; border: 15px solid black;}
+    a.noprint { display: none; }
+}
+form.noprint { display: none; }
+font.noprint { display: none; }
+br.noprint { display: none; }
+p.noprint { display: none; }
+*/
+tr.floatheader {
+    position: relative;
+    top: -1px;
+    background-color: #888;
+    overflow: visible !important;
+}
+tbody.floatheader {
+    overflow: auto;
+    overflow-x: visible;
+    height: 100%;
+}
+td.normnav:hover { background: #888; }
+div.hover { color: green; }
+td.normnav {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+.normnav {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+.selectnav {
+    background: white;
+    border: 1px solid black;
+}
+td.filler {
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+}
+table.sub_table {
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+    border: 1px dimgray solid;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+/**
+    my_home.php styles
+**/
+.left_nav {
+    float: left;
+    border: 2px solid black;
+    border-collapse: collapse;
+    margin-left: 20px;
+}
+.left_nav td {
+    border-right: 1px solid black;
+    width: 200px;
+    vertical-align: top;
+}
+.left_nav a {
+    color: blue;
+    font-size: 13px;
+    text-decoration: none;
+}
+.link_content {
+    padding-left: 8px;
+}
+.column_header {
+    background-color: #88CCFF; /* $fdcolor4 */
+    width: 100%;
+    font-size: 13px;
+}
+#my_notifications {
+    margin-left: 40px;
+    float: left;
+    width: 500px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+/**
+    main_tabs.php styles
+**/
+table.tabs {
+    border: 2px solid black;
+    border-collapse: collapse;
+}
+table.tabs td {
+    border: 2px solid black;
+    font-weight: bold;
+    background-color: #AAAAAA; /*fd_color2*/
+    padding: 5px;
+}
+table.tabs td.active { background-color: #FFF; }
+
+/**
+    top_nav.php styles
+**/
+#phone_book_button, #sub_phases_button, #material_phases_button, #labor_phases_button {
+    border-left: 1px solid black;
+    padding: 4px;
+    float: right;
+    font-size: 13px;
+    text-decoration: none;
+    font-weight: bold;
+}
+#weather {
+    overflow: hidden;
+    text-align: right;
+    border-left: 1px solid black;
+    padding: 4px;
+    font-size: 13px;
+}
+
+/**
+    bim_*.php styles
+**/
+table.signoff_area {
+    border: 0;
+    width: 400px;
+}
+table.project_info {
+    border: 2px solid dimgray;
+    border-collapse: collapse;
+}
+table.project_info td { padding: 5px 5px 5px 5px; }
+table.bim_info {
+    border: 2px solid dimgray;
+    border-collapse: collapse;
+}
+table.bim_info td { padding: 5px 5px 5px 5px; }
+
+/**
+    calendar_*.php styles
+**/
+table.calendar_item {
+    background-color: #DDDDDD; /* $fdcolor1 */
+    border-collapse: collapse;
+    border: 2px solid dimgray;
+    width: 100%;
+}
+table.calendar_item, .calendar_item tr, .calendar_item td {
+    padding: 3px 3px 3px 3px;
+    font-size: 13px;
+}
+
+/**
+    cell_phone_list.php styles
+**/
+table.cell_phones {
+    margin: auto auto;
+    border-collapse: collapse;
+}
+table.cell_phones td {
+    padding: 5px 5px 5px 5px;
+    font-size: 14px;
+}
+
+/**
+    cook_your_batch.php styles
+**/
+table.cook {
+    padding: 5px 5px 5px 5px;
+    border-collapse: collapse;
+}
+table.cook a { color: black; }
+
+/**
+    define_record_sets.php styles
+**/
+table.record_set td { padding: 3px 3px 3px 3px;}
+
+/**
+    fd_doc_attachments_show.php, fd_doclist_popup2_real.php, fd_document_box_main.php, foo.php, fd_doc_history_show styles
+**/
+table.fd_doc {
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+table.fd_doc th {
+    text-align: center;
+    background-color: #88CCFF;
+    padding: 5px 5px 5px 5px;
+}
+table.fd_doc td { padding: 5px 5px 5px 5px; }
+
+table.fd_dqm {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+table.fd_dqm th {
+    background-color: #88CCFF;
+    padding: 5px 5px 5px 5px;
+}
+table.fd_dqm td {
+    background-color: #DDDDDD;
+    padding: 5px 5px 5px 5px;
+}
+table.fd_popup {
+    width: 100%;
+    border: 1px solid dimgray;
+    border-collapse: collapse;
+}
+table.fd_popup td {
+    padding: 4px 4px 4px 4px;
+    background-color: #ffcc44; /* $fd_color_3 */
+    text-align: center;
+    font-size: 16px;
+}
+table.fd_popup2 {
+    width: 100%;
+}
+table.fd_popup2 td {
+    color: #FFFFFF;
+    background-color: #333333;
+    font-size: 16px;
+    text-align: center;
+}
+.fd_box {
+    height: 16px;
+    float: right;
+    color: white;
+    font-size: 13px;
+    background: green;
+    border: 1px solid black;
+}
+table.foo {
+    border: 2px solid dimgray;
+    border-collapse: collapse;
+}
+table.foo td { padding: 5px 5px 5px 5px; }
+
+/**
+    foreman_list.php styles
+**/
+table.foreman {
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+table.foreman td { padding: 3px 3px 3px 3px; }
+table.foreman2 {
+    width: 100%;
+    border: 1px solid black;
+    background-color: #DDDDDD;
+}
+
+/**
+    foreman_summary.php styles
+**/
+table.foreman_summary {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 0;
+}
+
+/**
+    global_groups_list.php, groups_list.php styles
+**/
+table#project_teams {  border-collapse: collapse; }
+table#project_teams td { padding: 3px 3px 3px 3px; }
+
+/**
+    global_members_list.php
+**/
+table.global_members_list td{  padding: 0; }
+
+/**
+    job_report_permissions.php
+**/
+table.job_report td { padding: 3px 3px 3px 3px; }
+
+/**
+    sites_phone_list.php
+**/
+table.phone_list {
+    font-size: 13px;
+    margin: auto auto;
+    border: 2px solid dimgray;
+    border-collapse: collapse;
+}
+table.phone_list th {
+    background-color: #88CCFF;
+    text-align: center;
+}
+table.phone_list td {
+    padding: 5px 5px 5px 5px;
+}
+
+div#search_div_advanced {
+    width: 340px;
+    display: block;
+    background: #9ad2ff;
+    text-align: left;
+    float:left;
+    border: 2px solid black;
+}
+
+div#search_div_simple {
+    width: 180px;
+    display: none;
+    background: #9ad2ff;
+    text-align: left;
+    float:left;
+    border: 2px solid black;
+}
+
+select.standardDD {
+    width: 100px;
+}
+
+/**
+    recent_jobs_menu.php
+**/
+table.recent_jobs { width: 100%; font-size: 13px; }
+table.recent_jobs td { padding: 4px 4px 4px 4px; }
+
+div.tableheader {
+    float: left;
+    text-align: center;
+    width: 600px;
+}
+
+table.standard {
+    border:1px solid black;
+}
+
+table.standard {
+    margin: 0 auto;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    float:left;
+}
+
+
+table.standard thead {
+    cursor: pointer;
+    background: #c9dff0;
+}
+table.standard thead tr th {
+    font-weight: bold;
+    font-size: .9em;
+    padding: 3px 0;
+    text-align: center;
+}
+table.standard thead tr th span {
+    padding-right: 20px;
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+}
+
+table.standard thead tr th.notes {
+    padding-left: 100px;
+    padding-right: 100px;
+}
+table.standard thead tr th.description {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+table.standard thead tr th span {
+    background-repeat: no-repeat;
+    /*background-position: bottom right;*/
+}
+table.standard thead tr th.headerSortUp, table.standard thead tr th.headerSortDown,
+table.standard thead tr th.sorting_desc, table.standard thead tr th.sorting_asc {
+    background-color: #acc8dd;
+}
+
+div#submittallog_filter {
+    padding-left:20px;
+    padding-top:5px;
+}
+
+table.standard thead tr th.sorting span {
+    background-image: url(/images/sort_both.png);
+}
+table.standard thead tr th.sorting_asc span {
+    background-image: url(/images/sort_asc.png);
+}
+table.standard thead tr th.sorting_desc span {
+    background-image: url(/images/sort_desc.png);
+}
+
+div.tablesearcherholder {
+    float:left;
+    border: 2px solid black;
+    background: #9ad2ff;
+    overflow: auto;
+    max-height: 200px;
+}
+table.tablesearcher {
+    width: 340px;
+    display: block;
+    text-align: left;
+}
+
+table.tablesearcher td {
+    width: 50%;
+}
+div.dataTables_filter {
+    margin-top: 2px;
+    clear:both;
+}
+div.reset_control {
+    float:right;
+    margin-right:10px;
+    font-style: italic;
+}
+
+
+table.standard tbody tr {
+    color: #555;
+}
+table.standard tbody tr td {
+    text-align: left;
+    font-size: .7em;
+    padding: 0 3px;
+}
+table.standard tbody tr td.number {
+    text-align: center;
+}
+
+div.floating_header {
+    float: left;
+    margin: 0 150px;
+}

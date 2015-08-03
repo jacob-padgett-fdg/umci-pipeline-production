@@ -1,5 +1,9 @@
-<?
-require('header.phtml');
+<?php
+require_once('classes/ReportTable.php');
+use classes\ReportTable\ReportTable;
+
+require('header.php');
+
 fd_navs_header();
 //if ($global_user->umc_emp=='Y')
 ajax_load("/javascript/calendar.js");
@@ -56,83 +60,66 @@ function save_data(dwg_id,field,item) {
 ";
 
 if ($global_jobinfo) {
-	
-	
-	$query_search_add=query_search_add_text();
-	$query="select * from drawinglog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '$current_drawinglog_section' $query_search_add order by type,sort_priority,sheet_num";
-	//tabledump($query);die();
-	/*
-	if ($search_text!="") {
-		$search_text=addslashes($search_text);
-		$query="select * from drawinglog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '$current_drawinglog_section' and
-		(
-		sheet_num like '%$search_text%' or
-		description like '%$search_text%' or 
-		type like '%$search_text%' or 
-		floor like '%$search_text%' or 
-		area like '%$search_text%'[
-		)
-		order by type,sort_priority,sheet_num";
-		}
-*/
+    $query_search_add= ''; // do it all client side - was query_search_add_text();
+	$query="select * from drawinglog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '{$_SESSION['current_drawinglog_section']}' $query_search_add order by type,sort_priority,sheet_num";
 	$res=@mysql_query($query);
-	include("fd_log_paging.phtml");
-
-	echo "
-	
-	<table id='sub_application_main_table' border=1 cellspacing=0 cellpadding=5>
-	<thead>
-	<tr><td colspan=16>";search_div();echo"<center>
+	include("fd_log_paging.php");
+    ReportTable::boss_search_filter(1, array(
+        'Current', 'Area', 'Sheet #', 'Sheet Title', 'Rev', 'Rev Date', 'Orig Issue', 'Issued for Construction',
+        'Sub to Eng', 'Ret from Eng', 'Resubmit Reqd', 'Submittal Status', 'Cur Sub Date', 'Sent to Field', 'Submitted to',
+        'Notes', 'Type'
+    ), '#sub_application_main_table');
+    echo "
+    <div class='floating_header'>
+    <center>
 	<b>Drawings for $global_jobinfo->contract_num - $global_jobinfo->display_name</b>
 		<div class=noprint>
-			<a href=$pagename?mode=drawinglog_edit&jobinfo_id=$global_jobinfo->jobinfo_id><font color=blue>Add Drawing</font></a>
+			<a href=$pagename?mode=drawinglog_edit&jobinfo_id=$global_jobinfo->jobinfo_id>Add Drawing</a>
 			<br>
-			$page_page_insert
-		</div></center>
-	</td></tr>
-	";
+            $page_page_insert
+		</div></center></div>";
+	echo "<table class='standard' id='sub_application_main_table' border=1 cellspacing=0 cellpadding=5><thead>";
 	$lasttype="";
 	
 	
 	echo "
-			<tr valign=top bgcolor=\"$fd_color_4\"><td>
-				<a target=csv_dl href=\"$pagename?mode=csv_download&query=" . urlencode($query) . "\"><font color=blue>CSV</font></a>
-			</td><td>
+			<tr valign=top bgcolor=\"$fd_color_4\"><th style='min-width:54px'><span>
+				<a target=csv_dl href=\"$pagename?mode=csv_download&query=" . urlencode($query) . "\">CSV</a>
+			</span></th><th style='min-width:74px'><span>
 				<b>Current</b>
-			</td><td>
+			</span></th><th><span>
 				<b>Area</b>
-			</td><td>
+			</span></th><th><span>
 				<b>Sheet&nbsp;#</b>
-			</td><td>
+			</span></th><th><span>
 				<b>Sheet&nbsp;Title</b>
-			</td><td>
+			</span></th><th style='min-width:47px'><span>
 				<b>Rev</b>
-			</td><td>
+			</span></th><th style='min-width:89px'><span>
 				<b>Rev&nbsp;Date</b>
-			</td><td>
+			</span></th><th style='min-width:93px'><span>
 				<b>Orig&nbsp;Issue</b>
-			</td><td align=center>
+			</span></th><th align=center  style='min-width:115px'><span>
 				<b>Issued&nbsp;For<br>Construction</b>
-			</td><td>
-				<b>Sub&nbsp;to&nbsp;Eng</b>
-			</td><td>
-				<b>Ret&nbsp;from&nbsp;Eng</b>
-			</td><td>
-				<b>Resubmit&nbsp;Reqd</b>
-			</td><td align=center>
+			</span></th><th style='min-width:48px'><span>
+				<b>Sub to Eng</b>
+			</span></th><th style='min-width:53px'><span>
+				<b>Ret from Eng</b>
+			</span></th><th><span>
+				<b>Resubmit Reqd</b>
+			</span></th><th align=center><span>
 				<b>Submittal<br>Status</b>
-			</td><td align=center>
-				<b>Cur&nbsp;Sub&nbsp;Date</b>
-			</td><td>
-				<b>Sent&nbsp;to&nbsp;Field</b>
-			</td><td>
+			</span></th><th align=center><span>
+				<b>Cur Sub Date</b>
+			</span></th><th style='min-width:54px'><span>
+				<b>Sent to Field</b>
+			</span></th><th style='min-width:115px'><span>
 				<b>Submitted&nbsp;to</b>
-			</td>
-			<td><b>Notes</b></td></tr></thead><tbody "; if ($global_browser!='IE') echo "class=floatheader";echo">";
+			</span></th>
+			<th><span><b>Notes</b></span></th>
+			<th><span><b>Type</b></span></th></tr></thead><tbody>";
 	
-	
-	
-	
+
 	
 	while($row=@mysql_fetch_object($res)) {
 		$temp_doc_id_query="select * from documents where doc_type = 'drawinglog' and section = '$row->section' and app_record_id = '$row->drawing_id'";
@@ -142,14 +129,13 @@ if ($global_jobinfo) {
 		//echo "<tr><td>$temp_doc_id</td><td>$temp_doc_id_query</td></tr>";
 		$stbg="#ffffff";
 		if ($row->submittal_status=='N/A') $stbg="#dddddd";
-		if ($row->type!=$lasttype) {
+		if (false && $row->type!=$lasttype) {
 			$lasttype=$row->type;
 			echo "
 			<tr class=floatheader><th colspan=18 align=center bgcolor=$fd_color_4>
 				<b>$row->type</b>
 			</td></tr>";
-
-			}
+        }
 		
 		$s_sep="";
 		$st_text="";
@@ -197,45 +183,46 @@ if ($global_jobinfo) {
 		<tr bgcolor=$bgcolor id='$row->drawing_id'><td>
 				<table border=0 cellspacing=0 cellpadding=0><tr><td>$file_paperclip&nbsp;</td><td>$file_batch</td></tr></table>
 			</td><td id=\"is_current_$row->drawing_id\">
-				<a href=\"javascript:toggle_is_current($row->drawing_id,'$row->drawing_is_current')\"><font color=blue>$row->drawing_is_current</font></a>
+				<a href=\"javascript:toggle_is_current($row->drawing_id,'$row->drawing_is_current')\">$row->drawing_is_current</a>
 			</td><td id=\"area_$row->drawing_id\">
 				$row->area
 			</td><td>";
-				if (($write)||(($guest)&&($global_user_id==$row->creator))) {
-				echo "<a href=$pagename?mode=drawinglog_edit&drawing_id=$row->drawing_id><font color=blue>$row->sheet_num</font></a>";
+				if (($write)||(($guest)&&($_SESSION['global_user_id']==$row->creator))) {
+				echo "<a href=$pagename?mode=drawinglog_edit&drawing_id=$row->drawing_id>$row->sheet_num</a>";
 				} else {
 				echo "$row->sheet_num";
 				}
 				echo "
 			</td>
 			<td id=\"description_$row->drawing_id\" onclick=quick_form('description',this)>
-				$row->description&nbsp;
+				$row->description
 			</td><td>
-				$row->revision&nbsp;
+				$row->revision
 			</td><td>
-				$current_rev_date&nbsp;
+				$current_rev_date
 			</td><td>
-				$orig_issue&nbsp;
+				$orig_issue
 			</td><td>
-				$const_issue&nbsp;
+				$const_issue
 			</td><td align=center bgcolor=\"$stbg\">
-				$ste&nbsp;
+				$ste
 			</td><td align=center bgcolor=\"$stbg\">
-				$rfe&nbsp;
+				$rfe
 			</td><td align=center bgcolor=\"$stbg\">
-				$rr&nbsp;
+				$rr
 			</td><td>
-				$row->submittal_status&nbsp;
+				$row->submittal_status
 			</td><td>
-				$current_submittal_date&nbsp;
+				$current_submittal_date
 			</td><td align=center>
-				$stf&nbsp;
+				$stf
 			</td><td align=center>
-				$st_text&nbsp;
-			</td><td>$notesimage$note_addendum&nbsp;</td></tr>";
+				$st_text
+			</td><td>$notesimage$note_addendum
+			</td><td>$row->type</td></tr>";
 		}
-	echo "<tr><td colspan=16 height=100%></td></tr></tbody></table>";
+
+    ReportTable::closeTable2('#sub_application_main_table');
 	}
-echo "</body>";
+echo "</tbody></body>";
 fd_navs_footer();
-?>
