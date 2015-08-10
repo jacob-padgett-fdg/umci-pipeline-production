@@ -45,9 +45,9 @@ class ReportTable {
         <script>
 
 
-            function filterColumn ( i ) {
+            function filterColumn ( i, useRegex, useSmartSearch ) {
                 $('<?php echo $tableName; ?>').DataTable().column( i ).search(
-                    $('#col'+i+'_filter').val()
+                    $('#col'+i+'_filter').val(), useRegex, useSmartSearch
                 ).draw();
             }
 
@@ -59,11 +59,15 @@ class ReportTable {
                 'order': [], //no initial order
                 'language': {
                     'search': 'Find _INPUT_ in filtered results'
+                  } ,
+                "search": {
+                    "regex": true,
+                    "smart": false
                   }
                 } );
 
                 $('input.column_filter').on( 'keyup click', function () {
-                    filterColumn( $(this).parents('tr').attr('data-column') );
+                    filterColumn( $(this).parents('tr').attr('data-column'), true, false );
                 } );
             } );
         </script>
