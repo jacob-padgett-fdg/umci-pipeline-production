@@ -1,0 +1,61 @@
+<?
+require("pageheader.phtml");
+require("querylib.inc");
+
+//$query="select $cdinfo.cdinfo_id,serial_num,' - ',project from $cdinfo,$jobinfo where project like '%$search_string%' and $cdinfo.cdinfo_id = $jobinfo.cdinfo_id or job_num like '%$search_string%' and $cdinfo.cdinfo_id = $jobinfo.cdinfo_id  or job_name like '%$search_string%' and $cdinfo.cdinfo_id = $jobinfo.cdinfo_id or description like '%$search_string%' and $cdinfo.cdinfo_id = $jobinfo.cdinfo_id group by $cdinfo.cdinfo_id order by serial_num";
+//$query="select $cdinfo.cdinfo_id,serial_num,' - ',description from $cdinfo,$jobinfo where project like '%$search_string%' or job_num like '%$search_string%' and $cdinfo.cdinfo_id = $jobinfo.cdinfo_id  or job_name like '%$search_string%' and $cdinfo.cdinfo_id = $jobinfo.cdinfo_id or description like '%$search_string%' and $cdinfo.cdinfo_id = $jobinfo.cdinfo_id group by $cdinfo.cdinfo_id order by serial_num";
+$query="
+	
+	select $cdinfo.cdinfo_id,serial_num,' - ',description from $cdinfo,$jobinfo where 
+
+	project like '%$search_string%' 
+		or 
+
+	$cdinfo.description like '%$search_string%'
+		or 
+
+	( job_num like '%$search_string%' 
+		and 
+	$cdinfo.cdinfo_id = $jobinfo.cdinfo_id  )
+
+		or 
+	( job_name like '%$search_string%' 
+		and 
+	$cdinfo.cdinfo_id = $jobinfo.cdinfo_id )
+
+		or 
+	( description like '%$search_string%' 
+		and 
+	$cdinfo.cdinfo_id = $jobinfo.cdinfo_id )
+
+	group by $cdinfo.cdinfo_id order by cdinfo_id";
+
+//echo "$query";exit;
+
+//$query="select * from jobinfo where customer = 20";
+
+
+echo "
+<b><i>These are the records containing entries that match your request:</i></b>
+
+
+<form name=foochicken method=post action=$pagename>
+<input type=hidden name=mode value=cdinfo_edit>
+";
+dropbox($query,"",15,"submit();");
+//tabledump($query);
+echo"
+
+
+</form>";
+
+
+
+
+
+require("footer.phtml");
+
+?>
+
+
+

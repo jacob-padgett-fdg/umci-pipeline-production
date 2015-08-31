@@ -1,0 +1,9 @@
+<?
+if (!($adminuser)) die_security();
+if ($contacts_id!="") $contacts_id=addslashes($contacts_id);
+else die("Application error! No 'contacts_id' specified!");
+
+@mysql_query("delete from bidlist_leads_users where contacts_id = '$contacts_id'");
+forward('leads_users');
+
+?>

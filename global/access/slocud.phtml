@@ -1,0 +1,32 @@
+<?
+require_once("global_connect_rw.phtml");
+require_once('querylib.inc');
+
+if ($server_name!="") {
+	$server_name=ereg_replace('\..*$','',$server_name);
+	$server_fqdn="$server_name.umci.com";
+	$server_name=addslashes($server_name);
+	}
+$server_ip=$REMOTE_ADDR;
+if (ereg("^10.",$server_ip)) {
+	queue_email(1,"UMC SERVER REPORTING AN INSIDE IP ADDRESS","Warning<br>Something is trying to report an internal network ip as its location. This should be fixed. Only public internet ips should be reported. <br>The server in question reports itself to be *$server_name* (*$server_fqdn*) and is attempting to report itself from $server_ip.",'Y');
+	queue_email(2,"UMC SERVER REPORTING AN INSIDE IP ADDRESS","Warning<br>Something is trying to report an internal network ip as its location. This should be fixed. Only public internet ips should be reported. <br>The server in question reports itself to be *$server_name* (*$server_fqdn*) and is attempting to report itself from $server_ip.",'Y');
+	exit;
+	}
+
+if ($update_type!="") $update_type=addslashes($update_type);
+else $update_type='unknown';
+	
+if (!(getoneb("select * from access_server_locations where server_name = '$server_name' and server_ip = '$server_ip' and current = 'Y'"))) {
+	@mysql_query("update access_server_locations set current = 'N' where server_ip = '$server_ip'");
+	@mysql_query("update access_server_locations set current = 'N' where server_fqdn = '$server_fqdn'");
+	@mysql_query("insert into access_server_locations set 
+	server_name = '$server_name',
+	server_fqdn = '$server_fqdn',
+	server_ip = '$server_ip',
+	update_type = '$update_type',
+	current = 'Y'");
+
+	}
+
+?>

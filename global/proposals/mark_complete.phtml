@@ -1,0 +1,21 @@
+<?
+$bid_info=load_proposal_info(escapeshellcmd($bidlist_id));
+if (!(($global_user_id==$bid_info->creator)||($global_user_id==$bid_info->to_lead)||($adminuser))) die("Permission Denied! You are not the owner of this record or an admin!");
+if ($bid_info->gc_low_set=='Y') $newstatus="Completed";
+else $newstatus="Almost Complete";
+
+$query="update bidlist set status = '$newstatus' where bidlist_id = '$bid_info->bidlist_id'";
+
+@mysql_query($query);
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+//forward('main');
+
+
+
+?>

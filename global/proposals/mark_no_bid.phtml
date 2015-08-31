@@ -1,0 +1,18 @@
+<?
+$bid_info=load_proposal_info(escapeshellcmd($bidlist_id));
+
+if (!(($adminuser)||($global_user_id==$bid_info->creator))) die("Permission Denied! You are not the owner of this record, and are not an admin!");
+
+$query="update bidlist set status = 'No Bid',awarded = 'NA' where bidlist_id = '$bid_info->bidlist_id'";
+//echo "$query";
+@mysql_query($query);
+
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+//forward('main');
+?>

@@ -1,0 +1,9 @@
+<?
+require("pageheader.phtml");
+require("querylib.inc");
+
+echo "<form name=queryform method=post action=$pagename>";
+dropbox("$query","",15);echo"
+<input type=hidden name=mode value=cdinfo_edit>
+<input type=button value=\"Submit\" onclick=submit();>
+</form>";

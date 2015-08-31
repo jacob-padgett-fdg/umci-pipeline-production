@@ -1,0 +1,55 @@
+<?
+
+//<a href=$pagename?mode=list_by_user><font color=blue>List by user</font</a><p>
+
+require('querylib.inc');
+echo "
+<html><body bgcolor=white>
+<center><h2>Global Database Access Control</h2></center><hr>
+
+<a href=$pagename?mode=server_list><font color=blue>Server DB</font></a><p>
+
+<a href=$pagename?mode=application_list><font color=blue>Application List</font></a><p>
+
+<a href=$pagename?mode=access_jupiter_main><font color=blue>Jupiter Permissions</font></a><p>
+
+<a href=$pagename?mode=jupiter_filewatch_main><font color=blue>Jupiter Filesystem DB</font></a><p>
+
+<table border=1 cellspacing=0 cellpadding=4><tr><td align=center bgcolor=#dddddd>
+<a href=$pagename?mode=backup_summaries><font color=blue>Backup Information<br>
+<img border=0 src=$pagename?mode=graph_bu_size_numbered_tiny></a>
+</font></a>
+</td></tr></table><br>
+
+";
+/*
+if (($global_user_id<3)||($global_user_id== "4743")) {
+echo "
+<table border=1 cellspacing=0 cellpadding=4><tr><td align=center bgcolor=#dddddd>
+<form name=authinfo method=post action=$pagename>
+<input type=hidden name=mode value=main>
+<b>Auth&nbsp;Info&nbsp;Lookup:</b><br>
+";contactsbox("select * from contacts where contact_type = 'contact' and umc_emp = 'Y'and current = 'Y'","submit()","userid");echo"<input type=submit>
+</form>
+</td></tr></table>
+";
+}
+
+if ($userid!="") {
+	$userid=addslashes($userid);
+	$uinfo=getoneb("select * from contacts where contacts_id = '$userid'");
+	if ($uinfo) {
+		$last_pass_decoded=ereg_replace('\0*$','',@mcrypt_decrypt(MCRYPT_RIJNDAEL_256,'zed',$uinfo->last_pass,"cbc"));
+		//$last_pass_decoded=mcrypt_decrypt(MCRYPT_RIJNDAEL_256,'zed',$uinfo->last_pass,"cbc");
+		//<b>Pass:</b>&nbsp;$uinfo->last_pass<br>
+		echo "<b>User:</b>&nbsp;$uinfo->login_name&nbsp;($uinfo->contacts_id)<br>
+		<b>Real:</b>&nbsp;$uinfo->display_name<br>
+		<b>Pass Decoded:</b>&nbsp;$last_pass_decoded<br>
+		<b>Pass:</b>&nbsp;$uinfo->web_password<br>
+		";
+		}
+	}
+*/
+require('footer.phtml');
+
+?>

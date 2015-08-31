@@ -1,0 +1,106 @@
+<?php
+include ("graph1/jpgraph.php");
+include ("graph1/jpgraph_line.php");
+
+$colors=array(
+	0 => "slateblue4",
+	1 => "mediumpurple",
+	2 => "mediumorchid3",
+	3 => "mediumslateblue",
+	4 => "mediumturquoise",
+	5 => "mediumseagreen",
+	6 => "palegreen",
+	7 => "yellow",
+	8 => "darkgreen",
+	9 => "tomato",
+	10 => "lightskyblue1",
+	11 => "orange",
+	12 => "steelblue1",
+	13 => "tan1",
+	14 => "yellow",
+	15 => "orange",
+	16 => "purple",
+	17 => "blue",
+	18 => "darkblue",
+	19 => "lightblue",
+	20 => "darkgreen",
+	21 => "pink",
+	22 => "gray",
+	23 => "cyan"
+	);
+
+$datelist=array();
+
+$start_date=date('Y-m-d',strtotime('1 year ago'));
+//tabledump("select * from access_servers_backup_logs,access_servers where access_servers_backup_logs.server_id = access_servers.server_id and active = 'Y' and in_production = 'Y' group by logdate order by logdate");exit;
+//$datesres=@mysql_query("select * from access_servers_backup_logs,access_servers where access_servers_backup_logs.server_id = access_servers.server_id and active = 'Y' and in_production = 'Y' group by logdate order by logdate");
+//$datesres=@mysql_query("select * from access_servers_backup_logs,access_servers where access_servers_backup_logs.server_id = access_servers.server_id and active = 'Y' and in_production = 'Y' and logdate > current_date()-365 group by logdate order by logdate");
+$datesres=@mysql_query("select * from access_servers_backup_logs,access_servers where access_servers_backup_logs.server_id = access_servers.server_id and active = 'Y' and in_production = 'Y' and logdate > '$start_date' group by logdate order by logdate");
+//tabledump("select * from access_servers_backup_logs,access_servers where access_servers_backup_logs.server_id = access_servers.server_id and active = 'Y' and in_production = 'Y' group by logdate order by logdate");
+while($daterow=@mysql_fetch_object($datesres)) {
+	array_push($datelist,$daterow->logdate);
+	}
+$datecount=sizeof($datelist);
+
+$lineplots=array();
+$serverslist=array();
+$serversres=mysql_query("select * from access_servers_backup_logs,access_servers where access_servers_backup_logs.server_id = access_servers.server_id and active = 'Y' and in_production = 'Y' and server_megs > 0 and logdate > '$start_date' group by name order by backup_megs desc");
+//tabledump("select * from access_servers_backup_logs,access_servers where access_servers_backup_logs.server_id = access_servers.server_id and active = 'Y' and in_production = 'Y' and server_megs > 0 group by name order by backup_megs desc");
+//tabledump("select * from access_servers_backup_logs,access_servers where access_servers_backup_logs.server_id = access_servers.server_id and active = 'Y' and in_production = 'Y' group by name order by name");
+while($serversrow=@mysql_fetch_object($serversres)) {
+	array_push($serverslist,$serversrow->name);
+	}
+$server_count=sizeof($serverslist);
+
+$count=0;
+while ($count < $server_count) {
+	$array_count=0;
+	$budata[$count]=array();
+	$servername=$serverslist[$count];
+	$server_info=getoneb("select * from access_servers where name = '$servername'");
+	$dateloop=0;
+	while ($dateloop < $datecount) {
+		$bu_log_data=getoneb("select * from access_servers_backup_logs where server_id = '$server_info->server_id' and logdate = '$datelist[$dateloop]'");
+		if ($bu_log_data->backup_megs=="") $bu_log_data->backup_megs="0";
+		if ($bu_log_data->backup_megs<1) {
+			$bu_log_date->backup_megs=1000;
+			$dateloop++;
+			continue;
+			}
+		$budata[$count][$dateloop]=$bu_log_data->backup_megs;
+		$dateloop++;
+		}
+	
+	$lptemp= new LinePlot($budata[$count]);
+	$lptemp->SetFillColor($colors[$count]);
+	$lptemp->SetLegend("$servername");
+	$lineplots[$count]=$lptemp;
+	$count++;
+	}
+
+$graph = new Graph(1200,800,"auto");	
+//$graph->SetScale("intlin",0,0,0,0);
+//$graph->SetScale("linlin",220000,500000,0,0);
+$graph->SetScale("linlin",200000,1000000,0,0);
+$graph->SetMarginColor("$umc_standard_blue");
+
+$ap = new AccLinePlot ($lineplots); 
+
+$graph->xaxis->SetTickLabels($datelist);
+$graph->xaxis->SetLabelAngle(90);
+$graph->xaxis->scale->ticks->Set(7,1);
+
+// Add the plot to the graph
+$graph->Add($ap);
+
+$graph->img->SetMargin(80,45,30,75);
+$graph->title->Set("Backup Accumulated History");
+$graph->xaxis->SetPos("min");
+$graph->yaxis->title->Set("Megabytes");
+$graph->yaxis->SetTitleMargin(60);
+$graph->legend->Pos(0.10,0.2,"left","center");
+$graph->legend->SetReverse();
+// Display the graph
+$graph->Stroke();
+//exit;
+?>

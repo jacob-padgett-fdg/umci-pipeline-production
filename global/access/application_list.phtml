@@ -1,0 +1,65 @@
+<?
+require_once('querylib.inc');
+$query="select * from access_applications order by application_name";
+//$query="select * from access_applications where application_active != 'Y' order by application_name";
+//tabledump($query);
+
+$zero=1;
+
+echo "<html><head><title>access/application list</title></head><body bgcolor=#ffffff>
+<center><h2>Application List</h2><hr></center>
+
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><p>
+<a href=$pagename?mode=application_edit><font color=blue>Add New Application</font></a><p>
+<table border=1 cellspacing=0 cellpadding=0>
+<tr><td>
+<table border=0 cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc><td>
+	Application Name
+</td><td>
+	Description
+</td><td>
+	Active
+</td><td>
+	FD Open
+</td><td>
+	&nbsp;
+</td></tr>
+";
+
+$res=@mysql_query($query);
+
+while($row=@mysql_fetch_object($res)) {
+	if ($zero==0) {
+		$zero=1;
+		$bgcolor="#dddddd";
+		} else {
+		$zero=0;
+		$bgcolor="#ffffff";
+		}
+	echo "
+	<tr bgcolor=$bgcolor><td>
+		<a href=$pagename?mode=application_list_permissions&access_applications_id=$row->access_applications_id><font color=blue>$row->application_name</font></a>
+	</td><td>
+		$row->application_description
+	</td><td align=center>
+		$row->application_active
+	</td><td align=center>
+		$row->front_door_open
+	</td><td>
+		<a href=$pagename?mode=application_edit&access_applications_id=$row->access_applications_id><font color=blue><i>Edit</i></font></a>
+	</td></tr>
+	";
+	}
+
+echo "
+</table></td></tr></table>
+";
+
+
+
+
+
+
+
+?>

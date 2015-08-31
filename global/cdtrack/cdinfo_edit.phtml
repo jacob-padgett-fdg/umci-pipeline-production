@@ -1,0 +1,174 @@
+
+<?require("pageheader.phtml");?>
+<?require("querylib.inc");?>
+<?require("customer.inc");?>
+<?
+$new=0;
+$highlight="#dddddd";
+
+if ("$cdinfo_id" != "") {
+	$cdinfomax=getone("select max(cdinfo_id) as cdinfomax from $cdinfo");
+	$cdinfo=getone("select * from $cdinfo where cdinfo_id = '$cdinfo_id'");
+	$cdinfo_back=$cdinfo_id - 1;
+	$cdinfo_forward=$cdinfo_id + 1;
+	if ($cdinfo_forward > $cdinfomax->cdinfomax) $cdinfo_forward=1;	
+	if ($cdinfo_back < 1) $cdinfo_back=$cdinfomax->cdinfomax;
+	$foochicken="<table border=0 cellspacing=0 cellpadding=0>
+				<tr><td>
+				<form method=post action=$pagename>
+					<input type=hidden name=mode value=cdinfo_edit>
+					<input type=hidden name=cdinfo_id value=$cdinfo_back>
+					<input type=button value=\"<--Previous-record--\" onclick=submit();>
+				</form>
+				</td><td>
+				<form action=$pagename>
+					<input type=button value=\"Back to top\" onclick=submit();>
+				</form>
+				</td><td>
+				<form method=post action=$pagename>
+					<input type=hidden name=mode value=cdinfo_edit>
+					<input type=hidden name=cdinfo_id value=$cdinfo_forward>
+					<input type=button value=\"--Next-record-->\" onclick=submit();>
+				</form>
+				</td></tr>
+				</table>";
+	}
+if ("$cdinfo_id" == "") {
+	$new=1;
+	$cdinfomax=getone("select max(cdinfo_id) as cdinfomax from $cdinfo");
+	$cdinfo=new bsclass;
+	$cdinfo->creator="$user_name_real";
+	$sernumstr="(Automatic)";
+	$foochicken="<table border=0 cellspacing=0 cellpadding=0>
+				<tr><td>
+					<form method=post action=$pagename target=viewlast>
+					<input type=hidden name=mode value=cdinfo_edit>
+					<input type=hidden name=cdinfo_id value=$cdinfomax->cdinfomax>
+					<input type=button value=\"View Last\" onclick=submit();>
+					</form>
+				</td><td> 
+					<form action=$pagename>
+					<input type=button value=\"Back to top\" onclick=submit();>
+					</form>
+				</td></tr>
+				</table";
+	}
+
+
+	$cdinfo->create_date=invali_date("$cdinfo->create_date");
+	$cdinfo->date_begin=invali_date("$cdinfo->date_begin");
+	$cdinfo->date_end=invali_date("$cdinfo->date_end");
+	$cdinfo->customer=custgetname($customer);
+	if ($cdinfo->create_date=="") {
+		$cdinfo->create_date=date("M-d-Y");
+		}
+?>
+
+
+<?
+
+echo "
+	$foochicken
+<b>Enter the information pertaining to the new CD:</b><br>
+
+	<form name=cdinfo method=post action=$pagename>
+	<input type=hidden name=mode value=cdinfo_submit>
+	<input type=hidden name=cdinfo_id value=\"$cdinfo->cdinfo_id\">
+	<input type=hidden name=serial_num value=\"$cdinfo->serial_num\">
+
+	<input type=hidden name=b_dwg value=\"$cdinfo->b_dwg\">
+	<input type=hidden name=b_txt value=\"$cdinfo->b_txt\">
+	<input type=hidden name=b_jpg value=\"$cdinfo->b_jpg\">
+	<input type=hidden name=b_tif value=\"$cdinfo->b_tif\">
+	<input type=hidden name=b_bmp value=\"$cdinfo->b_bmp\">";
+
+echo "
+<script>
+function checkcust () {
+var desturl;
+desturl=\"$pagename?mode=custcheck&customer=\" + escape(document.cdinfo.customer.value);
+open(desturl,\"checkcust\",\"width=450,height=500,resizable,dependent,alwaysRaised\");
+}
+function checkcust2 () {
+var desturl;
+desturl=\"$pagename?mode=custcheck2&customer=\" + escape(document.fooberry.customer.value);
+open(desturl,\"checkcust\",\"width=450,height=500,resizable,dependent,alwaysRaised\");
+}
+</script>
+
+<table border=0>
+<tr><td>
+	Serial Number:
+</td><td bgcolor=$highlight>
+	$cdinfo->serial_num $sernumstr
+</td><td>
+	Date Created:
+</td><td>
+	<input type=text name=create_date value=\"$cdinfo->create_date\" size=11>
+</td></tr>
+
+<tr><td>
+	Collection
+</td><td>
+	";dropbox("select * from $databases",$cdinfo->dbnames_id,"","",1);echo "
+</td><td>
+	Department
+</td><td>
+	";dropbox("select department_id as department, department_name from $departments",$cdinfo->department,"","",1);echo"
+</td></tr>	
+	
+<tr><td>
+	Description
+</td><td colspan=3>
+	<input type=text name=description value=\"$cdinfo->description\" size=45>
+</td></tr>
+
+<tr><td>
+	Created by:
+</td><td colspan=2>
+	<input type=text name=creator value=\"$cdinfo->creator\">
+</td></tr>
+
+<tr><td>
+	Project
+</td><td>
+	<input type=text name=project value=\"$cdinfo->project\">
+</td><td>
+	Customer
+</td><td>
+	<input type=text name=customer value=\"$cdinfo->customer\">
+</td></tr>
+
+<tr><td colspan=2>
+	Dates Spanning
+</td></tr>
+
+<tr><td align=right>
+	From:
+</td><td colspan=3>
+	<input type=text name=date_begin value=\"$cdinfo->date_begin\" size=11>
+	To:
+	<input type=text name=date_end value=\"$cdinfo->date_end\" size=11>
+</td></tr>
+
+<tr><td>
+	Copies burned:
+</td><td>
+	<input type=text name=copies value=\"$cdinfo->copies\" size=4>
+</td><td>
+</td><td>
+	<font size=-1><input type=button value=\"Save CD Data\" onclick=checkcust();></font>
+</td></tr>
+</form>
+</table>";
+
+
+if ($new == 1) {
+	echo "<hr><font size=+1><b><i>To add (more) jobs to this CD, please save it first</font></b></i>";
+	} else {
+	include("cdjobadd_edit.phtml");
+	}
+
+
+
+?>

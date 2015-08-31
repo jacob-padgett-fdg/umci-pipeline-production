@@ -1,0 +1,21 @@
+<?require("lookup_deny.inc");?>
+<?require("querylib.inc");?>
+<?
+$lookupmode=ereg_replace("^lookup_add_entry_","",$mode);
+$query="select * from $lookupmode where 0 = 1";
+$result=mysql_query($query);
+$record_name=mysql_field_name($result,1);
+
+$record_data=escapeshellcmd(${$record_name});
+
+
+$query="insert into $lookupmode ($record_name) values ('$record_data')";
+mysql_query($query);
+$mode="lookup_$lookupmode";
+include("lookup_$lookupmode.phtml");
+
+?>
+
+
+
+

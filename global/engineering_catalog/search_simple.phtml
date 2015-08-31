@@ -1,0 +1,22 @@
+<?
+require("querylib.inc");
+include("header.phtml");
+
+
+
+//tabledump("select * from product");
+
+
+echo "
+<h2>Please enter the product or catalog you are looking for:</h2>
+<font size=-1>(Use '%' for a wildcard)<br></font>
+<form name=blahblah method=get action=$pagename>
+<input type=hidden name=mode value=product_search_result>
+<input type=text name=search_text value=$last_search_value>
+<input type=button onclick=submit(); value=Search>
+</form>";
+
+
+
+require("footer.phtml");
+?>

@@ -1,0 +1,18 @@
+<?
+//$query1="select bidlist_id,proposal_num,create_date from bidlist where proposal_num = 0 order by bidlist_id";
+$query1="select bidlist_id,proposal_num,create_date from bidlist order by bidlist_id";
+//$query2="select bidlist_id,proposal_num,create_date from bidlist where proposal_num = 0 order by bidlist_id limit 1";
+
+tabledump($query1);
+
+$res=@mysql_query($query1);
+while($row=@mysql_fetch_object($res)) {
+	$year=ereg_replace("-.*$","",$row->create_date);
+	$prop_num=proposal_num_new($year);
+	$query="update bidlist set proposal_num = '$prop_num' where bidlist_id = '$row->bidlist_id'";
+	//echo "<hr>$query</hr>";
+	//@mysql_query($query);
+	mysql_query("update bidlist set proposal_num = '$year$row->bidlist_id' where bidlist_id = '$row->bidlist_id'");
+	}
+
+?>

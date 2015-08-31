@@ -1,0 +1,12 @@
+<?
+require_once('querylib.inc');
+echo "<html><body bgcolor=white>";
+
+$bidlist_results_id=escapeshellcmd($bidlist_results_id);
+$bid_res_info=getone("select bidlist_id from bidlist_results where bidlist_results_id = '$bidlist_results_id'");
+$query="delete from bidlist_results where bidlist_results_id = '$bidlist_results_id'";
+@mysql_query($query);
+forward("bidlist_edit&bidlist_id=$bid_res_info->bidlist_id");
+
+
+?>

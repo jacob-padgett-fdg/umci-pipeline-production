@@ -1,0 +1,49 @@
+<?
+require("pageheader.phtml");
+require("querylib.inc");
+require("customer.inc");
+
+//$customer=htmlspecialchars($customer);
+//$customer=escapeshellcmd($customer);
+
+if (custcheck($customer)) {
+	echo "
+	<script>
+	opener.document.cdinfo.submit();
+	close();
+	</script>";
+	exit;
+	}
+
+
+$addurl=rawurlencode("$customer");
+$addurl="$pagename?mode=customer_submit&customer=$addurl";
+
+echo "
+<b><i>The Customer listed isn't currently in the database.</i></b><p>
+
+You can <a href=\"$addurl\"><font color=blue>ADD</font></a> the customer to
+the database, or select select from the list of possible matches below<p>
+
+<center>
+<form name=custguess action=$pagename>
+";customerguess($customer);echo"
+<br>
+<input type=button value=\"Use this customer\" onclick=setcust();>
+</form>
+</center>
+
+<script>
+function setcust() {
+	var truecust;
+	truecust=document.custguess.customer_name.options[document.custguess.customer_name.selectedIndex].value;
+	opener.document.cdinfo.customer.value=truecust;
+	opener.document.cdinfo.submit();
+	close();
+	}
+</script>
+
+
+";
+?>
+

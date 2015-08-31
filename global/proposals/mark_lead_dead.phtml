@@ -1,0 +1,15 @@
+<?
+$bid_info=load_proposal_info(escapeshellcmd(escapeshellcmd($bidlist_id)));
+if ($bid_info->status!="Lead") die("ERROR: This record is not a lead!!! It can't be marked as a dead lead!");
+
+$query="update bidlist set status = 'Dead Lead' where bidlist_id = '$bid_info->bidlist_id'";
+@mysql_query($query);
+
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+?>

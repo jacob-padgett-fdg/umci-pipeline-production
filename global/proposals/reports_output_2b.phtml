@@ -1,0 +1,39 @@
+<?
+$start_date=vali_date($start_date);
+$end_date=vali_date($end_date);
+
+if ($umcgroups_id!="") {
+	$moregroups="";
+	$sep="";
+	while ($item=array_pop($umcgroups_id)) {
+		$moregroups = $moregroups . $sep . "umcgroups_id = '$item'";
+		$sep=" or ";
+		}
+	$moregroups=" (" . $moregroups . ") and ";
+	}
+
+if ($proposal_type!="") {
+	$moretypes="";
+	$sep="";
+	while ($item=array_pop($proposal_type)) {
+		$moretypes = $moretypes . $sep . "proposal_type = '$item'";
+		$sep=" or ";
+		}
+	$moretypes=" (" . $moretypes . ") and ";
+	}
+
+$query="select bidlist_id from bidlist where " . $moregroups . $moretypes . " bid_date >= '$start_date' and bid_date <= '$end_date' and status != 'No Bid' order by bid_date,bid_time";
+proposal_search_output_5($query);
+
+echo "<table border=0 cellspacing=0 cellpadding=1><tr>";
+$ptypes=@mysql_query("select proposal_type from bidlist where proposal_type != '' group by proposal_type order by proposal_type");
+while ($row=@mysql_fetch_object($ptypes)) {
+	echo "<td valign=top>";
+	$query_now=ereg_replace(" order by "," and proposal_type = '$row->proposal_type' order by ",$query);
+	proposal_search_stats_box($query_now,$row->proposal_type);
+	echo "</td>";
+	}
+
+echo "</tr></td></table>";
+proposal_search_stats_box($query,"All");
+?>

@@ -1,0 +1,46 @@
+<?
+echo "
+<input type=hidden name=proposal_form_bid_bond value=true>
+
+
+<script>
+function bid_bond_check(reset_field) {
+	if(document.bidlist_edit.bid_bond.value!='Y') {
+		document.bidlist_edit.bid_bond_requested.disabled=true;
+		document.bidlist_edit.bid_bond_returned.disabled=true;
+		document.bidlist_edit.bid_bond_remind_contact.disabled=true;
+		} else {
+		document.bidlist_edit.bid_bond_requested.disabled=false;
+		document.bidlist_edit.bid_bond_returned.disabled=false;
+		document.bidlist_edit.bid_bond_remind_contact.disabled=false;
+		}
+	}
+</script>
+<table border=1 cellspacing=0 cellpadding=1 width=100% class=\"tableobj\">
+	<tr><td bgcolor=$table_dark colspan=2>
+		<b style=\"color: $table_title;\">Bid Bond Required&nbsp;</b>";ynmselect("bid_bond",$bid_info->bid_bond,"?","bid_bond_check();");echo"
+	</td></tr>
+
+	<tr><th>
+		Ordered
+	</th><td>
+		";ynmselect("bid_bond_requested",$bid_info->bid_bond_requested,"?","bid_bond_check();");echo"
+	</td></tr>
+	
+	<tr><th>
+		Remind
+	</th><td>
+		";contactbox("select contacts_id as bid_bond_remind_contact,left(display_name,15) as display_name from contacts where current = 'Y' and employee_group = '3' and umc_emp = 'Y' order by alphasort",$bid_info->bid_bond_remind_contact,"","\" onfocus=\"bid_bond_check()\"");echo"
+	</td></tr>
+
+	<tr><th>
+		${rtc_start}Returned${rtc_end}
+	</th><td>
+		";ynmselect("bid_bond_returned",$bid_info->bid_bond_returned,"?","bid_bond_check();");echo"
+	</td></tr>
+	
+</table>
+<script>bid_bond_check();</script>
+";
+
+?>

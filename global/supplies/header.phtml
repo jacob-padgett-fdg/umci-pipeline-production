@@ -1,0 +1,25 @@
+<?
+echo "
+<script>
+function confirm_mark_ordered() {
+	if (confirm('Mark all remaining items as ordered?')) {
+		document.location=\"$pagename/?mode=process_orders_submit\";
+		}
+	}
+</script>
+
+<title>$dbdescription</title>
+<body bgcolor=$bgcolor>
+<table border=0 cellpadding=10>
+<tr><td>
+<a href=https://pipeline.umci.com/intra/><font color=blue>Back&nbsp;to&nbsp;UMC&nbsp;Intra&nbsp;Page</a>
+</td><td>
+<a href=$pagename?mode=order_form><font color=blue>Add&nbsp;to&nbsp;order</font></a>
+</td><td width=100% align=right>";
+
+if ($adminuser) echo "<a href=\"javascript:confirm_mark_ordered()\"><font color=blue>Process Orders</font></a>";
+echo "</td></tr>
+</table>
+<hr>
+";
+?>

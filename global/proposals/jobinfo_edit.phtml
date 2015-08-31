@@ -1,0 +1,53 @@
+<?
+require('querylib.inc');
+require('header.phtml');
+
+if ($jobinfo_id=="") die ("ERROR: Missing jobinfo_id. Please contact your system administrator");
+$jobinfo_id=escapeshellcmd($jobinfo_id);
+echo "1";
+$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+$bid_info=load_bid_info_for_job($jobinfo->jobinfo_id);
+echo "2";
+
+$form_mode="edit";
+$dropboxmode="";
+$dropboxvaradd="";
+$dropboxsize="1";
+
+echo "
+<form name=jobinfo_edit method=get action=$pagename>
+<input type=hidden name=mode value=jobinfo_submit>
+<input type=hidden name=jobinfo_id value='$jobinfo->jobinfo_id'>
+<input type=hidden name=target value=main>";
+
+require("jobinfo_edit_header.phtml");
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////	Top Section - Mandatory Items	////////////////////
+////////////////////////////////////////////////////////////////////////////
+echo "
+<div id=\"proposal_form_table\">
+<table border=0>
+<tr><td width=100% colspan=4>
+	";include("jobinfo_edit_form_info.phtml");echo"
+</td></tr>
+
+<tr><td width=100% colspan=4>
+	";include("jobinfo_edit_form_main.phtml");echo"
+</td></tr>
+
+</table>
+
+</form>
+</div>
+
+<script>
+function apply_changes() {
+	document.jobinfo_edit.target.value='reload';
+	document.jobinfo_edit.submit();
+	}
+</script>
+";
+
+?>

@@ -1,0 +1,98 @@
+<?
+require("header.phtml");
+
+if ($supplies_id!="") {
+	$supplies_id=addslashes($supplies_id);
+	$supply_info=getoneb("select * from supplies where supplies_id = '$supplies_id'");
+	}
+
+
+if ($supply_info->contacts_id<1) $supply_info->contacts_id=$global_user_id;
+
+echo "
+<center><h2>Order Form</h2></center><br>
+
+
+<i>
+
+You can access on online catalog of office supplies 
+through the <br>Complete Office website at <a target=_blank href=\"http://www.complete-office.com/\">http://www.complete-office.com/</a>.
+<ul style=\"padding-top: 0px;\"><li>Username: umci</li>
+<li>Password: umci11</li>
+</ul>
+
+Note: You cannot order directly through the Complete Office website.<br>The online catalog is only to view available items.<p>
+Please use the order form below to order your office items.<p>
+
+When entering the quantity, please verify the unit of measure (UM) in the <br>catalog. For example, many items have an \"EA\" (each) unit of measure,<br>meaning that if you order \"1 EA\" pen you will only get one pen--not a <br>box (BX) of pens.
+</i>
+
+
+
+
+
+<form name=supplies_form method=post action=$PHP_SELF>
+<input type=hidden name=supplies_id value=\"$supply_info->supplies_id\">
+<input type=hidden name=mode value=order_form_submit>
+<table border=1 cellpadding=4 cellspacing=0>
+<tr><td colspan=2 bgcolor=$fd_color_4 align=center>
+	<b>Order Office Supplies</b>
+</td></tr>
+";
+
+if ($adminuser) {
+	echo "<tr><td>
+			User
+		</td><td>
+			";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'",$supply_info->contacts_id,'contacts_id');echo "
+		</td></tr>";
+	} else {
+		echo "<input type=hidden name=contacts_id value=\"$supply_info->contacts_id\">";
+	}
+
+
+
+echo "
+
+<tr><td>
+	<a target=\"_blank\" href=\"http://www.complete-office.com/\"><font color=blue>Complete Office</font></a> Item Number
+</td><td>
+	<input type=text name=vendorcode value=\"$supply_info->vendorcode\">
+</td></tr>
+
+<tr><td>
+	Quantity
+</td><td>
+	<input size=5 type=text name=quantity value=\"$supply_info->quantity\">
+</td></tr>
+
+<tr><td>
+	Description
+</td><td>
+	<input size=40 type=text name=description value=\"$supply_info->description\">
+</td></tr>
+
+<tr><td>
+	Job
+</td><td>
+	";dropbox("select contract_num as jobnum,contract_num from jobinfo where active = 'Y' order by length(contract_num),contract_num",$supply_info->jobnum);echo "
+</td></tr>
+
+<tr><td>
+</td><td>
+	<input type=button value=\"Submit\" onclick=submit();>
+</td></tr>
+
+</table></form>
+
+
+
+
+
+
+";
+
+
+
+
+?>

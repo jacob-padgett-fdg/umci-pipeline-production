@@ -1,0 +1,16 @@
+<?
+//$create_year=date('Y');
+
+//$proposal_num=proposal_num_new($create_year);
+$status='Lead';
+$create_date=date('Y-m-d');
+$creator=$global_user_id;
+$show_in_bidlist='N';
+
+$query="insert into bidlist set status='$status',create_date='$create_date',creator='$creator',show_in_bidlist='N'";
+@mysql_query($query);
+$id=@mysql_insert_id();
+forward("lead_edit&bidlist_id=$id");
+
+exit;
+?>

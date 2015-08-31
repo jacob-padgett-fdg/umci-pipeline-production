@@ -1,0 +1,56 @@
+<?
+
+if ($vendorcode == "") {
+	echo "Error, vendorcode is a required field. Please try again.<p>";
+	exit;
+	}
+if ($description == "") {
+	echo "Error, description is a required field. Please try again.<p>";
+	exit;
+	}
+
+$contacts_id=addslashes($contacts_id);
+$username=addslashes($username);
+$vendorcode=addslashes($vendorcode);
+$quantity=addslashes($quantity);
+$description=addslashes($description);
+$jobnum=addslashes($jobnum);
+
+//$query="insert into supplies (username,vendorcode,quantity,description,jobnum,identifier)
+//		values
+//		('$username','$vendorcode','$quantity','$description','$jobnum','$desktop_cookie')";
+
+
+if ($supplies_id!="") {
+	$supplies_id=addslashes($supplies_id);
+	$query_start="update";
+	$query_end="where supplies_id = '$supplies_id'";
+	} else {
+	$query_start="insert into";
+	$query_end="";
+	}
+$query="$query_start supplies set
+username = '$global_user->display_name',
+contacts_id = '$contacts_id',
+vendorcode = '$vendorcode',
+quantity = '$quantity',
+description = '$description',
+jobnum = '$jobnum'
+$query_end
+";
+
+
+
+$result=@mysql_query($query);
+if (!($result)) {
+	echo "Error Adding record. Please try again.";
+	exit;
+	}
+include("main.phtml");
+
+
+
+
+
+
+?>

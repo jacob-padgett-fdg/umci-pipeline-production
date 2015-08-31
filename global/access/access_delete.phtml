@@ -1,0 +1,30 @@
+<?
+require('querylib.inc');
+
+if ($adminuser){
+if ($access_id=="") {
+
+	echo "Error: I need and ID to know what to do!!!! Please contact your
+		system administrator if you don't think this message is your fault, so
+		that he or she can tell you why it is.<p><a href=$pagemane><font color=blue>
+		Main Menu</font></a>";
+		exit;
+	}
+
+$access_id=escapeshellcmd($access_id);
+$query="delete from access where access_id = '$access_id'";
+
+$result=@mysql_query($query);
+
+} else {
+die("only those with \"admin\" access can delete things.. which is strange since you clearly have the ability to modify your own access levels from this application.");
+}
+forward('main');
+
+
+
+
+
+
+
+?>

@@ -1,0 +1,26 @@
+<?
+
+$tech=$global_user_id;
+$server_id=addslashes($server_id);
+$server_info=getone("select * from access_servers where server_id = '$server_id'");
+$service_id=addslashes($service_id);
+$description=addslashes($description);
+
+
+$query="insert into access_servers_log set
+server_id = '$server_info->server_id',
+tech = '$tech',
+service_type_id = '$service_type_id',
+entry_date = now(),
+description = '$description'
+";
+//echo "<hr>$query<hr>$return_mode";
+
+
+$res=@mysql_query($query);
+
+if (!($res)) die("Update error! Please contact your system administrator. Failed query:<hr>$query");
+forward("$return_mode&server_id=$server_id");
+
+
+?>

@@ -1,0 +1,26 @@
+<?
+$type="proposal_comments";
+$userid=escapeshellcmd($return_to_contact);
+$bidlist_id=escapeshellcmd($bidlist_id);
+require('header.phtml');
+
+echo "<form name=new_comment method=post action=$pagename>
+<input type=hidden name=mode value=proposal_edit_add_comment_wizard_submit>
+<input type=hidden name=userid value=\"$userid\">
+<input type=hidden name=bidlist_id value=\"$bidlist_id\">
+Please enter the comment you'd like to add:<br>
+<textarea name=comment rows=5 cols=40></textarea>
+<input type=submit value=Save>
+</form>
+";
+
+show_bidlist_log($bidlist_id,$type,"Existing Notes");
+
+
+
+
+
+
+
+
+?>

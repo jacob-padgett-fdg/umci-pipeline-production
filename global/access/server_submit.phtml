@@ -1,0 +1,70 @@
+<?
+if ($server_id!="") {
+	$server_id=addslashes($server_id);
+	$query_start="update access_servers set ";
+	$query_end=" where server_id = '$server_id'";
+	} else {
+	$query_start="insert into access_servers set ";
+	$query_end="";
+	}
+
+$name=addslashes($name);
+$name_description=addslashes($name_description);
+$description=addslashes($description);
+$admin_account=addslashes($admin_account);
+$admin_password=addslashes($admin_password);
+$os_id=addslashes($os_id);
+$ip_addr=addslashes($ip_addr);
+$ip_mask=addslashes($ip_mask);
+$reliable_storage=checkfix($reliable_storage);
+$storage_capacity=addslashes($storage_capacity);
+$remote_admin_method=addslashes($remote_admin_method);
+$backup_style_id=addslashes($backup_style_id);
+$backup_empty_ok=checkfix($backup_empty_ok);
+$backup_notes=addslashes($backup_notes);
+$in_production=checkfix($in_production);
+$active=checkfix($active);
+$job_site_server=checkfix($job_site_server);
+$vpn_ip=addslashes($vpn_ip);
+$vpn_username=addslashes($vpn_username);
+$vpn_password=addslashes($vpn_password);
+$remote_network=addslashes($remote_network);
+$job_site_notes=addslashes($job_site_notes);
+$service_pack=clean_int($service_pack);
+
+$query_middle="
+name = '$name',
+name_description = '$name_description',
+description = '$description',
+admin_account = '$admin_account',
+admin_password = '$admin_password',
+os_id = '$os_id',
+service_pack = '$service_pack',
+ip_addr = '$ip_addr',
+ip_mask = '$ip_mask',
+reliable_storage = '$reliable_storage',
+storage_capacity = '$storage_capacity',
+remote_admin_method = '$remote_admin_method',
+backup_style_id = '$backup_style_id',
+backup_empty_ok = '$backup_empty_ok',
+backup_notes = '$backup_notes',
+in_production = '$in_production',
+active = '$active',
+job_site_server = '$job_site_server',
+vpn_ip = '$vpn_ip',
+vpn_username = '$vpn_username',
+vpn_password = '$vpn_password',
+remote_network = '$remote_network',
+job_site_notes = '$job_site_notes'
+";
+
+$query_full=$query_start . $query_middle . $query_end;
+$res=@mysql_query($query_full);
+if (!($res)) {
+	die("Update failed: <hr>$query_full<hr>Contact your system administrator");
+	}
+if ($server_id < 1) {
+	$server_id=@mysql_insert_id();
+	}
+forward("server_edit&server_id=$server_id");
+?>

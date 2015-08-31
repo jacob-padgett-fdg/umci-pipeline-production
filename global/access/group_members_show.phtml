@@ -1,0 +1,30 @@
+<?
+
+$query="select * from access_servers_group_members 
+left join contacts on (access_servers_group_members.user_id = contacts.contacts_id)
+where server_id = '$server_id' and group_name = '$group_name' order by first_name, last_name, alphasort";
+
+require('header.phtml');
+echo "
+<a href=javascript:self.close()><font color=blue>Close</font></a>
+
+<center><table border=0 cellspacing=0 cellpadding=1>";
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><form name=form$row->contacts_id><td>";
+	contactsbox("select * from contacts where contacts_id = '$row->contacts_id'", $row->contacts_id,"foo","",0);
+	//contact_view("","$row->contacts_id");
+	echo "</td></form></tr>";
+	}
+echo "</table>";
+//tabledump($query);
+
+
+
+
+
+
+
+
+
+?>

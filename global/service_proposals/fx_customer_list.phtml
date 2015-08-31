@@ -1,0 +1,35 @@
+<?
+mssql_connect("gelf","lister","smeg");
+mssql_select_db("FX_FxServiceCenter");
+require_once('viewpoint_libs.inc');
+
+
+$query="select * from vewRptCstMailingListV4 where (CustomerStatusDesc = 'Active') order by cstNum";
+//ms_tabledump("select top 10 * from 
+//vewRptCstMailingListV4 where (CustomerStatusDesc = 'Active')");
+//ms_tabledump($query);
+custom_csvdump($query);
+
+//ms_tabledump("select 1");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

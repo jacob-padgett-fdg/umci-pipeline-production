@@ -1,0 +1,24 @@
+<?
+$userid=escapeshellcmd($userid);
+$bidlist_id=escapeshellcmd($bidlist_id);
+$comment=escapeshellcmd($comment);
+
+$query="insert into bidlist_log set
+bidlist_id = '$bidlist_id',
+type = 'proposal_comments',
+created = now(),
+creator = '$global_user_id',
+comment = '$comment'
+";
+
+//echo "<hr>$query<hr>";exit;
+//echo "<hr>reports_output_6b&contacts_id=$userid<hr>";
+
+
+@mysql_query($query);
+forward("reports_output_6b&contacts_id=$userid<");
+
+
+
+
+?>

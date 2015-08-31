@@ -1,0 +1,25 @@
+<?
+$bidlist_results_id=escapeshellcmd($bidlist_results_id);
+$bidres_info=getone("select * from bidlist_results where bidlist_results_id = '$bidlist_results_id'");
+
+if ($bidres_info->winning_bid=='N')
+	@mysql_query("update bidlist_results set winning_bid = 'Y' where bidlist_results_id = '$bidlist_results_id'");
+else
+	@mysql_query("update bidlist_results set winning_bid = 'N' where bidlist_results_id = '$bidlist_results_id'");
+
+flush();
+echo "
+<script>
+";
+
+if ($bidres_info->winning_bid=='N') echo "opener.document.bidlist_edit.awarded[0].checked=true;";
+percent_off_calc($bidres_info->bidlist_id);
+
+echo "
+opener.apply_changes();
+self.close();
+</script>
+";
+flush();
+
+?>

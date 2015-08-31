@@ -1,0 +1,24 @@
+<?
+require('header.phtml');
+echo "<h2><center>Backup Summary Information</center></h2><hr>
+
+
+<a href=$pagename?mode=main><font color=blue>Back to main</font></a><p>
+
+<a href=$pagename?mode=servers_backups_graph_list><font color=blue>
+All Servers Seperately w/ History
+</font></a><p>
+
+<img src=$pagename?mode=graph_bu_size_numbered><img src=$pagename?mode=graph_bu_size_weekly><br>
+<img src=$pagename?mode=graph_bu_history_accumulated><br>
+<img src=$pagename?mode=graph_bu_size_today_pie><br>
+
+
+
+
+";
+
+
+
+
+?>

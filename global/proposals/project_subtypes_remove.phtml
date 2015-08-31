@@ -1,0 +1,10 @@
+<?
+$bidlist_id=addslashes($bidlist_id);
+$project_subtype_id=addslashes($project_subtype_id);
+$query="delete from bidlist_bid_projsubtypes where project_subtype_id = '$project_subtype_id' and bidlist_id = '$bidlist_id'";
+@mysql_query($query);
+forward("project_subtypes_edit&bidlist_id=$bidlist_id");
+
+
+
+?>

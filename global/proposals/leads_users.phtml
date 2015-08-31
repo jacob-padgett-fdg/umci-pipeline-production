@@ -1,0 +1,43 @@
+<?
+if (!($adminuser)) die_security();
+$res=@mysql_query("select * from bidlist_leads_users left join contacts using (contacts_id) order by alphasort");
+
+echo "
+<a href=$pagename?mode=main_bidlist><font color=blue>Return to bidlist tab</font></a><p>
+<b>Leads Interface Users</b><hr>
+
+<table border=0>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+		<b>$row->display_name</b>
+	</td><td>
+		
+	</td><td>
+		<a href=$pagename?mode=leads_users_delete&contacts_id=$row->contacts_id><i><font color=blue>Delete</font></i></a>
+	</td></tr>
+			
+	";
+	}
+echo "</table>
+
+<script>
+function apply_changes() {
+	document.blah_blah.submit();
+	}
+</script>
+
+<p>
+<b>Add:</b>
+<form name=blah_blah method=post action=$pagename>
+<input type=hidden name=mode value=leads_users_add>
+";contactsbox("select * from contacts where umc_emp = 'Y'","","contacts_id","opener.apply_changes()");echo "
+</form>
+
+";
+
+
+
+
+?>

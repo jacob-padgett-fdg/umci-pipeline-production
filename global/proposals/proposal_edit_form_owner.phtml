@@ -1,0 +1,89 @@
+<?
+	$owner_info=getoneb("select * from contacts where contacts_id = '$bid_info->owner'");
+	if (($owner_info->address_city=="")||($owner_info->address_state=="")) $addr_sep="";
+	else $addr_sep=", ";
+	if ($owner_info->address_zip!="") $owner_info->address_zip=" $owner_info->address_zip";
+	if ($owner_info->address_1!="") $owner_info->address_1="<br>$owner_info->address_1";
+
+echo"
+<script>
+function owncontacts () {
+	open('$pagename?mode=contacts&contacts_mode=owners&selected_contact=$owner_info->contacts_id','owner_contacts_win','width=500,height=500');
+	}
+function owncontactsedit () {
+	open('$pagename?mode=contacts_edit&contacts_id=$owner_info->contacts_id','owner_contacts_win','width=500,height=500');
+	}
+function owncontactadd () {
+	open('$pagename?mode=company_contacts&company_id=$bid_info->owner','owner_company_contacts_win','width=500,height=500');
+	}
+function owncontactedit () {
+	open('$pagename?mode=company_contacts_edit&company_id=$bid_info->owner&contacts_id=$bid_info->owner_contact_id','owner_company_contacts_win','width=500,height=500');
+	}
+function consultantcontacts () {
+	open('$pagename?mode=contacts&contacts_mode=consultant','consultant_contacts_win','width=500,height=500');
+	}
+function bidtoowner () {
+	open('$pagename?mode=bidtoowner&bidlist_id=$bid_info->bidlist_id','bid_to_owner_win','width=500,height=500');
+	}
+function drink_the_bottle () {
+	open('$pagename?mode=eatme_drinkme','eatme_drinkme','width=500,height=500');
+	}
+function eat_the_cake () {
+	open('$pagename?mode=eatme_drinkme','eatme_drinkme','width=500,height=500');
+	}
+
+
+</script>
+	<input type=hidden name=proposal_form_owner value=true>
+	<table border=1 cellpadding=0 cellspacing=0 width=100% class=\"tableobj\">
+	<tr><td>
+	<table border=0 cellspacing=0 cellpadding=3 width=100%>
+		
+		<tr><th colspan=5 style=\"background-color: $table_dark;\">
+			<b>Project Team</b>
+		</th></tr>
+		
+		<tr valign=bottom><td>
+			<b><font color=red>Owner:&nbsp;</font></b>
+		</td><td>";
+			contactsbox("select * from contacts where owner = 'Y' and current = 'Y'",$bid_info->owner,"owner","opener.apply_changes();");echo"
+		</td><td>";
+			if ($bid_info->owner >= 1) echo "Owner&nbsp;Contact:&nbsp;";echo "
+		</td><td>";
+			$owner_contact_info=getoneb("select * from contacts where contacts_id = '$bid_info->owner_contact_id'");
+			if ($bid_info->owner!=$owner_contact_info->company_id) $bid_info->owner_contact_id=0;
+			if ($bid_info->owner >= 1) contactsbox("select * from contacts where company_id = '$bid_info->owner' and contact_type = 'contact'",$bid_info->owner_contact_id,"owner_contact_id","");echo "
+		</td><td  rowspan=4 valign=top align=center width=100%>
+			<table border=1 cellspacing=0 cellpadding=0><tr><td align=center>
+			<textarea name=site_address rows=2 cols=25>$bid_info->site_address</textarea>
+			<br><b style=\"color: black;\">Site Address</b></td></tr></table>
+		</td></tr>
+
+
+			<tr><td>
+				Architect:&nbsp;
+			</td><td>";
+				contactsbox("select * from contacts where consultant = 'Y' and current = 'Y'",$bid_info->architect,"architect");echo "
+			</td><td>
+				Mech&nbsp;Eng:&nbsp;
+			</td><td>";
+				contactsbox("select * from contacts where consultant = 'Y' and current = 'Y'",$bid_info->mech_eng,"mech_eng");echo "
+			</td></tr>
+			
+			
+			<tr><td>
+				Struct&nbsp;Eng:&nbsp;
+			</td><td>";
+				contactsbox("select * from contacts where consultant = 'Y' and current = 'Y'",$bid_info->struct_eng,"struct_eng");echo "
+			</td></tr>
+			
+			";
+			include("proposal_edit_form_bidding_to.phtml");
+			//echo"</td></tr>";
+		
+	echo "
+	</td></tr>
+	</table>
+";
+?>
+

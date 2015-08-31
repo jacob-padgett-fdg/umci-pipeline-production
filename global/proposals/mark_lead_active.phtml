@@ -1,0 +1,21 @@
+<?
+$bid_info=load_proposal_info(escapeshellcmd(escapeshellcmd($bidlist_id)));
+$proposal_num=proposal_num_new(date('Y'));
+
+
+if ($bid_info->proposal_num > 1) die("ERROR: Proposal number might already be set. This is an invalid state. Please contact Jeff immediately to straighten this out (don't worry, it's not a big deal, but this never should have happened).");
+
+
+$query="update bidlist set status = 'Active',proposal_num = '$proposal_num' where bidlist_id = '$bid_info->bidlist_id'";
+
+
+@mysql_query($query);
+
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+?>

@@ -1,0 +1,194 @@
+<?
+//require_once('querylib.inc');
+echo "
+<html><head><title>Service proposals search page</title></head><body bgcolor=#ffffff>
+<a href=$pagename?mode=proposal_lists><font color=blue>Return to proposal lists</font></a><br>
+";
+if ($last_svc_prop_query!="") echo "<a href=$pagename?mode=proposals_last_search><font color=blue>Repeat last search</font></a> <i>(this session only)</i><br>";
+echo "
+<center><h2>Enter your search parameters</h2></center>
+<hr>
+
+<form name=sp_search action=$pagename method=post>
+<input type=hidden name=mode value=proposals_search_submit>
+<table border=0>
+<tr><td>
+	Sales Person
+</td><td>
+	";dropbox("select contacts.contacts_id as sales_person,last_name,', ',first_name from contacts,access where access.contacts_id = contacts.contacts_id and application_name = 'service_proposals' order by last_name,first_name","","","",1);echo"
+</td></tr>
+
+<tr><td>
+	Proposal Date
+</td><td>
+	<input type=text size=10 name=proposal_date>
+</td><td>
+	<input type=radio name=proposal_date_mod value='=' checked>=
+	<input type=radio name=proposal_date_mod value='>'>&gt;
+	<input type=radio name=proposal_date_mod value='<'>&lt;
+</td></tr>
+
+<tr><td>
+	Customer
+</td><td>
+	";dropbox("select customer,customer as custname from svc_proposals group by customer order by customer","","","",1);echo"
+</td></tr>
+
+<tr><td>
+	Description Text
+</td><td>
+	<input type=text name=description>
+</td></tr>
+
+<tr><td>
+	Type
+</td><td>
+	";dropbox("select type,type as proptype from svc_proposals group by type order by type","","","",1);echo"
+</td></tr>
+
+<tr><td>
+	Sales Amount
+</td><td>
+	<input type=text size=10 name=proposal_amount>
+</td><td>
+	<input type=radio name=proposal_amount_mod value='>=' checked>&gt;
+	<input type=radio name=proposal_amount_mod value='<='>&lt;
+</td></tr>
+
+<tr><td>
+	Projected bill month
+</td><td>
+	<input type=text size=8 name=projected_bill_date>
+</td><td>
+	<input type=radio name=projected_bill_date_mod value='=' checked>=
+	<input type=radio name=projected_bill_date_mod value='>=' checked>&gt;=
+	<input type=radio name=projected_bill_date_mod value='<=' checked>&lt;=
+</td></tr>
+
+<tr><td>
+	Probablility of close
+</td><td>
+	<select name=probability>
+	<option>
+	<option>0
+	<option>25
+	<option>50
+	<option>75
+	<option>100
+	</select>
+</td><td>
+	<input type=radio name=probability_mod value='=' checked>=
+	<input type=radio name=probability_mod value='>='>&gt;=
+	<input type=radio name=probability_mod value='<='>&lt;=
+</td></tr>
+
+<tr><td>
+	Estimated Hours
+</td><td>
+	<input type=text size=8 name=estimated_hours>
+</td><td>
+	<input type=radio name=estimated_hours_mod value='=' checked>=
+	<input type=radio name=estimated_hours_mod value='>='>&gt;=
+	<input type=radio name=estimated_hours_mod value='<='>&lt;=
+</td></tr>
+
+<tr><td>
+	Estimated Margin
+</td><td>
+	<input type=text size=4 name=estimated_margin_percent>
+</td><td>
+	<input type=radio name=estimated_margin_percent_mod value='=' checked>=
+	<input type=radio name=estimated_margin_percent_mod value='>='>&gt;=
+	<input type=radio name=estimated_margin_percent_mod value='<='>&lt;=
+</td></tr>
+
+<tr><td>
+	Status
+</td><td>
+	";dropbox("select status,status as statustext from svc_proposals group by status order by status","","","",1);echo"
+</td></tr>
+
+<tr><td>
+	Work Order #
+</td><td>
+	<input type=text name=workorder_num>
+</td><td>
+	<input type=radio name=workorder_num_mod value='=' checked>=
+	<input type=radio name=workorder_num_mod value='>='>&gt;=
+	<input type=radio name=workorder_num_mod value='<='>&lt;=
+</td></tr>
+
+<tr><td>
+	Competition
+</td><td>
+	";dropbox("select beaten_by,beaten_by as competition from svc_proposals group by beaten_by order by beaten_by","","","",1);echo"
+</td></tr>
+
+<tr><td>
+	<b>Sort by:</b>
+</td><td>
+	<select name=order_by_1>
+	<option>
+	<option value='last_name,first_name'>Sales Person
+	<option value='proposal_date'>Proposal Date
+	<option value='customer'>Customer
+	<option value='description'>Description Text
+	<option value='type'>Type
+	<option value='proposal_amount'>Sales Amount
+	<option value='projected_bill_date'>Projected Bill Month
+	<option value='probability'>Probability of Close
+	<option value='estimated_hours'>Estimated Hours
+	<option value='status'>Status
+	<option value='workorder_num'>Work Order Number
+	<option value='beaten_by'>Competition
+	<option value='last_modified'>Recent Activity
+	</select>
+</td><td>
+	<input type=radio name=order_by_mod_1 value='' checked>Forward
+	<input type=radio name=order_by_mod_1 value='desc'>Reverse
+</td></tr>	
+
+<tr><td>
+	<b>..then by:</b>
+</td><td>
+	<select name=order_by_2>
+	<option>
+	<option value='last_name,first_name'>Sales Person
+	<option value='proposal_date'>Proposal Date
+	<option value='customer'>Customer
+	<option value='description'>Description Text
+	<option value='type'>Type
+	<option value='proposal_amount'>Sales Amount
+	<option value='projected_bill_date'>Projected Bill Month
+	<option value='probability'>Probability of Close
+	<option value='estimated_hours'>Estimated Hours
+	<option value='status'>Status
+	<option value='workorder_num'>Work Order Number
+	<option value='beaten_by'>Competition
+	<option value='last_modified'>Recent Activity
+	</select>
+</td><td>
+	<input type=radio name=order_by_mod_2 value='' checked>Forward
+	<input type=radio name=order_by_mod_2 value='desc'>Reverse
+</td></tr>	
+
+<tr><td colspan=3 align=right>
+	<input type=submit value=Search>
+</td></tr>
+
+
+
+</form>
+
+";
+
+
+
+
+
+
+
+
+
+
+?>

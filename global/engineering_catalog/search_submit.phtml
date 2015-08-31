@@ -1,0 +1,37 @@
+<?
+require('querylib.inc');
+require('header.phtml');
+
+$variables=array(
+	"name",
+	"mfg_name",
+	"rep_company",
+	"rep_contact",
+	"rep_other_contacts",
+	"rep_address",
+	"rep_address2",
+	"rep_city",
+	"rep_state",
+	"rep_zip");
+$basequery="select product_id,name as 'Product Name',mfg_name as 'Manufacturer', rep_company as 'Rep Company' from engineering_products where 1 = 1 ";
+$basequery_group_by=" ";
+$basequery_order_by="";
+$basequery_alt_order_by=" name";
+
+require('generic_search.phtml');
+
+
+echo "<form name=search_res method=post action=$pagename>
+<input type=hidden name=mode value=product_edit>
+<a href=$pagename?mode=search><font color=blue>Return to search</font></a><br>
+<h3>Search Results</h3><hr>
+";
+
+clicktable($basequery,"#444444",1);
+
+
+echo "</form>";
+
+
+
+?>

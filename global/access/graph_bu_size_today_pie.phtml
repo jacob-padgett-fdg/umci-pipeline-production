@@ -1,0 +1,73 @@
+<?php
+include ("graph1/jpgraph.php");
+//include ("graph1/jpgraph_line.php");
+include "graph1/jpgraph_pie.php";
+include "graph1/jpgraph_pie3d.php";
+
+
+
+
+$date_info=getoneb("select * from access_servers_backup_logs group by logdate order by logdate desc limit 1");
+$res=@mysql_query("select * from access_servers_backup_logs where logdate = '$date_info->logdate' order by backup_megs");
+
+$data=array();
+$text=array();
+//$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$server_info=getoneb("select * from access_servers where server_id = '$row->server_id'");
+	array_push($data,$row->backup_megs);
+	array_push($text,$server_info->name);
+	}
+
+$graph = new PieGraph(1200,1000,"auto");	
+$graph->SetShadow();
+$graph->title->Set("Data Distribution for $date_info->logdate"); 
+$p1 = new PiePlot3D($data); 
+//$p1-> SetGuideLines( true,true);
+$p1->SetLegends($text);
+$graph->legend->Pos(0.05,0.7,"right","center");
+$graph->img->SetMargin(200,50,50,50);
+$graph->Add( $p1);
+$graph->Stroke();
+
+
+
+
+exit;
+
+$graph->SetScale("intlin",0,($max * 1.1),0,sizeof($ydata));
+$graph->SetMarginColor("$umc_standard_blue");
+
+// Create the linear plots
+$lineplot=new LinePlot($ydata);
+$lineplot->SetColor("red");
+$lineplot->SetWeight(3);
+$lineplot->SetLegend("Backup Space Used");
+
+if ($bu_style_info->name!='Exchange') {
+	$lineplot2=new LinePlot($ydata2);
+	$lineplot2->SetColor("darkgreen");
+	$lineplot2->SetWeight(3);
+	$lineplot2->SetLegend("Server Space Used");
+	}
+
+$graph->legend->Pos(0.05,0.85,"right","center");
+$graph->xaxis->SetTickLabels($textx);
+$graph->xaxis->SetLabelAngle(90);
+$graph->xaxis->scale->ticks->Set(7,1);
+
+// Add the plot to the graph
+$graph->Add($lineplot);
+if ($bu_style_info->name!='Exchange') $graph->Add($lineplot2);
+//$graph->Add($lineplot2);
+
+$graph->img->SetMargin(80,65,30,65);
+$graph->title->Set("Backup Data: $server_info->name");
+//$graph->xaxis->title->Set("Time");
+$graph->xaxis->SetPos("min");
+$graph->yaxis->title->Set("Megabytes");
+$graph->yaxis->SetTitleMargin(60);
+
+// Display the graph
+$graph->Stroke();
+?>

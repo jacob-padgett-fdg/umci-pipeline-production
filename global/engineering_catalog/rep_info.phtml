@@ -1,0 +1,106 @@
+<?
+$product_id=escapeshellcmd($record_id);
+require('header.phtml');
+require('querylib.inc');
+$rep_info=getone("select * from engineering_products where product_id = '$product_id'");
+
+
+echo "
+<a href=$pagename?mode=list_by_rep><font color=blue>Return to Rep list</font></a><br>
+<h2>$rep_info->rep_company</h2><hr>
+<form name=rep_form method=post action=$pagename>
+<table border=0>
+
+<tr><td>
+	Rep Company
+</td><td>
+	<input type=text size=30 name=rep_company value=\"$rep_info->rep_company\">
+	<input type=button value=Apply onclick=apply_change('rep_company',document.rep_form.rep_company.value)>
+</td></tr>
+
+<tr><td>
+	Rep Contact
+</td><td>
+	<input type=text size=30 name=rep_contact value=\"$rep_info->rep_contact\">
+	<input type=button value=Apply onclick=apply_change('rep_contact',document.rep_form.rep_contact.value)>
+</td></tr>
+
+<tr><td valign=top>
+	Rep Other Contacts
+</td><td valign=top>
+	<textarea cols=28 rows=2 name=rep_other_contacts>$rep_info->rep_other_contacts</textarea>
+	<input type=button valign=top align=top value=Apply onclick=apply_change('rep_other_contacts',document.rep_form.rep_other_contacts.value)>
+</td></tr>
+
+<tr><td>
+	Rep Address
+</td><td>
+	<input type=text size=30 name=rep_address value=\"$rep_info->rep_address\">
+	<input type=button value=Apply onclick=apply_change('rep_address',document.rep_form.rep_address.value)>
+</td></tr>
+
+<tr><td>
+	Rep Address (cont.)
+</td><td>
+	<input type=text size=30 name=rep_address2 value=\"$rep_info->rep_address2\">
+	<input type=button value=Apply onclick=apply_change('rep_address2',document.rep_form.rep_address2.value)>
+</td></tr>
+
+<tr><td>
+	Rep City
+</td><td>
+	<input type=text size=30 name=rep_city value=\"$rep_info->rep_city\">
+	<input type=button value=Apply onclick=apply_change('rep_city',document.rep_form.rep_city.value)>
+</td></tr>
+
+<tr><td>
+	Rep State
+</td><td>
+	<input type=text size=3 name=rep_state value=\"$rep_info->rep_state\">
+	<input type=button value=Apply onclick=apply_change('rep_state',document.rep_form.rep_state.value)>
+</td></tr>
+
+<tr><td>
+	Rep Zip
+</td><td>
+	<input type=text size=10 name=rep_zip value=\"$rep_info->rep_zip\">
+	<input type=button value=Apply onclick=apply_change('rep_zip',document.rep_form.rep_zip.value)>
+</td></tr>
+
+<tr><td>
+	Rep Phone
+</td><td>
+	<input type=text size=30 name=rep_phone value=\"$rep_info->rep_phone\">
+	<input type=button value=Apply onclick=apply_change('rep_phone',document.rep_form.rep_phone.value)>
+</td></tr>
+
+<tr><td>
+	Rep Fax
+</td><td>
+	<input type=text size=30 name=rep_fax value=\"$rep_info->rep_fax\">
+	<input type=button value=Apply onclick=apply_change('rep_fax',document.rep_form.rep_fax.value)>
+</td></tr>
+
+<tr><td>
+	Rep URL
+</td><td>
+	<input type=text size=30 name=rep_url value=\"$rep_info->rep_url\">
+	<input type=button value=Apply onclick=apply_change('rep_url',document.rep_form.rep_url.value)>
+</td></tr>
+
+</table>
+</form>
+
+<a href=$pagename?mode=list_rep_products&record_id=$product_id><font color=blue>Show All $rep_info->rep_company Products</font></a>
+<script>
+function apply_change(field,value) {
+	if(confirm('This will change all records for this rep.'))
+	 open('$pagename?mode=rep_update&record_id=$rep_info->product_id&field=' + field + '&value=' + value,'rep_modify_win','width=500,height=400,scrollbars=yes,location=yes' )
+	}
+
+</script>
+
+";
+
+
+?>

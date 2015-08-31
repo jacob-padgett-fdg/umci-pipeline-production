@@ -1,0 +1,97 @@
+<?
+if ($jobinfo_id!="") {
+	if ($jobinfo_id=="Y") {
+		$jobinfo_id="0";
+		$jobinfo_id_radio=">";
+		}
+	
+	if ($jobinfo_id=="N") {
+		$jobinfo_id="0";
+		$jobinfo_id_radio="<=";
+		}
+	}
+
+if (($bid_date!="") || ($bid_date_range_end!="")) {
+	if ($bid_date=="") $bid_date="01-01-0001";
+	if ($bid_date_range_end=="") $bid_date_range_end="12-31-2999";
+	}
+
+$join_results="false";
+$join_bidding_to="false";
+if ("$company">1) $join_results="true";
+if ("$bid_amount"!="") $join_results="true";
+if ("$winning_bid"!="") $join_results="true";
+
+if ("$general_id">1) $join_bidding_to="true";
+if ("$low_bid"!="") $join_bidding_to="true";
+
+$basequery="select bidlist.bidlist_id as bidlist_id from bidlist 
+left join bidlist_bid_projtypes using (bidlist_id) 
+left join bidlist_bidding_to using (bidlist_id)
+left join bidlist_results using (bidlist_id)
+where 1 = 1 ";
+
+
+if ($to_all_selection >= 1) {
+	$to_all_selection=escapeshellcmd($to_all_selection);
+	$basequery=$basequery . " and ( to_lead = '$to_all_selection' or to_plm = '$to_all_selection' or to_htg = '$to_all_selection' or to_metal = '$to_all_selection' or to_proc = '$to_all_selection' or to_prop = '$to_all_selection' ) ";
+	}
+
+$basequery_group_by=" group by bidlist.bidlist_id ";
+$basequery_order_by="";
+$basequery_alt_order_by=" proposal_num";
+
+if ((count($status)==1)&&($status[0]=="")) {
+	$status=array( "0" => "Active", "1" => "Almost Complete", "2" => "Completed");
+	//$status[]="Active";
+	//$status[]="Almost Complete";
+	//$status[]="Completed";
+	//echo "foo";
+	}
+
+$variables=array(
+	"proposal_num",
+	"status",
+	"creator",
+	"display_in_bidlist",
+	"umcgroups_id",
+	"proposal_type",
+	"project_sponsor",
+	"project",
+	"location",
+	"contract_type",
+	"bid_date",
+	"project_type_id",
+	"design_process",
+	"owner",
+	"architect",
+	"jobinfo_id",
+	"company",
+	"bid_amount",
+	"winning_bid",
+	"general_id",
+	"low_bid",
+	"to_lead",
+	"to_plm",
+	"to_htg",
+	"to_metal",
+	"to_proc",
+	"to_prop",
+	"to_gct",
+	"awarded",
+	"reprographics_company_id"
+	);
+
+require('generic_search2.phtml');
+
+session_register("last_search_query");
+
+$last_search_query=$basequery;
+if ($search_output_mode!="") {
+	session_register("last_search_output_mode");
+	$last_search_output_mode=$search_output_mode;
+	}
+
+require('proposal_search_execute.phtml');
+
+?>

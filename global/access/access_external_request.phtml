@@ -1,0 +1,49 @@
+<?
+require("querylib.inc");
+
+if (($contacts_id=="")
+	||($application_name_set=="")
+	||($rightsmode=="")
+	||($type=="")
+	||($action=="")
+	) die ("Error: Missing required information!!!!! (must send: contacts_id, application_name_set, rightsmode, type and action)");
+
+$contacts_id=escapeshellcmd($contacts_id);
+$application_name_set=escapeshellcmd($application_name_set);
+$rightsmode=escapeshellcmd($rightsmode);
+$type=escapeshellcmd($type);
+$action=escapeshellcmd($action);
+
+if (getoneb("select * from access where contacts_id = '$contacts_id' and application_name = '$application_name_set' and (rightsmode != '$rightsmode' or type = 'admin')")) {
+	echo "Error: Access information already exists, or admin access set!?!?! (specifically denied or granted already??) Please contact your network administrator";
+	exit;
+	}
+
+if ($action=="add")
+	$query="insert into access 
+		(application_name, contacts_id, type, rightsmode)
+		values
+		('$application_name_set','$contacts_id','$type','$rightsmode')";
+if ($action=="delete")
+	$query="delete from access where contacts_id = '$contacts_id'
+		and application_name = '$application_name_set'
+		and rightsmode = '$rightsmode'";
+
+if (($action!="add") && ($action!="delete")) die ("Invalid action! Cannot continue!");
+
+$res=@mysql_query($query);
+if (!($res)) {
+	echo "Error: Query failed... Go back to the drawing Board";
+	exit;
+	} else {
+	echo "
+	<script>
+		opener.document.location.reload();
+		self.close();
+	</script>
+	";
+	exit;
+	}
+
+echo "WTF!?!?!? I shouldn't be here!";
+?>

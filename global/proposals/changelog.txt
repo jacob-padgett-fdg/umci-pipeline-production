@@ -1,0 +1,881 @@
+
+----------------------------------------------------------------------------
+Tue Jul 22 15:52:23 PDT 2003
+bidlist-0.13
+----------------------------------------------------------------------------
+Add won/lost/unknown option
+Add another table to record with history of everyone elses bids
+Add won/lost/unknown statitics/summary at the bottom
+
+
+
+----------------------------------------------------------------------------
+Thu Jul 24 18:12:28 PDT 2003
+bidlist-0.14
+----------------------------------------------------------------------------
+
+Added bgcolor tags to prevent strange backgrounds.
+Added delete option to bidlist_results table entries.
+Hid calculated percentages for won/lost/unknown
+     (Ed does not like them, so invisible ink was used)
+
+
+
+----------------------------------------------------------------------------
+Wed Nov 26 14:21:39 PST 2003
+bidlist-0.15
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Wed Nov 26 18:30:55 PST 2003
+bidlist-0.16
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Dec  1 16:20:45 PST 2003
+bidlist-0.17
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Dec  1 17:33:28 PST 2003
+bidlist-0.18
+----------------------------------------------------------------------------
+modify bidlist_results table and data to be lookup based.. working towards a full proposal/bidlist db
+
+
+----------------------------------------------------------------------------
+Mon Dec  1 18:19:11 PST 2003
+bidlist-0.19
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Thu Dec  4 13:20:04 PST 2003
+proposals-0.2
+----------------------------------------------------------------------------
+initial conversion from bidlist with compatibility tweaks
+
+
+----------------------------------------------------------------------------
+Wed Dec 10 10:58:01 PST 2003
+proposals-0.3
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Thu Dec 11 14:04:35 PST 2003
+proposals-0.4
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Fri Dec 19 16:51:14 PST 2003
+proposals-0.5
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Wed Dec 31 11:56:31 PST 2003
+proposals-0.6
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Fri Jan  2 08:31:10 PST 2004
+proposals-0.7
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Fri Jan  2 09:18:21 PST 2004
+proposals-0.8
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Fri Jan  2 09:19:15 PST 2004
+proposals-0.9
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Jan  5 14:47:08 PST 2004
+proposals-0.10
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Jan  5 18:12:59 PST 2004
+proposals-0.11
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Wed Jan  7 16:04:49 PST 2004
+proposals-0.14
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Wed Jan  7 18:22:01 PST 2004
+proposals-0.15
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Thu Jan  8 15:29:38 PST 2004
+proposals-0.16
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Fri Jan  9 10:45:56 PST 2004
+proposals-0.17
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Fri Jan  9 11:46:27 PST 2004
+proposals-0.18
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Jan 12 12:12:38 PST 2004
+proposals-0.19
+----------------------------------------------------------------------------
+adding UMC Prime GC, and finishing search options
+
+
+----------------------------------------------------------------------------
+Mon Jan 12 18:02:46 PST 2004
+proposals-0.20
+----------------------------------------------------------------------------
+reorganize rom hrs/$, add warning for bid dates in the past when changing, add user notes to bid_results
+
+
+----------------------------------------------------------------------------
+Mon Jan 12 18:17:21 PST 2004
+proposals-0.21
+----------------------------------------------------------------------------
+filter bidlist to remove jobs that have bid results for UMC already in
+
+
+----------------------------------------------------------------------------
+Tue Jan 13 11:41:52 PST 2004
+proposals-0.22
+----------------------------------------------------------------------------
+show items in a persons active list if they're listed in the takeoff assignments or project sponsor
+
+
+----------------------------------------------------------------------------
+Tue Jan 13 17:39:00 PST 2004
+proposals-0.23
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Wed Jan 14 16:26:29 PST 2004
+proposals-0.24
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Wed Jan 14 17:08:45 PST 2004
+proposals-0.25
+----------------------------------------------------------------------------
+..since checkboxen were converted to y/n/m boxen, the check for if completion should be allowed has been broken. Fixed that, and some other problems with the checks that were done originally.
+
+
+----------------------------------------------------------------------------
+Thu Jan 22 17:45:03 PST 2004
+proposals-0.26
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Fri Jan 23 18:13:39 PST 2004
+proposals-0.27
+----------------------------------------------------------------------------
+a number of small tweaks
+
+
+----------------------------------------------------------------------------
+Tue Jan 27 18:05:43 PST 2004
+proposals-0.28
+----------------------------------------------------------------------------
+many cleanups: missing search boxen added, search all to assignments, color
+key for main page, report output changes for special projects etc etc etc...
+
+
+----------------------------------------------------------------------------
+Mon Feb  9 15:39:04 PST 2004
+proposals-0.29
+----------------------------------------------------------------------------
+Tons of changes.. internally, it's barely the same program..
+main change was a caching system on "load_proposal_info" function that
+prevents a lot of re-calculation/re-querying. The speed increase was about
+600-700% at least...
+
+Added a "lead tracking" interface to proposals, and put main sections onto
+seperate tabs to allow you to easily change "modes".. main modes are 
+bidlist,lead tracking, and proposals/bids.. This included adding a number of
+new fields, and a couple of new tables.
+
+Updated the handling of contact information quite a bit.
+
+----------------------------------------------------------------------------
+Fri Feb 13 18:08:31 PST 2004
+proposals-0.30
+----------------------------------------------------------------------------
+Finished migrating search of new project types..  
+
+Cleaned up search queries with left joins.. now only one base search..
+
+Added gct field to estimating assignments..
+
+Fixed project name double quote bug.. side affect: slightly shorter project
+names when using double quotes in them..
+
+Added generic statistics output that can be used in any report as summary..
+
+Added generic statistics function that can do calculations based on any
+query.. can be used for more elaborate reports, but only returns raw data as
+an object..
+
+A number of small clean ups..
+
+
+
+----------------------------------------------------------------------------
+Mon Feb 23 17:46:41 PST 2004
+proposals-0.31
+----------------------------------------------------------------------------
+
+Allow non-maintainers to edit bid results for a record.
+
+Fixed missing scrollbars=yes lines for pop-up windows..
+
+Fixed an error in IE where you get forwarded to the wrong destination
+page after you've added a contact.
+
+
+
+
+----------------------------------------------------------------------------
+Tue Feb 24 11:27:37 PST 2004
+proposals-0.32
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Fri Feb 27 16:32:37 PST 2004
+proposals-0.33
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Mar  1 10:43:34 PST 2004
+proposals-0.34
+----------------------------------------------------------------------------
+A quick fix for bug in report 2 and the fact that reprographics firms searching was stuck 'on'
+
+
+----------------------------------------------------------------------------
+Thu Mar  4 12:01:45 PST 2004
+proposals-0.35
+----------------------------------------------------------------------------
+
+Improved navigation with side menu to allow tracking of the job through to completion when/if needed.
+
+Allow the creation of old jobs for import of old old data...
+
+
+
+
+----------------------------------------------------------------------------
+Thu Mar  4 12:27:03 PST 2004
+proposals-0.36
+----------------------------------------------------------------------------
+
+Fixed missing proposal num on header
+
+
+
+----------------------------------------------------------------------------
+Fri Mar  5 10:50:30 PST 2004
+proposals-0.37
+----------------------------------------------------------------------------
+Show status info in the title bar again
+
+
+----------------------------------------------------------------------------
+Mon Mar  8 10:51:27 PST 2004
+proposals-0.38
+----------------------------------------------------------------------------
+Whoapico main_leads.phtml ! People can't click on things behind the invisible div box with certain browsers. That mean 1/2 of the form was not really accessable..
+
+Fixed lead_edit / proposal_edit conflicts from proposal_list dumps..
+
+Linked in job information window with error checking when heading back to the bid side of life.. If only one bid exists, you go straight back to it, but you're redirected (to a currently missing page) if there are more than one, or no bids attached to that contract_num/jobinfo_id..
+
+
+
+
+----------------------------------------------------------------------------
+Tue Mar  9 14:41:26 PST 2004
+proposals-0.39
+----------------------------------------------------------------------------
+Fixed a few bugs..
+Finished navigation back and from from/to job data and proposal data. Will list options when ambiguous.
+
+Still need to add main menu tab navigation for the job data stuff..
+
+Fixed submit problem with proposal_submit when updating lead data.
+
+
+
+----------------------------------------------------------------------------
+Thu Mar 11 16:59:06 PST 2004
+proposals-0.40
+----------------------------------------------------------------------------
+
+Added the option for an admin to specify old bid year _AND_ proposal number.
+Previously only specifying the year was allowed.
+
+
+----------------------------------------------------------------------------
+Fri Mar 12 17:32:38 PST 2004
+proposals-0.41
+----------------------------------------------------------------------------
+Added 'bidding_to' section to lead tracking.. I guess we know who we'll bid to if there ever is a bid...
+
+
+----------------------------------------------------------------------------
+Wed Mar 17 16:29:24 PST 2004
+proposals-0.42
+----------------------------------------------------------------------------
+Updated bidlist to show generals.
+Filtered recently initiated to not include old (before 2004) in the list..
+
+
+
+----------------------------------------------------------------------------
+Mon Mar 22 11:45:49 PST 2004
+proposals-0.43
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Mar 22 15:51:26 PST 2004
+proposals-0.44
+----------------------------------------------------------------------------
+Put a kludgy fix in to allow IE users to focus on the project name box easily...
+
+
+----------------------------------------------------------------------------
+Tue Mar 23 16:55:05 PST 2004
+proposals-0.45
+----------------------------------------------------------------------------
+Added lead notes field that is not in seperat log, but logs directly to the record, and changed record note log to log only into the mode of the form that you're in.
+
+Also added some background fields needed to make changes for Robin.
+
+Fixed an error in the name of a field in the cache table, and corrected the forms accordingly so that cache updates would work again.
+
+
+
+
+----------------------------------------------------------------------------
+Tue Mar 23 18:16:44 PST 2004
+proposals-0.46
+----------------------------------------------------------------------------
+Tons of changes to which fields are viewable where.. Mostly hiding fields from the lead tracking interface.
+
+
+
+
+----------------------------------------------------------------------------
+Fri Mar 26 17:04:29 PST 2004
+proposals-0.47
+----------------------------------------------------------------------------
+Murdered the radio_box function to allow an NA option for awarded.
+
+Changed the bidding to awarded clicks to allow a yes to be toggled off as well.
+
+Some other junk that I can't even remember anymore.. Too long since the last version update.
+
+
+
+----------------------------------------------------------------------------
+Fri Mar 26 17:39:35 PST 2004
+proposals-0.48
+----------------------------------------------------------------------------
+Fixed text on lead tracking interface.
+
+Added search button (that applies changes) to the sidemenu.
+
+
+
+----------------------------------------------------------------------------
+Wed Mar 31 12:17:16 PST 2004
+proposals-0.49
+----------------------------------------------------------------------------
+Added the status "Dead Lead", and fixed the upcoming projects report (at least partially).
+
+Implimented saved searches, and the ability to recall/return to your last search..
+
+
+
+----------------------------------------------------------------------------
+Wed Mar 31 17:00:05 PST 2004
+proposals-0.50
+----------------------------------------------------------------------------
+Finished the output format 6, to be used with the upcoming projects report
+
+
+----------------------------------------------------------------------------
+Thu Apr  8 15:10:59 PDT 2004
+proposals-0.51
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Mon Apr 19 18:13:44 PDT 2004
+proposals-0.52
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Tue Apr 20 09:22:36 PDT 2004
+proposals-0.53
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Thu Apr 22 12:37:58 PDT 2004
+proposals-0.54
+----------------------------------------------------------------------------
+Fixed some bugs.
+Added some reports.
+Added a jobs tab.
+Modified some other reports to have more options.
+..OK, I'm done with this for now, and going to work on some other things..
+
+
+
+
+----------------------------------------------------------------------------
+Tue May 11 16:37:36 PDT 2004
+proposals-0.55
+----------------------------------------------------------------------------
+Removed (disabled) old bidlist notification system.
+
+Added new, simplified system to decide when bidlist notifications should go out.
+
+Revised, and re-included the interface to modify who gets notifications.
+
+Modified calendar link for bid_date to show the new yearly view button.
+
+
+
+----------------------------------------------------------------------------
+Wed May 12 11:09:03 PDT 2004
+proposals-0.56
+----------------------------------------------------------------------------
+Modified reports_output_2 to truncate to a history of only 2 notes, but to indicate if additional notes had been truncated.
+
+
+----------------------------------------------------------------------------
+Mon Jun 14 14:19:27 PDT 2004
+proposals-0.57
+----------------------------------------------------------------------------
+Modified report to show 4 or 5 stat boxen, one for each proposal_type, and one for all.. Fixed method used to tally. Previous method was correct, but unclear about awarded vs pending due to the fact that we were pulling from different fields (awarded vs. umc_won) to tally, and it seemed like the numbers should total correctly, even though this was never certain.
+
+
+
+----------------------------------------------------------------------------
+Thu Jun 17 16:12:32 PDT 2004
+proposals-0.58
+----------------------------------------------------------------------------
+
+Lots of changes.. 
+
+Converted most html to use CSS, and centralized most of the color settings.
+
+Changed some of the table layouts to to make better section headers (most noteably, changed the bid_results, and bidding_to headers to be in inline tables instead of just being text by themselves.. 
+
+Fixed some fields in the current leads pdf report.
+
+Fixed the current leads pdf report to circumvent the IE bug where even though the proper mime-type was sent, it looks at the extension of the URL, and decides to go off into never never land for a while (or indefinitely as in Robin's case.
+
+Many other small improvements as per Robin and Brett's suggestion(s).
+
+
+
+----------------------------------------------------------------------------
+Thu Oct  7 13:24:49 PDT 2004
+proposals-0.59
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Thu Oct  7 13:26:12 PDT 2004
+proposals-0.60
+----------------------------------------------------------------------------
+Converted all pdf's to use new library.
+Fixed some *MAJOR* bugs including vital text that was invisible (lead rank).
+Fixed a number of problems handling leads and 'Dead Lead
+
+
+----------------------------------------------------------------------------
+Thu Oct 21 09:56:57 PDT 2004
+proposals-0.61
+----------------------------------------------------------------------------
+made a bunch of changes to try to make Robin happier
+
+
+----------------------------------------------------------------------------
+Thu Oct 21 10:01:30 PDT 2004
+proposals-0.62
+----------------------------------------------------------------------------
+fixed lead_lead_notes dupe problem
+
+
+----------------------------------------------------------------------------
+Thu Oct 21 12:34:19 PDT 2004
+proposals-0.63
+----------------------------------------------------------------------------
+added load lead # to main_leads screen
+
+
+----------------------------------------------------------------------------
+Thu Dec 23 17:10:09 PST 2004
+proposals-0.64
+----------------------------------------------------------------------------
+added proposal search range
+removed umc costs l/m/s
+added document revisions
+added a way to link documents (associate)
+fixed job walk dialog to allow data entry even if job walk not required.
+
+
+
+----------------------------------------------------------------------------
+Tue Dec 28 14:46:22 PST 2004
+proposals-0.65
+----------------------------------------------------------------------------
+oops.. forgot to include the associated records list in the leads interface..
+fixed now..
+
+
+
+----------------------------------------------------------------------------
+Wed Dec 29 16:50:33 PST 2004
+proposals-0.66
+----------------------------------------------------------------------------
+added project sub-types.
+finished up the percent off pace stuff.
+added the printing of revision of document letter next to proposal number on
+a number of output screens. More filtering will probably come later as users request.
+
+
+
+----------------------------------------------------------------------------
+Tue Jan  4 09:25:45 PST 2005
+proposals-0.67
+----------------------------------------------------------------------------
+added a couple lines to support the slightly more public
+version of the bidlist.
+
+
+----------------------------------------------------------------------------
+Fri Jan  7 15:11:46 PST 2005
+proposals-0.68
+----------------------------------------------------------------------------
+Fixed a problem where the most recently created 20 proposals
+were not being listed in the recently created list.
+Turns out it was a problem with the bidlist_cache table, and the fact that
+it's fields are not actually date fields, so it was alphabetizing them.
+
+Fixed a couple of strtotime error messages that would come up when creating
+a new record. This was caused by the change to a new web server AFAICT.
+
+
+
+----------------------------------------------------------------------------
+Tue Jan 11 15:09:02 PST 2005
+proposals-0.69
+----------------------------------------------------------------------------
+a quick fix to the paper size if a person is not logged in to 
+any web page.
+
+
+----------------------------------------------------------------------------
+Tue Jan 25 13:56:10 PST 2005
+proposals-0.70
+----------------------------------------------------------------------------
+Total revamp of the bid activity report.
+Lots of cool shit added...
+
+
+----------------------------------------------------------------------------
+Wed Jan 26 09:34:19 PST 2005
+proposals-0.71
+----------------------------------------------------------------------------
+oops.. forgot to automatically mark old revisions to be excluded from bid volume calculations
+
+
+----------------------------------------------------------------------------
+Tue Mar 22 11:13:33 PST 2005
+proposals-0.72
+----------------------------------------------------------------------------
+added Brett's Job Resource Report
+
+
+----------------------------------------------------------------------------
+Wed May  4 11:58:28 PDT 2005
+proposals-0.73
+----------------------------------------------------------------------------
+updated authentication
+
+
+----------------------------------------------------------------------------
+Mon Jun 20 15:13:59 PDT 2005
+proposals-0.74
+----------------------------------------------------------------------------
+made a few changes
+
+
+----------------------------------------------------------------------------
+Mon Jun 20 15:31:40 PDT 2005
+proposals-0.75
+----------------------------------------------------------------------------
+test 2
+
+
+----------------------------------------------------------------------------
+Mon Jun 20 15:50:55 PDT 2005
+proposals-0.76
+----------------------------------------------------------------------------
+fixed the leads tracking cache problem for probability_raw (needed to distinguish NULL from '0' records
+
+
+----------------------------------------------------------------------------
+Mon Jun 20 16:04:46 PDT 2005
+proposals-0.77
+----------------------------------------------------------------------------
+hid the input box that adds a general (so you don't get confused
+with ones that actually display information in them).
+
+
+----------------------------------------------------------------------------
+Wed Aug 24 14:54:52 PDT 2005
+proposals-0.78
+----------------------------------------------------------------------------
+added file attachment support
+
+
+----------------------------------------------------------------------------
+Mon Aug 29 12:13:26 PDT 2005
+proposals-0.79
+----------------------------------------------------------------------------
+make the file box wider
+
+
+----------------------------------------------------------------------------
+Tue Aug 30 10:18:32 PDT 2005
+proposals-0.80
+----------------------------------------------------------------------------
+use the onchange field to bump refreshes for webfile previews
+
+
+----------------------------------------------------------------------------
+Wed Sep  7 11:16:53 PDT 2005
+proposals-0.81
+----------------------------------------------------------------------------
+added the file attachment interface to the Traxx Leads section
+
+
+----------------------------------------------------------------------------
+Tue Oct  4 11:56:11 PDT 2005
+proposals-0.82
+----------------------------------------------------------------------------
+added item# column to active leads report
+
+
+----------------------------------------------------------------------------
+Tue Oct  4 14:31:29 PDT 2005
+proposals-0.83
+----------------------------------------------------------------------------
+quick fix for other pdf lead report
+
+
+----------------------------------------------------------------------------
+Thu Dec  8 14:57:18 PST 2005
+proposals-0.84
+----------------------------------------------------------------------------
+added hotkeys
+
+
+----------------------------------------------------------------------------
+Tue Jan  3 16:24:17 PST 2006
+proposals-0.85
+----------------------------------------------------------------------------
+fixed the can't type anything into text fields problems
+
+
+----------------------------------------------------------------------------
+Mon May  8 13:05:48 PDT 2006
+proposals-0.86
+----------------------------------------------------------------------------
+fixed a problem where a lead couldn't complete a record
+
+
+----------------------------------------------------------------------------
+Tue Jul 18 12:06:34 PDT 2006
+proposals-0.87
+----------------------------------------------------------------------------
+changed percent_off_pace output to warn about cherry picking being invalid
+
+
+----------------------------------------------------------------------------
+Fri Sep 22 15:27:37 PDT 2006
+proposals-0.88
+----------------------------------------------------------------------------
+fixed a problem entering text into a text field when shortcuts were enabled
+
+
+----------------------------------------------------------------------------
+Mon Dec 18 09:50:42 PST 2006
+proposals-0.89
+----------------------------------------------------------------------------
+added a southern wa checkbox to the proposal log by group report
+
+
+----------------------------------------------------------------------------
+Mon Dec 18 09:51:40 PST 2006
+proposals-0.90
+----------------------------------------------------------------------------
+fixed a spelling error/typo
+
+
+----------------------------------------------------------------------------
+Mon Jun  4 11:14:26 PDT 2007
+proposals-0.91
+----------------------------------------------------------------------------
+changed the version numbering system
+
+
+----------------------------------------------------------------------------
+Mon Dec 31 12:52:20 PST 2007
+proposals-0.92
+----------------------------------------------------------------------------
+security audit
+
+
+----------------------------------------------------------------------------
+Mon Dec 31 12:54:42 PST 2007
+proposals-0.93
+----------------------------------------------------------------------------
+fixed security update bug
+
+
+----------------------------------------------------------------------------
+Wed Apr 23 15:55:44 PDT 2008
+proposals-0.94
+----------------------------------------------------------------------------
+fixed the job_selection_win popup to sort things better and
+to have better defaults..
+
+
+----------------------------------------------------------------------------
+Mon May  5 15:56:52 PDT 2008
+proposals-0.95
+----------------------------------------------------------------------------
+minor update to contact popup selection
+
+
+----------------------------------------------------------------------------
+Mon May 12 15:25:47 PDT 2008
+proposals-0.96
+----------------------------------------------------------------------------
+I hopefully fixed an issue where something that is bidding today doesn't show up
+in the correct column on the main screen.. strange date/time 
+problem.
+
+
+
+----------------------------------------------------------------------------
+Mon Oct 27 14:13:20 PDT 2008
+proposals-0.97
+----------------------------------------------------------------------------
+added link back to front_desk
+
+
+----------------------------------------------------------------------------
+Thu Nov  6 16:38:48 PST 2008
+proposals-0.98
+----------------------------------------------------------------------------
+quick text changes for CV.. 
+
+
+----------------------------------------------------------------------------
+Thu Nov  6 16:42:03 PST 2008
+proposals-0.99
+----------------------------------------------------------------------------
+more quick text changes for CV.. 
+
+
+----------------------------------------------------------------------------
+Thu Mar 12 15:44:35 PDT 2009
+proposals-0.100
+----------------------------------------------------------------------------
+updated some stuff for Ed
+
+
+----------------------------------------------------------------------------
+Mon Mar 30 10:25:55 PDT 2009
+proposals-0.101
+----------------------------------------------------------------------------
+quick (not so quick really) to the project type field to make it match the new system (viewpoint)
+
+
+----------------------------------------------------------------------------
+Mon Mar 30 11:21:54 PDT 2009
+proposals-0.102
+----------------------------------------------------------------------------
+fixed traxx caching system to support changed projtypes
+
+
+----------------------------------------------------------------------------
+Thu Apr  2 16:16:58 PDT 2009
+proposals-0.103
+----------------------------------------------------------------------------
+updated fields to show required ones in red
+
+
+----------------------------------------------------------------------------
+Mon Apr 13 16:28:47 PDT 2009
+proposals-0.104
+----------------------------------------------------------------------------
+fixed the percent off pace output... It wasn't showing when there were more than 1 bid result listed as a winning bid.. (even if one was marked as 0 dollars)..
+
+
+----------------------------------------------------------------------------
+Wed Apr 15 13:00:22 PDT 2009
+proposals-0.105
+----------------------------------------------------------------------------
+made the new hit rate report so you can drill down in to any of the numbers (most of them at least)
+
+
+----------------------------------------------------------------------------
+Fri Apr 17 11:42:00 PDT 2009
+proposals-0.106
+----------------------------------------------------------------------------
+made some changes for the meeting this morning.. 
+
+

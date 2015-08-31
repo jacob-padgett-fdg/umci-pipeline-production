@@ -1,0 +1,159 @@
+<?
+//if ($bid_info->record_maintainer=="true") {
+
+$bidlist_query="select * from bidlist_results,contacts where bidlist_results.company = contacts.contacts_id and bidlist_id = '$bidlist_id' order by bid_amount";
+$blres=@mysql_query($bidlist_query);
+
+echo"
+
+<table border=0 cellspacing=0 cellpadding=0 style=\"display: inline;\"><tr><td>
+<table border=1 cellspacing=0 cellpadding=2 class=\"tableobj\"><tr><th style=\"background-color: $table_dark; color: white;\">
+
+<b><font color=red>Mechanical&nbsp;Bid&nbsp;Results</font>:</b> <a href=javascript:add_bid_results(''); style=\"color: white; font-weight: bold;\">Input Proposal Amt / Bid Results</a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	";if ($bid_info->gc_low_display_name!="") echo "<b><font color=#aaffaa>Apparent LOW GC: $bid_info->gc_low_display_name</font></b>";echo "	
+<script>
+function add_bid_results(bidlist_results_id) {
+	open('$pagename?mode=bid_results_add&bidlist_id=$bid_info->bidlist_id&bidlist_results_id=' + bidlist_results_id,'bidresultsadd','width=500,height=500');
+	}
+function mark_winning_bid(bidlist_results_id) {
+	open('$pagename?mode=bid_results_winning_bid&bidlist_results_id=' + bidlist_results_id,'bidresultsadd','width=500,height=500');
+	}
+function job_selection_win() {
+	open('$pagename?mode=job_selection_win&jobinfo_id=$bid_info->jobinfo_id','jobinfo_win','width=500,height=500,scrollbars=yes');
+	}
+</script>
+
+</table></table>
+";
+
+
+$count=@mysql_num_rows($blres);
+if (($count > 0)||($bid_info->proposal_type=="Budget")||($bid_info->proposal_type=="RFQ/Preq/Eleg")||($bid_info->awarded!="P")||($bid_info->status=="No Bid")) {
+
+echo "
+<input type=hidden name=proposal_form_bid_results value=true>
+<table border=1 cellpadding=0 cellspacing=0 width=100%>
+<tr><td bgcolor=#eeeeee>
+<table border=1 cellspacing=0 cellpadding=1 width=100%>
+
+	<tr><td colspan=7>
+
+	<table border=0 cellspacing=0 cellpadding=1 width=100%>
+		<tr><td>
+			<input type=hidden size=10 name=umc_costs_lms value=\"$bid_info->umc_costs_lms\">
+			";
+			if (!($lead_mode)) {
+				if (($bid_info->proposal_type=="Budget")||($bid_info->proposal_type=="RFQ/Preq/Eleg")||($bid_info->status=="No Bid"))
+					radio_box2("${rtc_start}Mechanical&nbsp;Awarded:${rtc_end}&nbsp;","awarded",$bid_info->awarded,"P","NA");
+					else 
+					radio_box2("<b><font color=red>Awarded:</font></b>&nbsp;","awarded",$bid_info->awarded,"P");
+				}
+		echo"</td><td align=right>";
+			if ($bid_info->percent_from_pace_applies=='Y') {
+				echo "<b>Percent&nbsp;Off&nbsp;Pace:&nbsp;$bid_info->percent_from_pace&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+				}
+			if ($bid_info->percent_from_pace_applies=='C') {
+				echo "<b>Percent&nbsp;Off&nbsp;Pace:&nbsp;N/A Cherry Picked&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+				}
+		if ($bid_info->umc_bid_won=="Y") {
+			echo "
+			<input type=hidden name=jobinfo_id value='$bid_info->jobinfo_id'>
+			<a href=javascript:job_selection_win()>${rtc_start}Job #${rtc_end}</a> $bid_info->job_num";
+			}
+		echo"</td></tr>
+	</table>
+
+	</td></tr>
+	
+	<tr bgcolor=#dddddd><td>
+		Company
+	</td><td>
+		Break Out
+	</td><td>
+		Notes
+	</td><td>
+		Awarded to:
+	</td><td align=right>
+		Direct Cost
+	</td><td align=right>
+		Bid Amount
+	</td><td>
+		Margin
+	</td></tr>
+	";
+	
+	while($brrow=@mysql_fetch_object($blres)) {
+		$margin="N/A";
+		/*if ($brrow->bid_amount>0) {
+			$margin=round(100 * (1 - ($brrow->direct_cost/$brrow->bid_amount)),2);
+			}
+		*/
+		/*
+		if ($brrow->direct_cost>0) {
+			$margin=round(
+			($brrow->bid_amount/$brrow->direct_cost * 100)
+			,2);
+			}
+		*/
+		
+		if ($brrow->direct_cost>0) $margin=round($brrow->bid_amount/$brrow->direct_cost*100 - 100,2);
+			
+		/*
+		if ($brrow->direct_cost > 0) {
+			$margin_dollars=$brrow->bid_amount - $brrow->direct_cost;
+			$margin=round($margin_dollars / $brrow->direct_cost * 100,2);
+			}
+		*/
+		$brrow->bid_amount=format_long_num($brrow->bid_amount);
+		$brrow->direct_cost=format_long_num($brrow->direct_cost);
+		$extra="";
+		if ($brrow->pulled=='Y') $extra="${extra}Bid Pulled<br>";
+		if ($brrow->air_only=='Y') $extra="${extra}Air Only<br>";
+		if ($brrow->hvac_only=='Y') $extra="${extra}HVAC Only<br>";
+		if ($brrow->plumb_only=='Y') $extra="${extra}Plumbing Only<br>";
+		if ($extra=="") $extra="&nbsp;";
+		echo "
+		<tr><td>
+			<a href=javascript:add_bid_results('$brrow->bidlist_results_id')><font color=blue>$brrow->display_name</font></a>
+		</td><td>
+			$extra
+		</td><td>
+			$brrow->notes&nbsp;
+		</td><td>
+			";
+			if (($bid_info->proposal_type=="Budget")||($bid_info->proposal_type=="RFQ/Preq/Eleg")) {
+				echo "<b title=\"Budgets/Prequals don't get awarded. Please make a proposal.\">N/A</b>";
+				} else {
+				if ($brrow->winning_bid=='N')
+				echo "<a href=javascript:mark_winning_bid('$brrow->bidlist_results_id')><font color=blue>No</font></a>";
+				if ($brrow->winning_bid=='Y')
+				echo "<a href=javascript:mark_winning_bid('$brrow->bidlist_results_id')><font color=blue>Yes</font></a>";
+				}
+			echo"
+		</td><td align=right>
+			\$$brrow->direct_cost
+		</td><td align=right>
+			\$$brrow->bid_amount
+		</td><td align=right>
+			$margin%
+		</td></tr>
+		";
+		}
+	
+
+	echo"
+
+	</table>
+	</td></tr>
+	</table>
+
+";
+} else {
+echo "<input type=hidden name=awarded value=\"$bid_info->awarded\">";
+}
+
+//}
+
+?>
+

@@ -1,0 +1,11 @@
+<?
+require('querylib.inc');
+$product_id=escapeshellcmd($product_id);
+
+$query="delete from engineering_products where product_id = '$product_id'";
+$res=@mysql_query($query);
+
+if (!($res)) die("ERROR: Query failed. Please contact your system administrator.<p>Failed Query:<hr>$query");
+forward('product_search_result');
+
+?>

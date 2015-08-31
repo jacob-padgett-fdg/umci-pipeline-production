@@ -1,0 +1,22 @@
+<?
+$jobinfo_id=escapeshellcmd($jobinfo_id);
+$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+
+$bid_info=getoneb("select * from bidlist where jobinfo_id = '$jobinfo->jobinfo_id'");
+
+if ($bid_info) {
+	forward("proposal_edit&bidlist_id=$bid_info->bidlist_id");
+	exit;
+	}
+	
+
+
+echo "<center><b><font size=+1>Available proposals for job # $jobinfo->contract_num</font></b></center><hr>
+
+<table border=1 cellspacing=0 cellpadding=0>
+<tr><td>";
+
+proposal_list("select bidlist_id from bidlist where jobinfo_id = '$jobinfo_id' order by bid_date");
+echo "</td></tr></table>";
+
+?>

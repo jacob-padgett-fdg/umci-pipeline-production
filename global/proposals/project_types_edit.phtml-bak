@@ -1,0 +1,80 @@
+<?
+
+if ($bidlist_id!="") $bidlist_id=escapeshellcmd($bidlist_id);
+else die("ERROR: No bidlist_id specified! Please contact your system administrator or try again");
+
+
+echo "<html><head><title>$application_name - Proposal Type Edit</title></head>
+<body bgcolor=#ffffff onclose=close_clean()>";
+
+
+
+$query="select proposal_type_id from bidlist_bid_proptypes where bidlist_id = '$bidlist_id'";
+//tabledump($query);
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	$typearray[]=$row->proposal_type_id;
+	}
+
+
+
+$lasttitle1="";
+$lasttitle2="";
+
+$select1="<select name=proposal_type_id size=20>";
+$select2="<select name=proposal_type_id size=20>";
+
+
+
+$query="select * from bidlist_proposaltypes order by propgroup,proposal_type";
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	if (in_array($row->proposal_type_id,$typearray)) {
+		if ($lasttitle1!=$row->propgroup) $select1=$select1 . "<option value=''>$row->propgroup</option>";
+		$select1=$select1 . "<option value=\"$row->proposal_type_id\">&nbsp;&nbsp;$row->proposal_type</option>";
+		$lasttitle1=$row->propgroup;
+	} else {
+		if ($lasttitle2!=$row->propgroup) $select2=$select2 . "<option value=''>$row->propgroup</option>";
+		$select2=$select2 . "<option value=\"$row->proposal_type_id\">&nbsp;&nbsp;$row->proposal_type</option>";
+		$lasttitle2=$row->propgroup;
+		}
+	}
+
+$select1=$select1 . "</select>";
+$select2=$select2 . "</select>";
+
+
+echo "
+<script>
+	function close_clean() {
+	opener.apply_changes();
+	self.close();
+	}
+</script>
+
+<table border=0>
+<tr><td>
+	<form name=sidea method=post action=$pagename>
+	<input type=hidden name=mode value=proposal_types_remove>
+	<input type=hidden name=bidlist_id value=\"$bidlist_id\">
+	$select1
+</td><td valign=center>
+	<input type=submit value='-->'>
+	
+	</form>
+	<form name=sideb method=post action=$pagename>
+
+	<input type=submit value='<--'>
+	<input type=hidden name=mode value=proposal_types_add>
+	<input type=hidden name=bidlist_id value=\"$bidlist_id\">
+</td><td>
+	$select2
+	</form>
+</td></tr>
+</table>
+
+<p>
+
+<a href=javascript:close_clean();><font color=blue>Done</font></a>";
+
+?>

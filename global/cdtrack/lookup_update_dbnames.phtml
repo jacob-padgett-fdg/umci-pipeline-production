@@ -1,0 +1,22 @@
+<?require("lookup_deny.inc");?>
+<?require("querylib.inc");?>
+<?
+$lookupmode=ereg_replace("^lookup_update_","",$mode);
+$query="select * from $lookupmode where 0 = 1";
+$result=mysql_query($query);
+$record_name=mysql_field_name($result,1);
+$record_id_name=mysql_field_name($result,0);
+
+$record_data=escapeshellcmd(${$record_name});
+
+
+$query="update $lookupmode set $record_name = '$record_data' where $record_id_name = '$record'";
+mysql_query($query);
+$mode="lookup_$lookupmode";
+include("lookup_$lookupmode.phtml");
+
+?>
+
+
+
+

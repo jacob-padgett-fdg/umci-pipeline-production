@@ -1,0 +1,60 @@
+<?
+
+if($contacts_id=="") {
+	$query_start="insert into";
+	$query_end="";
+	$company=escapeshellcmd($company);
+	$company_query="company = '$company',";
+	$creator="record_creator = '$global_user_id',
+	";
+	} else {
+	$contacts_id=escapeshellcmd($contacts_id);
+	$query_start="update";
+	$query_end="where contacts_id = '$contacts_id'";
+	$creator="";
+	}
+
+$phone=escapeshellcmd($phone);
+$phone_fax=escapeshellcmd($phone_fax);
+$address_1=escapeshellcmd($address_1);
+$address_city=escapeshellcmd($address_city);
+$address_state=escapeshellcmd($address_state);
+$address_zip=escapeshellcmd($address_zip);
+$current=checkfix($current);
+$is_general=checkfix($is_general);
+$is_reprographics_firm=checkfix($is_reprographics_firm);
+$owner=checkfix($owner);
+$mechanical_contractor=checkfix($mechanical_contractor);
+$consultant=checkfix($consultant);
+
+
+$base_query=" contacts set
+$company_query
+$creator
+phone = '$phone',
+phone_fax = '$phone_fax',
+address_1 = '$address_1',
+address_city = '$address_city',
+address_state = '$address_state',
+address_zip = '$address_zip',
+current = '$current',
+is_general = '$is_general',
+is_reprographics_firm = '$is_reprographics_firm',
+owner = '$owner',
+mechanical_contractor = '$mechanical_contractor',
+consultant = '$consultant'
+";
+
+$full_query=$query_start . $base_query . $query_end;
+
+//echo "$full_query";exit;
+
+@mysql_query($full_query);
+require("contact_maint.phtml");
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+?>

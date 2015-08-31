@@ -1,0 +1,34 @@
+<?
+//echo "$share_owner";
+
+if ($share_owner!="") $share_owner=addslashes($share_owner);
+else die("oops, no share_owner");
+
+if ($share_path!="") $share_path=addslashes($share_path);
+else die("oops, no share_path");
+
+if ($device_id!="") $device_id=addslashes($device_id);
+else die("oops, no device_id");
+
+if ($sharelist_id!="") {
+	$sharelist_id=addslashes($sharelist_id);
+	$query_start="update ";
+	$query_end=" where sharelist_id = '$sharelist_id'";
+	} else {
+	$query_start="insert into ";
+	$query_end="";
+	}
+$query_middle=" access_jupiter_sharelist set
+device_id = '$device_id',
+share_path = '$share_path',
+share_owner = '$share_owner'
+";
+
+$full_query= $query_start . $query_middle . $query_end;
+
+$res=@mysql_query($full_query);
+if (!($res)) die("Query failed:<hr>$full_query<hr>");
+
+forward('access_jupiter_main');
+
+?>

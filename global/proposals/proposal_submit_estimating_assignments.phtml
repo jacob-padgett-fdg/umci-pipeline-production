@@ -1,0 +1,24 @@
+<?
+
+$to_lead=addslashes($to_lead);
+$to_plm=addslashes($to_plm);
+$to_htg=addslashes($to_htg);
+$to_metal=addslashes($to_metal);
+$to_proc=addslashes($to_proc);
+$to_prop=addslashes($to_prop);
+$to_gct=addslashes($to_gct);
+
+
+
+$query_data=$query_data . "$data_seperator 
+to_lead = '$to_lead',
+to_plm = '$to_plm',
+to_htg = '$to_htg',
+to_metal = '$to_metal',
+to_proc = '$to_proc',
+to_prop = '$to_prop',
+to_gct = '$to_gct'";
+
+$data_seperator=",";
+
+?>

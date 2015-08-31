@@ -1,0 +1,58 @@
+<?
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><br>
+<h3>Proposal Search Options</h3><hr>
+
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td bgcolor=#dddddd>
+	<b>Create Date</b>
+</td><td bgcolor=#dddddd>
+	<b>Bid Date</b>
+</td></tr>
+
+<tr><td>
+<form name=quick_search1 method=get action=$pagename>
+<input type=hidden name=mode value=proposal_search_create_dates_submit>
+Start Date:";datebox('','quick_search1.create_date_1');echo"
+End&nbsp;&nbsp;&nbsp;Date:";datebox('','quick_search1.create_date_2');echo"
+<input type=submit value=Search>
+</form>
+
+</td><td>
+
+<form name=quick_search2 method=get action=$pagename>
+<input type=hidden name=mode value=proposal_search_bid_dates_submit>
+Start Date:";datebox('','quick_search2.bid_date_1');echo"
+End&nbsp;&nbsp;&nbsp;Date:";datebox('','quick_search2.bid_date_2');echo"
+<input type=submit value=Search>
+</form>
+
+
+</td></tr>
+
+
+
+
+
+</table>
+
+
+
+<p>
+<a href=$pagename?mode=proposal_search_saved><font color=blue>Saved Searches</font>
+<p>
+<a href=$pagename?mode=proposal_search_full><font color=blue>Full Search</font>
+<p>
+";
+
+
+
+
+
+
+
+
+?>

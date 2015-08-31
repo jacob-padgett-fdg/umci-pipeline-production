@@ -1,0 +1,16 @@
+<?
+require("header.phtml");
+echo "
+<h2>Login Info</h2>
+<form method=post action=$PHP_SELF>
+<input type=hidden name=mode value=process_orders_2>
+
+US Office Products Username: <input type=text name=tmuser><p>
+US Office Products Password: <input type=password name=tmpass><p>
+<input type=button value=Submit onclick=submit();>
+
+</form>
+";
+
+?>
+

@@ -1,0 +1,57 @@
+<?
+
+echo "
+<input type=hidden name=proposal_form_tracking value=true>
+<table border=1 width=100% cellspacing=0 cellpadding=2 class=\"tableobj\">
+<tr><td colspan=2 align=center bgcolor=$table_dark>
+	<b>Tracking Info</b>
+</td></tr>
+
+<tr><th>
+	Primary UMC Contact
+</th><td>
+	";contactbox("select contacts_id as lead_prime_contact,display_name,current from contacts where umc_emp = 'Y' order by alphasort",$bid_info->lead_prime_contact);echo"
+</td></tr>
+
+<tr><th>
+	Next Activity
+</th><td>
+	";datebox($bid_info->lead_next_activity,"bidlist_edit.lead_next_activity");echo"
+</td></tr>
+
+<tr><th>
+	Lead Source
+</th><td>
+	";dropbox("select lead_source,lead_source from bidlist_lead_sources order by lead_source",$bid_info->lead_source,"","","2");echo"
+</td></tr>
+
+<tr><th>
+	Ranking&nbsp;&nbsp;<font size=-1><i>(1=Best)</i></font>
+</th><td>
+	<input type=hidden name=lead_ranking value=\"$bid_info->lead_ranking\">
+	<font id=lead_ranking_text face=\"Arial Bold\">$bid_info->lead_ranking</font>&nbsp;
+	<a href=javascript:ranking_minus()><b><font color=blue>+</font></b></a> / <a href=javascript:ranking_plus()><b><font color=blue>-</font></b></a>
+	
+	<script>
+	function ranking_plus() {
+		var tempint;
+		tempint=parseInt(document.bidlist_edit.lead_ranking.value);
+		document.bidlist_edit.lead_ranking.value=tempint + 1;
+		if (document.bidlist_edit.lead_ranking.value > 5) document.bidlist_edit.lead_ranking.value = 5;
+		document.getElementById('lead_ranking_text').innerHTML=document.bidlist_edit.lead_ranking.value;
+		}
+		
+	function ranking_minus() {
+		var tempint;
+		tempint=parseInt(document.bidlist_edit.lead_ranking.value);
+		document.bidlist_edit.lead_ranking.value=tempint - 1;
+		if (document.bidlist_edit.lead_ranking.value < 1) document.bidlist_edit.lead_ranking.value = 1;
+		document.getElementById('lead_ranking_text').innerHTML=document.bidlist_edit.lead_ranking.value;
+		}
+	</script>
+</td></tr>
+
+</table>
+";
+
+?>

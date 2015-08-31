@@ -1,0 +1,17 @@
+<?
+
+require("settings.cfg");
+require("global_connect_rw.phtml");
+session_start('employment');
+require_once('local.inc');
+
+require_once('querylib.inc');
+
+if (isset($mode)) {
+	$mode=ereg_replace("[^a-zA-Z0-9_]","",$mode);
+	if (is_readable("$mode.phtml")) { 
+		include("$mode.phtml");  } else { include ("badmode.phtml"); }
+	} else {
+	include ("eeoc.phtml");
+	}
+?>

@@ -1,0 +1,14 @@
+<?
+include("pageheader.phtml");
+include("querylib.inc");
+
+
+echo "<center><h2>Sums by Serial Number<br></h2>";
+$query="select serial_num as 'Serial Number',copies as 'Copies Burned' from $cdinfo order by cdinfo_id";
+tabledump($query);
+echo "<p><hr>";
+$count="select sum(copies) as 'Total CD Burn Count' from $cdinfo";
+tabledump($count);
+echo "</center>";
+include("footer.phtml");
+?>

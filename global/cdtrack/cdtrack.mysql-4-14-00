@@ -1,0 +1,740 @@
+# MySQL dump 6.6
+#
+# Host: localhost    Database: cdtracking
+#--------------------------------------------------------
+# Server version	3.23.6-alpha
+
+#
+# Table structure for table 'cdinfo'
+#
+CREATE TABLE cdinfo (
+  cdinfo_id int(11) NOT NULL auto_increment,
+  dbnames_id int(11) DEFAULT '0' NOT NULL,
+  serial_num char(40),
+  create_date date,
+  description char(100),
+  department int(11),
+  creator char(50),
+  customer int(11),
+  project char(50),
+  date_begin date,
+  date_end date,
+  copies int(11),
+  PRIMARY KEY (cdinfo_id),
+  UNIQUE serial_num (serial_num)
+);
+
+#
+# Dumping data for table 'cdinfo'
+#
+
+INSERT INTO cdinfo VALUES (1,1,'DET-00-1','2000-01-13','WLUC CAD As-built Files',1,'Brett Endres',13,'WLUC','0000-00-00','1999-07-27',3);
+INSERT INTO cdinfo VALUES (2,1,'DET-00-2','2000-01-14','F Drive archive disk a',1,'Andrea Osterday',9,'','0000-00-00','1999-12-27',2);
+INSERT INTO cdinfo VALUES (3,2,'CON-00-3','2000-01-14','Swedish 4th floor',1,'',2,'Swedish','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (4,2,'CON-00-4','2000-01-14','UWB/CCC Phase 1 UW1/CC1/LB1 structural dwgs',1,NULL,2,'UWB','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (5,1,'DET-00-5','2000-01-14','F Drive Archive disk b',1,'Andrea Osterday',2,'','0000-00-00','1999-12-27',2);
+INSERT INTO cdinfo VALUES (6,1,'DET-00-6','2000-01-14','F Drive Archive disk c',1,'Andrea Osterday',2,'','0000-00-00','1999-12-27',2);
+INSERT INTO cdinfo VALUES (7,1,'DET-00-7','2000-01-14','G Drive Archive disk a',1,'Andrea Osterday',2,'','0000-00-00','1999-12-27',2);
+INSERT INTO cdinfo VALUES (8,1,'DET-00-8','2000-01-14','G Drive Archive disk b',1,'Andrea Osterday',2,'','0000-00-00','1999-12-27',2);
+INSERT INTO cdinfo VALUES (9,1,'DET-00-9','2000-01-14','F:\\Acad\\OHMC MOB TI & 1972',1,'Andrea Osterday',19,'','0000-00-00','1999-12-27',2);
+INSERT INTO cdinfo VALUES (10,1,'DET-00-10','2000-01-14','Harborview Acad disk 1 of 3',1,'',2,'Harborview','0000-00-00','1998-12-07',1);
+INSERT INTO cdinfo VALUES (11,1,'DET-00-11','2000-01-14','Harborview Acad Disk 2 of 3',1,'',2,'Harborview','0000-00-00','1998-12-07',1);
+INSERT INTO cdinfo VALUES (12,1,'DET-00-12','2000-01-14','Harborview Acad disk 3 of 3',1,'',2,'Harborview','0000-00-00','1998-12-07',1);
+INSERT INTO cdinfo VALUES (13,2,'CON-00-13','2000-01-14','UW Bothell UW2 building Structural dwgs',1,'',2,'UW Bothell','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (14,2,'CON-00-14','2000-01-14','UWB/CCC Bothell CC2 Struct & Arch disk 2 of 2',1,'',2,'UW Bothell','0000-00-00','1999-09-24',0);
+INSERT INTO cdinfo VALUES (15,2,'CON-00-15','2000-01-14','UWB CC2 Permit Set ASI2-126.1 Disk 1 of 2',1,'',2,'UW Bothell','0000-00-00','1999-09-02',1);
+INSERT INTO cdinfo VALUES (16,2,'CON-00-16','2000-01-14','UWB CC1,LB1,UW1 Buildout Dwgs  CC2 dwgs',1,'',2,'UW Bothell','0000-00-00','1999-10-15',1);
+INSERT INTO cdinfo VALUES (17,2,'CON-00-17','2000-01-14','CCC/UWB Buildout CC2 Elec Acad filees',1,'',2,'UW Bothell','0000-00-00','1999-12-25',1);
+INSERT INTO cdinfo VALUES (18,2,'CON-00-18','2000-01-14','UWB/CCC CC2 Buildout Architectural',1,'',2,'UW Bothell','0000-00-00','1999-10-13',1);
+INSERT INTO cdinfo VALUES (19,2,'CON-00-19','2000-01-14','UWB/CCC Phase 2A Garges & Central Plant Mech',1,'',2,'UW Bothell','0000-00-00','1999-09-14',1);
+INSERT INTO cdinfo VALUES (20,2,'CON-00-20','2000-01-14','UWB/CCC Garage and Physical Plant Arch',1,'',2,'UW Bothell','0000-00-00','1999-10-29',1);
+INSERT INTO cdinfo VALUES (21,2,'CON-00-21','2000-01-14','CCC/UWB-2A PH2/SG2/NG2  Elec cad files',1,'',2,'UW Bothell','0000-00-00','1999-11-03',1);
+INSERT INTO cdinfo VALUES (22,2,'CON-00-22','2000-01-14','Overlake Garage Fire Protection',1,'',2,'Overlake Garage','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (23,2,'CON-00-23','2000-01-14','Overlake MOB Fire Protection',1,'',2,'Overlake MOB','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (24,1,'DET-00-24','2000-01-14','1843 Galleria before as-builts',1,'Brett Endres',2,'Galleria','0000-00-00','1999-02-19',1);
+INSERT INTO cdinfo VALUES (25,1,'DET-00-25','2000-01-14','Benaroya Hall As-builts',1,'Brett Endres',2,'Benaroya Hall','0000-00-00','1998-12-02',3);
+INSERT INTO cdinfo VALUES (26,1,'DET-00-26','2000-01-14','Benaroya Hall As-builts all junk back-up',1,'Brett Endres',2,'Benaroya Hall','0000-00-00','1998-10-21',1);
+INSERT INTO cdinfo VALUES (27,1,'DET-00-27','2000-01-14','Masca As-builts all cad files',1,'',2,'Masca','0000-00-00','0000-00-00',0);
+INSERT INTO cdinfo VALUES (28,1,'DET-00-28','2000-01-14','Masca junk files used in as-built resurection',1,'',2,'Masca','0000-00-00','0000-00-00',0);
+INSERT INTO cdinfo VALUES (29,1,'DET-00-29','2000-01-14','Swedish 5th Flr coordination files',1,'Brett Endres',12,'Swedish','0000-00-00','1999-05-04',0);
+INSERT INTO cdinfo VALUES (30,1,'DET-00-30','2000-01-14','1798 Pcplace before Il Fornaio as-builts',1,'Brett Endres',2,'Pacific Place','0000-00-00','1999-02-17',0);
+INSERT INTO cdinfo VALUES (31,1,'DET-00-31','2000-01-14','F:\\Acad archive disk 1 of 2',1,'Brett Endres',2,'','0000-00-00','1998-03-19',3);
+INSERT INTO cdinfo VALUES (32,1,'DET-00-32','2000-01-14','F:\\acad archive disk 2 of 2',1,'Brett Endres',2,'','0000-00-00','1998-03-20',0);
+INSERT INTO cdinfo VALUES (33,1,'DET-00-33','2000-01-14','F:\\acad\\umc all files',1,'Brett Endres',2,'','0000-00-00','1998-08-04',0);
+INSERT INTO cdinfo VALUES (34,2,'CON-00-34','2000-01-18','Swedish Contract',1,'',12,'Swedish','0000-00-00','1999-02-15',1);
+INSERT INTO cdinfo VALUES (35,2,'CON-00-35','2000-01-18','Stafford Creek Conformed Set 1 of 2',1,'',2,'Stafford','0000-00-00','1998-05-04',1);
+INSERT INTO cdinfo VALUES (36,2,'CON-00-36','2000-01-18','Stafford Creek Conformed Set 2 of 2',1,'NBBJ',2,'Stafford','0000-00-00','1999-05-04',1);
+INSERT INTO cdinfo VALUES (37,2,'CON-00-37','2000-01-18','UMC Version Copy of Original From Sellen',1,'NBBJ',12,'Swedish','0000-00-00','1999-02-11',1);
+INSERT INTO cdinfo VALUES (38,4,'MSC-00-38','2000-01-18','Culligan',1,'',2,'','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (39,4,'MSC-00-39','2000-01-18','Chicago Faucets',1,'',2,'','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (40,4,'MSC-00-40','2000-01-18','Sloan Product Catalog',1,'Sloan Valve Company',2,'','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (41,4,'MSC-00-41','2000-01-18','Haws',1,'',2,'','0000-00-00','0000-00-00',1);
+INSERT INTO cdinfo VALUES (42,1,'DET-00-42','2000-01-18','Before 77 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (43,1,'DET-00-43','2000-01-18','No Year archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (44,1,'DET-00-44','2000-01-18','77-79 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (45,1,'DET-00-45','2000-01-18','80-81 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (46,1,'DET-00-46','2000-01-18','1982 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (47,1,'DET-00-47','2000-01-18','83-84 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (48,1,'DET-00-48','2000-01-18','84prs-01 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (49,1,'DET-00-49','2000-01-18','84prs-02 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (50,1,'DET-00-50','2000-01-18','84prs-03 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (51,1,'DET-00-51','2000-01-18','84prs-04 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (52,1,'DET-00-52','2000-01-18','84prs-05 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (53,1,'DET-00-53','2000-01-18','84prs-06 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (54,1,'DET-00-54','2000-01-18','84prs-07 archive of scanned dwgs',1,'Andrea OSterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (55,1,'DET-00-55','2000-01-18','84prs-08 archive os scanned dwgs',1,'Andrea OSterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (56,1,'DET-00-56','2000-01-18','84prs-09 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (57,1,'DET-00-57','2000-01-18','84prs-10 archive of scanned dwgs',1,'Andrea Osterday',2,'','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (58,1,'DET-00-58','2000-01-19','1058 Arch 1 of 2',1,'Andrea Osterday',127,'Courtyards at Punahon','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (59,1,'DET-00-59','2000-01-19','1058 2 of 2',1,'Andrea Osterday',127,'Courtyards at Punahon','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (60,1,'DET-00-60','2000-01-19','793 UMC 1 of 2',1,'Andrea Osterday',5,'Boeing Everett Office Complex','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (61,1,'DET-00-61','2000-01-19','793 2 of 2',1,'Andrea Osterday',5,'Boeing Everett Office Complex','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (62,1,'DET-00-62','2000-01-19','636 A',1,'Andrea Osterday',56,'Mirage Claim','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (63,1,'DET-00-63','2000-01-19','636 B',1,'Andrea Osterday',56,'Mirage Claim','0000-00-00','0000-00-00',3);
+INSERT INTO cdinfo VALUES (64,1,'DET-00-64','2000-01-26','FHCRC Phase II',1,'',14,'FHCRC Phase II','0000-00-00','1997-10-17',1);
+INSERT INTO cdinfo VALUES (65,3,'DSG-00-65','2000-02-15','Overlake MOB Shell/core Mech/plumb all flrs',2,'gsb',19,'1840','1999-02-26','2000-01-25',1);
+INSERT INTO cdinfo VALUES (66,4,'MSC-00-66','2000-03-17','F:\\acad\\umc',1,'Andrea Osterday',2,'Umc Directory','0000-00-00','0000-00-00',2);
+INSERT INTO cdinfo VALUES (67,1,'DET-00-67','2000-03-22','UW Bothell Job to date sent to Stan Jaworowski',1,'Andrea Osterday',2,'UW Bothell','0000-00-00','2000-03-22',2);
+
+#
+# Table structure for table 'customers'
+#
+CREATE TABLE customers (
+  customer_id int(11) NOT NULL auto_increment,
+  customer_name char(100) DEFAULT '' NOT NULL,
+  PRIMARY KEY (customer_id,customer_name)
+);
+
+#
+# Dumping data for table 'customers'
+#
+
+INSERT INTO customers VALUES (1,'Fisher Properties');
+INSERT INTO customers VALUES (2,'');
+INSERT INTO customers VALUES (3,'Sellen');
+INSERT INTO customers VALUES (4,'Art Institute');
+INSERT INTO customers VALUES (5,'Boeing');
+INSERT INTO customers VALUES (6,'Redhook');
+INSERT INTO customers VALUES (7,'Swedish Medical');
+INSERT INTO customers VALUES (8,'Allstate');
+INSERT INTO customers VALUES (9,'Systems Block');
+INSERT INTO customers VALUES (10,'Franciscan');
+INSERT INTO customers VALUES (11,'customer');
+INSERT INTO customers VALUES (12,'Swedish');
+INSERT INTO customers VALUES (13,'WLUC');
+INSERT INTO customers VALUES (14,'Fred Hutch');
+INSERT INTO customers VALUES (15,'Kimberly Clark');
+INSERT INTO customers VALUES (16,'Kodiak Borou.');
+INSERT INTO customers VALUES (17,'Matsushita');
+INSERT INTO customers VALUES (18,'Kodiak Island');
+INSERT INTO customers VALUES (19,'Overlake Hospital');
+INSERT INTO customers VALUES (20,'FHCRC');
+INSERT INTO customers VALUES (21,'St Clare');
+INSERT INTO customers VALUES (22,'Accurate Building');
+INSERT INTO customers VALUES (23,'Kirkland Gateway Office Building');
+INSERT INTO customers VALUES (24,'Fouchee & As');
+INSERT INTO customers VALUES (25,'Microsoft');
+INSERT INTO customers VALUES (26,'Corixa');
+INSERT INTO customers VALUES (27,'Seattle Symp');
+INSERT INTO customers VALUES (28,'Allstate Insurance');
+INSERT INTO customers VALUES (29,'Infections Ltd.');
+INSERT INTO customers VALUES (30,'Physcian Me');
+INSERT INTO customers VALUES (31,'Intel');
+INSERT INTO customers VALUES (32,'Schroeder U');
+INSERT INTO customers VALUES (33,'M K Ferguson');
+INSERT INTO customers VALUES (34,'SDL Corp');
+INSERT INTO customers VALUES (35,'Lease Crutcher');
+INSERT INTO customers VALUES (36,'Donald Drake');
+INSERT INTO customers VALUES (37,'KBI Interior');
+INSERT INTO customers VALUES (38,'Michaelson');
+INSERT INTO customers VALUES (39,'Baugh');
+INSERT INTO customers VALUES (40,'Turner');
+INSERT INTO customers VALUES (41,'Mckinstry');
+INSERT INTO customers VALUES (42,'M.A. Mortenson');
+INSERT INTO customers VALUES (43,'Weapons Safety');
+INSERT INTO customers VALUES (44,'Walker Richer');
+INSERT INTO customers VALUES (45,'Providence');
+INSERT INTO customers VALUES (46,'Nicholett Jewelry');
+INSERT INTO customers VALUES (47,'Fred Hutchins');
+INSERT INTO customers VALUES (48,'Colby Sq/JD');
+INSERT INTO customers VALUES (49,'Tully\'s');
+INSERT INTO customers VALUES (50,'Sisters of Providence');
+INSERT INTO customers VALUES (51,'Providence Medical');
+INSERT INTO customers VALUES (52,'Martin Selig');
+INSERT INTO customers VALUES (53,'GeoEnergy');
+INSERT INTO customers VALUES (54,'Seattle Yacht');
+INSERT INTO customers VALUES (55,'Hedreen');
+INSERT INTO customers VALUES (56,'UMC');
+INSERT INTO customers VALUES (57,'Strand');
+INSERT INTO customers VALUES (58,'H.S. Wright');
+INSERT INTO customers VALUES (59,'H.Lease');
+INSERT INTO customers VALUES (60,'D. Mowatt');
+INSERT INTO customers VALUES (61,'Fluor');
+INSERT INTO customers VALUES (62,'Pacific Ventures');
+INSERT INTO customers VALUES (63,'Aldrch/Assoc');
+INSERT INTO customers VALUES (64,'Howard Lease');
+INSERT INTO customers VALUES (65,'Prime');
+INSERT INTO customers VALUES (66,'Davis Court');
+INSERT INTO customers VALUES (67,'Howard Wright');
+INSERT INTO customers VALUES (68,'Wick');
+INSERT INTO customers VALUES (69,'Venetian');
+INSERT INTO customers VALUES (70,'Dawson');
+INSERT INTO customers VALUES (71,'Gall Landau');
+INSERT INTO customers VALUES (72,'CBS');
+INSERT INTO customers VALUES (73,'Swinerton \\& Wallberg');
+INSERT INTO customers VALUES (74,'Swinerton \\& Wallberg');
+INSERT INTO customers VALUES (75,'P. Kiewit');
+INSERT INTO customers VALUES (76,'Ferrell-Penning');
+INSERT INTO customers VALUES (77,'Lease Crutcher Kisse');
+INSERT INTO customers VALUES (78,'Absher');
+INSERT INTO customers VALUES (79,'Max Kuney');
+INSERT INTO customers VALUES (80,'Eberharter');
+INSERT INTO customers VALUES (81,'Gilbert Moen');
+INSERT INTO customers VALUES (82,'Hoffman Const');
+INSERT INTO customers VALUES (83,'Morrisson Kudd Const');
+INSERT INTO customers VALUES (84,'West Wind');
+INSERT INTO customers VALUES (85,'D. Drake');
+INSERT INTO customers VALUES (86,'McCann');
+INSERT INTO customers VALUES (87,'Huff Const');
+INSERT INTO customers VALUES (88,'Hoffman');
+INSERT INTO customers VALUES (89,'GW Const');
+INSERT INTO customers VALUES (90,'Austin Co');
+INSERT INTO customers VALUES (91,'Selig/MSRE');
+INSERT INTO customers VALUES (92,'Gall Landau Young');
+INSERT INTO customers VALUES (93,'Abshear Const');
+INSERT INTO customers VALUES (94,'Paschen');
+INSERT INTO customers VALUES (95,'Century');
+INSERT INTO customers VALUES (96,'Rogers-Babbler');
+INSERT INTO customers VALUES (97,'HSWCC');
+INSERT INTO customers VALUES (98,'Koll Const');
+INSERT INTO customers VALUES (99,'Peoples Bank');
+INSERT INTO customers VALUES (100,'Berkley Struct');
+INSERT INTO customers VALUES (101,'HSW');
+INSERT INTO customers VALUES (102,'Shea-Emerick');
+INSERT INTO customers VALUES (103,'Superior Air');
+INSERT INTO customers VALUES (104,'Seattle Steel');
+INSERT INTO customers VALUES (105,'Glad Co');
+INSERT INTO customers VALUES (106,'Barry Lamb Inc');
+INSERT INTO customers VALUES (107,'Lydig Const');
+INSERT INTO customers VALUES (108,'Cont Heller');
+INSERT INTO customers VALUES (109,'Baugh/Koll');
+INSERT INTO customers VALUES (110,'Morstenson');
+INSERT INTO customers VALUES (111,'M.A. Segale');
+INSERT INTO customers VALUES (112,'Umc-Boise');
+INSERT INTO customers VALUES (113,'UMC-Ecova');
+INSERT INTO customers VALUES (114,'Holaday Parks');
+INSERT INTO customers VALUES (115,'PM');
+INSERT INTO customers VALUES (116,'UMC-Turner');
+INSERT INTO customers VALUES (117,'Sewell Const');
+INSERT INTO customers VALUES (118,'Newland Const');
+INSERT INTO customers VALUES (119,'S.G. Taylor');
+INSERT INTO customers VALUES (120,'Crownover');
+INSERT INTO customers VALUES (121,'Fletcher Wright');
+INSERT INTO customers VALUES (122,'Foster Wheel');
+INSERT INTO customers VALUES (123,'DPR');
+INSERT INTO customers VALUES (124,'McCarthy');
+INSERT INTO customers VALUES (125,'Rognlins');
+INSERT INTO customers VALUES (126,'NBBJ');
+INSERT INTO customers VALUES (127,'US Pacific Bldr');
+INSERT INTO customers VALUES (128,'Delete');
+
+#
+# Table structure for table 'dbnames'
+#
+CREATE TABLE dbnames (
+  dbnames_id int(11) NOT NULL auto_increment,
+  dbname char(50),
+  PRIMARY KEY (dbnames_id)
+);
+
+#
+# Dumping data for table 'dbnames'
+#
+
+INSERT INTO dbnames VALUES (1,'UMC DETAILING CD\'s (DET)');
+INSERT INTO dbnames VALUES (2,'Consultants (CON)');
+INSERT INTO dbnames VALUES (3,'UMC CD\'s (DSG)');
+INSERT INTO dbnames VALUES (4,'Misc (MSC)');
+
+#
+# Table structure for table 'department'
+#
+CREATE TABLE department (
+  department_id int(11) NOT NULL auto_increment,
+  department_name char(50) DEFAULT '' NOT NULL,
+  PRIMARY KEY (department_id)
+);
+
+#
+# Dumping data for table 'department'
+#
+
+INSERT INTO department VALUES (1,'Detailing');
+INSERT INTO department VALUES (2,'Design Build');
+INSERT INTO department VALUES (3,'Accounting');
+
+#
+# Table structure for table 'jobinfo'
+#
+CREATE TABLE jobinfo (
+  jobinfo_id int(11) NOT NULL auto_increment,
+  cdinfo_id int(11) DEFAULT '0' NOT NULL,
+  job_num char(30),
+  job_name char(100),
+  customer int(11),
+  manager char(50),
+  year_ended int(11),
+  b_dwg char(4),
+  b_txt char(4),
+  b_jpg char(4),
+  b_tif char(4),
+  b_bmp char(4),
+  b_oth char(4),
+  PRIMARY KEY (jobinfo_id)
+);
+
+#
+# Dumping data for table 'jobinfo'
+#
+
+INSERT INTO jobinfo VALUES (1,2,'1436','Swedish Hospital-Phase V',12,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (2,2,'1436-asb','Swedish Hospital-Phase V',12,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (3,2,'1439','Art Institute of Seattle-Culinary School',4,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (4,2,'1465','Boeing-Corporate Office',5,'TG',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (5,2,'1475','Boeing Kent-New Chiller Bldg-18-54',5,'TG',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (6,2,'1482','Redhook N.Hamp-Boiler System',6,'JB',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (7,2,'1483','Redhook-Underslab/Piping',6,'JB',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (8,2,'1484','Swedish Medical-Heath Bldg HT WTR',7,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (9,2,'1507','Allstate FIS',8,'DM',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (10,2,'','Systems Block Retail',9,'BC',1997,'yes','no','yes','no','no','no');
+INSERT INTO jobinfo VALUES (11,2,'1527-old','Systems Block Retail',9,'BC',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (12,5,'1567','FHCRC-Phase II',14,'DP',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (13,5,'1583','Redhook-MCC Room AC',6,'JB',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (14,5,'1589','KC-Cumulator Platform Brackets',15,'RG',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (15,5,'1612','Boeing 17-06 Internal Tank Piping',5,'JE',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (16,5,'1634','Kodiak Island Hospital Renovation',16,'JB',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (17,5,'1635','Masca Fab D',17,'JE',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (18,6,'1830','Kodiak Hosp-Cogen Heat Recovery',18,'JB',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (19,6,'1838OHMC','Overlake-Ancillary Projects Design',19,'JB',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (20,6,'1897','Yale Bldg 2nd & 3rd',20,'DP',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (21,6,'1897-rev','Yale Bldg 2nd & 3rd',20,'DP',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (22,6,'1911','St Clare Radiology Room',21,'DM',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (23,6,'1929','Boeing 2-25 Design',5,'BC',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (24,6,'1949','Swedish-Annex HR Expansion',12,'DP',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (25,6,'1951','Swedish-Ballard Atrium/Library',12,'DP',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (26,6,'1952','Swedish-Cardiac Surgeon Suite',12,'DP',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (27,6,'1955','1550 Eastlake T.I.',22,'KM',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (28,6,'1959','Fisher 3400 Driftwood',1,'KM',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (29,6,'1963','Kirkland Gateway Office Building',23,'RH',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (30,6,'1968','Swedish-1120 Cherry Bldg. Cooling Load',12,'DP',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (31,6,'1969','Ste 3400 bldg-Emerald Mortgage',1,'KM',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (32,6,'1982-01Noninvaisive','OHMC-Non-Evasive',19,'BC/RH',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (33,6,'1986','St Joesph Transcend Room for Telecom',10,'DP',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (34,6,'2034','OHMC-Finance Design',19,'RH',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (35,6,'2035core','OHMC-Core Offices Design',19,'RH',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (36,6,'2038','OHNC-West Wing Design',19,'RH',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (37,6,'2063','Youth Theatre Design',24,'ST',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (38,6,'2251','',2,'',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (39,6,'K-187','',2,'',1999,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (40,7,'1300','Walker Richer Quinn-Fifth Floor',1,'TG',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (41,7,'1463','DPR-Fred Hutch-95 Lab Revisions',14,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (42,7,'1502','Microsoft 456 Remodel',25,'TG',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (43,7,'1513','FHCRC Smith & Greene Bldg',20,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (44,7,'1545','Corixa Corporate Facility',26,'DP',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (45,7,'1570','Benaroya Concert Hall',27,'JB',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (46,7,'1573','WRQ-1st Floor',1,'DM',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (47,7,'1616','KC-EM 1/2 Upgrades,HVAC Duct',15,'RG',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (48,7,'1659','FHCRC-HVAC Changes in Room B1-450',14,'DP/DM',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (49,7,'1665','Boeing Kent-18-54 Phace IV',5,'TG',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (50,7,'1689','Allstate Insurance Company',28,'DM',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (51,7,'1723','Infections Limited',29,'DM',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (52,7,'1739','St. Joesph-Replace Water Piping',10,'DP',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (53,7,'1743','Boeing-1501 Chiller',5,'PD',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (54,7,'1747','PMC Building-Dr.Lewis',30,'DM',1997,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (55,7,'1780','St. Joesph-Ambulatory Care',10,'KS/DP',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (56,7,'1781','St. Joesph-Subacute Care',10,'KS/DP',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (57,7,'1830','Kodiak Hosp-Cogen Heat Recovery',0,'JB',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (58,7,'1830','Kodiak Hosp-Cogen Heat Recovery',18,'JB',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (59,7,'1837-DP3','Intel DP3',31,'JE/RH',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (60,7,'1843','Bellevue Galleria',32,'JE',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (61,8,'1864','Swedish-Central Sterile Remodel',12,'KS/DP',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (62,8,'1892','FHCRC-4th Floor',20,'DP',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (63,8,'','Boeing',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (64,8,'','CD-151',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (65,8,'','FHCDAY',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (66,8,'','FHCRC2',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (67,8,'','HCWL',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (68,8,'','Hypribric',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (69,8,'','k177-VA',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (70,8,'','Lakridge',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (71,8,'','Masca',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (72,8,'','Masca-asbuilts',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (73,8,'1613','Pcfplace',2,'JB',1998,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (74,8,'','Service',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (75,8,'','Stjoe',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (76,31,'1039','Westlake Union Center-Design',3,'FC',1992,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (77,31,'1040','Allstate Building Remodel',33,'BC',1992,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (78,31,'1053','U of W \"H\" wing',34,'BG',1993,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (79,31,'1057','Boeing 17-66 Base Bldg',34,'BC',1992,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (80,31,'1092','Pac Car-Kenworth Truck',35,'DP',1993,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (81,31,'1116','Beoing 493/471 Bluestreak',5,'BG',1993,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (82,31,'1185','Westlake Union Center-Construction',3,'TG',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (83,31,'1195','Swedish Medical Phase III, SE Wing Addition',3,'DP',1993,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (84,31,'1203','Boeing 45-04 Rudder Shop',5,'EDK',1993,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (85,31,'1220','Boeing 45-07',5,'DM',1993,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (86,31,'1243','Bothell Allstate-Remodel',3,'BC',1993,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (87,31,'1244','Everett Mutual Tower',34,'DP',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (88,31,'1246','PSNS Support Facility',36,'PM',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (89,31,'1260','Allen Estate-Lake House Renovation',35,'JB',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (90,31,'1268','Westlake T.I.',3,'TG',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (91,31,'1270','2nd and Columbia',37,'TG',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (115,31,'1454','Everett Mutual-Tully\'s Coffee',0,'',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (93,31,'1273','Covenant Shores Retirement',38,'EDK',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (94,31,'1280','Boeing 14-01',39,'BC',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (95,31,'1293','Everett Mutual T.I.',34,'DP',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (96,31,'1296','Fred Hutch-Biologics',35,'DP',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (97,31,'1300','Walker Richer Quinn-Fifth Floor',40,'TG',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (98,31,'1311','Microsoft West-Plumbing',41,'PM',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (99,31,'1313','Federal Detention Center',42,'SK',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (100,31,'1314','Weapons Safety-Design',43,'DM',1994,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (101,31,'1318','Saint Claire Hospital',3,'DP',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (102,31,'1360','WLUC-Us West Fiberoptics Hub Room',3,'TG',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (103,31,'1366','Walker Richer Quinn-Fourth Floor Westlake',40,'TG',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (104,31,'1399','WRQ-3rd Floor @ WLUC',44,'TG',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (105,31,'1404','Providence Medical-T.I.',45,'DP',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (106,31,'1421','Walker Richer Quinn-As-builts',1,'DM',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (107,31,'1425','Everett Mutual-Nicholett Jewelry',46,'DP',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (108,31,'1427','Kodiak Hospital',16,'JB',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (109,31,'1434','Providence Hosp-Admin Reloc 5th Flr',45,'DP',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (110,31,'1436','Swedish Hospital-Phase V',12,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (111,31,'1439','Art Institute of Seattle-Culinary School',4,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (112,31,'1443','FHCRC-Hutch Kids Childcare Ctr',47,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (113,31,'1452','EMT-State Farm Floor 7',48,'DP',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (116,31,'1454','Everett Mutual-Tully\'s Coffee',0,'',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (117,31,'1454','Everett Mutual-Tully\'s Coffee',0,'',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (118,31,'1454','Everett Mutual-Tully\'s Coffee',49,'DM',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (119,31,'1456','Providence-Cath Lab Remodel',50,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (120,31,'1458','AEA Bank @ Westlake Union Center',1,'TG',1995,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (121,31,'1463','DPR-Fred Hutch-95 Lab Revisions',47,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (122,31,'767','Fred Hutch Cancer Research Cntr',39,'EDK',1992,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (123,31,'787','Fred Hutch Mass Spec Alts',14,'EDK',1991,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (124,31,'793','Boeing Everett Office Complex',5,'BC',1992,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (125,31,'365','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (126,31,'398','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (127,31,'418','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (128,31,'569','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (129,31,'593','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (130,31,'623','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (131,31,'690','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (132,32,'1475','Boeing Kent-New Chiller Bldg-18-54',5,'TG',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (133,32,'1502','Microsoft 456 Remodel',25,'TG',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (134,32,'1511','Providence Sports & Spine',51,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (135,32,'1513','FHCRC Smith & Greene Bldg',20,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (136,32,'1521','Providence Dr Li',51,'DP',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (137,32,'1537','4th & Battery Design',52,'DM',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (138,32,'1594','GeoEnergy-Phase VII',53,'BS',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (139,32,'1602','Seattle Yacht Club',54,'DM',1996,'yes','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (140,32,'','Agena',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (141,32,'','Allen',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (142,32,'J-357','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (143,32,'J-514','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (144,32,'J-525','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (145,32,'J-543','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (146,32,'J-706','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (147,32,'J-809','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (148,32,'J-894','',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (149,32,'','Lnidr',2,'',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (150,42,'566','Radar Air Traffic Control Center',2,'',1971,'no','yes','no','yes','no','no');
+INSERT INTO jobinfo VALUES (151,42,'603','Whidbey Island',55,'JP',1972,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (152,42,'635','B.P. Alaska INC',56,'DB',1974,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (153,42,'691','FHCRC',14,'HAC',1974,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (154,42,'694','Solete Candy',57,'DG',1973,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (155,42,'699','Martin Properties',58,'JVP',1974,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (156,42,'701','Group Health',59,'',1974,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (157,42,'703','TDI',2,'GG',1974,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (158,42,'738','B.P. Alaksa INC',56,'JVP',1975,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (159,42,'759','Martin Properties 4th & Vine',58,'JVP',1974,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (160,42,'833','Freeway Park',60,'GG',1975,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (161,42,'855','U.S. Navy',61,'GG',1975,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (162,42,'856','U.S. Coast Guard',62,'DG',1975,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (163,42,'859','Sand Point Dept of Navy',63,'DAP',1975,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (164,42,'871','Ste Michelle Winery',58,'GG',1975,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (165,42,'922','Rainier Bank Corp',64,'DG',1976,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (166,42,'924','Smith Hall',65,'DG',1976,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (167,42,'946','Bon',56,'DG',1976,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (168,42,'961','Mount Vernon',66,'DG',1976,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (169,42,'','Cathay House Restaurant',2,'',1976,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (170,42,'','South Seattle Community College',2,'',1974,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (171,42,'','US Post Office Terminal Annex',2,'',1975,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (172,43,'144','FSCI',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (173,43,'419','Allen Estate',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (174,43,'518','UW Phase II',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (175,43,'571','UW Law Library',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (176,43,'611','TDI',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (177,43,'867','Orca Lounge & Restaurant',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (178,43,'995','Thousand Trails',67,'BG',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (179,43,'J-185','Ecova Skid',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (180,43,'J-387','Boeing Bunker \"C\" Fuel storage Facility',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (181,43,'','1st & Stewart',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (182,43,'','4th flr Madison Medical Office Bldg',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (183,43,'','Boeing Bldg 17-06',5,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (184,43,'','Boeing Vacuum',5,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (185,43,'','Cornerstone Tower',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (186,43,'','Eastlake Center 2',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (187,43,'','Edpac Process Cooling for Computers',2,'FC',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (188,43,'','Elliott Park South',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (189,43,'','First Seattle Assoc Tower',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (190,43,'','Fisher Business Center Lynnwood',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (191,43,'','Fuel Oil Piping Ballard Community Hospital',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (192,43,'','Harbor Steps Plumbing',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (193,43,'','Hart-Crowser Bldg',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (194,43,'','King County Multi-Service Center',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (195,43,'','L-C-Smith Building',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (196,43,'','Market Place North',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (197,43,'','Mendenhall Apartments Juneau Alaska',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (198,43,'','No Job Number',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (199,43,'','Segale 862 Bldg',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (200,43,'','Swedish Medical Center',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (201,43,'','Three Tree Med. Arts Bldg',2,'',2000,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (202,44,'006','Baranof-Engineering',68,'DB',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (203,44,'017','FHCRC',59,'LRB',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (204,44,'018','United Transportation INC',69,'AI',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (205,44,'023','Lakeside Schools',3,'LRB',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (206,44,'030','Wall Street Journal',68,'DG',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (207,44,'066','Waterfall Garden',3,'JVP',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (208,44,'080','Klawock Hatchery',70,'GG',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (209,44,'102','Seattle Center',71,'DG',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (210,44,'110','Sea-Tac Motor Inn',2,'',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (211,44,'124','Evergreen Moblie',56,'AI',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (212,44,'154','Boeing 17-12 BCAO',5,'MG',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (213,44,'156','Boeing 17-06',5,'GG',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (214,44,'163','City Credit Union of Seattle',72,'MG',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (215,44,'205','Sea-Tac Office Center',39,'FC',1979,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (216,44,'227','Westland Bldg',71,'FC',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (217,44,'246','United Pacific Reliance Insurance Company',0,'DG',1979,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (218,44,'249','Norton Bldg',56,'DAP',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (219,44,'273','HMC North Wing',75,'LRB',1979,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (220,44,'291','Boeing Bldg 17-07',3,'MG',1979,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (221,44,'293','Boeing Bldg 40-30',5,'DG',1979,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (222,44,'401','Hewlett Packard',36,'DG',1979,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (223,44,'442','Pacific Venture',62,'FC',1979,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (224,44,'952','University Book Store',3,'AI',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (225,44,'957','Coast Guard',76,'DG',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (226,44,'966','Bellevue City Hall',59,'FC',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (227,44,'991','UW',56,'GG',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (228,44,'','Kenworth Test Track',2,'',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (229,44,'','Parkwood Plaza',2,'',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (230,44,'','Seattle Center Flag Pavillon',2,'',1977,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (231,44,'','Service Center-Snohomish Coors Co',2,'',1978,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (232,45,'196','Portland G.E.',2,'',1980,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (233,45,'394','US Navy',2,'',1980,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (234,45,'445','Paccar',77,'JVP',1980,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (235,45,'516','Elliott Bay Office Park',58,'FC',1980,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (236,45,'563','Portland Hydoelectric',62,'DAP/BC',1980,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (237,45,'610','Washington Plaza',58,'LRB',1981,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (238,45,'615','Western State Hospital',78,'MG',1980,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (239,45,'636','Monsanto Company',56,'BC/DAP',1980,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (240,45,'695','NW Hospital',3,'LRB',1981,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (241,45,'760&886','Robbins Machine Inc',77,'TB',1981,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (242,45,'810','J.A. Jack',2,'',1981,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (243,45,'819','Aritc Building Alterations',3,'DG',1981,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (244,46,'798','WPPSS',79,'JVP',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (245,46,'807','Cristwood Senior Housing',3,'BG',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (246,46,'818','Alaska Bldg',3,'MG',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (247,46,'821','Pantages Theatre, Tacoma',80,'DG',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (248,46,'839','The Waterfront Center',3,'FC',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (249,46,'843','Pacific Place Bellevue',39,'FC',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (250,46,'863','Waterfront Center One',3,'DG',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (251,46,'876','Dept of Energy Fuel & Materials',81,'JVP',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (252,46,'878','Peoples Computer Center (1986)',39,'FC/GG',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (253,46,'904','Tacoma General Hospital',82,'MG',1982,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (254,47,'888-895','Mar Support Facilities',83,'LRB',1983,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (255,47,'923','Columbia Center',58,'MG',1983,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (256,47,'930','Highline Hospital',3,'BG',1983,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (257,47,'949','Tacoma Finanical Center',3,'JVP',1983,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (258,47,'969','Waterfront Center One',2,'',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (259,47,'972','Ballard Hospital (1984)',3,'LRB',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (260,47,'973','Providence Hospital',39,'FC',1983,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (261,47,'977','Peoples National Bank',56,'FC',1983,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (262,47,'978','Jordan Creek Mall',84,'DG',1983,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (263,47,'984','Hewlett Packard',77,'JVP',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (264,47,'994','Airborne',67,'BG',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (265,47,'','Federal Way Office Bldg',2,'',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (266,47,'','Providence Orhtropedic Unit',2,'',1983,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (267,48,'003','Baranof-Fire Damage',68,'DB',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (268,48,'029','Waterfront Center II',3,'FC',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (269,48,'032','Pacific NW Bell',85,'DG',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (270,48,'043','Fisher Bldg Fire Prot. & S.M. Dwgs',3,'JVP',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (271,48,'058','Honeywell',86,'BG',1985,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (272,48,'071','Leschi D & E Bldg',87,'BG',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (273,48,'092','12th & Pine',56,'FC',1985,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (274,48,'116','Textronix, Inc',88,'FC',1985,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (275,48,'122','Dag\'s Restaurant',89,'FC',1985,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (276,48,'126','Valley Office Park II / B.C.S.',90,'RB',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (277,48,'128','Occidental South M & P Dwgs (1986)',3,'FC',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (278,48,'136/252','Columbia Center (1986)',91,'MG/BC',1985,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (279,48,'139','Oak Harbor Terminal M Dwgs (1986)',92,'PB',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (280,48,'148','Olympic Community Senior Center',93,'DG',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (281,48,'160','Convention Center',94,'MG',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (282,48,'166','Old Y Bldg Moderization',95,'DG',1985,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (283,49,'176','Fairbanks Utilidor (feb 88)',96,'JVP',1985,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (284,49,'190','Seattle Trust (1987)',97,'BC',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (285,49,'209','Seattle Trust Tenant',97,'BC',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (286,49,'218','Boeing 9-101 East Annex (1986)',5,'DG',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (287,49,'242','Auburn Downs',3,'JVP',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (288,49,'250','Terminal 101',58,'FC',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (289,49,'260','B.C.S. II P&M Dwgs (1987)',90,'BG',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (290,49,'261','1420-5th Ave Bldg',3,'MG/BC',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (291,49,'269','Boeing 2-25/2-31',5,'JVP',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (292,49,'297','Koll 1-95',98,'TJ',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (293,49,'298','Koll Group Health Bldg',98,'TJ',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (294,49,'299','Peoples Bank-Woodinville',99,'TJ',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (295,49,'317','Peoples Bank-Bellevue',99,'TJ',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (296,49,'322','University Prep',2,'',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (297,49,'329','P.I. Remodel',100,'TJ',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (298,49,'333','Kingdome Loges',42,'DG',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (299,49,'337','Seafirst 5th Ave Plaza-5th Level or 34th Flr',39,'RT',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (300,49,'339','Bon Marche Metro Base',39,'DG',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (301,49,'360','Seafirst Fab 5 (service dept) (1987)',39,'RT',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (302,49,'365','Gateway Tower',97,'MG/BC',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (303,50,'367','Air Products Lin Backup (Aug 87)',2,'RMC',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (304,50,'368','Fisher Flour-Hvac Floor Plan',3,'TJ/FC',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (305,50,'378','University Prep',2,'',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (306,50,'383','Metropolitan Park East II M&P Dwgs',101,'PM',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (307,50,'385','Boeing MCTD (1987)',5,'RMC',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (308,50,'387','Chase Manhatten',98,'TJ',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (309,50,'398','W.S.U. Chemistry Bldg',102,'BG',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (310,50,'405','Fisher Flour Phase II',3,'TJ',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (311,50,'415','Fort Lewis Rip Incin',2,'RMC',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (312,50,'416','Two Union Sq (1988)',103,'MG/BC',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (313,50,'418','St. Joesph Hospital',3,'FC',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (314,50,'422','Seafirst Bank Silverdale',39,'TJ',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (315,50,'425','Seattle Steel',104,'TB',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (316,50,'436','Olympic Tower Remodel',105,'FC',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (317,50,'472','Providence Medical Center Morgue',3,'TJ/FC',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (318,50,'485','Linde Home Care-Fisher',3,'TJ',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (319,50,'491','Semi Conductor Puyallup',77,'BG',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (320,50,'500','Contel-Fisher',3,'TJ',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (321,50,'502','Fisher Flour Warehouse',3,'TJ',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (322,51,'512','National Semiconductor Phase II',77,'BG',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (323,51,'517','Providence Hospital Hvac (1991)',3,'FC',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (324,51,'539','Allstate Tenant Improvements',3,'TJ',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (325,51,'540','University Prep',2,'',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (326,51,'546','MASCA',2,'',1997,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (327,51,'553','Boeing 40-56',5,'BG',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (328,51,'557','Mirage Princeville Hotel',2,'PM',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (329,51,'560','Boeing 17-45 (Sheet Metal)',5,'JVP',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (330,51,'564','A.T.I. at Fisher Industrial',3,'DG',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (331,51,'572','Computer Facility-U of W 4545 Bldg',106,'TJ',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (332,51,'585','Boeing 10-65 Bldg Renton (1989)',5,'RLG',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (333,51,'593','Boeing 18-01 Office Bldg',5,'MG',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (334,51,'594','Boeing Autoclave #6 Contract Dwgs',5,'RMC',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (335,52,'605','Boeing/Auburn As-builts, P&ID\'S (1989)',5,'JVP',1989,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (336,52,'621','Washington State Convention Center',80,'RT',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (337,52,'623','Boeing Co Bldg 17-68',5,'BG',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (338,52,'669','Boeing Co 40-03 Quality Control',5,'RT',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (339,52,'670','Boeing 40-60 Chilled Water',5,'BG',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (340,52,'687','Boeing Co Bldg 17-62',42,'JVP',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (341,52,'390','Delete',128,'Delete',2000,'no','no','no','no','no','no');
+INSERT INTO jobinfo VALUES (342,52,'690','Pacific Center, Bellevue',67,'TJ',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (343,52,'711','HGU-2 Biological Treatment System',56,'RMC',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (344,52,'728','Liquid Air Pipe Mods',56,'RMC',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (345,52,'731','Boeing Co Bldg 17-10',107,'RT',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (346,52,'734','Airport Ind, Park Assoc Hawaii',82,'PM',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (347,52,'758','University Prep Academy',63,'DM',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (348,52,'764','Tacoma Union Station',108,'BG',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (349,52,'767','FHCRC (1991)',109,'EDK',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (350,52,'776','Solar Energy Research Institute',56,'RMC',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (351,52,'787','Fred Hutch Mass Spectrometer',14,'EDK',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (352,52,'792','Digester Dirrect Steam Revision Scoot Paper Co',56,'RMC',1988,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (353,52,'1009','NW Hospital',3,'EK/JB',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (354,52,'1016','Boeing Airplane Co',5,'SK',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (355,52,'1039','WLUC As-builts M&P',3,'FC',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (356,53,'1047','Boeing Research Aerodynamic Icing Tunnel (Brixit)',5,'RC',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (357,53,'1050','Boeing Chem. Mill Tankline (1992)',5,'RC',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (358,53,'1053','U of W \"H\" Wing',34,'BG',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (359,53,'1055','Ecova',56,'RC',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (360,53,'1057','Boeing 17-66 Base Bldg',5,'BC',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (361,53,'1068','Kaneohe Commissary Hawaii',82,'PM',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (362,54,'1070','West Point WWTP',42,'SK',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (363,54,'1092','Paccar/Kenworth Originals',77,'MG',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (364,54,'1107','Boeing Co 40-60 Chiller Add',5,'BC',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (365,54,'1116','Boeing 493-471 Bluestreak',5,'BG',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (366,54,'1178','Boeing Longacres',111,'DP',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (367,54,'1179','Boise Cascade / Saveall',112,'TB',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (368,54,'1182','Westlake Union Center',56,'BC',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (369,54,'1185','Westlake Union Center',3,'TG',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (370,54,'1190','Leachate Treatment System',113,'RC',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (371,54,'1195','Swedish Hospital Phase III',3,'DP',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (372,54,'1202','Harbor Steps Utility Relocate',34,'EDK',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (373,54,'1203','Boeing 45-04 Rudder Shop',114,'EDK',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (374,54,'1235','WRQ Design-Fisher',40,'EDK/JB',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (375,55,'1243','Allstate-Bothell',3,'BC',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (376,55,'1244','Everett Mutual/Colby Tower',34,'BC',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (377,55,'1245','Boeing Bldg 2-80',5,'RMC',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (378,55,'1246','PSNS Support Facility',115,'Donald Drake',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (379,55,'1259','WSRC Vapor Phase Bioreacter',113,'RMC',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (380,55,'1260','Allen Estate',77,'DC',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (381,55,'1265','Boeing Tank Farm',5,'RC',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (382,55,'1268','WLUC-Fisher',3,'TG',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (383,55,'1270','2nd & Columbia',37,'BC',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (384,55,'1273','Covenant Shores Retirement Community',38,'EDK',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (385,56,'1280','Boeing 14-01',5,'BC',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (386,56,'1293','Everett Mutual Tower T.I.',34,'DP',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (387,56,'1294-1','Everett Mutual Bank',3,'',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (388,56,'1296','FHCRC Biologics Production Facility',77,'DP',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (389,56,'1300','WRQ 5th Floor-Fisher',116,'TG',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (390,56,'1305','Boeing 40-12/40-30',5,'JB',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (391,56,'1310','Swedish Phase IV, B',3,'DP',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (392,56,'1311','Microsoft West',41,'PM',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (393,56,'1313','Federal Detection Center',42,'TG',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (394,56,'1314','Weapons Safety Inc',43,'DM',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (395,56,'1318','St. Claire Hospital',3,'PP',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (396,56,'1365','WLUC Fluid Coolers Install-Fisher',1,'TG',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (397,56,'1400','Boeing Bldg 15-01',5,'BC',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (398,56,'1425','Everett Mutual Tower Nicholett Jewerly',117,'PP',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (399,56,'1427','Kodiak',34,'JB',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (400,56,'1434','Providence-Admin 5th Floor',118,'DP',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (401,56,'1436','Swedish Phase V',3,'DP',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (402,56,'1439','Art Institute of Seattle-Culinary School',77,'DP',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (403,56,'1443','Hutch Kids Childcare Center',119,'DMP',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (404,56,'1458','AEA Bank at WLUC',120,'TBG',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (405,56,'1464-2','Boeing',5,'TG',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (406,56,'1468','Providence-Catscan',121,'DP',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (407,56,'1482','Redhook',6,'JB',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (408,56,'1483','Redhook-Woodinville',6,'JB',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (409,56,'1498','Foster-Steam Injection Pilot Plant',122,'SK',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (410,56,'1511','Providence-Sports & Spine',121,'DP',1996,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (411,56,'','University Prep',2,'',1990,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (412,57,'1520','Swedish Hospital Phase V',3,'DP',1996,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (413,57,'1545','Corixa',123,'DP',1996,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (414,57,'1583','Redhook/MCC ac City of Woodinville',6,'JB',1996,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (415,57,'1613','Pacific Place',3,'JB',1996,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (416,57,'1677','Suite 120',119,'DM',1997,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (417,57,'1700','Harborview',2,'BC/EW',1997,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (418,57,'1816','Swedish Or\'s West 3 & West 4',3,'KS/DP',1997,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (419,57,'1843','BEllevue Galleria',124,'JE',1998,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (420,57,'1921','Boeing-335',5,'JE',1998,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (421,57,'1945','Grays Harbor Hospital',125,'JE',1998,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (422,57,'1951','Swedish-Ballard Atrium',3,'DP',1998,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (423,57,'1992','Swedish Call Center',3,'RH',1999,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (424,57,'2037','Overlake Hospital Medical Center',126,'RH',1999,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (425,57,'J-245','Allen Estate',2,'',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (426,57,'J-894','Smith Tower',2,'',1996,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (427,57,'K-132','Highline Mental Health Center',2,'DMM',1997,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (428,57,'','American Express',2,'',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (429,57,'','Boeing Bldg 3-335',5,'',1998,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (430,57,'','Boeing 18-54',5,'',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (431,57,'','Fiber Optic Hub Room-Fisher Properties',2,'',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (432,57,'','Fisher Bussiness Center-B',2,'',1985,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (433,57,'','I.Magnim Furs',2,'',1987,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (434,57,'','Lake Union Waterworks Marina',2,'',1984,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (435,57,'','Marina Mart Bldg-Fisher',2,'',1991,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (436,57,'','Mike Granston',2,'',1992,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (437,57,'','Rose Court Allen Estate',2,'',1993,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (438,57,'','Seattle Trade Center',2,'',1995,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (439,57,'','SMC-3rd Floor West Wing',2,'',1996,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (440,57,'','Smoking Point Restaurant',2,'',1994,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (441,57,'','South Fork II Inc',2,'',1986,'no','no','no','yes','no','no');
+INSERT INTO jobinfo VALUES (442,57,'','Valley Medical Office Bldg',2,'',1991,'no','no','no','yes','no','no');
+

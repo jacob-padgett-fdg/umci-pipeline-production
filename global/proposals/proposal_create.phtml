@@ -1,0 +1,36 @@
+<?
+
+$prop_num_force="";
+
+if ($old_prop=='true') {
+	if ($proposal_year=="") die('ERROR: old proposal, but no year specified. Please go <a href=javascript:history.go(-1)><font color=blue>back</font></a> and try again.');
+	$create_year=escapeshellcmd($proposal_year);
+	
+	if ($override_sequence_num!="") {
+		$override_sequence_num=escapeshellcmd($override_sequence_num);
+		$override_sequence_num=clean_int($override_sequence_num);
+		$sn_padded=str_pad($override_sequence_num,4,"0",STR_PAD_LEFT);
+		$prop_num_force=$create_year . $sn_padded;
+		}
+	} else {
+	$create_year=date('Y');
+	}
+
+$proposal_num=proposal_num_new($create_year);
+if ($prop_num_force!="") {
+	if ($prop_num_force>21000000) die("ERROR: Proposal number is out of range. Please contact your system administrator. (propnum: $prop_num_force).");
+	if ($prop_num_force<19800000) die("ERROR: Proposal number is out of range. Please contact your system administrator. (propnum: $prop_num_force).");
+	if (getoneb("select * from bidlist where proposal_num = '$prop_num_force'")) die ("ERROR: Proposal number already in use. Did you try to force it? Either way, contact your system administrator, or pick out a new proposal number for this proposal.");
+	$proposal_num=$prop_num_force;
+	}
+
+$status='Active';
+$create_date=date('Y-m-d');
+$creator=$global_user_id;
+$show_in_bidlist='N';
+$query="insert into bidlist set proposal_num = '$proposal_num',status='$status',create_date='$create_date',creator='$creator',show_in_bidlist='$show_in_bidlist'";
+@mysql_query($query);
+$id=@mysql_insert_id();
+forward("proposal_edit&bidlist_id=$id");
+exit;
+?>

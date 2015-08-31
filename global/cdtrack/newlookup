@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $# -ne 1 ] 
+	then
+	echo "Usage Error: go get a clue!" >&1 
+	exit 1
+fi
+
+ln -s lookup_add_entry_selected.phtml lookup_add_entry_$1.phtml
+ln -s lookup_delete_selected.phtml lookup_delete_$1.phtml
+ln -s lookup_edit_selected.phtml lookup_edit_$1.phtml
+ln -s lookup_selected.phtml lookup_$1.phtml
+ln -s lookup_update_selected.phtml lookup_update_$1.phtml
+

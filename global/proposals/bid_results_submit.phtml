@@ -1,0 +1,59 @@
+<?
+$bidlist_id=addslashes($bidlist_id);
+$pulled=checkfix($pulled);
+$air_only=checkfix($air_only);
+$hvac_only=checkfix($hvac_only);
+$plumb_only=checkfix($plumb_only);
+$bid_amount=clean_int($bid_amount);
+$direct_cost=clean_int($direct_cost);
+$company=addslashes($company);
+$notes=addslashes($notes);
+
+if ($bidlist_results_id!="") {
+	$bidlist_results_id=escapeshellcmd($bidlist_results_id);
+	$query="update bidlist_results set
+	bidlist_id = '$bidlist_id',
+	company = '$company',
+	bid_amount = '$bid_amount',
+	direct_cost = '$direct_cost',
+	pulled = '$pulled',
+	air_only = '$air_only',
+	hvac_only = '$hvac_only',
+	plumb_only = '$plumb_only',
+	notes = '$notes'
+	where bidlist_results_id = '$bidlist_results_id'";
+	} else {
+	$query="insert into bidlist_results set
+	bidlist_id = '$bidlist_id',
+	company = '$company',
+	direct_cost = '$direct_cost',
+	bid_amount = '$bid_amount',
+	pulled = '$pulled',
+	air_only = '$air_only',
+	hvac_only = '$hvac_only',
+	plumb_only = '$plumb_only',
+	notes = '$notes'";
+	}
+
+//echo "<hr>$query<hr>";exit;
+
+$res=@mysql_query($query);
+if (!($res)) die("ERROR: Query failed! Please contact your system administrator.<p>Failed query:<hr>$query<hr>");
+
+
+
+percent_off_calc($bidlist_id);
+
+
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+
+";
+
+
+
+
+?>

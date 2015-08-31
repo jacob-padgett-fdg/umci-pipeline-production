@@ -1,0 +1,30 @@
+<?
+
+
+//tabledump("select bidlist_id,project,start_date,complete_date,probability,rom from bidlist_cache where ( umc_bid_won = 'Y' or awarded = 'P') and ((start_date = '') or (complete_date = '') or (probability = Null) or (probability = '') or (rom_orig < 1))");
+$query="select bidlist_id,project,start_date,complete_date,probability,rom from bidlist_cache where ( umc_bid_won = 'Y' or awarded = 'P' or awarded = '' or awarded = Null) and ((start_date = '') or (complete_date = '') or (probability = Null) or (probability = '') or (rom_orig < 1)) and status != 'Dead Lead' and status != 'No Bid' and (jobinfo_id = '0' or jobinfo_id = Null)";
+$res=@mysql_query($query);
+
+echo "<table border=1>";
+while ($row=@mysql_fetch_object($res)) {
+	$proposal_info=load_proposal_info($row->bidlist_id);
+	if (($proposal_info->status=="Lead")||($proposal_info->status=="Dead Lead")) $view="lead";
+	else $view="proposal";
+	echo "<tr><td>
+			<a href=$pagename?mode=${view}_edit&bidlist_id=$proposal_info->bidlist_id><font color=blue>$proposal_info->prop_num_text</font></a>
+		</td><td>
+			$proposal_info->project&nbsp;
+		</td><td>
+			$proposal_info->start_date&nbsp;
+		</td><td>
+			$proposal_info->complete_date&nbsp;
+		</td><td>
+			$proposal_info->probability&nbsp;
+		</td><td>
+			$proposal_info->rom&nbsp;
+		</td><td>
+			$proposal_info->status
+		</td></tr>";
+	}
+echo "</table>";
+?>

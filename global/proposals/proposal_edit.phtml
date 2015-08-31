@@ -1,0 +1,166 @@
+<?
+require('querylib.inc');
+require('header.phtml');
+if (($proposal_num!="")&&($bidlist_id=="")) {
+	$proposal_num=addslashes($proposal_num);
+	$tmp=getone("select * from bidlist where proposal_num = '$proposal_num' order by bidlist_id desc limit 1");
+	$bidlist_id=$tmp->bidlist_id;
+	}
+
+if ($bidlist_id=="") {
+	include("proposal_create.phtml");
+	exit;
+	} 
+$bidlist_id=escapeshellcmd($bidlist_id);
+$bid_info=bidlist_cache_update($bidlist_id);
+
+$form_mode="edit";
+$dropboxmode="";
+$dropboxvaradd="";
+$dropboxsize="1";
+
+echo "
+<form name=bidlist_edit method=get action=$pagename>
+<input type=hidden name=mode value=proposal_submit>
+<input type=hidden name=bidlist_id value='$bidlist_id'>
+<input type=hidden name=target value=main>
+<input type=hidden name=targetmode value=proposal>";
+
+include("proposal_edit_header.phtml");
+
+
+
+//if ($bid_info->revision!="") {
+//	include('proposal_edit_form_revision_warning.phtml');
+//	}
+//
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////	Top Section - Mandatory Items	////////////////////
+////////////////////////////////////////////////////////////////////////////
+echo "
+<div id=\"proposal_form_table\">
+<table border=0 cellspacing=0 cellpadding=0>
+<tr><td valign=top>
+<table border=0 cellspacing=0 cellpadding=$main_table_padding>
+<tr><td width=100% colspan=4>
+	";
+	include("proposal_edit_form_required.phtml");
+	echo"
+</td></tr>
+
+<tr><td width=100% colspan=4>
+	";
+	include("proposal_edit_form_owner.phtml");
+	echo"
+</td></tr>
+
+<tr><td width=100% colspan=4 valign=top>";
+	include("proposal_edit_form_bid_results.phtml");
+	echo"
+</td></tr>
+
+<tr><td valign=top>
+	";
+	include('proposal_edit_form_estimating.phtml');
+	echo"
+</td><td valign=top>
+	";
+	include("proposal_edit_form_docs.phtml");
+	echo"
+</td><td valign=top align=left>
+	";
+	include("proposal_edit_form_project_data.phtml");
+	echo"
+</td></tr>
+
+<tr><td colspan=2>";
+	if ($adminuser) {
+		echo "
+		<a href=javascript:apply_go_down();><font color=blue>&lt;--Prev--</font></a>&nbsp;&nbsp;&nbsp;<a href=javascript:apply_go_up();><font color=blue>--Next--&gt;</font></a>
+		";
+		}echo"
+</td><td align=right>
+	<b title=\"If you don't know what this is, don't touch it!!!\">Include this in total bids volume calculation:</b><input type=checkbox name=show_in_bid_total_calc title=\"If you don't know what this is, don't touch it!\" $bid_info->show_in_bid_total_calc>
+</td></tr>
+
+<tr><td colspan=3>
+	";
+	show_bidlist_log($bidlist_id,'proposal_comments','Note Log');
+	echo"
+</td></tr>
+
+</table>
+
+</td><td valign=top>
+	";
+	include('proposal_edit_form_associated.phtml');
+	echo"
+	<b>Files:</b><br>
+	";
+	webfilebox($bid_info->attached_files,"attached_files","opener.apply_changes()");
+	webfile_group_vert_preview($bid_info->attached_files);
+	echo"
+</td></tr></table>
+</div>
+</p>
+</form>
+
+<script>
+function apply_changes() {
+	document.bidlist_edit.target.value='reload';
+	document.bidlist_edit.submit();
+	}
+function save_and_search() {
+	document.bidlist_edit.target.value='searchpage';
+	document.bidlist_edit.submit();
+	}
+function apply_go_down() {
+	document.bidlist_edit.target.value='go_down';
+	document.bidlist_edit.submit();
+	}
+function apply_go_up() {
+	document.bidlist_edit.target.value='go_up';
+	document.bidlist_edit.submit();
+	}
+function show_bidlist_query() {
+	document.getElementById('proposal_form_table').style.visibility='hidden';
+	document.getElementById('bidlist_question').style.visibility='visible';
+	}
+
+function hide_bidlist_query() {
+	document.getElementById('proposal_form_table').style.visibility='visible';
+	document.getElementById('bidlist_question').style.visibility='hidden';
+	}
+
+function set_bidlist_yes() {
+	document.bidlist_edit.show_in_bidlist.checked=true;
+	hide_bidlist_query();
+	document.bidlist_edit.project.focus();
+	}
+
+function set_bidlist_no() {
+	document.bidlist_edit.show_in_bidlist.checked=false;
+	hide_bidlist_query();
+	document.bidlist_edit.project.focus();
+	}
+
+</script>
+";
+
+if ($bid_info->project=="") {
+	echo "
+	<script>
+	show_bidlist_query();
+	</script>
+	";
+	}
+
+//$res=@mysql_query("select bidlist_id from bidlist");
+//while ($row=@mysql_fetch_object($res)) {
+//	echo "updating $row->bidlist_id....<br>";
+//	flush();
+//	percent_off_calc($row->bidlist_id);
+//	}
+?>
