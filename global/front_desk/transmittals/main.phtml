@@ -21,14 +21,10 @@ if ($global_jobinfo) {
 	
 	<table id='sub_application_main_table' border=1 cellspacing=0 cellpadding=5>
 	<thead>
-	<tr><td colspan=9>";
-	//<div class=noprint style=\"position: absolute; border: 2px solid black;\"><form name=search method=post action=$pagename>Search:&nbsp;<input type=text name=search_text value=\"$search_text\"><input type=submit value='Go'></form></div>
-	search_div();
-	echo"
-	<center>
+	<tr><td colspan=9 align=center>
+	<div class=noprint style=\"position: absolute; border: 2px solid black;\"><form name=search method=post action=$pagename>Search:&nbsp;<input type=text name=search_text value=\"$search_text\"><input type=submit value='Go'></form></div>
 	<b><font size=+2>Transmittal Log</font><br>Job $global_jobinfo->contract_num:&nbsp;$global_jobinfo->display_name<br>$today</b>
 	<div class=noprint><br><a href=$pagename?mode=transmittal_edit&jobinfo_id=$global_jobinfo->jobinfo_id><font color=blue>New Transmittal</font></a><br>$page_page_insert</div>
-	</center>
 	</td></tr>
 	<tr class=floatheader><th>
 		<b>#</b>

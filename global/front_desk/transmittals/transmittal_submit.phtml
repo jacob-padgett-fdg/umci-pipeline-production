@@ -10,7 +10,7 @@ if ($transmittal_id!="") {
 	} else {
 	$query_start="insert into";
 	$transmittal_info->transmittal_date=date('Y-m-d');
-	$query_end=", creator = '$global_user->contacts_id'";
+	$query_end="";
 	$max_num=getoneb("select max(transmittal_num) as max_num from transmittals where jobinfo_id = '$jobinfo_id' and section = '$current_transmittals_section'");
 	$transmittal_num=$max_num->max_num + 1;
 	$jobinfo_id=$global_jobinfo_id;
@@ -30,7 +30,6 @@ $comments=addslashes($comments);
 $sent=checkfix($sent);
 $use_contact_addr_when_available=checkfix($use_contact_addr_when_available);
 
-//creator = '$global_user->contacts_id',
 $query_middle=" transmittals set
 jobinfo_id = '$jobinfo_id',
 section = '$current_transmittals_section',
@@ -40,6 +39,7 @@ company_id = '$company_id',
 site_id = '$site_id',
 attention_to_id = '$attention_to_id',
 cc_to_id = '$cc_to_id',
+creator = '$global_user->contacts_id',
 subject = '$subject',
 transmitted_via = '$transmitted_via',
 transmitted = '$transmitted',
