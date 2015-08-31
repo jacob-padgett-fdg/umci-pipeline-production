@@ -1,15 +1,8 @@
-issue_resolution
-proposals
-service_proposals
 update_mimetype.sql
-global/access
 *.gz
-global/employment
 config
-crm
 gallery
 _images
-intra
-global/reproduction
 .idea
+*.swp
 data
