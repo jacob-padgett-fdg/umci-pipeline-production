@@ -1,0 +1,140 @@
+<?
+require_once('intra-pw.inc');
+
+@mysql_connect(localhost,"globalread","qazxsw");
+@mysql_select_db("global");
+
+require("querylib.inc");
+
+$query="select contract_num, job_name, project_manager_id, job_cost, contract_type from jobinfo where active = 'Y' order by contract_num";
+
+$result=@mysql_query($query);
+$today=date("n-d-Y",time());
+echo "
+<center><font size=-1>Active Jobs List ($today)</font>
+<thead>
+<table border=0 cellspacing=0 cellpadding=0>
+
+	<tr bgcolor=#dddddd valign=top><td>
+		<font size=-2>
+		Job #
+		</font>
+	</td><td>
+		<font size=-2>
+		Name
+		</font>
+	</td><td>
+		<font size=-2>
+		Proj. Manager
+		</font>
+	</td><td>
+		<font size=-2>
+		Job<br>Cost
+		</font>
+	</td><td>
+		<font size=-2>
+		Contract<br>Type
+		</font>
+	</td><td bgcolor=#666666>
+		<font size=-6>
+		&nbsp;
+		</font>
+	</td><td>		
+		<font size=-2>
+		Job #
+		</font>
+	</td><td>
+		<font size=-2>
+		Name
+		</font>
+	</td><td>
+		<font size=-2>
+		Proj. Manager
+		</font>
+	</td><td>
+		<font size=-2>
+		Job<br>Cost
+		</font>
+	</td><td>
+		<font size=-2>
+		Contract<br>Type
+		</font>
+	</td></tr>
+</thead>
+";
+
+	$oddrow="true";
+while($row=@mysql_fetch_object($result)) {
+	if ($oddrow=="true") {
+		$oddrow="false";
+		$rowbg="#ffffff";
+		} else {
+		$oddrow="true";
+		$rowbg="#dddddd";
+		}
+	$mgr=getoneb("select * from contacts where contacts_id = '$row->project_manager_id'");
+	$row2=@mysql_fetch_object($result);
+	$mgr2=getoneb("select * from contacts where contacts_id = '$row2->project_manager_id'");
+
+	if ($mgr) {
+		$manager="$mgr->last_name, $mgr->first_name";
+		} else {
+		$manager="";
+		}
+	if ($mgr2) {
+		$manager2="$mgr2->last_name, $mgr2->first_name";
+		} else {
+		$manager2="";
+		}
+	echo "<tr bgcolor=$rowbg><td>
+			<font size=-2>
+			$row->contract_num
+			</font>
+		</td><td>
+			<font size=-2>
+			$row->job_name
+			</font>
+		</td><td>
+			<font size=-2>
+			$manager&nbsp;
+			</font>
+		</td><td>
+			<font size=-2>
+			$row->job_cost&nbsp;
+			</font>
+		</td><td>
+			<font size=-2>
+			$row->contract_type&nbsp;
+			</font>
+		</td><td bgcolor=black>
+			<font size=-6>
+			&nbsp;
+			</font>
+		</td><td>
+			<font size=-2>
+			&nbsp;$row2->contract_num
+			</font>
+		</td><td>
+			<font size=-2>
+			$row2->job_name
+			</font>
+		</td><td>
+			<font size=-2>
+			$manager2&nbsp;
+			</font>
+		</td><td>
+			<font size=-2>
+			$row2->job_cost&nbsp;
+			</font>
+		</td><td>
+			<font size=-2>
+			$row2->contract_type&nbsp;
+			</font>
+		</td></tr>
+		";
+		
+		}
+
+echo "</table></center>";
+	
+?>

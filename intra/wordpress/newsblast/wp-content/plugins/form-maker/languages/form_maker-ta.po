@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-12 20:25+0400\n"
+"PO-Revision-Date: 2012-04-13 16:48+0400\n"
+"Last-Translator: Web-Dorado.com <info@web-dorado.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Tamil\n"
+"X-Poedit-SearchPath-0: C:\\wamp\\www\\wordpress\\wp-content\\plugins\\form-maker\n"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:162
+msgid "Title"
+msgstr "தலைப்பு"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:163
+msgid "First"
+msgstr "முதல்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:164
+msgid "Last"
+msgstr "கடந்த"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:165
+msgid "Middle"
+msgstr "மத்திய"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:166
+msgid "January"
+msgstr "ஆங்கில ஆண்டின் முதல் மாதம்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:167
+msgid "February"
+msgstr "பிப்ரவரி"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:168
+msgid "March"
+msgstr "மார்ச்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:169
+msgid "April"
+msgstr "ஏப்ரல்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:170
+msgid "May"
+msgstr "கூடும்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:171
+msgid "June"
+msgstr "ஜூன்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:172
+msgid "July"
+msgstr "ஜூலை"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:173
+msgid "August"
+msgstr "ஆகஸ்ட்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:174
+msgid "September"
+msgstr "செப்டம்பர்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:175
+msgid "October"
+msgstr "அக்டோபர்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:176
+msgid "November"
+msgstr "நவம்பர்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:177
+msgid "December"
+msgstr "டிசம்பர்"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:583
+msgid "The value of year is not valid"
+msgstr "ஆண்டு மதிப்பு தவறானது"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:765
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3373
+msgid "Sorry, you are not allowed to upload this type of file"
+msgstr "நீங்கள் இந்த வகை கோப்பை பதிவேற்ற அனுமதி இல்லை"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:773
+msgid "field is required"
+msgstr "புலத்தில் தேவைப்படுகிறது"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:786
+msgid "This is not a valid email address"
+msgstr "இந்த ஒரு செல்லுபடியாகும் மின்னஞ்சல் முகவரி இல்லை"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:15
+msgid "Form Maker"
+msgstr "Form Maker"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3186
+msgid "Error, incorrect Security code"
+msgstr "பிழை, தவறான பாதுகாப்பு குறியீடு"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3351
+msgid "The file exceeds the allowed size of"
+msgstr "கோப்பு அனுமதிக்கப்பட்ட அளவை விட அதிகமாக"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3387
+msgid "Error, file cannot be moved"
+msgstr "பிழை, கோப்பு நகர்த்த முடியாது"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3467
+msgid "Nothing was submitted"
+msgstr "எதுவும் சமர்ப்பிக்கப்பட்ட"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3619
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3636
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3642
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3655
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3661
+msgid "Your form was successfully submitted"
+msgstr "உங்கள் படிவத்தை வெற்றிகரமாக சமர்ப்பிக்கப்பட்ட"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3625
+msgid "Error, email was not sent"
+msgstr "பிழை, மின்னஞ்சல் அனுப்ப"
+

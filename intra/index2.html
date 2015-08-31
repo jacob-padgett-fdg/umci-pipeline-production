@@ -1,0 +1,155 @@
+<?
+require("intra-pw.inc");
+require_once('querylib.inc');
+
+$bgcolor="#bbbbff";
+
+echo "
+<html>
+<title>UMC Insider</title>
+
+<body bgcolor = #ffffff vlink=blue>
+
+<center>
+ <img src = /images/umcinsider.jpg>
+</center>
+
+<p>
+
+<table align = center border = 0 width = 480>
+
+<tr bgcolor=$bgcolor><td align=center colspan=2>
+	<b>UMC Culture</b>
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	<a href=/intra/core_values.pdf><b><font color=#006600>UMC Core Values</font></b></a>
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	";
+	include("recent_news_blast.phtml");
+	echo"
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	<a href=older_news_blasts.phtml>Older Newsletters</a>
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	";
+	require_once("global_connect_rw.phtml");
+	eom_blurb();
+	echo"
+</td></tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr><td>&nbsp;</td></tr>
+<tr bgcolor=$bgcolor><td align=center colspan=2>
+	<b>UMC Utilities</b>
+</td></tr>
+
+
+<tr><td colspan=2 align=center>
+	<a href=/global/timesheet/><b>Timesheets</b></a>
+</td></tr>
+	
+<tr><td colspan=2 align=center>
+	<a href=http://pipeline.umci.com/global/itsupport.html><b>Securing IT Help</b></a>
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	<a href=/global/front_desk/><b>Front Desk</b></a>
+</td></tr>
+
+<tr><td colspan=2 align=center>
+	<a href=/global/front_desk/?mode=my_reference_center><b>Reference Center</b></a>
+</td></tr>
+
+<tr><td>&nbsp;</td></tr>
+
+<tr bgcolor=$bgcolor><td align=center colspan=2>
+	<b>Reference Center Shortcuts</b>
+</td></tr>
+
+<tr><td>
+	<a href=/global/front_desk-devel/index.html?mode=my_reference_center&category_id=16>Forms</a>
+</td><td>
+	<a href=/global/front_desk/index.html?mode=my_reference_center&category_id=14><font color=blue>Benefits</font></a>
+</td></tr>	
+
+<tr><td>
+	<a href=/global/front_desk-devel/index.html?mode=my_reference_center&category_id=17>Company Information</a>
+</td><td>
+	<a href=http://www.sbbb.com/tools.html target=financial_tools><font color=blue>Financial Education</font></a>
+</td></tr>
+
+
+<tr><td>&nbsp;</td></tr>
+
+<tr bgcolor=$bgcolor><td align=center colspan=2>
+	<b>UMC Contact Info</b>
+</td></tr>
+
+<tr><td>
+	<a href=/global/front_desk/?mode=my_home><font color=blue>Phone Lists on FD Home</font></a>
+</td><td>
+</td></tr>
+
+<tr><td>&nbsp;</td></tr>
+<tr bgcolor=$bgcolor><td align=center colspan=2>
+	<b>UMC Job Information</b>
+</td></tr>
+
+<tr><td>
+	<a href=\"/global/front_desk/index.html?mode=report_show&report_name=active_job_lists\"><font color=blue>Job Lists</font></a>
+</td></tr>
+
+<tr><td>&nbsp;</td></tr>
+
+
+<tr bgcolor=$bgcolor><td align=center colspan=2>
+	<b>UMC Database Lookups</b>
+</td></tr>
+
+<tr><td>
+	<a href=/global/service_proposals/>Service Proposals Log</a>
+</td><td>
+	<a href=cdtrack/>CD Tracker</a>
+</td></tr>
+
+<tr><td>
+	<a href=eng_catalog>Engineering Catalog</a>
+</td><td>
+	<a href=/global/contacts/><font color=blue>Contact Manager</font></a>
+</td></tr>
+
+<tr><td>&nbsp;</td></tr>
+<tr bgcolor=$bgcolor><td align=center colspan=2>
+	<b>UMC Misc</b>
+</td></tr>
+
+<tr><td>
+	<a href=/global/costore/>Company Store</a>
+</td><td>
+	<a href=supplies/>Order Office Supplies</a>
+</td></tr>
+
+</table>
+</body>
+</html>
+";
+
+?>

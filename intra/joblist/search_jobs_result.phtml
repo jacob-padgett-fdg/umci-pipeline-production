@@ -1,0 +1,141 @@
+<?
+require('intra-pw.inc');
+
+@mysql_connect(localhost,"globalread","qazxsw");
+@mysql_select_db("global");
+
+session_register('print_size');
+if ($print_size=="") $print_size="8";
+if ($print_size_set!="") $print_size=addslashes($print_size_set);
+$print_size_big=$print_size + 2;
+
+if ($job_num != "") {
+	$job_num=addslashes($job_num);
+	
+	if (ereg("[ ,]",$job_num)) {
+		$job_num=ereg_replace(',',' ',$job_num);
+		$job_nums=explode(' ',$job_num);
+		$job_query_string="";
+		$sep="";
+		while($part=array_pop($job_nums)) {
+			$job_query_string=$job_query_string . " $sep " . "contract_num = '$part'";
+			$sep="or";
+			}
+		} else {
+			$job_query_string=" contract_num = '$job_num' ";
+		}
+	
+	$query="select contract_num, job_name, project_manager_id, job_cost, contract_type, contract_admin,general_id from jobinfo where $job_query_string  order by contract_num";
+	}
+if ($job_description != "") {
+	$job_description=addslashes($job_description);
+	$query="select contract_num, job_name, project_manager_id, job_cost, contract_type,contract_admin,general_id from jobinfo where job_name like '%$job_description%' order by contract_num";
+	}
+if ($query=="") {
+	echo "Error&lt;exclamation point&gt;. Were you going to search for anything? I didn't see you fill anything out.<p>
+	<a href=/intra/><font color=blue>Return to Intra</font></a>
+	";
+	exit;
+	}
+
+//tabledump($query);exit;
+$result=@mysql_query($query);
+
+echo "
+
+<style type=\"text/css\" media=\"print\">
+th {
+	font-size: $print_size_big
+	}
+td {
+	font-size: $print_size
+	}
+div#printsize {
+	display: none;
+	}
+</style>
+
+<div id=\"printsize\">
+<a href=$pagename_up><font color=blue>Exit</font></a>
+<form name=printsize method=post action=$pagename>
+<table border=1 cellspacing=0 cellpadding=3><tr><td bgcolor=#dddddd>Print Size: <input size=2 type=text name=print_size_set value=\"$print_size\" onchange=submit()></td></tr></table>
+<input type=hidden name=job_num value=\"$job_num\">
+<input type=hidden name=\"job_description\" value=\"$job_description\">
+</form>
+</div>
+
+<body bgcolor=#ffffff>
+<center>
+<h2>Jobs Matching Your Query</h2>
+<table border=1 cellspacing=0 cellpadding=3>
+<thead>
+	<tr bgcolor=#dddddd><th>
+	Job Number
+	</th><th>
+	Name
+	</th><th>
+	Project Manager
+	</th><th>
+	Job Cost
+	</th><th>
+	Contract Type
+	</th><th>
+	Contract Admin
+	</th><th>
+	Customer
+	</th></tr>
+</thead>
+";
+
+while($row=@mysql_fetch_object($result)) {
+	$con_ad=getoneb("select * from contacts where contacts_id = '$row->contract_admin'");
+	$cust_info=getoneb("select * from contacts where contacts_id = '$row->general_id'");
+	if ($con_ad) {
+		$contract_admin="$con_ad->last_name, $con_ad->first_name";
+		} else {
+		$contract_admin="";
+		}
+	$mgr=getoneb("select * from contacts where contacts_id = '$row->project_manager_id'");
+	if ($mgr) {
+		$manager="$mgr->last_name, $mgr->first_name";
+		} else {
+		$manager="";
+		}
+	echo "<tr><td>
+			$row->contract_num
+		</td><td>
+			$row->job_name
+		</td><td>
+			$manager&nbsp;
+		</td><td>
+			$row->job_cost&nbsp;
+		</td><td>
+			$row->contract_type&nbsp;
+		</td><td>
+			$contract_admin
+		</td><td>
+			$cust_info->display_name&nbsp;
+		</td></tr>";
+		}
+
+echo "</table></center>
+<a href=/intra/><font color=blue>Return to Intra</font></a>
+</body>";
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

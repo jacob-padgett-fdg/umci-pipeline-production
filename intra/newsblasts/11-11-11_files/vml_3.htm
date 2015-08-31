@@ -1,0 +1,209 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" 
+ xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5"/>
+<link rel="stylesheet" type="text/css" href="visio.css"/>
+<title>UMC Organizational Chart</title>
+<style type="text/css">
+	 v\:* { behavior: url(#default#VML); }
+</style>
+
+<script src="vml_1.js" type="text/jscript" language="jscript"></script>
+
+<script type="text/jscript" language="jscript">
+
+	var pageID = 0;
+	var viewMgr = null;
+
+	if (parent.g_FirstPageToLoad != null && parent.g_FirstPageToLoad.length > 0)
+	{
+		if (parent.g_FileList[parent.g_CurPageIndex].PageID != pageID)
+		{
+			location.replace(parent.g_FileList[parent.g_CurPageIndex].PriImage);
+		}
+
+		parent.g_FirstPageToLoad = null;
+	}
+
+	function getPNZ()
+	{
+		var rawHTML = VMLDiv.innerHTML;
+		var strReturn = ""
+		
+		strReturn = rawHTML.slice( rawHTML.indexOf( '<v:group' ), rawHTML.indexOf( "</v:shape>" ) );
+		strReturn += "</v:shape></v:group>\n";
+				
+		return strReturn;
+	}
+	
+	function load()
+	{
+		viewMgr = new parent.CViewMgr("ConvertedImage", "arrowDiv");
+
+		viewMgr.put_Location = ViewMgrSetVMLLocation;
+
+
+		viewMgr.visBBoxLeft = 4.991667;
+		viewMgr.visBBoxRight = 15.950695;
+		viewMgr.visBBoxBottom = 0.649997;
+		viewMgr.visBBoxTop = 10.772222;
+
+		viewMgr.Zoom = VMLZoomChange;
+		viewMgr.setView= VMLSetView;
+
+		viewMgr.SupportsDetails = true;
+		viewMgr.SupportsSearch = true;
+
+		parent.viewMgr = viewMgr;
+
+		fit();
+	}
+
+	function unload()
+	{
+		viewMgr = null;
+		parent.viewMgr = null;
+	}
+
+	function fit()
+	{
+		if(parent.frmToolbar)
+		{
+			if (parent.g_WidgetsLoaded)
+			{
+				var zoom100 = parent.frmToolbar.document.all('a100');
+				if (zoom100)
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					zoom100.click();
+				}
+				else
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					viewMgr.Zoom(100);
+				}
+			}
+			else
+			{
+				window.setTimeout("fit()", 500);
+			}
+		}	
+		else
+		{
+			parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+			viewMgr.Zoom(100);
+		}
+	}
+
+	function PostZoomProcessing (newZoomLevel)
+	{
+		parent.viewMgr.PostZoomProcessing = null;
+		var pageIndex = parent.PageIndexFromID (pageID);
+		parent.viewMgr.getPNZ = getPNZ;
+		parent.CurPageUpdate (pageIndex);
+	}
+
+
+	
+	var isUpLevel = parent.isUpLevel;
+	var OnShapeClick = parent.OnShapeClick;
+	var OnShapeKey = parent.OnShapeKey;
+	var UpdateTooltip = parent.UpdateTooltip;
+	var clickMenu = parent.clickMenu;
+	var toggleMenuDiv = parent.toggleMenuDiv;
+	var toggleMenuLink = parent.toggleMenuLink;
+	var GoToPage = parent.GoToPage;
+
+	window.onload = load;
+	window.onunload = unload;
+	document.onclick = clickMenu;
+
+
+
+
+</script>
+
+</head>
+
+<body style="MARGIN:10px" onresize="VMLOnResize();" onscroll="VMLOnScroll();">
+
+<div id="arrowdiv" style="position:absolute;top:0;left:0;visibility:hidden;z-index:5">
+<img id="arrowgif" alt="Shows the location of the selected shape" src="arrow.gif"/>
+</div>
+
+<div id="menu1" onclick="clickMenu()" class="hlMenu">
+</div>
+
+
+
+
+<div id="VMLDiv" >
+
+
+<v:group  id="ConvertedImage" style="width:4.330679in;height:4.000000in;position:absolute;visibility=hidden;" coordSize="2165,2000" coordOrigin="-1000,-1000" >
+
+<v:shapetype 
+  id="VISSHAPE"
+  target="_parent"
+  coordsize="2165,2000"
+  coordorigin="-1000,-1000"
+  stroked="f"
+  strokecolor="red"
+  filled="t"
+>
+<v:fill opacity="0.0"/>
+</v:shapetype>
+
+
+<v:shape style="top:-1000.0;left:-1000.0;width:2165.3;height:2000.0;position:absolute" coordSize="2165,2000" coordOrigin="-1000,-1000" >
+<v:imagedata src="vml_3.emz"/>
+</v:shape>
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="David Malone, PE Engineering Manager" origTitle="David Malone, PE Engineering Manager"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -90,-37 l 119,-37 l 119,-126 l -90,-126 l -90,-37xe" onmouseover="UpdateTooltip(this,0,1)" onclick="OnShapeClick(0,1)" onfocus="UpdateTooltip(this,0,1);" onkeyup="OnShapeKey(0,1)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Engineering" origTitle="Engineering"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -84,-180 l 113,-180 l 113,-279 l -84,-279 l -84,-180xe" onmouseover="UpdateTooltip(this,0,6)" onclick="OnShapeClick(0,6)" onfocus="UpdateTooltip(this,0,6);" onkeyup="OnShapeKey(0,6)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Mike Harshman Senior Engineer" origTitle="Mike Harshman Senior Engineer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -46,362 l 151,362 l 151,263 l -46,263 l -46,362xe" onmouseover="UpdateTooltip(this,0,11)" onclick="OnShapeClick(0,11)" onfocus="UpdateTooltip(this,0,11);" onkeyup="OnShapeKey(0,11)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Steve Bueler Senior Engineer" origTitle="Steve Bueler Senior Engineer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -48,608 l 149,608 l 149,509 l -48,509 l -48,608xe" onmouseover="UpdateTooltip(this,0,16)" onclick="OnShapeClick(0,16)" onfocus="UpdateTooltip(this,0,16);" onkeyup="OnShapeKey(0,16)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Business Development" origTitle="Business Development"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -380,-180 l -183,-180 l -183,-279 l -380,-279 l -380,-180xe" onmouseover="UpdateTooltip(this,0,21)" onclick="OnShapeClick(0,21)" onfocus="UpdateTooltip(this,0,21);" onkeyup="OnShapeKey(0,21)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Tom Boysen, PE Project Developer" origTitle="Tom Boysen, PE Project Developer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -330,-32 l -133,-32 l -133,-131 l -330,-131 l -330,-32xe" onmouseover="UpdateTooltip(this,0,26)" onclick="OnShapeClick(0,26)" onfocus="UpdateTooltip(this,0,26);" onkeyup="OnShapeKey(0,26)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Ted Granston BD Manager" origTitle="Ted Granston BD Manager"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -227,-333 l -40,-333 l -40,-421 l -227,-421 l -227,-333xe" onmouseover="UpdateTooltip(this,0,31)" onclick="OnShapeClick(0,31)" onfocus="UpdateTooltip(this,0,31);" onkeyup="OnShapeKey(0,31)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Ned Miller Design Engineer" origTitle="Ned Miller Design Engineer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -48,731 l 149,731 l 149,633 l -48,633 l -48,731xe" onmouseover="UpdateTooltip(this,0,36)" onclick="OnShapeClick(0,36)" onfocus="UpdateTooltip(this,0,36);" onkeyup="OnShapeKey(0,36)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Steve Stamm Lead  Engineer" origTitle="Steve Stamm Lead  Engineer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -46,115 l 151,115 l 151,17 l -46,17 l -46,115xe" onmouseover="UpdateTooltip(this,0,41)" onclick="OnShapeClick(0,41)" onfocus="UpdateTooltip(this,0,41);" onkeyup="OnShapeKey(0,41)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Dean Petterson Project Developer" origTitle="Dean Petterson Project Developer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -330,91 l -133,91 l -133,-8 l -330,-8 l -330,91xe" onmouseover="UpdateTooltip(this,0,46)" onclick="OnShapeClick(0,46)" onfocus="UpdateTooltip(this,0,46);" onkeyup="OnShapeKey(0,46)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Paul Idzik Design Engineer" origTitle="Paul Idzik Design Engineer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -48,854 l 149,854 l 149,756 l -48,756 l -48,854xe" onmouseover="UpdateTooltip(this,0,51)" onclick="OnShapeClick(0,51)" onfocus="UpdateTooltip(this,0,51);" onkeyup="OnShapeKey(0,51)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Daniel Vu Senior Engineer" origTitle="Daniel Vu Senior Engineer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -46,485 l 151,485 l 151,386 l -46,386 l -46,485xe" onmouseover="UpdateTooltip(this,0,56)" onclick="OnShapeClick(0,56)" onfocus="UpdateTooltip(this,0,56);" onkeyup="OnShapeKey(0,56)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Marketing" origTitle="Marketing"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -995,-180 l -798,-180 l -798,-279 l -995,-279 l -995,-180xe" onmouseover="UpdateTooltip(this,0,61)" onclick="OnShapeClick(0,61)" onfocus="UpdateTooltip(this,0,61);" onkeyup="OnShapeKey(0,61)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Gail Kinner Marketing Manager" origTitle="Gail Kinner Marketing Manager"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -990,-37 l -803,-37 l -803,-126 l -990,-126 l -990,-37xe" onmouseover="UpdateTooltip(this,0,66)" onclick="OnShapeClick(0,66)" onfocus="UpdateTooltip(this,0,66);" onkeyup="OnShapeKey(0,66)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Al Howell  Lead Engineer" origTitle="Al Howell  Lead Engineer"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -46,239 l 151,239 l 151,140 l -46,140 l -46,239xe" onmouseover="UpdateTooltip(this,0,80)" onclick="OnShapeClick(0,80)" onfocus="UpdateTooltip(this,0,80);" onkeyup="OnShapeKey(0,80)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Jerry Bush President / CEO" origTitle="Jerry Bush President / CEO"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -547,-530 l -261,-530 l -261,-668 l -547,-668 l -547,-530xe" onmouseover="UpdateTooltip(this,0,79)" onclick="OnShapeClick(0,79)" onfocus="UpdateTooltip(this,0,79);" onkeyup="OnShapeKey(0,79)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Pat Stephens Director of Sales" origTitle="Pat Stephens Director of Sales"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -867,-333 l -680,-333 l -680,-421 l -867,-421 l -867,-333xe" onmouseover="UpdateTooltip(this,0,102)" onclick="OnShapeClick(0,102)" onfocus="UpdateTooltip(this,0,102);" onkeyup="OnShapeKey(0,102)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Sales Management" origTitle="Sales Management"  style="top:-1000;left:-1000;width:2165;height:2000;position:absolute" path=" m -749,-180 l -552,-180 l -552,-279 l -749,-279 l -749,-180xe" onmouseover="UpdateTooltip(this,0,107)" onclick="OnShapeClick(0,107)" onfocus="UpdateTooltip(this,0,107);" onkeyup="OnShapeKey(0,107)"/> 
+
+</v:group>
+
+
+
+</div>
+
+
+
+</body>
+</html>
+

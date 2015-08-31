@@ -1,0 +1,293 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" 
+ xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5"/>
+<link rel="stylesheet" type="text/css" href="visio.css"/>
+<title>UMC Organizational Chart</title>
+<style type="text/css">
+	 v\:* { behavior: url(#default#VML); }
+</style>
+
+<script src="vml_1.js" type="text/jscript" language="jscript"></script>
+
+<script type="text/jscript" language="jscript">
+
+	var pageID = 11;
+	var viewMgr = null;
+
+	if (parent.g_FirstPageToLoad != null && parent.g_FirstPageToLoad.length > 0)
+	{
+		if (parent.g_FileList[parent.g_CurPageIndex].PageID != pageID)
+		{
+			location.replace(parent.g_FileList[parent.g_CurPageIndex].PriImage);
+		}
+
+		parent.g_FirstPageToLoad = null;
+	}
+
+	function getPNZ()
+	{
+		var rawHTML = VMLDiv.innerHTML;
+		var strReturn = ""
+		
+		strReturn = rawHTML.slice( rawHTML.indexOf( '<v:group' ), rawHTML.indexOf( "</v:shape>" ) );
+		strReturn += "</v:shape></v:group>\n";
+				
+		return strReturn;
+	}
+	
+	function load()
+	{
+		viewMgr = new parent.CViewMgr("ConvertedImage", "arrowDiv");
+
+		viewMgr.put_Location = ViewMgrSetVMLLocation;
+
+
+		viewMgr.visBBoxLeft = 0.526250;
+		viewMgr.visBBoxRight = 16.630000;
+		viewMgr.visBBoxBottom = 0.422219;
+		viewMgr.visBBoxTop = 10.647222;
+
+		viewMgr.Zoom = VMLZoomChange;
+		viewMgr.setView= VMLSetView;
+
+		viewMgr.SupportsDetails = true;
+		viewMgr.SupportsSearch = true;
+
+		parent.viewMgr = viewMgr;
+
+		fit();
+	}
+
+	function unload()
+	{
+		viewMgr = null;
+		parent.viewMgr = null;
+	}
+
+	function fit()
+	{
+		if(parent.frmToolbar)
+		{
+			if (parent.g_WidgetsLoaded)
+			{
+				var zoom100 = parent.frmToolbar.document.all('a100');
+				if (zoom100)
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					zoom100.click();
+				}
+				else
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					viewMgr.Zoom(100);
+				}
+			}
+			else
+			{
+				window.setTimeout("fit()", 500);
+			}
+		}	
+		else
+		{
+			parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+			viewMgr.Zoom(100);
+		}
+	}
+
+	function PostZoomProcessing (newZoomLevel)
+	{
+		parent.viewMgr.PostZoomProcessing = null;
+		var pageIndex = parent.PageIndexFromID (pageID);
+		parent.viewMgr.getPNZ = getPNZ;
+		parent.CurPageUpdate (pageIndex);
+	}
+
+
+	
+	var isUpLevel = parent.isUpLevel;
+	var OnShapeClick = parent.OnShapeClick;
+	var OnShapeKey = parent.OnShapeKey;
+	var UpdateTooltip = parent.UpdateTooltip;
+	var clickMenu = parent.clickMenu;
+	var toggleMenuDiv = parent.toggleMenuDiv;
+	var toggleMenuLink = parent.toggleMenuLink;
+	var GoToPage = parent.GoToPage;
+
+	window.onload = load;
+	window.onunload = unload;
+	document.onclick = clickMenu;
+
+
+
+
+</script>
+
+</head>
+
+<body style="MARGIN:10px" onresize="VMLOnResize();" onscroll="VMLOnScroll();">
+
+<div id="arrowdiv" style="position:absolute;top:0;left:0;visibility:hidden;z-index:5">
+<img id="arrowgif" alt="Shows the location of the selected shape" src="arrow.gif"/>
+</div>
+
+<div id="menu1" onclick="clickMenu()" class="hlMenu">
+</div>
+
+
+
+
+<div id="VMLDiv" >
+
+
+<v:group  id="ConvertedImage" style="width:6.299754in;height:4.000000in;position:absolute;visibility=hidden;" coordSize="3150,2000" coordOrigin="-1000,-1000" >
+
+<v:shapetype 
+  id="VISSHAPE"
+  target="_parent"
+  coordsize="3150,2000"
+  coordorigin="-1000,-1000"
+  stroked="f"
+  strokecolor="red"
+  filled="t"
+>
+<v:fill opacity="0.0"/>
+</v:shapetype>
+
+
+<v:shape style="top:-1000.0;left:-1000.0;width:3149.9;height:2000.0;position:absolute" coordSize="3150,2000" coordOrigin="-1000,-1000" >
+<v:imagedata src="vml_9.emz"/>
+</v:shape>
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="David Malone, PE Engineering Manager" origTitle="David Malone, PE Engineering Manager"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -122,-113 l 119,-113 l 119,-208 l -122,-208 l -122,-113xe" onmouseover="UpdateTooltip(this,11,2)" onclick="OnShapeClick(11,2)" onfocus="UpdateTooltip(this,11,2);" onkeyup="OnShapeKey(11,2)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Engineering" origTitle="Engineering"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -124,-253 l 120,-253 l 120,-350 l -124,-350 l -124,-253xe" onmouseover="UpdateTooltip(this,11,7)" onclick="OnShapeClick(11,7)" onfocus="UpdateTooltip(this,11,7);" onkeyup="OnShapeKey(11,7)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Max Harshman, PE Lead Design Engineer" origTitle="Max Harshman, PE Lead Design Engineer"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -307,27 l -72,27 l -72,-71 l -307,-71 l -307,27xe" onmouseover="UpdateTooltip(this,11,12)" onclick="OnShapeClick(11,12)" onfocus="UpdateTooltip(this,11,12);" onkeyup="OnShapeKey(11,12)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Steve Brooks, PE Senior Engineer" origTitle="Steve Brooks, PE Senior Engineer"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -307,152 l -71,152 l -71,55 l -307,55 l -307,152xe" onmouseover="UpdateTooltip(this,11,17)" onclick="OnShapeClick(11,17)" onfocus="UpdateTooltip(this,11,17);" onkeyup="OnShapeKey(11,17)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Mike Harshman Senior Engineer" origTitle="Mike Harshman Senior Engineer"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 45,27 l 255,27 l 255,-70 l 45,-70 l 45,27xe" onmouseover="UpdateTooltip(this,11,27)" onclick="OnShapeClick(11,27)" onfocus="UpdateTooltip(this,11,27);" onkeyup="OnShapeKey(11,27)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Steve Bueler Design Engineer" origTitle="Steve Bueler Design Engineer"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 50,396 l 255,396 l 255,298 l 50,298 l 50,396xe" onmouseover="UpdateTooltip(this,11,32)" onclick="OnShapeClick(11,32)" onfocus="UpdateTooltip(this,11,32);" onkeyup="OnShapeKey(11,32)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Estimating" origTitle="Estimating"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1945,-284 l 2140,-284 l 2140,-381 l 1945,-381 l 1945,-284xe" onmouseover="UpdateTooltip(this,11,37)" onclick="OnShapeClick(11,37)" onfocus="UpdateTooltip(this,11,37);" onkeyup="OnShapeKey(11,37)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Karen Langeberg Estimator" origTitle="Karen Langeberg Estimator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1951,155 l 2146,155 l 2146,57 l 1951,57 l 1951,155xe" onmouseover="UpdateTooltip(this,11,42)" onclick="OnShapeClick(11,42)" onfocus="UpdateTooltip(this,11,42);" onkeyup="OnShapeKey(11,42)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Jim Carlson Sheet Metal Estimator" origTitle="Jim Carlson Sheet Metal Estimator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1945,9 l 2140,9 l 2140,-89 l 1945,-89 l 1945,9xe" onmouseover="UpdateTooltip(this,11,47)" onclick="OnShapeClick(11,47)" onfocus="UpdateTooltip(this,11,47);" onkeyup="OnShapeKey(11,47)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Ed Toyoji BIM Lead Coordinator" origTitle="Ed Toyoji BIM Lead Coordinator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 846,130 l 1042,130 l 1042,33 l 846,33 l 846,130xe" onmouseover="UpdateTooltip(this,11,52)" onclick="OnShapeClick(11,52)" onfocus="UpdateTooltip(this,11,52);" onkeyup="OnShapeKey(11,52)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Khai Xiong BIM Lead Coordinator" origTitle="Khai Xiong BIM Lead Coordinator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 846,252 l 1042,252 l 1042,155 l 846,155 l 846,252xe" onmouseover="UpdateTooltip(this,11,57)" onclick="OnShapeClick(11,57)" onfocus="UpdateTooltip(this,11,57);" onkeyup="OnShapeKey(11,57)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Sean Cavanaugh BIM Lead Coordinator" origTitle="Sean Cavanaugh BIM Lead Coordinator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1115,124 l 1310,124 l 1310,27 l 1115,27 l 1115,124xe" onmouseover="UpdateTooltip(this,11,62)" onclick="OnShapeClick(11,62)" onfocus="UpdateTooltip(this,11,62);" onkeyup="OnShapeKey(11,62)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="C.V. Nguyen Lead Estimator" origTitle="C.V. Nguyen Lead Estimator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1945,-138 l 2140,-138 l 2140,-235 l 1945,-235 l 1945,-138xe" onmouseover="UpdateTooltip(this,11,67)" onclick="OnShapeClick(11,67)" onfocus="UpdateTooltip(this,11,67);" onkeyup="OnShapeKey(11,67)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Business Development" origTitle="Business Development"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -593,-260 l -398,-260 l -398,-357 l -593,-357 l -593,-260xe" onmouseover="UpdateTooltip(this,11,72)" onclick="OnShapeClick(11,72)" onfocus="UpdateTooltip(this,11,72);" onkeyup="OnShapeKey(11,72)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Tom Boysen, PE Project Executive" origTitle="Tom Boysen, PE Project Executive"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -741,-112 l -556,-112 l -556,-200 l -741,-200 l -741,-112xe" onmouseover="UpdateTooltip(this,11,77)" onclick="OnShapeClick(11,77)" onfocus="UpdateTooltip(this,11,77);" onkeyup="OnShapeKey(11,77)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Dean Petterson Project Executive" origTitle="Dean Petterson Project Executive"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -418,-423 l -232,-423 l -232,-511 l -418,-511 l -418,-423xe" onmouseover="UpdateTooltip(this,11,82)" onclick="OnShapeClick(11,82)" onfocus="UpdateTooltip(this,11,82);" onkeyup="OnShapeKey(11,82)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Jerry Bush President / CEO" origTitle="Jerry Bush President / CEO"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 510,-654 l 793,-654 l 793,-791 l 510,-791 l 510,-654xe" onmouseover="UpdateTooltip(this,11,87)" onclick="OnShapeClick(11,87)" onfocus="UpdateTooltip(this,11,87);" onkeyup="OnShapeKey(11,87)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Konstantin Aluf BIM Coordinator" origTitle="Konstantin Aluf BIM Coordinator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 846,374 l 1042,374 l 1042,277 l 846,277 l 846,374xe" onmouseover="UpdateTooltip(this,11,100)" onclick="OnShapeClick(11,100)" onfocus="UpdateTooltip(this,11,100);" onkeyup="OnShapeKey(11,100)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Rene Soucy BIM Specialist" origTitle="Rene Soucy BIM Specialist"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 602,130 l 798,130 l 798,33 l 602,33 l 602,130xe" onmouseover="UpdateTooltip(this,11,105)" onclick="OnShapeClick(11,105)" onfocus="UpdateTooltip(this,11,105);" onkeyup="OnShapeKey(11,105)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Wayne Denton BIM Specialist" origTitle="Wayne Denton BIM Specialist"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 846,862 l 1042,862 l 1042,764 l 846,764 l 846,862xe" onmouseover="UpdateTooltip(this,11,110)" onclick="OnShapeClick(11,110)" onfocus="UpdateTooltip(this,11,110);" onkeyup="OnShapeKey(11,110)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Ned Miller Design Engineer" origTitle="Ned Miller Design Engineer"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -307,274 l -71,274 l -71,177 l -307,177 l -307,274xe" onmouseover="UpdateTooltip(this,11,115)" onclick="OnShapeClick(11,115)" onfocus="UpdateTooltip(this,11,115);" onkeyup="OnShapeKey(11,115)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Mehrdad Rad BIM Coordinator" origTitle="Mehrdad Rad BIM Coordinator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 846,496 l 1042,496 l 1042,399 l 846,399 l 846,496xe" onmouseover="UpdateTooltip(this,11,121)" onclick="OnShapeClick(11,121)" onfocus="UpdateTooltip(this,11,121);" onkeyup="OnShapeKey(11,121)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Teng Vang BIM Specialist" origTitle="Teng Vang BIM Specialist"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 846,740 l 1042,740 l 1042,642 l 846,642 l 846,740xe" onmouseover="UpdateTooltip(this,11,127)" onclick="OnShapeClick(11,127)" onfocus="UpdateTooltip(this,11,127);" onkeyup="OnShapeKey(11,127)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Steve Stamm Lead  Engineer" origTitle="Steve Stamm Lead  Engineer"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 50,274 l 255,274 l 255,177 l 50,177 l 50,274xe" onmouseover="UpdateTooltip(this,11,132)" onclick="OnShapeClick(11,132)" onfocus="UpdateTooltip(this,11,132);" onkeyup="OnShapeKey(11,132)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="John Munson BIM Coordinator" origTitle="John Munson BIM Coordinator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1115,368 l 1310,368 l 1310,271 l 1115,271 l 1115,368xe" onmouseover="UpdateTooltip(this,11,138)" onclick="OnShapeClick(11,138)" onfocus="UpdateTooltip(this,11,138);" onkeyup="OnShapeKey(11,138)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Brent Johnson BIM Coordinator" origTitle="Brent Johnson BIM Coordinator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1115,246 l 1310,246 l 1310,149 l 1115,149 l 1115,246xe" onmouseover="UpdateTooltip(this,11,143)" onclick="OnShapeClick(11,143)" onfocus="UpdateTooltip(this,11,143);" onkeyup="OnShapeKey(11,143)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Ted Granston Project Executive" origTitle="Ted Granston Project Executive"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -436,-112 l -250,-112 l -250,-200 l -436,-200 l -436,-112xe" onmouseover="UpdateTooltip(this,11,148)" onclick="OnShapeClick(11,148)" onfocus="UpdateTooltip(this,11,148);" onkeyup="OnShapeKey(11,148)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Paul Idzik Design Engineer" origTitle="Paul Idzik Design Engineer"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 47,519 l 252,519 l 252,421 l 47,421 l 47,519xe" onmouseover="UpdateTooltip(this,11,156)" onclick="OnShapeClick(11,156)" onfocus="UpdateTooltip(this,11,156);" onkeyup="OnShapeKey(11,156)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Steve Miller BIM Specialist" origTitle="Steve Miller BIM Specialist"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1115,612 l 1310,612 l 1310,514 l 1115,514 l 1115,612xe" onmouseover="UpdateTooltip(this,11,162)" onclick="OnShapeClick(11,162)" onfocus="UpdateTooltip(this,11,162);" onkeyup="OnShapeKey(11,162)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Daniel Vu Senior Engineer" origTitle="Daniel Vu Senior Engineer"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 50,152 l 255,152 l 255,55 l 50,55 l 50,152xe" onmouseover="UpdateTooltip(this,11,167)" onclick="OnShapeClick(11,167)" onfocus="UpdateTooltip(this,11,167);" onkeyup="OnShapeKey(11,167)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Bryan Eppler Major Projects Manager" origTitle="Bryan Eppler Major Projects Manager"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1461,-435 l 1647,-435 l 1647,-523 l 1461,-523 l 1461,-435xe" onmouseover="UpdateTooltip(this,11,173)" onclick="OnShapeClick(11,173)" onfocus="UpdateTooltip(this,11,173);" onkeyup="OnShapeKey(11,173)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Mark Peeples  BIM Drafter" origTitle="Mark Peeples  BIM Drafter"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 383,252 l 578,252 l 578,155 l 383,155 l 383,252xe" onmouseover="UpdateTooltip(this,11,184)" onclick="OnShapeClick(11,184)" onfocus="UpdateTooltip(this,11,184);" onkeyup="OnShapeKey(11,184)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Randy Adams BIM Coordinator" origTitle="Randy Adams BIM Coordinator"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 846,618 l 1042,618 l 1042,520 l 846,520 l 846,618xe" onmouseover="UpdateTooltip(this,11,189)" onclick="OnShapeClick(11,189)" onfocus="UpdateTooltip(this,11,189);" onkeyup="OnShapeKey(11,189)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Purchasing / Expediting" origTitle="Purchasing / Expediting"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1676,-284 l 1871,-284 l 1871,-381 l 1676,-381 l 1676,-284xe" onmouseover="UpdateTooltip(this,11,194)" onclick="OnShapeClick(11,194)" onfocus="UpdateTooltip(this,11,194);" onkeyup="OnShapeKey(11,194)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Rick Coulter Purchasing Manager" origTitle="Rick Coulter Purchasing Manager"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1681,-143 l 1866,-143 l 1866,-230 l 1681,-230 l 1681,-143xe" onmouseover="UpdateTooltip(this,11,199)" onclick="OnShapeClick(11,199)" onfocus="UpdateTooltip(this,11,199);" onkeyup="OnShapeKey(11,199)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Wayne Hakola Purchasing" origTitle="Wayne Hakola Purchasing"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1676,9 l 1871,9 l 1871,-89 l 1676,-89 l 1676,9xe" onmouseover="UpdateTooltip(this,11,204)" onclick="OnShapeClick(11,204)" onfocus="UpdateTooltip(this,11,204);" onkeyup="OnShapeKey(11,204)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Shane Jacob Capital Equip Manager" origTitle="Shane Jacob Capital Equip Manager"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1676,155 l 1871,155 l 1871,57 l 1676,57 l 1676,155xe" onmouseover="UpdateTooltip(this,11,209)" onclick="OnShapeClick(11,209)" onfocus="UpdateTooltip(this,11,209);" onkeyup="OnShapeKey(11,209)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Mike McNeil Purchasing" origTitle="Mike McNeil Purchasing"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1676,301 l 1871,301 l 1871,204 l 1676,204 l 1676,301xe" onmouseover="UpdateTooltip(this,11,214)" onclick="OnShapeClick(11,214)" onfocus="UpdateTooltip(this,11,214);" onkeyup="OnShapeKey(11,214)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Dale Bechtholdt Purchasing" origTitle="Dale Bechtholdt Purchasing"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1676,447 l 1871,447 l 1871,350 l 1676,350 l 1676,447xe" onmouseover="UpdateTooltip(this,11,219)" onclick="OnShapeClick(11,219)" onfocus="UpdateTooltip(this,11,219);" onkeyup="OnShapeKey(11,219)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Curtis Watson BIM Services Manager" origTitle="Curtis Watson BIM Services Manager"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 863,-167 l 1049,-167 l 1049,-255 l 863,-255 l 863,-167xe" onmouseover="UpdateTooltip(this,11,237)" onclick="OnShapeClick(11,237)" onfocus="UpdateTooltip(this,11,237);" onkeyup="OnShapeKey(11,237)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="BIM Services" origTitle="BIM Services"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 859,-284 l 1054,-284 l 1054,-381 l 859,-381 l 859,-284xe" onmouseover="UpdateTooltip(this,11,242)" onclick="OnShapeClick(11,242)" onfocus="UpdateTooltip(this,11,242);" onkeyup="OnShapeKey(11,242)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 956,-258 l 956,-284 l 956,-284 l 946,-284 l 946,-258xe" onmouseover="UpdateTooltip(this,11,247)" onclick="OnShapeClick(11,247)" onfocus="UpdateTooltip(this,11,247);" onkeyup="OnShapeKey(11,247)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Bryan Irey BIM Specialist" origTitle="Bryan Irey BIM Specialist"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1115,490 l 1310,490 l 1310,392 l 1115,392 l 1115,490xe" onmouseover="UpdateTooltip(this,11,250)" onclick="OnShapeClick(11,250)" onfocus="UpdateTooltip(this,11,250);" onkeyup="OnShapeKey(11,250)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="BIM Drafting" origTitle="BIM Drafting"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 383,-16 l 578,-16 l 578,-113 l 383,-113 l 383,-16xe" onmouseover="UpdateTooltip(this,11,255)" onclick="OnShapeClick(11,255)" onfocus="UpdateTooltip(this,11,255);" onkeyup="OnShapeKey(11,255)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Industrial Modeling" origTitle="Industrial Modeling"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 602,-16 l 798,-16 l 798,-113 l 602,-113 l 602,-16xe" onmouseover="UpdateTooltip(this,11,260)" onclick="OnShapeClick(11,260)" onfocus="UpdateTooltip(this,11,260);" onkeyup="OnShapeKey(11,260)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Sheet Metal Modeling" origTitle="Sheet Metal Modeling"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1115,-16 l 1310,-16 l 1310,-113 l 1115,-113 l 1115,-16xe" onmouseover="UpdateTooltip(this,11,265)" onclick="OnShapeClick(11,265)" onfocus="UpdateTooltip(this,11,265);" onkeyup="OnShapeKey(11,265)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="BIM QA/QC" origTitle="BIM QA/QC"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1359,-16 l 1554,-16 l 1554,-113 l 1359,-113 l 1359,-16xe" onmouseover="UpdateTooltip(this,11,270)" onclick="OnShapeClick(11,270)" onfocus="UpdateTooltip(this,11,270);" onkeyup="OnShapeKey(11,270)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Plumbing/Piping Modeling" origTitle="Plumbing/Piping Modeling"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 846,-16 l 1042,-16 l 1042,-113 l 846,-113 l 846,-16xe" onmouseover="UpdateTooltip(this,11,275)" onclick="OnShapeClick(11,275)" onfocus="UpdateTooltip(this,11,275);" onkeyup="OnShapeKey(11,275)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Chris Riddle BIM Lead Drafter" origTitle="Chris Riddle BIM Lead Drafter"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 383,130 l 578,130 l 578,33 l 383,33 l 383,130xe" onmouseover="UpdateTooltip(this,11,280)" onclick="OnShapeClick(11,280)" onfocus="UpdateTooltip(this,11,280);" onkeyup="OnShapeKey(11,280)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Marketing" origTitle="Marketing"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -984,-260 l -789,-260 l -789,-357 l -984,-357 l -984,-260xe" onmouseover="UpdateTooltip(this,11,324)" onclick="OnShapeClick(11,324)" onfocus="UpdateTooltip(this,11,324);" onkeyup="OnShapeKey(11,324)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -886,-381 l -886,-357 l -886,-357 l -876,-357 l -876,-381xe" onmouseover="UpdateTooltip(this,11,329)" onclick="OnShapeClick(11,329)" onfocus="UpdateTooltip(this,11,329);" onkeyup="OnShapeKey(11,329)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -886,-260 l -886,-211 l -886,-211 l -876,-211 l -876,-260xe" onmouseover="UpdateTooltip(this,11,330)" onclick="OnShapeClick(11,330)" onfocus="UpdateTooltip(this,11,330);" onkeyup="OnShapeKey(11,330)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Gail Kinner Marketing Manager" origTitle="Gail Kinner Marketing Manager"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -991,-112 l -806,-112 l -806,-200 l -991,-200 l -991,-112xe" onmouseover="UpdateTooltip(this,11,331)" onclick="OnShapeClick(11,331)" onfocus="UpdateTooltip(this,11,331);" onkeyup="OnShapeKey(11,331)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -496,-235 l -496,-260 l -496,-260 l -506,-260 l -506,-235xe" onmouseover="UpdateTooltip(this,11,336)" onclick="OnShapeClick(11,336)" onfocus="UpdateTooltip(this,11,336);" onkeyup="OnShapeKey(11,336)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -72,-22 l 45,-22 l 45,-22 l 45,-32 l -72,-32xe" onmouseover="UpdateTooltip(this,11,95)" onclick="OnShapeClick(11,95)" onfocus="UpdateTooltip(this,11,95);" onkeyup="OnShapeKey(11,95)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -71,103 l 50,103 l 50,103 l 50,93 l -71,93xe" onmouseover="UpdateTooltip(this,11,94)" onclick="OnShapeClick(11,94)" onfocus="UpdateTooltip(this,11,94);" onkeyup="OnShapeKey(11,94)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -71,225 l 50,225 l 50,225 l 50,215 l -71,215xe" onmouseover="UpdateTooltip(this,11,96)" onclick="OnShapeClick(11,96)" onfocus="UpdateTooltip(this,11,96);" onkeyup="OnShapeKey(11,96)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -2,348 l 50,347 l 50,347 l 50,337 l -2,338xe" onmouseover="UpdateTooltip(this,11,97)" onclick="OnShapeClick(11,97)" onfocus="UpdateTooltip(this,11,97);" onkeyup="OnShapeKey(11,97)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m -2,-213 l -2,-253 l -2,-253 l -12,-253 l -12,-213xe" onmouseover="UpdateTooltip(this,11,98)" onclick="OnShapeClick(11,98)" onfocus="UpdateTooltip(this,11,98);" onkeyup="OnShapeKey(11,98)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Gary Green BIM Specialist" origTitle="Gary Green BIM Specialist"  style="top:-1000;left:-1000;width:3150;height:2000;position:absolute" path=" m 1108,738 l 1316,738 l 1316,641 l 1108,641 l 1108,738xe" onmouseover="UpdateTooltip(this,11,337)" onclick="OnShapeClick(11,337)" onfocus="UpdateTooltip(this,11,337);" onkeyup="OnShapeKey(11,337)"/> 
+
+</v:group>
+
+
+
+</div>
+
+
+
+</body>
+</html>
+

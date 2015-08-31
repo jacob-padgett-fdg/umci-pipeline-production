@@ -1,0 +1,241 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: montezuma\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-10 15:30+0100\n"
+"PO-Revision-Date: 2012-09-10 15:30+0100\n"
+"Last-Translator: BytesForAll <lmmmuc@gmail.com>\n"
+"Language-Team: wordpress.bytesforall.com\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: functions.php:145
+#, php-format
+msgid "Page %s"
+msgstr ""
+
+#: functions.php:223
+msgid "Menu 1"
+msgstr ""
+
+#: functions.php:223
+msgid "Menu 2"
+msgstr ""
+
+#: functions.php:344
+msgid "read more"
+msgstr ""
+
+#: image.php:36
+#: admin/default-templates/main-templates/image.php:31
+msgid "Pages:"
+msgstr ""
+
+#: image.php:41
+#: admin/default-templates/main-templates/image.php:36
+#: admin/default-templates/main-templates/page.php:22
+#: admin/default-templates/main-templates/single.php:32
+#: admin/default-templates/sub-templates/comments-comment.php:23
+msgid "Edit"
+msgstr ""
+
+#: admin/default-templates/main-templates/page.php:17
+#: admin/default-templates/main-templates/single.php:27
+msgid "<p class=\"post-pagination\">Pages:"
+msgstr ""
+
+#: admin/default-templates/main-templates/single.php:21
+msgid "<p class=\"post-tags\">Tags: "
+msgstr ""
+
+#: admin/default-templates/sub-templates/comments-closed.php:1
+msgid "Comments are closed."
+msgstr ""
+
+#: admin/default-templates/sub-templates/comments-comment.php:7
+msgid "Reply"
+msgstr ""
+
+#: admin/default-templates/sub-templates/comments-comment.php:8
+msgid "Log in to Reply"
+msgstr ""
+
+#: admin/default-templates/sub-templates/comments-comment.php:24
+msgid "Delete"
+msgstr ""
+
+#: admin/default-templates/sub-templates/comments-comment.php:25
+msgid "Spam"
+msgstr ""
+
+#: admin/default-templates/sub-templates/comments-comment.php:29
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: admin/default-templates/sub-templates/comments-password.php:3
+msgid "This post is password protected. Enter the password to view any comments."
+msgstr ""
+
+#: admin/default-templates/sub-templates/comments-pingback.php:3
+msgid "Pingback:"
+msgstr ""
+
+#: admin/default-templates/sub-templates/footer.php:4
+msgid "All Rights Reserved."
+msgstr ""
+
+#: admin/default-templates/sub-templates/header.php:21
+msgid "Subscribe to RSS Feed"
+msgstr ""
+
+#: admin/default-templates/sub-templates/postformat.php:25
+msgid "read more &rarr;"
+msgstr ""
+
+#: includes/breadcrumbs.php:78
+msgid "Search results for: "
+msgstr ""
+
+#: includes/breadcrumbs.php:81
+msgid "Posts tagged: "
+msgstr ""
+
+#: includes/breadcrumbs.php:85
+msgid "Articles posted by: "
+msgstr ""
+
+#: includes/breadcrumbs.php:88
+msgid "Error 404"
+msgstr ""
+
+#: includes/breadcrumbs.php:95
+msgid "Blog"
+msgstr ""
+
+#: includes/comment_form.php:17
+msgid "<strong>Author</strong> (required)"
+msgstr ""
+
+#: includes/comment_form.php:21
+msgid "<strong>Email</strong> (will not be published)(required)"
+msgstr ""
+
+#: includes/comment_form.php:25
+msgid "Website"
+msgstr ""
+
+#: includes/comment_form.php:37
+#, php-format
+msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
+msgstr ""
+
+#: includes/comment_form.php:44
+#, php-format
+msgid "Logged in as <a href=\"%1$s\">%2$s</a>. <a href=\"%3$s\" title=\"Log out of this account\">Log out?</a>"
+msgstr ""
+
+#: includes/comment_form.php:54
+msgid "Leave a Reply"
+msgstr ""
+
+#: includes/comment_form.php:55
+#, php-format
+msgid "Leave a Reply to %s"
+msgstr ""
+
+#: includes/comment_form.php:56
+msgid "Cancel Reply"
+msgstr ""
+
+#: includes/comment_form.php:57
+msgid "Post Comment"
+msgstr ""
+
+#: includes/image_meta.php:69
+msgid "Aperture"
+msgstr ""
+
+#: includes/image_meta.php:70
+msgid "Credit"
+msgstr ""
+
+#: includes/image_meta.php:71
+msgid "Camera"
+msgstr ""
+
+#: includes/image_meta.php:72
+msgid "Caption"
+msgstr ""
+
+#: includes/image_meta.php:73
+msgid "Timestamp"
+msgstr ""
+
+#: includes/image_meta.php:74
+msgid "Copyright"
+msgstr ""
+
+#: includes/image_meta.php:75
+msgid "Focal Length"
+msgstr ""
+
+#: includes/image_meta.php:76
+msgid "ISO"
+msgstr ""
+
+#: includes/image_meta.php:77
+msgid "Shutter Speed"
+msgstr ""
+
+#: includes/image_meta.php:78
+msgid "Title"
+msgstr ""
+
+#: includes/not_found.php:3
+msgid "Not Found"
+msgstr ""
+
+#: includes/not_found.php:4
+msgid "Sorry, but you are looking for something that is not here."
+msgstr ""
+
+#: includes/template_tags.php:97
+msgid "Nothing Found"
+msgstr ""
+
+#: includes/template_tags.php:99
+msgid "Apologies, but no results were found for the requested archive. Perhaps searching will help find a related post."
+msgstr ""
+
+#: includes/widget_meta.php:12
+msgid "Meta"
+msgstr ""
+
+#: includes/widget_meta.php:41
+msgid "Syndicate this site using RSS 2.0"
+msgstr ""
+
+#: includes/widget_meta.php:41
+msgid "Entries <abbr title=\"Really Simple Syndication\">RSS</abbr>"
+msgstr ""
+
+#: includes/widget_meta.php:45
+msgid "The latest comments to all posts in RSS"
+msgstr ""
+
+#: includes/widget_meta.php:45
+msgid "Comments <abbr title=\"Really Simple Syndication\">RSS</abbr>"
+msgstr ""
+
+#: includes/widget_meta.php:49
+msgid "Powered by WordPress, state-of-the-art semantic personal publishing platform."
+msgstr ""
+
+#: includes/widget_meta.php:51
+msgid "WordPress.org"
+msgstr ""
+

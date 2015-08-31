@@ -1,0 +1,28 @@
+<? require('intra-pw.inc'); ?>
+
+<html>
+<head>
+<title>UMC Job Info Search Page</title>
+</head>
+<body bgcolor=#ffffff>
+<form name=search_jobs action=search_jobs_result.phtml method=post>
+
+<table border=0>
+<tr><td>
+	Search for job # 
+</td><td>
+	<input type=text size=8 name=job_num> <i>(comma or space separated list)</i>
+</td></tr>
+
+<tr><td>
+	Search Description for 
+</td><td>
+	<input type=text name=job_description>
+</td></tr>
+</table>
+
+<input type=button onclick=submit(); value=Search>
+<form>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+Changelog:
+
+
+1.1.3:
+
+Added note to readme.txt regading wrapping of menu items in drop down menu
+
+/functions.php line 344: Added textdomain
+
+/admin/default-templates/sub-templates/footer.php line 4: Added textdomain
+
+/includes/not_found.php line 3,4: Added textdomain
+
+/includes/breadcrumbs.php line 78,81,85,88,95: Added textdomain
+
+/includes/meta_box_template.php line 13,15: Removed textdomain 'montezuma-backend'
+
+/includes/widget_meta.php line 6,7,108,115,121,131,136,142,146,152: Removed textdomain
+
+/admin/default-templates/sub-templates/comments-comment.php line 27: added class "comment-text"
+
+/admin/default-templates/css/10-content.css line ~230-380: various CSS changes / additions
+
+/admin/options/400_css_settings.php line 644: added '.comment-text ul li' to list of elements to <i> inserted for CSS sprite image
+
+/includes/get_javascript.php line 136: add class 'alternate' to even table rows
+
+Replaced bfa_list_pages with wp_list_pages in single.php and page.php

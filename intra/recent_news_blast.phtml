@@ -1,0 +1,15 @@
+<?
+if ($ouput!="") die_security();
+exec("/bin/ls -1 -t /data/web/pipeline/intra/newsblasts/*.pdf | /usr/bin/head -1",$output);
+$basename=ereg_replace("^.*/","",$output[0]);
+$filename=$output[0];
+
+$filedate=date('m-d-Y',filemtime($filename));
+
+echo "<a href=\"http://pipeline.umci.com/intra/newsblasts/$basename\" title=\"Posted: $filedate\">Current U-Connections</a>";
+//echo "<hr>$output[0]<hr>";
+//echo "<hr>$basename<hr>";
+
+
+
+?>
