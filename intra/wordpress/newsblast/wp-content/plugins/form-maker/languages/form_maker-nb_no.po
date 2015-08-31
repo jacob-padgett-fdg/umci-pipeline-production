@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-12 19:58+0400\n"
+"PO-Revision-Date: 2012-10-02 13:42+0400\n"
+"Last-Translator: Web-Dorado.com <info@web-dorado.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Norwegian\n"
+"X-Poedit-SearchPath-0: C:\\wamp\\www\\wordpress\\wp-content\\plugins\\form-maker\n"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:162
+msgid "Title"
+msgstr "Tittel"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:163
+msgid "First"
+msgstr "Fornavn"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:164
+msgid "Last"
+msgstr "Etternavn"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:165
+msgid "Middle"
+msgstr "Middle"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:166
+msgid "January"
+msgstr "januar"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:167
+msgid "February"
+msgstr "februar"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:168
+msgid "March"
+msgstr "mars"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:169
+msgid "April"
+msgstr "april"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:170
+msgid "May"
+msgstr "mai"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:171
+msgid "June"
+msgstr "juni"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:172
+msgid "July"
+msgstr "juli"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:173
+msgid "August"
+msgstr "august"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:174
+msgid "September"
+msgstr "september"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:175
+msgid "October"
+msgstr "ktober"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:176
+msgid "November"
+msgstr "november"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:177
+msgid "December"
+msgstr "desember"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:583
+msgid "The value of year is not valid"
+msgstr "Verdien av året er ikke gyldig"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:765
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3373
+msgid "Sorry, you are not allowed to upload this type of file"
+msgstr "Beklager, du har ikke lov til å laste opp denne filtypen"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:773
+msgid "field is required"
+msgstr "Feltet er påkrevd"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/Form_Maker.php:786
+msgid "This is not a valid email address"
+msgstr "ette er ikke en gyldig e-postadresse"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:15
+msgid "Form Maker"
+msgstr "Form Maker"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3186
+msgid "Error, incorrect Security code"
+msgstr "Feil, feil sikkerhetskode"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3351
+msgid "The file exceeds the allowed size of"
+msgstr "Filen overskrider den tillatte størrelsen på"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3387
+msgid "Error, file cannot be moved"
+msgstr "Feil, kan ikke filen flyttes"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3467
+msgid "Nothing was submitted"
+msgstr "Ingenting ble sendt"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3619
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3636
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3642
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3655
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3661
+msgid "Your form was successfully submitted"
+msgstr "Ditt skjema har blitt sendt."
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form-maker/functions.php:3625
+msgid "Error, email was not sent"
+msgstr "Feil, ble e-posten ikke sendt"
+

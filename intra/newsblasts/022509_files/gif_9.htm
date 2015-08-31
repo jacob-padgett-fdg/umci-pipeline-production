@@ -1,0 +1,189 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="visio.css"/>
+<title>
+UMC Organizational Chart
+</title>
+<script type="text/javascript" language="javascript">
+function UpdateTooltip(){};
+function OnShapeClick(){};
+</script>
+
+<script src="gif_1.js" type="text/jscript" language="jscript"></script>
+
+<script type="text/jscript" language="jscript">
+	if(parent.isUpLevel)
+	{
+		location.replace(parent.g_FileList[parent.g_CurPageIndex].PriImage);
+	}
+</script>
+
+
+
+<script type="text/jscript" language="jscript">
+
+var pageID = 11;
+
+var isUpLevel = parent.isUpLevel;
+var OnShapeClick = null;
+if (!parent.isMac)
+{
+	OnShapeClick = parent.OnShapeClick;
+}
+
+var OnShapeKey = parent.OnShapeKey;
+var UpdateTooltip = parent.UpdateTooltip;
+var clickMenu = parent.clickMenu;
+var toggleMenuDiv = parent.toggleMenuDiv;
+var toggleMenuLink = parent.toggleMenuLink;
+var GoToPage = parent.GoToPage;
+
+
+if (parent.isUpLevel)
+{
+
+	if (parent.g_FirstPageToLoad != null && parent.g_FirstPageToLoad.length > 0)
+	{
+		if (parent.g_FileList[parent.g_CurPageIndex].PageID != pageID)
+		{
+			var fileEntry = parent.g_FileList[parent.g_CurPageIndex];
+			var fileToLoad = fileToLoad = fileEntry.PriImage;
+			if (fileEntry.SecImage.length > 0)
+			{
+				fileToLoad = fileEntry.SecImage;
+			}
+
+			location.replace(fileToLoad);
+		}
+
+		parent.g_FirstPageToLoad = null;
+	}
+
+
+	var viewMgr = new parent.CViewMgr();
+	parent.viewMgr = viewMgr;
+
+	viewMgr.SupportsDetails = true;
+	viewMgr.SupportsSearch = true;
+
+	viewMgr.put_Location = ViewMgrSetRasterLocation;
+	viewMgr.visBBoxLeft = 0.526250;
+	viewMgr.visBBoxRight = 16.630000;
+	viewMgr.visBBoxBottom = 0.422219;
+	viewMgr.visBBoxTop = 10.647222;
+	viewMgr.highlightDiv = null;
+}
+
+function load ()
+{
+	if(isUpLevel)
+	{
+		arrowdiv.innerHTML = '<img id="arrowgif" alt="Shows the location of the selected shape" src="arrow.gif"/>';
+
+		var pageIndex = parent.PageIndexFromID (pageID);
+		parent.CurPageUpdate (pageIndex);
+	}
+}
+
+function unload()
+{
+	if(isUpLevel)
+	{
+		viewMgr = null;
+		parent.viewMgr = null;
+	}
+}
+
+window.onload = load;
+window.onunload = unload;
+document.onclick = clickMenu;
+
+</script>
+</head>
+
+<body class="pageView" bgcolor="#FFFFFF">
+
+<div id=arrowdiv style="position:absolute;top:0;left:0;visibility:hidden;z-index:5">
+</div>
+
+<div id="menu1" onclick="clickMenu()" class="hlMenu">
+</div>
+
+<DIV id=RasterDiv>
+
+
+<center>
+  <IMG id="ConvertedImage" SRC="gif_9.gif" ALT="Technical Services" name=RasterImage BORDER="0" USEMAP="#visImageMap">
+</center>
+
+<MAP NAME="visImageMap">
+  <AREA shape="POLYGON" tabindex="1" ALT="Gary Green BIM Specialist" origTitle="Gary Green BIM Specialist" TITLE="Gary Green BIM Specialist"  target="_top" COORDS=" 858,707 943,707 943,668 858,668 858,707" onmouseover="UpdateTooltip(this,11,337)" onfocus="UpdateTooltip(this,11,337)" onclick="return OnShapeClick(11,337);" onkeyup="OnShapeKey(11,337);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 406,320 406,304 405,304 405,320" onmouseover="UpdateTooltip(this,11,98)" onfocus="UpdateTooltip(this,11,98)" onclick="return OnShapeClick(11,98);" onkeyup="OnShapeKey(11,98);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 406,548 427,548 427,547 406,547" onmouseover="UpdateTooltip(this,11,97)" onfocus="UpdateTooltip(this,11,97)" onclick="return OnShapeClick(11,97);" onkeyup="OnShapeKey(11,97);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 377,498 427,498 427,497 377,497" onmouseover="UpdateTooltip(this,11,96)" onfocus="UpdateTooltip(this,11,96)" onclick="return OnShapeClick(11,96);" onkeyup="OnShapeKey(11,96);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 377,449 427,449 427,448 377,448" onmouseover="UpdateTooltip(this,11,94)" onfocus="UpdateTooltip(this,11,94)" onclick="return OnShapeClick(11,94);" onkeyup="OnShapeKey(11,94);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 377,397 424,398 424,397 377,396" onmouseover="UpdateTooltip(this,11,95)" onfocus="UpdateTooltip(this,11,95)" onclick="return OnShapeClick(11,95);" onkeyup="OnShapeKey(11,95);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 204,311 204,301 203,301 203,311" onmouseover="UpdateTooltip(this,11,336)" onfocus="UpdateTooltip(this,11,336)" onclick="return OnShapeClick(11,336);" onkeyup="OnShapeKey(11,336);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Gail Kinner Marketing Manager" origTitle="Gail Kinner Marketing Manager" TITLE="Gail Kinner Marketing Manager"  target="_top" COORDS=" 2,361 78,361 78,325 2,325 2,361" onmouseover="UpdateTooltip(this,11,331)" onfocus="UpdateTooltip(this,11,331)" onclick="return OnShapeClick(11,331);" onkeyup="OnShapeKey(11,331);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 45,301 45,321 46,321 46,301" onmouseover="UpdateTooltip(this,11,330)" onfocus="UpdateTooltip(this,11,330)" onclick="return OnShapeClick(11,330);" onkeyup="OnShapeKey(11,330);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 45,251 45,261 46,261 46,251" onmouseover="UpdateTooltip(this,11,329)" onfocus="UpdateTooltip(this,11,329)" onclick="return OnShapeClick(11,329);" onkeyup="OnShapeKey(11,329);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Marketing" origTitle="Marketing" TITLE="Marketing"  target="_top" COORDS=" 5,301 85,301 85,261 5,261 5,301" onmouseover="UpdateTooltip(this,11,324)" onfocus="UpdateTooltip(this,11,324)" onclick="return OnShapeClick(11,324);" onkeyup="OnShapeKey(11,324);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Chris Riddle BIM Lead Drafter" origTitle="Chris Riddle BIM Lead Drafter" TITLE="Chris Riddle BIM Lead Drafter"  target="_top" COORDS=" 562,460 642,460 642,420 562,420 562,460" onmouseover="UpdateTooltip(this,11,280)" onfocus="UpdateTooltip(this,11,280)" onclick="return OnShapeClick(11,280);" onkeyup="OnShapeKey(11,280);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Plumbing/Piping Modeling" origTitle="Plumbing/Piping Modeling" TITLE="Plumbing/Piping Modeling"  target="_top" COORDS=" 751,400 831,400 831,360 751,360 751,400" onmouseover="UpdateTooltip(this,11,275)" onfocus="UpdateTooltip(this,11,275)" onclick="return OnShapeClick(11,275);" onkeyup="OnShapeKey(11,275);">
+  <AREA shape="POLYGON" tabindex="1" ALT="BIM QA/QC" origTitle="BIM QA/QC" TITLE="BIM QA/QC"  target="_top" COORDS=" 960,400 1039,400 1039,360 960,360 960,400" onmouseover="UpdateTooltip(this,11,270)" onfocus="UpdateTooltip(this,11,270)" onclick="return OnShapeClick(11,270);" onkeyup="OnShapeKey(11,270);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Sheet Metal Modeling" origTitle="Sheet Metal Modeling" TITLE="Sheet Metal Modeling"  target="_top" COORDS=" 860,400 940,400 940,360 860,360 860,400" onmouseover="UpdateTooltip(this,11,265)" onfocus="UpdateTooltip(this,11,265)" onclick="return OnShapeClick(11,265);" onkeyup="OnShapeKey(11,265);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Industrial Modeling" origTitle="Industrial Modeling" TITLE="Industrial Modeling"  target="_top" COORDS=" 652,400 731,400 731,360 652,360 652,400" onmouseover="UpdateTooltip(this,11,260)" onfocus="UpdateTooltip(this,11,260)" onclick="return OnShapeClick(11,260);" onkeyup="OnShapeKey(11,260);">
+  <AREA shape="POLYGON" tabindex="1" ALT="BIM Drafting" origTitle="BIM Drafting" TITLE="BIM Drafting"  target="_top" COORDS=" 562,400 642,400 642,360 562,360 562,400" onmouseover="UpdateTooltip(this,11,255)" onfocus="UpdateTooltip(this,11,255)" onclick="return OnShapeClick(11,255);" onkeyup="OnShapeKey(11,255);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Bryan Irey BIM Specialist" origTitle="Bryan Irey BIM Specialist" TITLE="Bryan Irey BIM Specialist"  target="_top" COORDS=" 860,606 940,606 940,567 860,567 860,606" onmouseover="UpdateTooltip(this,11,250)" onfocus="UpdateTooltip(this,11,250)" onclick="return OnShapeClick(11,250);" onkeyup="OnShapeKey(11,250);">
+  <AREA shape="POLYGON" tabindex="1" ALT="" origTitle="" TITLE=""  target="_top" COORDS=" 796,301 796,291 795,291 795,301" onmouseover="UpdateTooltip(this,11,247)" onfocus="UpdateTooltip(this,11,247)" onclick="return OnShapeClick(11,247);" onkeyup="OnShapeKey(11,247);">
+  <AREA shape="POLYGON" tabindex="1" ALT="BIM Services" origTitle="BIM Services" TITLE="BIM Services"  target="_top" COORDS=" 756,291 836,291 836,251 756,251 756,291" onmouseover="UpdateTooltip(this,11,242)" onfocus="UpdateTooltip(this,11,242)" onclick="return OnShapeClick(11,242);" onkeyup="OnShapeKey(11,242);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Curtis Watson BIM Services Manager" origTitle="Curtis Watson BIM Services Manager" TITLE="Curtis Watson BIM Services Manager"  target="_top" COORDS=" 758,338 834,338 834,303 758,303 758,338" onmouseover="UpdateTooltip(this,11,237)" onfocus="UpdateTooltip(this,11,237)" onclick="return OnShapeClick(11,237);" onkeyup="OnShapeKey(11,237);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Dale Bechtholdt Purchasing" origTitle="Dale Bechtholdt Purchasing" TITLE="Dale Bechtholdt Purchasing"  target="_top" COORDS=" 1089,589 1169,589 1169,549 1089,549 1089,589" onmouseover="UpdateTooltip(this,11,219)" onfocus="UpdateTooltip(this,11,219)" onclick="return OnShapeClick(11,219);" onkeyup="OnShapeKey(11,219);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Mike McNeil Purchasing" origTitle="Mike McNeil Purchasing" TITLE="Mike McNeil Purchasing"  target="_top" COORDS=" 1089,529 1169,529 1169,489 1089,489 1089,529" onmouseover="UpdateTooltip(this,11,214)" onfocus="UpdateTooltip(this,11,214)" onclick="return OnShapeClick(11,214);" onkeyup="OnShapeKey(11,214);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Shane Jacob Capital Equip Manager" origTitle="Shane Jacob Capital Equip Manager" TITLE="Shane Jacob Capital Equip Manager"  target="_top" COORDS=" 1089,470 1169,470 1169,430 1089,430 1089,470" onmouseover="UpdateTooltip(this,11,209)" onfocus="UpdateTooltip(this,11,209)" onclick="return OnShapeClick(11,209);" onkeyup="OnShapeKey(11,209);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Wayne Hakola Purchasing" origTitle="Wayne Hakola Purchasing" TITLE="Wayne Hakola Purchasing"  target="_top" COORDS=" 1089,410 1169,410 1169,370 1089,370 1089,410" onmouseover="UpdateTooltip(this,11,204)" onfocus="UpdateTooltip(this,11,204)" onclick="return OnShapeClick(11,204);" onkeyup="OnShapeKey(11,204);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Rick Coulter Purchasing Manager" origTitle="Rick Coulter Purchasing Manager" TITLE="Rick Coulter Purchasing Manager"  target="_top" COORDS=" 1091,348 1167,348 1167,313 1091,313 1091,348" onmouseover="UpdateTooltip(this,11,199)" onfocus="UpdateTooltip(this,11,199)" onclick="return OnShapeClick(11,199);" onkeyup="OnShapeKey(11,199);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Purchasing / Expediting" origTitle="Purchasing / Expediting" TITLE="Purchasing / Expediting"  target="_top" COORDS=" 1089,291 1169,291 1169,251 1089,251 1089,291" onmouseover="UpdateTooltip(this,11,194)" onfocus="UpdateTooltip(this,11,194)" onclick="return OnShapeClick(11,194);" onkeyup="OnShapeKey(11,194);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Randy Adams BIM Coordinator" origTitle="Randy Adams BIM Coordinator" TITLE="Randy Adams BIM Coordinator"  target="_top" COORDS=" 751,658 831,658 831,619 751,619 751,658" onmouseover="UpdateTooltip(this,11,189)" onfocus="UpdateTooltip(this,11,189)" onclick="return OnShapeClick(11,189);" onkeyup="OnShapeKey(11,189);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Mark Peeples  BIM Drafter" origTitle="Mark Peeples  BIM Drafter" TITLE="Mark Peeples  BIM Drafter"  target="_top" COORDS=" 562,509 642,509 642,470 562,470 562,509" onmouseover="UpdateTooltip(this,11,184)" onfocus="UpdateTooltip(this,11,184)" onclick="return OnShapeClick(11,184);" onkeyup="OnShapeKey(11,184);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Bryan Eppler Major Projects Manager" origTitle="Bryan Eppler Major Projects Manager" TITLE="Bryan Eppler Major Projects Manager"  target="_top" COORDS=" 1002,229 1077,229 1077,193 1002,193 1002,229" onmouseover="UpdateTooltip(this,11,173)" onfocus="UpdateTooltip(this,11,173)" onclick="return OnShapeClick(11,173);" onkeyup="OnShapeKey(11,173);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Daniel Vu Senior Engineer" origTitle="Daniel Vu Senior Engineer" TITLE="Daniel Vu Senior Engineer"  target="_top" COORDS=" 427,469 510,469 510,429 427,429 427,469" onmouseover="UpdateTooltip(this,11,167)" onfocus="UpdateTooltip(this,11,167)" onclick="return OnShapeClick(11,167);" onkeyup="OnShapeKey(11,167);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Steve Miller BIM Specialist" origTitle="Steve Miller BIM Specialist" TITLE="Steve Miller BIM Specialist"  target="_top" COORDS=" 860,656 940,656 940,616 860,616 860,656" onmouseover="UpdateTooltip(this,11,162)" onfocus="UpdateTooltip(this,11,162)" onclick="return OnShapeClick(11,162);" onkeyup="OnShapeKey(11,162);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Paul Idzik Design Engineer" origTitle="Paul Idzik Design Engineer" TITLE="Paul Idzik Design Engineer"  target="_top" COORDS=" 425,618 509,618 509,578 425,578 425,618" onmouseover="UpdateTooltip(this,11,156)" onfocus="UpdateTooltip(this,11,156)" onclick="return OnShapeClick(11,156);" onkeyup="OnShapeKey(11,156);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Ted Granston Project Executive" origTitle="Ted Granston Project Executive" TITLE="Ted Granston Project Executive"  target="_top" COORDS=" 229,361 304,361 304,325 229,325 229,361" onmouseover="UpdateTooltip(this,11,148)" onfocus="UpdateTooltip(this,11,148)" onclick="return OnShapeClick(11,148);" onkeyup="OnShapeKey(11,148);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Brent Johnson BIM Coordinator" origTitle="Brent Johnson BIM Coordinator" TITLE="Brent Johnson BIM Coordinator"  target="_top" COORDS=" 860,507 940,507 940,467 860,467 860,507" onmouseover="UpdateTooltip(this,11,143)" onfocus="UpdateTooltip(this,11,143)" onclick="return OnShapeClick(11,143);" onkeyup="OnShapeKey(11,143);">
+  <AREA shape="POLYGON" tabindex="1" ALT="John Munson BIM Coordinator" origTitle="John Munson BIM Coordinator" TITLE="John Munson BIM Coordinator"  target="_top" COORDS=" 860,557 940,557 940,517 860,517 860,557" onmouseover="UpdateTooltip(this,11,138)" onfocus="UpdateTooltip(this,11,138)" onclick="return OnShapeClick(11,138);" onkeyup="OnShapeKey(11,138);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Steve Stamm Lead  Engineer" origTitle="Steve Stamm Lead  Engineer" TITLE="Steve Stamm Lead  Engineer"  target="_top" COORDS=" 427,518 510,518 510,478 427,478 427,518" onmouseover="UpdateTooltip(this,11,132)" onfocus="UpdateTooltip(this,11,132)" onclick="return OnShapeClick(11,132);" onkeyup="OnShapeKey(11,132);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Teng Vang BIM Specialist" origTitle="Teng Vang BIM Specialist" TITLE="Teng Vang BIM Specialist"  target="_top" COORDS=" 751,708 831,708 831,668 751,668 751,708" onmouseover="UpdateTooltip(this,11,127)" onfocus="UpdateTooltip(this,11,127)" onclick="return OnShapeClick(11,127);" onkeyup="OnShapeKey(11,127);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Mehrdad Rad BIM Coordinator" origTitle="Mehrdad Rad BIM Coordinator" TITLE="Mehrdad Rad BIM Coordinator"  target="_top" COORDS=" 751,609 831,609 831,569 751,569 751,609" onmouseover="UpdateTooltip(this,11,121)" onfocus="UpdateTooltip(this,11,121)" onclick="return OnShapeClick(11,121);" onkeyup="OnShapeKey(11,121);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Ned Miller Design Engineer" origTitle="Ned Miller Design Engineer" TITLE="Ned Miller Design Engineer"  target="_top" COORDS=" 281,518 377,518 377,478 281,478 281,518" onmouseover="UpdateTooltip(this,11,115)" onfocus="UpdateTooltip(this,11,115)" onclick="return OnShapeClick(11,115);" onkeyup="OnShapeKey(11,115);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Wayne Denton BIM Specialist" origTitle="Wayne Denton BIM Specialist" TITLE="Wayne Denton BIM Specialist"  target="_top" COORDS=" 751,758 831,758 831,718 751,718 751,758" onmouseover="UpdateTooltip(this,11,110)" onfocus="UpdateTooltip(this,11,110)" onclick="return OnShapeClick(11,110);" onkeyup="OnShapeKey(11,110);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Rene Soucy BIM Specialist" origTitle="Rene Soucy BIM Specialist" TITLE="Rene Soucy BIM Specialist"  target="_top" COORDS=" 652,460 731,460 731,420 652,420 652,460" onmouseover="UpdateTooltip(this,11,105)" onfocus="UpdateTooltip(this,11,105)" onclick="return OnShapeClick(11,105);" onkeyup="OnShapeKey(11,105);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Konstantin Aluf BIM Coordinator" origTitle="Konstantin Aluf BIM Coordinator" TITLE="Konstantin Aluf BIM Coordinator"  target="_top" COORDS=" 751,559 831,559 831,519 751,519 751,559" onmouseover="UpdateTooltip(this,11,100)" onfocus="UpdateTooltip(this,11,100)" onclick="return OnShapeClick(11,100);" onkeyup="OnShapeKey(11,100);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Jerry Bush President / CEO" origTitle="Jerry Bush President / CEO" TITLE="Jerry Bush President / CEO"  target="_top" COORDS=" 614,140 729,140 729,84 614,84 614,140" onmouseover="UpdateTooltip(this,11,87)" onfocus="UpdateTooltip(this,11,87)" onclick="return OnShapeClick(11,87);" onkeyup="OnShapeKey(11,87);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Dean Petterson Project Executive" origTitle="Dean Petterson Project Executive" TITLE="Dean Petterson Project Executive"  target="_top" COORDS=" 236,234 312,234 312,198 236,198 236,234" onmouseover="UpdateTooltip(this,11,82)" onfocus="UpdateTooltip(this,11,82)" onclick="return OnShapeClick(11,82);" onkeyup="OnShapeKey(11,82);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Tom Boysen, PE Project Executive" origTitle="Tom Boysen, PE Project Executive" TITLE="Tom Boysen, PE Project Executive"  target="_top" COORDS=" 104,361 180,361 180,325 104,325 104,361" onmouseover="UpdateTooltip(this,11,77)" onfocus="UpdateTooltip(this,11,77)" onclick="return OnShapeClick(11,77);" onkeyup="OnShapeKey(11,77);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Business Development" origTitle="Business Development" TITLE="Business Development"  target="_top" COORDS=" 164,301 244,301 244,261 164,261 164,301" onmouseover="UpdateTooltip(this,11,72)" onfocus="UpdateTooltip(this,11,72)" onclick="return OnShapeClick(11,72);" onkeyup="OnShapeKey(11,72);">
+  <AREA shape="POLYGON" tabindex="1" ALT="C.V. Nguyen Lead Estimator" origTitle="C.V. Nguyen Lead Estimator" TITLE="C.V. Nguyen Lead Estimator"  target="_top" COORDS=" 1199,350 1278,350 1278,311 1199,311 1199,350" onmouseover="UpdateTooltip(this,11,67)" onfocus="UpdateTooltip(this,11,67)" onclick="return OnShapeClick(11,67);" onkeyup="OnShapeKey(11,67);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Sean Cavanaugh BIM Lead Coordinator" origTitle="Sean Cavanaugh BIM Lead Coordinator" TITLE="Sean Cavanaugh BIM Lead Coordinator"  target="_top" COORDS=" 860,457 940,457 940,417 860,417 860,457" onmouseover="UpdateTooltip(this,11,62)" onfocus="UpdateTooltip(this,11,62)" onclick="return OnShapeClick(11,62);" onkeyup="OnShapeKey(11,62);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Khai Xiong BIM Lead Coordinator" origTitle="Khai Xiong BIM Lead Coordinator" TITLE="Khai Xiong BIM Lead Coordinator"  target="_top" COORDS=" 751,509 831,509 831,470 751,470 751,509" onmouseover="UpdateTooltip(this,11,57)" onfocus="UpdateTooltip(this,11,57)" onclick="return OnShapeClick(11,57);" onkeyup="OnShapeKey(11,57);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Ed Toyoji BIM Lead Coordinator" origTitle="Ed Toyoji BIM Lead Coordinator" TITLE="Ed Toyoji BIM Lead Coordinator"  target="_top" COORDS=" 751,460 831,460 831,420 751,420 751,460" onmouseover="UpdateTooltip(this,11,52)" onfocus="UpdateTooltip(this,11,52)" onclick="return OnShapeClick(11,52);" onkeyup="OnShapeKey(11,52);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Jim Carlson Sheet Metal Estimator" origTitle="Jim Carlson Sheet Metal Estimator" TITLE="Jim Carlson Sheet Metal Estimator"  target="_top" COORDS=" 1199,410 1278,410 1278,370 1199,370 1199,410" onmouseover="UpdateTooltip(this,11,47)" onfocus="UpdateTooltip(this,11,47)" onclick="return OnShapeClick(11,47);" onkeyup="OnShapeKey(11,47);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Karen Langeberg Estimator" origTitle="Karen Langeberg Estimator" TITLE="Karen Langeberg Estimator"  target="_top" COORDS=" 1201,470 1281,470 1281,430 1201,430 1201,470" onmouseover="UpdateTooltip(this,11,42)" onfocus="UpdateTooltip(this,11,42)" onclick="return OnShapeClick(11,42);" onkeyup="OnShapeKey(11,42);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Estimating" origTitle="Estimating" TITLE="Estimating"  target="_top" COORDS=" 1199,291 1278,291 1278,251 1199,251 1199,291" onmouseover="UpdateTooltip(this,11,37)" onfocus="UpdateTooltip(this,11,37)" onclick="return OnShapeClick(11,37);" onkeyup="OnShapeKey(11,37);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Steve Bueler Design Engineer" origTitle="Steve Bueler Design Engineer" TITLE="Steve Bueler Design Engineer"  target="_top" COORDS=" 427,568 510,568 510,528 427,528 427,568" onmouseover="UpdateTooltip(this,11,32)" onfocus="UpdateTooltip(this,11,32)" onclick="return OnShapeClick(11,32);" onkeyup="OnShapeKey(11,32);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Mike Harshman Senior Engineer" origTitle="Mike Harshman Senior Engineer" TITLE="Mike Harshman Senior Engineer"  target="_top" COORDS=" 424,418 510,418 510,378 424,378 424,418" onmouseover="UpdateTooltip(this,11,27)" onfocus="UpdateTooltip(this,11,27)" onclick="return OnShapeClick(11,27);" onkeyup="OnShapeKey(11,27);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Steve Brooks, PE Senior Engineer" origTitle="Steve Brooks, PE Senior Engineer" TITLE="Steve Brooks, PE Senior Engineer"  target="_top" COORDS=" 281,469 377,469 377,429 281,429 281,469" onmouseover="UpdateTooltip(this,11,17)" onfocus="UpdateTooltip(this,11,17)" onclick="return OnShapeClick(11,17);" onkeyup="OnShapeKey(11,17);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Max Harshman, PE Lead Design Engineer" origTitle="Max Harshman, PE Lead Design Engineer" TITLE="Max Harshman, PE Lead Design Engineer"  target="_top" COORDS=" 281,417 377,417 377,378 281,378 281,417" onmouseover="UpdateTooltip(this,11,12)" onfocus="UpdateTooltip(this,11,12)" onclick="return OnShapeClick(11,12);" onkeyup="OnShapeKey(11,12);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Engineering" origTitle="Engineering" TITLE="Engineering"  target="_top" COORDS=" 356,304 455,304 455,264 356,264 356,304" onmouseover="UpdateTooltip(this,11,7)" onfocus="UpdateTooltip(this,11,7)" onclick="return OnShapeClick(11,7);" onkeyup="OnShapeKey(11,7);">
+  <AREA shape="POLYGON" tabindex="1" ALT="David Malone, PE Engineering Manager" origTitle="David Malone, PE Engineering Manager" TITLE="David Malone, PE Engineering Manager"  target="_top" COORDS=" 357,360 455,360 455,322 357,322 357,360" onmouseover="UpdateTooltip(this,11,2)" onfocus="UpdateTooltip(this,11,2)" onclick="return OnShapeClick(11,2);" onkeyup="OnShapeKey(11,2);">
+</MAP>
+
+
+
+</DIV>
+
+</body>
+</html>
+

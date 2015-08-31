@@ -1,0 +1,276 @@
+<?
+require("fd_connect_settings.cfg");
+require("global-auth.inc");
+require("header.phtml");
+$query="select * from contacts where umc_emp = 'Y' and current = 'Y' and phone_ext != '' order by first_name,last_name,employee_num";
+$res=@mysql_query($query);
+$total=@mysql_num_rows($res);
+$break=ceil($total/3);
+$break2=$break * 2;
+$side1=array();
+$side2=array();
+$side3=array();
+
+$count=1;
+$tcount=1;
+$today=date('m/d/Y');
+echo "
+
+<a href=$pagedir><font color=blue>Done</font></a>
+
+<table class=wideprint border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=$fd_color_4><td align=center colspan=6><div style=\"float: right;\"><i><font size=-1>$today</font></i></div><font size=+1><b>Extension List</b></font></td></tr>
+<tr><td colspan=6 align=center class=wideprint>
+NOTE:&nbsp;YOUR&nbsp;DIRECT&nbsp;DIAL&nbsp;NUMBER&nbsp;IS&nbsp;368-6&nbsp;(your&nbsp;extension)&nbsp;if&nbsp;your&nbsp;extension&nbsp;is&nbsp;200-259<br>
+FOR&nbsp;EXTENSIONS&nbsp;260&nbsp;THRU&nbsp;289,&nbsp;YOUR&nbsp;DIRECT&nbsp;DIAL&nbsp;IS&nbsp;368-69&nbsp;(last&nbsp;2&nbsp;digits&nbsp;of&nbsp;your&nbsp;extension)
+</td></tr>
+
+<tr bgcolor=$fd_color_1><th class=wideprint width=5%>
+	<b>Ext</b>
+</th><th class=wideprint width=28%>
+	<b>Name</b>
+</th><th class=wideprint width=5%>
+	<b>Ext</b>
+</th><th class=wideprint width=28%>
+	<b>Name</b>
+</th><th class=wideprint width=5%>
+	<b>Ext</b>
+</th><th class=wideprint width=29%>
+	<b>Name</b>
+</th></tr>
+
+<style>
+@media print{
+td { font-size: 8pt; }
+th { font-size: 8pt; }
+}
+</style>
+
+";
+while ($row=@mysql_fetch_object($res)) {
+	
+	if ($tcount<=$break) {
+		$side1[$count]=$row;
+		}
+	if (($tcount>$break)&&($tcount<=$break2))	{
+		$side2[$count]=$row;
+		}
+	if ($tcount>$break2)	{
+		$side3[$count]=$row;
+		}
+	if ($count==$break) $count=0;
+	$count++;
+	$tcount++;
+	$row="";
+	}
+
+$count=1;
+while ($count<=$break) {
+	$a=$side1[$count];
+	$b=$side2[$count];
+	$c=$side3[$count];
+	echo "<tr><td class=wideprint align=right>
+			$a->phone_ext
+		</td><td class=wideprint>
+			$a->first_name&nbsp;$a->last_name
+		</td><td class=wideprint align=right>
+			$b->phone_ext
+		</td><td class=wideprint>
+			$b->first_name&nbsp;$b->last_name
+		</td><td class=wideprint align=right>
+			$c->phone_ext
+		</td><td class=wideprint>
+			$c->first_name&nbsp;$c->last_name
+		</td></tr>
+		";
+	$count++;
+	}
+
+echo "
+<tr>
+<td colspan=2 bgcolor=$fd_color_4 align=center><b>Faxes</b></td>
+<td colspan=2 bgcolor=$fd_color_4 align=center><b>Conference&nbsp;Rooms</b></td>
+<td colspan=2 bgcolor=$fd_color_4 align=center><b>Other #'s & Extensions</b></td>
+</tr>
+
+<tr><td colspan=2 valign=top align=center>
+	<table width=100% border=1 cellspacing=0 cellpadding=2>
+
+	<tr><td>
+		1st Floor
+	</td><td>
+		206-365-1580
+	</td></tr>
+	
+	<tr><td>
+		2nd Floor (Bids)
+	</td><td>
+		206-361-2126
+	</td></tr>
+
+	<tr><td>
+		Svc/Purch
+	</td><td>
+		206-365-3895
+	</td></tr>
+
+	<tr><td>
+		Proj Mgmt
+	</td><td>
+		206-364-8376
+	</td></tr>
+	
+	<tr><td>
+		Clarice/Payroll
+	</td><td>
+		206-365-1460
+	</td></tr>
+	
+	<tr><td>
+		David B/HR
+	</td><td>
+		206-368-6224
+	</td></tr>
+	
+	<tr><td>
+		Doug Smith
+	</td><td>
+		206-361-1209
+	</td></tr>
+	
+	<tr><td>
+		Gary Morgan
+	</td><td>
+		206-361-8456
+	</td></tr>
+	
+	<tr><td>
+		Jerry Bush
+	</td><td>
+		206-364-9905
+	</td></tr>
+	
+	<tr><td>
+		Safety
+	</td><td>
+		206-363-5233
+	</td></tr>
+	
+	<tr><td>
+		Shop
+	</td><td>
+		206-364-8784
+	</td></tr>
+	
+	<tr><td>
+		Rick Coulter
+	</td><td>
+		206-364-0670
+	</td></tr>
+	
+	<tr><td>
+		Wayne Hakola
+	</td><td>
+		206-364-3504
+	</td></tr>
+	</table>
+</td><td colspan=2 valign=top align=center>
+	<table width=100% border=1 cellspacing=0 cellpadding=2>
+	<tr><td align=right>
+		714
+	</td><td>
+		Baldwin Room
+	</td></tr>
+	
+	<tr><td align=right>
+		325
+	</td><td>
+		Central Plant
+	</td></tr>
+	
+	<tr><td align=right>
+		715
+	</td><td>
+		Chiller Room
+	</td></tr>
+	
+	<tr><td align=right>
+		701
+	</td><td>
+		Fan Room
+	</td></tr>
+	
+	<tr><td align=right>
+		702
+	</td><td>
+		Lobby
+	</td></tr>
+	
+	<tr><td align=right>
+		703
+	</td><td>
+		MRC
+	</td></tr>
+	
+	</table>
+</td><td colspan=2 valign=top align=center>
+	<table width=100% border=1 cellspacing=0 cellpadding=2>
+	
+	<tr><td colspan=2>
+		<div style=\"float:right;\">206-364-9900</div>Seattle Phone
+	</td></tr>
+
+	<tr><td colspan=2>
+       <div style=\"float:right;\">425-322-1299</div>Mukilteo Phone
+	</td></tr>
+
+	<tr><td colspan=2>
+       <div style=\"float:right;\">206-364-959</div>Warehouse
+	</td></tr>
+
+	<tr><td align=right>
+		284
+	</td><td>
+		Jerry Bush (line 2)
+	</td></tr>
+
+	<tr><td align=right>
+		259
+	</td><td>
+		Voice Mail
+	</td></tr>
+	
+	<tr><td align=right>
+		716
+	</td><td>
+		Server Room
+	</td></tr>
+	
+	<tr><td align=right>
+		303
+	</td><td>
+		Warehouse Loft
+	</td></tr>
+
+	<tr><td align=right>
+		309
+	</td><td>
+		Postage Room
+	</td></tr>
+	
+	</table>
+</td></tr>
+
+
+
+
+
+
+</table>
+";
+
+
+
+
+
+?>

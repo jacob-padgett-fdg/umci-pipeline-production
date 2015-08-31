@@ -1,0 +1,233 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" 
+ xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5"/>
+<link rel="stylesheet" type="text/css" href="visio.css"/>
+<title>UMC Organizational Chart</title>
+<style type="text/css">
+	 v\:* { behavior: url(#default#VML); }
+</style>
+
+<script src="vml_1.js" type="text/jscript" language="jscript"></script>
+
+<script type="text/jscript" language="jscript">
+
+	var pageID = 5;
+	var viewMgr = null;
+
+	if (parent.g_FirstPageToLoad != null && parent.g_FirstPageToLoad.length > 0)
+	{
+		if (parent.g_FileList[parent.g_CurPageIndex].PageID != pageID)
+		{
+			location.replace(parent.g_FileList[parent.g_CurPageIndex].PriImage);
+		}
+
+		parent.g_FirstPageToLoad = null;
+	}
+
+	function getPNZ()
+	{
+		var rawHTML = VMLDiv.innerHTML;
+		var strReturn = ""
+		
+		strReturn = rawHTML.slice( rawHTML.indexOf( '<v:group' ), rawHTML.indexOf( "</v:shape>" ) );
+		strReturn += "</v:shape></v:group>\n";
+				
+		return strReturn;
+	}
+	
+	function load()
+	{
+		viewMgr = new parent.CViewMgr("ConvertedImage", "arrowDiv");
+
+		viewMgr.put_Location = ViewMgrSetVMLLocation;
+
+
+		viewMgr.visBBoxLeft = 1.281250;
+		viewMgr.visBBoxRight = 15.774750;
+		viewMgr.visBBoxBottom = 1.274997;
+		viewMgr.visBBoxTop = 10.562500;
+
+		viewMgr.Zoom = VMLZoomChange;
+		viewMgr.setView= VMLSetView;
+
+		viewMgr.SupportsDetails = true;
+		viewMgr.SupportsSearch = true;
+
+		parent.viewMgr = viewMgr;
+
+		fit();
+	}
+
+	function unload()
+	{
+		viewMgr = null;
+		parent.viewMgr = null;
+	}
+
+	function fit()
+	{
+		if(parent.frmToolbar)
+		{
+			if (parent.g_WidgetsLoaded)
+			{
+				var zoom100 = parent.frmToolbar.document.all('a100');
+				if (zoom100)
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					zoom100.click();
+				}
+				else
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					viewMgr.Zoom(100);
+				}
+			}
+			else
+			{
+				window.setTimeout("fit()", 500);
+			}
+		}	
+		else
+		{
+			parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+			viewMgr.Zoom(100);
+		}
+	}
+
+	function PostZoomProcessing (newZoomLevel)
+	{
+		parent.viewMgr.PostZoomProcessing = null;
+		var pageIndex = parent.PageIndexFromID (pageID);
+		parent.viewMgr.getPNZ = getPNZ;
+		parent.CurPageUpdate (pageIndex);
+	}
+
+
+	
+	var isUpLevel = parent.isUpLevel;
+	var OnShapeClick = parent.OnShapeClick;
+	var OnShapeKey = parent.OnShapeKey;
+	var UpdateTooltip = parent.UpdateTooltip;
+	var clickMenu = parent.clickMenu;
+	var toggleMenuDiv = parent.toggleMenuDiv;
+	var toggleMenuLink = parent.toggleMenuLink;
+	var GoToPage = parent.GoToPage;
+
+	window.onload = load;
+	window.onunload = unload;
+	document.onclick = clickMenu;
+
+
+
+
+</script>
+
+</head>
+
+<body style="MARGIN:10px" onresize="VMLOnResize();" onscroll="VMLOnScroll();">
+
+<div id="arrowdiv" style="position:absolute;top:0;left:0;visibility:hidden;z-index:5">
+<img id="arrowgif" alt="Shows the location of the selected shape" src="arrow.gif"/>
+</div>
+
+<div id="menu1" onclick="clickMenu()" class="hlMenu">
+</div>
+
+
+
+
+<div id="VMLDiv" >
+
+
+<v:group  id="ConvertedImage" style="width:6.242151in;height:4.000000in;position:absolute;visibility=hidden;" coordSize="3121,2000" coordOrigin="-1000,-1000" >
+
+<v:shapetype 
+  id="VISSHAPE"
+  target="_parent"
+  coordsize="3121,2000"
+  coordorigin="-1000,-1000"
+  stroked="f"
+  strokecolor="red"
+  filled="t"
+>
+<v:fill opacity="0.0"/>
+</v:shapetype>
+
+
+<v:shape style="top:-1000.0;left:-1000.0;width:3121.1;height:2000.0;position:absolute" coordSize="3121,2000" coordOrigin="-1000,-1000" >
+<v:imagedata src="vml_3.emz"/>
+</v:shape>
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Steve Otis Operations Manager" origTitle="Steve Otis Operations Manager"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 372,-130 l 576,-130 l 576,-227 l 372,-227 l 372,-130xe" onmouseover="UpdateTooltip(this,5,6)" onclick="OnShapeClick(5,6)" onfocus="UpdateTooltip(this,5,6);" onkeyup="OnShapeKey(5,6)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Fabrication" origTitle="Fabrication"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 931,156 l 1145,156 l 1145,49 l 931,49 l 931,156xe" onmouseover="UpdateTooltip(this,5,38)" onclick="OnShapeClick(5,38)" onfocus="UpdateTooltip(this,5,38);" onkeyup="OnShapeKey(5,38)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Warehousing" origTitle="Warehousing"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -278,144 l -63,144 l -63,36 l -278,36 l -278,144xe" onmouseover="UpdateTooltip(this,5,44)" onclick="OnShapeClick(5,44)" onfocus="UpdateTooltip(this,5,44);" onkeyup="OnShapeKey(5,44)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Field Operations" origTitle="Field Operations"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 367,144 l 581,144 l 581,36 l 367,36 l 367,144xe" onmouseover="UpdateTooltip(this,5,32)" onclick="OnShapeClick(5,32)" onfocus="UpdateTooltip(this,5,32);" onkeyup="OnShapeKey(5,32)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Matt Mifflin General Superintendent" origTitle="Matt Mifflin General Superintendent"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 130,299 l 334,299 l 334,203 l 130,203 l 130,299xe" onmouseover="UpdateTooltip(this,5,50)" onclick="OnShapeClick(5,50)" onfocus="UpdateTooltip(this,5,50);" onkeyup="OnShapeKey(5,50)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Chris Gunn Sheetmetal" origTitle="Chris Gunn Sheetmetal"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 587,299 l 791,299 l 791,203 l 587,203 l 587,299xe" onmouseover="UpdateTooltip(this,5,56)" onclick="OnShapeClick(5,56)" onfocus="UpdateTooltip(this,5,56);" onkeyup="OnShapeKey(5,56)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Gary Morgan  Warehouse Manager" origTitle="Gary Morgan  Warehouse Manager"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -273,299 l -69,299 l -69,203 l -273,203 l -273,299xe" onmouseover="UpdateTooltip(this,5,62)" onclick="OnShapeClick(5,62)" onfocus="UpdateTooltip(this,5,62);" onkeyup="OnShapeKey(5,62)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Dick Kirk Shop Superintendent" origTitle="Dick Kirk Shop Superintendent"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 936,312 l 1140,312 l 1140,215 l 936,215 l 936,312xe" onmouseover="UpdateTooltip(this,5,68)" onclick="OnShapeClick(5,68)" onfocus="UpdateTooltip(this,5,68);" onkeyup="OnShapeKey(5,68)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Davin Chea Driver" origTitle="Davin Chea Driver"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -278,465 l -63,465 l -63,358 l -278,358 l -278,465xe" onmouseover="UpdateTooltip(this,5,74)" onclick="OnShapeClick(5,74)" onfocus="UpdateTooltip(this,5,74);" onkeyup="OnShapeKey(5,74)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Mark Shipley Driver" origTitle="Mark Shipley Driver"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -278,626 l -63,626 l -63,519 l -278,519 l -278,626xe" onmouseover="UpdateTooltip(this,5,80)" onclick="OnShapeClick(5,80)" onfocus="UpdateTooltip(this,5,80);" onkeyup="OnShapeKey(5,80)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Ian Footer Driver" origTitle="Ian Footer Driver"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -278,787 l -63,787 l -63,680 l -278,680 l -278,787xe" onmouseover="UpdateTooltip(this,5,86)" onclick="OnShapeClick(5,86)" onfocus="UpdateTooltip(this,5,86);" onkeyup="OnShapeKey(5,86)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Plumbing Fab Foreman" origTitle="Plumbing Fab Foreman"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 931,478 l 1145,478 l 1145,371 l 931,371 l 931,478xe" onmouseover="UpdateTooltip(this,5,98)" onclick="OnShapeClick(5,98)" onfocus="UpdateTooltip(this,5,98);" onkeyup="OnShapeKey(5,98)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Piping Fab Foreman" origTitle="Piping Fab Foreman"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 931,639 l 1145,639 l 1145,532 l 931,532 l 931,639xe" onmouseover="UpdateTooltip(this,5,104)" onclick="OnShapeClick(5,104)" onfocus="UpdateTooltip(this,5,104);" onkeyup="OnShapeKey(5,104)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Shop Steward" origTitle="Shop Steward"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 931,800 l 1145,800 l 1145,693 l 931,693 l 931,800xe" onmouseover="UpdateTooltip(this,5,110)" onclick="OnShapeClick(5,110)" onfocus="UpdateTooltip(this,5,110);" onkeyup="OnShapeKey(5,110)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Plumbing  Foreman" origTitle="Plumbing  Foreman"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 105,465 l 205,465 l 205,383 l 224,383 l 224,351 l 98,351 l 98,358 l -10,358 l -10,465 l 98,465 l 98,469 l 105,469 l 105,465xe" onmouseover="UpdateTooltip(this,5,116)" onclick="OnShapeClick(5,116)" onfocus="UpdateTooltip(this,5,116);" onkeyup="OnShapeKey(5,116)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Piping Foreman" origTitle="Piping Foreman"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 259,465 l 474,465 l 474,358 l 259,358 l 259,465xe" onmouseover="UpdateTooltip(this,5,122)" onclick="OnShapeClick(5,122)" onfocus="UpdateTooltip(this,5,122);" onkeyup="OnShapeKey(5,122)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Plumbing Journeyman" origTitle="Plumbing Journeyman"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -10,626 l 205,626 l 205,519 l -10,519 l -10,626xe" onmouseover="UpdateTooltip(this,5,128)" onclick="OnShapeClick(5,128)" onfocus="UpdateTooltip(this,5,128);" onkeyup="OnShapeKey(5,128)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Plumbing Apprentice" origTitle="Plumbing Apprentice"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -10,787 l 205,787 l 205,680 l -10,680 l -10,787xe" onmouseover="UpdateTooltip(this,5,134)" onclick="OnShapeClick(5,134)" onfocus="UpdateTooltip(this,5,134);" onkeyup="OnShapeKey(5,134)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Piping Journeyman" origTitle="Piping Journeyman"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 259,626 l 474,626 l 474,519 l 259,519 l 259,626xe" onmouseover="UpdateTooltip(this,5,140)" onclick="OnShapeClick(5,140)" onfocus="UpdateTooltip(this,5,140);" onkeyup="OnShapeKey(5,140)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Plumbing Apprentice" origTitle="Plumbing Apprentice"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 259,787 l 474,787 l 474,680 l 259,680 l 259,787xe" onmouseover="UpdateTooltip(this,5,146)" onclick="OnShapeClick(5,146)" onfocus="UpdateTooltip(this,5,146);" onkeyup="OnShapeKey(5,146)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Sheetmetal Foreman" origTitle="Sheetmetal Foreman"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 581,465 l 796,465 l 796,358 l 581,358 l 581,465xe" onmouseover="UpdateTooltip(this,5,152)" onclick="OnShapeClick(5,152)" onfocus="UpdateTooltip(this,5,152);" onkeyup="OnShapeKey(5,152)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Sheetmetal Journeyman" origTitle="Sheetmetal Journeyman"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 695,626 l 796,626 l 796,544 l 802,544 l 802,512 l 689,512 l 689,519 l 581,519 l 581,626 l 689,626 l 689,630 l 695,630 l 695,626xe" onmouseover="UpdateTooltip(this,5,158)" onclick="OnShapeClick(5,158)" onfocus="UpdateTooltip(this,5,158);" onkeyup="OnShapeKey(5,158)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Sheetmetal Apprentice" origTitle="Sheetmetal Apprentice"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 581,787 l 796,787 l 796,680 l 581,680 l 581,787xe" onmouseover="UpdateTooltip(this,5,164)" onclick="OnShapeClick(5,164)" onfocus="UpdateTooltip(this,5,164);" onkeyup="OnShapeKey(5,164)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Start Up &#38; Commissioning" origTitle="Start Up &#38; Commissioning"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -547,144 l -332,144 l -332,36 l -547,36 l -547,144xe" onmouseover="UpdateTooltip(this,5,194)" onclick="OnShapeClick(5,194)" onfocus="UpdateTooltip(this,5,194);" onkeyup="OnShapeKey(5,194)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Vern Roach Supervisor" origTitle="Vern Roach Supervisor"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m -541,299 l -337,299 l -337,203 l -541,203 l -541,299xe" onmouseover="UpdateTooltip(this,5,199)" onclick="OnShapeClick(5,199)" onfocus="UpdateTooltip(this,5,199);" onkeyup="OnShapeKey(5,199)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Jerry Bush President / CEO" origTitle="Jerry Bush President / CEO"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 318,-318 l 630,-318 l 630,-468 l 318,-468 l 318,-318xe" onmouseover="UpdateTooltip(this,5,206)" onclick="OnShapeClick(5,206)" onfocus="UpdateTooltip(this,5,206);" onkeyup="OnShapeKey(5,206)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 474,-232 l 474,-313 l 474,-313 l 464,-313 l 464,-232xe" onmouseover="UpdateTooltip(this,5,1)" onclick="OnShapeClick(5,1)" onfocus="UpdateTooltip(this,5,1);" onkeyup="OnShapeKey(5,1)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 635,-393 l 769,-393 l 769,-393 l 769,-403 l 635,-403xe" onmouseover="UpdateTooltip(this,5,12)" onclick="OnShapeClick(5,12)" onfocus="UpdateTooltip(this,5,12);" onkeyup="OnShapeKey(5,12)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 769,-393 l 769,-232 l 769,-232 l 779,-232 l 779,-393xe" onmouseover="UpdateTooltip(this,5,13)" onclick="OnShapeClick(5,13)" onfocus="UpdateTooltip(this,5,13);" onkeyup="OnShapeKey(5,13)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Kirk Baisch Safety Director" origTitle="Kirk Baisch Safety Director"  style="top:-1000;left:-1000;width:3121;height:2000;position:absolute" path=" m 667,-130 l 871,-130 l 871,-227 l 667,-227 l 667,-130xe" onmouseover="UpdateTooltip(this,5,14)" onclick="OnShapeClick(5,14)" onfocus="UpdateTooltip(this,5,14);" onkeyup="OnShapeKey(5,14)"/> 
+
+</v:group>
+
+
+
+</div>
+
+
+
+</body>
+</html>
+

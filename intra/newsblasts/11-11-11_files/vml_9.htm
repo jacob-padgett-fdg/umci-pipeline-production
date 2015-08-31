@@ -1,0 +1,233 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" 
+ xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5"/>
+<link rel="stylesheet" type="text/css" href="visio.css"/>
+<title>UMC Organizational Chart</title>
+<style type="text/css">
+	 v\:* { behavior: url(#default#VML); }
+</style>
+
+<script src="vml_1.js" type="text/jscript" language="jscript"></script>
+
+<script type="text/jscript" language="jscript">
+
+	var pageID = 12;
+	var viewMgr = null;
+
+	if (parent.g_FirstPageToLoad != null && parent.g_FirstPageToLoad.length > 0)
+	{
+		if (parent.g_FileList[parent.g_CurPageIndex].PageID != pageID)
+		{
+			location.replace(parent.g_FileList[parent.g_CurPageIndex].PriImage);
+		}
+
+		parent.g_FirstPageToLoad = null;
+	}
+
+	function getPNZ()
+	{
+		var rawHTML = VMLDiv.innerHTML;
+		var strReturn = ""
+		
+		strReturn = rawHTML.slice( rawHTML.indexOf( '<v:group' ), rawHTML.indexOf( "</v:shape>" ) );
+		strReturn += "</v:shape></v:group>\n";
+				
+		return strReturn;
+	}
+	
+	function load()
+	{
+		viewMgr = new parent.CViewMgr("ConvertedImage", "arrowDiv");
+
+		viewMgr.put_Location = ViewMgrSetVMLLocation;
+
+
+		viewMgr.visBBoxLeft = 2.328125;
+		viewMgr.visBBoxRight = 16.481945;
+		viewMgr.visBBoxBottom = 1.024997;
+		viewMgr.visBBoxTop = 10.562500;
+
+		viewMgr.Zoom = VMLZoomChange;
+		viewMgr.setView= VMLSetView;
+
+		viewMgr.SupportsDetails = true;
+		viewMgr.SupportsSearch = true;
+
+		parent.viewMgr = viewMgr;
+
+		fit();
+	}
+
+	function unload()
+	{
+		viewMgr = null;
+		parent.viewMgr = null;
+	}
+
+	function fit()
+	{
+		if(parent.frmToolbar)
+		{
+			if (parent.g_WidgetsLoaded)
+			{
+				var zoom100 = parent.frmToolbar.document.all('a100');
+				if (zoom100)
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					zoom100.click();
+				}
+				else
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					viewMgr.Zoom(100);
+				}
+			}
+			else
+			{
+				window.setTimeout("fit()", 500);
+			}
+		}	
+		else
+		{
+			parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+			viewMgr.Zoom(100);
+		}
+	}
+
+	function PostZoomProcessing (newZoomLevel)
+	{
+		parent.viewMgr.PostZoomProcessing = null;
+		var pageIndex = parent.PageIndexFromID (pageID);
+		parent.viewMgr.getPNZ = getPNZ;
+		parent.CurPageUpdate (pageIndex);
+	}
+
+
+	
+	var isUpLevel = parent.isUpLevel;
+	var OnShapeClick = parent.OnShapeClick;
+	var OnShapeKey = parent.OnShapeKey;
+	var UpdateTooltip = parent.UpdateTooltip;
+	var clickMenu = parent.clickMenu;
+	var toggleMenuDiv = parent.toggleMenuDiv;
+	var toggleMenuLink = parent.toggleMenuLink;
+	var GoToPage = parent.GoToPage;
+
+	window.onload = load;
+	window.onunload = unload;
+	document.onclick = clickMenu;
+
+
+
+
+</script>
+
+</head>
+
+<body style="MARGIN:10px" onresize="VMLOnResize();" onscroll="VMLOnScroll();">
+
+<div id="arrowdiv" style="position:absolute;top:0;left:0;visibility:hidden;z-index:5">
+<img id="arrowgif" alt="Shows the location of the selected shape" src="arrow.gif"/>
+</div>
+
+<div id="menu1" onclick="clickMenu()" class="hlMenu">
+</div>
+
+
+
+
+<div id="VMLDiv" >
+
+
+<v:group  id="ConvertedImage" style="width:5.936069in;height:4.000000in;position:absolute;visibility=hidden;" coordSize="2968,2000" coordOrigin="-1000,-1000" >
+
+<v:shapetype 
+  id="VISSHAPE"
+  target="_parent"
+  coordsize="2968,2000"
+  coordorigin="-1000,-1000"
+  stroked="f"
+  strokecolor="red"
+  filled="t"
+>
+<v:fill opacity="0.0"/>
+</v:shapetype>
+
+
+<v:shape style="top:-1000.0;left:-1000.0;width:2968.0;height:2000.0;position:absolute" coordSize="2968,2000" coordOrigin="-1000,-1000" >
+<v:imagedata src="vml_9.emz"/>
+</v:shape>
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Doug Smith VP / CFO" origTitle="Doug Smith VP / CFO"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 38,-127 l 342,-127 l 342,-273 l 38,-273 l 38,-127xe" onmouseover="UpdateTooltip(this,12,6)" onclick="OnShapeClick(12,6)" onfocus="UpdateTooltip(this,12,6);" onkeyup="OnShapeKey(12,6)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Human  Resources" origTitle="Human  Resources"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -98,140 l 112,140 l 112,35 l -98,35 l -98,140xe" onmouseover="UpdateTooltip(this,12,12)" onclick="OnShapeClick(12,12)" onfocus="UpdateTooltip(this,12,12);" onkeyup="OnShapeKey(12,12)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Accounting" origTitle="Accounting"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 765,453 l 975,453 l 975,349 l 765,349 l 765,453xe" onmouseover="UpdateTooltip(this,12,17)" onclick="OnShapeClick(12,17)" onfocus="UpdateTooltip(this,12,17);" onkeyup="OnShapeKey(12,17)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Finance" origTitle="Finance"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 896,140 l 1105,140 l 1105,35 l 896,35 l 896,140xe" onmouseover="UpdateTooltip(this,12,22)" onclick="OnShapeClick(12,22)" onfocus="UpdateTooltip(this,12,22);" onkeyup="OnShapeKey(12,22)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Payroll" origTitle="Payroll"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 1053,453 l 1262,453 l 1262,349 l 1053,349 l 1053,453xe" onmouseover="UpdateTooltip(this,12,27)" onclick="OnShapeClick(12,27)" onfocus="UpdateTooltip(this,12,27);" onkeyup="OnShapeKey(12,27)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Contract Management" origTitle="Contract Management"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -725,140 l -516,140 l -516,35 l -725,35 l -725,140xe" onmouseover="UpdateTooltip(this,12,32)" onclick="OnShapeClick(12,32)" onfocus="UpdateTooltip(this,12,32);" onkeyup="OnShapeKey(12,32)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Rich Munoz Controller" origTitle="Rich Munoz Controller"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 901,291 l 1100,291 l 1100,197 l 901,197 l 901,291xe" onmouseover="UpdateTooltip(this,12,42)" onclick="OnShapeClick(12,42)" onfocus="UpdateTooltip(this,12,42);" onkeyup="OnShapeKey(12,42)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Information / Technology" origTitle="Information / Technology"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -385,140 l -176,140 l -176,35 l -385,35 l -385,140xe" onmouseover="UpdateTooltip(this,12,40)" onclick="OnShapeClick(12,40)" onfocus="UpdateTooltip(this,12,40);" onkeyup="OnShapeKey(12,40)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="David Babington HR Manager" origTitle="David Babington HR Manager"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -40,291 l 159,291 l 159,197 l -40,197 l -40,291xe" onmouseover="UpdateTooltip(this,12,54)" onclick="OnShapeClick(12,54)" onfocus="UpdateTooltip(this,12,54);" onkeyup="OnShapeKey(12,54)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Catherine Waldren HR Supervisor" origTitle="Catherine Waldren HR Supervisor"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 7,453 l 216,453 l 216,349 l 7,349 l 7,453xe" onmouseover="UpdateTooltip(this,12,60)" onclick="OnShapeClick(12,60)" onfocus="UpdateTooltip(this,12,60);" onkeyup="OnShapeKey(12,60)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Antonio Fernandez Systems Analyst" origTitle="Antonio Fernandez Systems Analyst"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -333,427 l -124,427 l -124,323 l -333,323 l -333,427xe" onmouseover="UpdateTooltip(this,12,66)" onclick="OnShapeClick(12,66)" onfocus="UpdateTooltip(this,12,66);" onkeyup="OnShapeKey(12,66)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Chris Bondelid IT Manager" origTitle="Chris Bondelid IT Manager"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -328,291 l -129,291 l -129,197 l -328,197 l -328,291xe" onmouseover="UpdateTooltip(this,12,72)" onclick="OnShapeClick(12,72)" onfocus="UpdateTooltip(this,12,72);" onkeyup="OnShapeKey(12,72)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Bill Laughlin Project Accounting Manager" origTitle="Bill Laughlin Project Accounting Manager"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -469,227 l -469,197 l -668,197 l -668,291 l -469,291 l -469,258 l -465,258 l -465,227 l -469,227xe" onmouseover="UpdateTooltip(this,12,78)" onclick="OnShapeClick(12,78)" onfocus="UpdateTooltip(this,12,78);" onkeyup="OnShapeKey(12,78)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Vicky Rozis Contract Admin" origTitle="Vicky Rozis Contract Admin"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -621,715 l -412,715 l -412,610 l -621,610 l -621,715xe" onmouseover="UpdateTooltip(this,12,84)" onclick="OnShapeClick(12,84)" onfocus="UpdateTooltip(this,12,84);" onkeyup="OnShapeKey(12,84)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Leah Holden Contract Admin" origTitle="Leah Holden Contract Admin"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -621,453 l -412,453 l -412,349 l -621,349 l -621,453xe" onmouseover="UpdateTooltip(this,12,90)" onclick="OnShapeClick(12,90)" onfocus="UpdateTooltip(this,12,90);" onkeyup="OnShapeKey(12,90)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Les Bouck Courier" origTitle="Les Bouck Courier"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 59,741 l 268,741 l 268,636 l 59,636 l 59,741xe" onmouseover="UpdateTooltip(this,12,96)" onclick="OnShapeClick(12,96)" onfocus="UpdateTooltip(this,12,96);" onkeyup="OnShapeKey(12,96)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Toni Adams Contract Admin" origTitle="Toni Adams Contract Admin"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -621,584 l -412,584 l -412,479 l -621,479 l -621,584xe" onmouseover="UpdateTooltip(this,12,102)" onclick="OnShapeClick(12,102)" onfocus="UpdateTooltip(this,12,102);" onkeyup="OnShapeKey(12,102)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="AP" origTitle="AP"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 452,453 l 661,453 l 661,349 l 452,349 l 452,453xe" onmouseover="UpdateTooltip(this,12,108)" onclick="OnShapeClick(12,108)" onfocus="UpdateTooltip(this,12,108);" onkeyup="OnShapeKey(12,108)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Julie Blanchard AP" origTitle="Julie Blanchard AP"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 556,767 l 765,767 l 765,662 l 556,662 l 556,767xe" onmouseover="UpdateTooltip(this,12,114)" onclick="OnShapeClick(12,114)" onfocus="UpdateTooltip(this,12,114);" onkeyup="OnShapeKey(12,114)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Bruce Freeman AP" origTitle="Bruce Freeman AP"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 556,897 l 765,897 l 765,793 l 556,793 l 556,897xe" onmouseover="UpdateTooltip(this,12,120)" onclick="OnShapeClick(12,120)" onfocus="UpdateTooltip(this,12,120);" onkeyup="OnShapeKey(12,120)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Clarice Olson Payroll" origTitle="Clarice Olson Payroll"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 1105,610 l 1315,610 l 1315,506 l 1105,506 l 1105,610xe" onmouseover="UpdateTooltip(this,12,132)" onclick="OnShapeClick(12,132)" onfocus="UpdateTooltip(this,12,132);" onkeyup="OnShapeKey(12,132)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Mary Bouck Receptionist" origTitle="Mary Bouck Receptionist"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 1393,610 l 1602,610 l 1602,506 l 1393,506 l 1393,610xe" onmouseover="UpdateTooltip(this,12,144)" onclick="OnShapeClick(12,144)" onfocus="UpdateTooltip(this,12,144);" onkeyup="OnShapeKey(12,144)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Rick Davison Financial Acctng Manager" origTitle="Rick Davison Financial Acctng Manager"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 823,605 l 1022,605 l 1022,511 l 823,511 l 823,605xe" onmouseover="UpdateTooltip(this,12,150)" onclick="OnShapeClick(12,150)" onfocus="UpdateTooltip(this,12,150);" onkeyup="OnShapeKey(12,150)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Sonja Cotterell Staff Accountant" origTitle="Sonja Cotterell Staff Accountant"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 818,741 l 1027,741 l 1027,636 l 818,636 l 818,741xe" onmouseover="UpdateTooltip(this,12,156)" onclick="OnShapeClick(12,156)" onfocus="UpdateTooltip(this,12,156);" onkeyup="OnShapeKey(12,156)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Jerry Bush President / CEO" origTitle="Jerry Bush President / CEO"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 38,-336 l 342,-336 l 342,-482 l 38,-482 l 38,-336xe" onmouseover="UpdateTooltip(this,12,173)" onclick="OnShapeClick(12,173)" onfocus="UpdateTooltip(this,12,173);" onkeyup="OnShapeKey(12,173)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Admin Support" origTitle="Admin Support"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 1341,453 l 1550,453 l 1550,349 l 1341,349 l 1341,453xe" onmouseover="UpdateTooltip(this,12,149)" onclick="OnShapeClick(12,149)" onfocus="UpdateTooltip(this,12,149);" onkeyup="OnShapeKey(12,149)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Debi Serales Admin Assistant" origTitle="Debi Serales Admin Assistant"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 556,-148 l 765,-148 l 765,-252 l 556,-252 l 556,-148xe" onmouseover="UpdateTooltip(this,12,183)" onclick="OnShapeClick(12,183)" onfocus="UpdateTooltip(this,12,183);" onkeyup="OnShapeKey(12,183)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Jeff Buck  Database Manager" origTitle="Jeff Buck  Database Manager"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m -333,558 l -124,558 l -124,453 l -333,453 l -333,558xe" onmouseover="UpdateTooltip(this,12,197)" onclick="OnShapeClick(12,197)" onfocus="UpdateTooltip(this,12,197);" onkeyup="OnShapeKey(12,197)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Cindy Littrell AP Supervisor" origTitle="Cindy Littrell AP Supervisor"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 504,610 l 713,610 l 713,506 l 504,506 l 504,610xe" onmouseover="UpdateTooltip(this,12,203)" onclick="OnShapeClick(12,203)" onfocus="UpdateTooltip(this,12,203);" onkeyup="OnShapeKey(12,203)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Ruthann Browse HR Assistant" origTitle="Ruthann Browse HR Assistant"  style="top:-1000;left:-1000;width:2968;height:2000;position:absolute" path=" m 59,610 l 268,610 l 268,506 l 59,506 l 59,610xe" onmouseover="UpdateTooltip(this,12,119)" onclick="OnShapeClick(12,119)" onfocus="UpdateTooltip(this,12,119);" onkeyup="OnShapeKey(12,119)"/> 
+
+</v:group>
+
+
+
+</div>
+
+
+
+</body>
+</html>
+

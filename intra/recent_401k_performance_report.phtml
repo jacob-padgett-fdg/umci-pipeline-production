@@ -1,0 +1,15 @@
+<?
+if ($ouput!="") die_security();
+exec("/bin/ls -1 -t /data/web/pipeline/intra/401k_performance_reports/*.pdf | /usr/bin/head -1",$output);
+$basename=ereg_replace("^.*/","",$output[0]);
+$filename=$output[0];
+
+$filedate=date('m-d-Y',filemtime($filename));
+
+echo "<a href=\"http://pipeline.umci.com/intra/401k_performance_reports/$basename\" title=\"Posted: $filedate\"><font color=blue>The most recent 401k Performance Report</font></a>";
+//echo "<hr>$output[0]<hr>";
+//echo "<hr>$basename<hr>";
+
+
+
+?>

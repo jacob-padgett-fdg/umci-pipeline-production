@@ -1,0 +1,23 @@
+<?
+$output="";
+require('header.phtml');
+
+echo "<center><h3>Older 401k Performance Reports</h3><hr>";
+
+
+
+exec("/bin/ls -1 -t /data/web/pipeline/intra/401k_performance_reports/*.pdf",$output);
+$totalcount=sizeof($output);
+$count=0;
+
+while ($count <= $totalcount) {
+	$basename=ereg_replace("^.*/","",$output[$count]);
+	$filename=$output[$count];
+	$filedate=date('m-d-Y',filemtime($filename));
+	if ($filename != "") echo "<a href=\"http://pipeline.umci.com/intra/401k_performance_reports/$basename\" title=\"Filename: $basename\">Posted: $filedate</a><br>";
+	$count++;
+	}
+echo "</center></html></body>";
+
+
+?>

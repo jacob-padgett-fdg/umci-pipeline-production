@@ -1,0 +1,20 @@
+<?
+require_once('intra-pw.inc');
+
+if (ereg( 'MSIE ([0-9].[0-9]{1,2})',$HTTP_USER_AGENT,$log_version)) {
+	include("activejobs_printable_ie.phtml");
+	exit;
+	}
+
+if (ereg('Mozilla/([0-9].[0-9]{1,2})',$HTTP_USER_AGENT,$log_version)) {
+	include("activejobs_printable_ns.phtml");
+	exit;
+	}
+
+echo "Error: Could not detect your browser properly!<p>
+	Please select the most appropriate option below.<p><hr>
+	<a href=activejobs_printable_ns.phtml>Netscape</a><br>
+	<a href=activejobs_printable_ie.phtml>Internet Exploder</a><p>
+	Sorry Chris, no Opera tweaked version yet..<p>";
+
+?>

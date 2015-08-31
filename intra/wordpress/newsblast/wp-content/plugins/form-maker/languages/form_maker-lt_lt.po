@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: form_maker\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-03-09 14:49+0400\n"
+"PO-Revision-Date: 2012-04-13 16:50+0400\n"
+"Last-Translator: Web-Dorado.com <info@web-dorado.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Lithuanian\n"
+"X-Poedit-SearchPath-0: C:\\wamp\\www\\wordpress\\wp-content\\plugins\\form_maker\n"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:148
+msgid "Title"
+msgstr "pavadinimas"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:149
+msgid "First"
+msgstr "pirmas"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:150
+msgid "Last"
+msgstr "paskutinis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:151
+msgid "Middle"
+msgstr "vidurinis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:152
+msgid "January"
+msgstr "sausis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:153
+msgid "February"
+msgstr "vasaris"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:154
+msgid "March"
+msgstr "kovas"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:155
+msgid "April"
+msgstr "balandis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:156
+msgid "May"
+msgstr "gegužės"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:157
+msgid "June"
+msgstr "birželis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:158
+msgid "July"
+msgstr "liepa"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:159
+msgid "August"
+msgstr "rugpjūtis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:160
+msgid "September"
+msgstr "rugsėjis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:161
+msgid "October"
+msgstr "spalis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:162
+msgid "November"
+msgstr "lapkritis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:163
+msgid "December"
+msgstr "gruodis"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:580
+msgid "The value of year is not valid"
+msgstr "Metų vertė yra negalioja"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:762
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3265
+msgid "Sorry, you are not allowed to upload this type of file"
+msgstr "Atsiprašome, bet jums neleidžiama įkelti šį failo tipą"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:770
+msgid "field is required"
+msgstr "laukas"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:783
+msgid "This is not a valid email address"
+msgstr "Tai nėra galiojantis elektroninio pašto adresas"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:22
+msgid "Form Maker"
+msgstr "Form Maker"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3078
+msgid "Error, incorrect Security code"
+msgstr "Klaida, neteisingas Saugos kodas"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3243
+msgid "The file exceeds the allowed size of"
+msgstr "Failas viršija leistiną dydį"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3279
+msgid "Error, file cannot be moved"
+msgstr "Klaida, failas negali būti perkeltas"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3336
+msgid "Nothing was submitted"
+msgstr "Nieko buvo pateikta"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3488
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3505
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3511
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3524
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3530
+msgid "Your form was successfully submitted"
+msgstr "Tavo forma buvo sėkmingai pateikta"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3494
+msgid "Error, email was not sent"
+msgstr "Klaida, laiškas nebuvo išsiųstas"
+

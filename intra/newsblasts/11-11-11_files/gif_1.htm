@@ -1,0 +1,166 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="visio.css"/>
+<title>
+UMC Organizational Chart
+</title>
+<script type="text/javascript" language="javascript">
+function UpdateTooltip(){};
+function OnShapeClick(){};
+</script>
+
+<script src="gif_1.js" type="text/jscript" language="jscript"></script>
+
+<script type="text/jscript" language="jscript">
+	if(parent.isUpLevel)
+	{
+		location.replace(parent.g_FileList[parent.g_CurPageIndex].PriImage);
+	}
+</script>
+
+
+
+<script type="text/jscript" language="jscript">
+
+var pageID = 6;
+
+var isUpLevel = parent.isUpLevel;
+var OnShapeClick = null;
+if (!parent.isMac)
+{
+	OnShapeClick = parent.OnShapeClick;
+}
+
+var OnShapeKey = parent.OnShapeKey;
+var UpdateTooltip = parent.UpdateTooltip;
+var clickMenu = parent.clickMenu;
+var toggleMenuDiv = parent.toggleMenuDiv;
+var toggleMenuLink = parent.toggleMenuLink;
+var GoToPage = parent.GoToPage;
+
+
+if (parent.isUpLevel)
+{
+
+	if (parent.g_FirstPageToLoad != null && parent.g_FirstPageToLoad.length > 0)
+	{
+		if (parent.g_FileList[parent.g_CurPageIndex].PageID != pageID)
+		{
+			var fileEntry = parent.g_FileList[parent.g_CurPageIndex];
+			var fileToLoad = fileToLoad = fileEntry.PriImage;
+			if (fileEntry.SecImage.length > 0)
+			{
+				fileToLoad = fileEntry.SecImage;
+			}
+
+			location.replace(fileToLoad);
+		}
+
+		parent.g_FirstPageToLoad = null;
+	}
+
+
+	var viewMgr = new parent.CViewMgr();
+	parent.viewMgr = viewMgr;
+
+	viewMgr.SupportsDetails = true;
+	viewMgr.SupportsSearch = true;
+
+	viewMgr.put_Location = ViewMgrSetRasterLocation;
+	viewMgr.visBBoxLeft = 1.375000;
+	viewMgr.visBBoxRight = 15.513195;
+	viewMgr.visBBoxBottom = 1.399997;
+	viewMgr.visBBoxTop = 10.437500;
+	viewMgr.highlightDiv = null;
+}
+
+function load ()
+{
+	if(isUpLevel)
+	{
+		arrowdiv.innerHTML = '<img id="arrowgif" alt="Shows the location of the selected shape" src="arrow.gif"/>';
+
+		var pageIndex = parent.PageIndexFromID (pageID);
+		parent.CurPageUpdate (pageIndex);
+	}
+}
+
+function unload()
+{
+	if(isUpLevel)
+	{
+		viewMgr = null;
+		parent.viewMgr = null;
+	}
+}
+
+window.onload = load;
+window.onunload = unload;
+document.onclick = clickMenu;
+
+</script>
+</head>
+
+<body class="pageView" bgcolor="#FFFFFF">
+
+<div id=arrowdiv style="position:absolute;top:0;left:0;visibility:hidden;z-index:5">
+</div>
+
+<div id="menu1" onclick="clickMenu()" class="hlMenu">
+</div>
+
+<DIV id=RasterDiv>
+
+
+<center>
+  <IMG id="ConvertedImage" SRC="gif_1.gif" ALT="Corporate Leaders" name=RasterImage BORDER="0" USEMAP="#visImageMap">
+</center>
+
+<MAP NAME="visImageMap">
+  <AREA shape="POLYGON" tabindex="1" ALT="Controls" origTitle="Controls" TITLE="Controls"  target="_top" COORDS=" 205,230 262,230 262,201 205,201 205,230" onmouseover="UpdateTooltip(this,6,329)" onfocus="UpdateTooltip(this,6,329)" onclick="return OnShapeClick(6,329);" onkeyup="OnShapeKey(6,329);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Marketing" origTitle="Marketing" TITLE="Marketing"  target="_top" COORDS=" 729,265 785,265 785,237 729,237 729,265" onmouseover="UpdateTooltip(this,6,90)" onfocus="UpdateTooltip(this,6,90)" onclick="return OnShapeClick(6,90);" onkeyup="OnShapeKey(6,90);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Sales Management" origTitle="Sales Management" TITLE="Sales Management"  target="_top" COORDS=" 729,230 785,230 785,201 729,201 729,230" onmouseover="UpdateTooltip(this,6,318)" onfocus="UpdateTooltip(this,6,318)" onclick="return OnShapeClick(6,318);" onkeyup="OnShapeKey(6,318);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Pat Stephens Director of Sales" origTitle="Pat Stephens Director of Sales" TITLE="Pat Stephens Director of Sales"  target="_top" COORDS=" 716,186 770,186 770,160 716,160 716,186" onmouseover="UpdateTooltip(this,6,313)" onfocus="UpdateTooltip(this,6,313)" onclick="return OnShapeClick(6,313);" onkeyup="OnShapeKey(6,313);">
+  <AREA shape="POLYGON" tabindex="1" ALT="VCS Group" origTitle="VCS Group" TITLE="VCS Group"  target="_top" COORDS=" 580,230 637,230 637,201 580,201 580,230" onmouseover="UpdateTooltip(this,6,306)" onfocus="UpdateTooltip(this,6,306)" onclick="return OnShapeClick(6,306);" onkeyup="OnShapeKey(6,306);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Brett Endres VCS / Detailing" origTitle="Brett Endres VCS / Detailing" TITLE="Brett Endres VCS / Detailing"  target="_top" COORDS=" 567,186 621,186 621,160 567,160 567,186" onmouseover="UpdateTooltip(this,6,301)" onfocus="UpdateTooltip(this,6,301)" onclick="return OnShapeClick(6,301);" onkeyup="OnShapeKey(6,301);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Fleet" origTitle="Fleet" TITLE="Fleet"  target="_top" COORDS=" 287,488 344,488 344,460 287,460 287,488" onmouseover="UpdateTooltip(this,6,285)" onfocus="UpdateTooltip(this,6,285)" onclick="return OnShapeClick(6,285);" onkeyup="OnShapeKey(6,285);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Jerry Bush President / CEO" origTitle="Jerry Bush President / CEO" TITLE="Jerry Bush President / CEO"  target="_top" COORDS=" 320,122 402,122 402,83 320,83 320,122" onmouseover="UpdateTooltip(this,6,276)" onfocus="UpdateTooltip(this,6,276)" onclick="return OnShapeClick(6,276);" onkeyup="OnShapeKey(6,276);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Start Up &#38; Commissioning" origTitle="Start Up &#38; Commissioning" TITLE="Start Up &#38; Commissioning"  target="_top" COORDS=" 317,452 344,452 344,431 361,431 361,422 316,422 316,424 287,424 287,452 316,452 316,453 317,453 317,452" onmouseover="UpdateTooltip(this,6,270)" onfocus="UpdateTooltip(this,6,270)" onclick="return OnShapeClick(6,270);" onkeyup="OnShapeKey(6,270);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Information / Technology" origTitle="Information / Technology" TITLE="Information / Technology"  target="_top" COORDS=" 686,336 710,336 710,314 719,314 719,306 684,306 684,307 658,307 658,336 684,336 684,337 686,337 686,336" onmouseover="UpdateTooltip(this,6,258)" onfocus="UpdateTooltip(this,6,258)" onclick="return OnShapeClick(6,258);" onkeyup="OnShapeKey(6,258);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Energy Services Group" origTitle="Energy Services Group" TITLE="Energy Services Group"  target="_top" COORDS=" 380,265 407,265 407,243 415,243 415,235 378,235 378,237 350,237 350,265 378,265 378,266 380,266 380,265" onmouseover="UpdateTooltip(this,6,228)" onfocus="UpdateTooltip(this,6,228)" onclick="return OnShapeClick(6,228);" onkeyup="OnShapeKey(6,228);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Quality Management" origTitle="Quality Management" TITLE="Quality Management"  target="_top" COORDS=" 87,265 113,265 113,243 123,243 123,235 85,235 85,237 57,237 57,265 85,265 85,266 87,266 87,265" onmouseover="UpdateTooltip(this,6,222)" onfocus="UpdateTooltip(this,6,222)" onclick="return OnShapeClick(6,222);" onkeyup="OnShapeKey(6,222);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Corporate  Safety" origTitle="Corporate  Safety" TITLE="Corporate  Safety"  target="_top" COORDS=" 87,230 113,230 113,201 113,201 113,200 85,200 85,201 57,201 57,230 85,230 85,231 87,231 87,230" onmouseover="UpdateTooltip(this,6,216)" onfocus="UpdateTooltip(this,6,216)" onclick="return OnShapeClick(6,216);" onkeyup="OnShapeKey(6,216);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Service Group" origTitle="Service Group" TITLE="Service Group"  target="_top" COORDS=" 502,230 559,230 559,201 502,201 502,230" onmouseover="UpdateTooltip(this,6,180)" onfocus="UpdateTooltip(this,6,180)" onclick="return OnShapeClick(6,180);" onkeyup="OnShapeKey(6,180);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Industrial Group" origTitle="Industrial Group" TITLE="Industrial Group"  target="_top" COORDS=" 332,203 332,201 276,201 276,230 332,230 332,212 334,212 334,203 332,203" onmouseover="UpdateTooltip(this,6,174)" onfocus="UpdateTooltip(this,6,174)" onclick="return OnShapeClick(6,174);" onkeyup="OnShapeKey(6,174);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Estimating" origTitle="Estimating" TITLE="Estimating"  target="_top" COORDS=" 580,265 637,265 637,237 580,237 580,265" onmouseover="UpdateTooltip(this,6,168)" onfocus="UpdateTooltip(this,6,168)" onclick="return OnShapeClick(6,168);" onkeyup="OnShapeKey(6,168);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Purchasing" origTitle="Purchasing" TITLE="Purchasing"  target="_top" COORDS=" 276,265 332,265 332,237 276,237 276,265" onmouseover="UpdateTooltip(this,6,162)" onfocus="UpdateTooltip(this,6,162)" onclick="return OnShapeClick(6,162);" onkeyup="OnShapeKey(6,162);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Special Projects Group" origTitle="Special Projects Group" TITLE="Special Projects Group"  target="_top" COORDS=" 378,230 405,230 405,208 413,208 413,200 377,200 377,201 348,201 348,230 377,230 377,231 378,231 378,230" onmouseover="UpdateTooltip(this,6,144)" onfocus="UpdateTooltip(this,6,144)" onclick="return OnShapeClick(6,144);" onkeyup="OnShapeKey(6,144);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Warehousing" origTitle="Warehousing" TITLE="Warehousing"  target="_top" COORDS=" 287,417 344,417 344,389 287,389 287,417" onmouseover="UpdateTooltip(this,6,138)" onfocus="UpdateTooltip(this,6,138)" onclick="return OnShapeClick(6,138);" onkeyup="OnShapeKey(6,138);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Fabrication" origTitle="Fabrication" TITLE="Fabrication"  target="_top" COORDS=" 287,382 344,382 344,354 287,354 287,382" onmouseover="UpdateTooltip(this,6,132)" onfocus="UpdateTooltip(this,6,132)" onclick="return OnShapeClick(6,132);" onkeyup="OnShapeKey(6,132);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Field Operations (MP, SP, SW)" origTitle="Field Operations (MP, SP, SW)" TITLE="Field Operations (MP, SP, SW)"  target="_top" COORDS=" 287,346 346,346 346,318 287,318 287,346" onmouseover="UpdateTooltip(this,6,126)" onfocus="UpdateTooltip(this,6,126)" onclick="return OnShapeClick(6,126);" onkeyup="OnShapeKey(6,126);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Southern Washington Group" origTitle="Southern Washington Group" TITLE="Southern Washington Group"  target="_top" COORDS=" 451,230 477,230 477,201 421,201 421,230 449,230 449,231 451,231 451,230" onmouseover="UpdateTooltip(this,6,120)" onfocus="UpdateTooltip(this,6,120)" onclick="return OnShapeClick(6,120);" onkeyup="OnShapeKey(6,120);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Engineering" origTitle="Engineering" TITLE="Engineering"  target="_top" COORDS=" 131,265 188,265 188,237 131,237 131,265" onmouseover="UpdateTooltip(this,6,108)" onfocus="UpdateTooltip(this,6,108)" onclick="return OnShapeClick(6,108);" onkeyup="OnShapeKey(6,108);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Business Development" origTitle="Business Development" TITLE="Business Development"  target="_top" COORDS=" 161,230 188,230 188,208 191,208 191,200 159,200 159,201 131,201 131,230 159,230 159,231 161,231 161,230" onmouseover="UpdateTooltip(this,6,102)" onfocus="UpdateTooltip(this,6,102)" onclick="return OnShapeClick(6,102);" onkeyup="OnShapeKey(6,102);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Contract Management" origTitle="Contract Management" TITLE="Contract Management"  target="_top" COORDS=" 686,300 711,300 711,279 717,279 717,270 684,270 684,272 658,272 658,300 684,300 684,301 686,301 686,300" onmouseover="UpdateTooltip(this,6,96)" onfocus="UpdateTooltip(this,6,96)" onclick="return OnShapeClick(6,96);" onkeyup="OnShapeKey(6,96);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Accounting / Finance" origTitle="Accounting / Finance" TITLE="Accounting / Finance"  target="_top" COORDS=" 685,265 710,265 710,243 719,243 719,235 684,235 684,237 658,237 658,265 684,265 684,266 685,266 685,265" onmouseover="UpdateTooltip(this,6,78)" onfocus="UpdateTooltip(this,6,78)" onclick="return OnShapeClick(6,78);" onkeyup="OnShapeKey(6,78);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Human  Resources" origTitle="Human  Resources" TITLE="Human  Resources"  target="_top" COORDS=" 686,230 710,230 710,208 721,208 721,200 684,200 684,201 658,201 658,230 684,230 684,231 686,231 686,230" onmouseover="UpdateTooltip(this,6,72)" onfocus="UpdateTooltip(this,6,72)" onclick="return OnShapeClick(6,72);" onkeyup="OnShapeKey(6,72);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Doug Smith VP / CFO" origTitle="Doug Smith VP / CFO" TITLE="Doug Smith VP / CFO"  target="_top" COORDS=" 645,186 699,186 699,160 645,160 645,186" onmouseover="UpdateTooltip(this,6,66)" onfocus="UpdateTooltip(this,6,66)" onclick="return OnShapeClick(6,66);" onkeyup="OnShapeKey(6,66);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Kirk Baisch Safety Manager" origTitle="Kirk Baisch Safety Manager" TITLE="Kirk Baisch Safety Manager"  target="_top" COORDS=" 44,186 98,186 98,160 44,160 44,186" onmouseover="UpdateTooltip(this,6,60)" onfocus="UpdateTooltip(this,6,60)" onclick="return OnShapeClick(6,60);" onkeyup="OnShapeKey(6,60);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Ted Granston Director Bus. Dev." origTitle="Ted Granston Director Bus. Dev." TITLE="Ted Granston Director Bus. Dev."  target="_top" COORDS=" 118,186 172,186 172,160 118,160 118,186" onmouseover="UpdateTooltip(this,6,54)" onfocus="UpdateTooltip(this,6,54)" onclick="return OnShapeClick(6,54);" onkeyup="OnShapeKey(6,54);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Marj Schmidt Executive Assistant" origTitle="Marj Schmidt Executive Assistant" TITLE="Marj Schmidt Executive Assistant"  target="_top" COORDS=" 446,117 507,117 507,88 446,88 446,117" onmouseover="UpdateTooltip(this,6,48)" onfocus="UpdateTooltip(this,6,48)" onclick="return OnShapeClick(6,48);" onkeyup="OnShapeKey(6,48);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Rich Happel Service Manager" origTitle="Rich Happel Service Manager" TITLE="Rich Happel Service Manager"  target="_top" COORDS=" 489,186 544,186 544,160 489,160 489,186" onmouseover="UpdateTooltip(this,6,42)" onfocus="UpdateTooltip(this,6,42)" onclick="return OnShapeClick(6,42);" onkeyup="OnShapeKey(6,42);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Maria Boyer Southern WA Group" origTitle="Maria Boyer Southern WA Group" TITLE="Maria Boyer Southern WA Group"  target="_top" COORDS=" 408,186 462,186 462,160 408,160 408,186" onmouseover="UpdateTooltip(this,6,36)" onfocus="UpdateTooltip(this,6,36)" onclick="return OnShapeClick(6,36);" onkeyup="OnShapeKey(6,36);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Pat Damitio Director of Operations" origTitle="Pat Damitio Director of Operations" TITLE="Pat Damitio Director of Operations"  target="_top" COORDS=" 263,186 317,186 317,160 263,160 263,186" onmouseover="UpdateTooltip(this,6,30)" onfocus="UpdateTooltip(this,6,30)" onclick="return OnShapeClick(6,30);" onkeyup="OnShapeKey(6,30);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Steve Otis Operations / Innovation Manager" origTitle="Steve Otis Operations / Innovation Manager" TITLE="Steve Otis Operations / Innovation Manager"  target="_top" COORDS=" 272,303 333,303 333,277 272,277 272,303" onmouseover="UpdateTooltip(this,6,24)" onfocus="UpdateTooltip(this,6,24)" onclick="return OnShapeClick(6,24);" onkeyup="OnShapeKey(6,24);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Bryan Eppler Strategic Growth" origTitle="Bryan Eppler Strategic Growth" TITLE="Bryan Eppler Strategic Growth"  target="_top" COORDS=" 192,186 246,186 246,160 192,160 192,186" onmouseover="UpdateTooltip(this,6,18)" onfocus="UpdateTooltip(this,6,18)" onclick="return OnShapeClick(6,18);" onkeyup="OnShapeKey(6,18);">
+  <AREA shape="POLYGON" tabindex="1" ALT="Steve Brooks, PE Special Projects Manager" origTitle="Steve Brooks, PE Special Projects Manager" TITLE="Steve Brooks, PE Special Projects Manager"  target="_top" COORDS=" 336,186 389,186 389,160 336,160 336,186" onmouseover="UpdateTooltip(this,6,11)" onfocus="UpdateTooltip(this,6,11)" onclick="return OnShapeClick(6,11);" onkeyup="OnShapeKey(6,11);">
+</MAP>
+
+
+
+</DIV>
+
+</body>
+</html>
+

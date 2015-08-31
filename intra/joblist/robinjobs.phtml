@@ -1,0 +1,105 @@
+<?
+
+require('intra-pw.inc');
+
+@mysql_connect(localhost,"globalread","qazxsw");
+@mysql_select_db("global");
+
+require("querylib.inc");
+
+
+//$query="select contract_num, job_name, project_manager_id, job_cost, contract_type,fed_pub,contract_admin from jobinfo where active = 'Y' order by contract_num";
+$query="select * from jobinfo where cust_id = 749";
+$query="select * from jobinfo where design_build like 'Design%'";
+
+
+
+
+header("Content-type: text/comma-seperated-file");
+csvdump($query);exit;
+$result=@mysql_query($query);
+
+echo "
+
+<center>
+<h2>LEASE CRUTCHER LEWIS</h2>
+
+<table border=1>
+
+	<tr bgcolor=#dddddd><td>
+	Job Number
+	</td><td>
+	Name
+	</td><td>
+	Project Manager
+	</td><td>
+	Job Cost
+	</td><td>
+	Contract Type
+	</td><td>
+	Fed/Pub
+	</td><td>
+	Contract Admin
+	</td><td>
+	Design/Build
+	</td><td>
+	Orig Amount
+	</td><td>
+	Final Amount
+	</td></tr>";
+
+while($row=@mysql_fetch_object($result)) {
+	$con_ad=getoneb("select * from contacts where contacts_id = '$row->contract_admin'");
+	if ($con_ad) {
+		$contract_admin="$con_ad->last_name, $con_ad->first_name";
+		} else {
+		$contract_admin="";
+		}
+	$mgr=getoneb("select * from contacts where contacts_id = '$row->project_manager_id'");
+	if ($mgr) {
+		$manager="$mgr->last_name, $mgr->first_name";
+		} else {
+		$manager="";
+		}
+	echo "<tr><td>
+			$row->contract_num
+		</td><td>
+			$row->job_name
+		</td><td>
+			$manager&nbsp;
+		</td><td>
+			$row->job_cost&nbsp;
+		</td><td>
+			$row->contract_type&nbsp;
+		</td><td>
+			&nbsp;$row->fed_pub
+		</td><td>
+			&nbsp;$contract_admin
+		</td><td>
+			&nbsp;$row->design_build
+		</td><td>
+			&nbsp;$row->contract_amount_orig
+		</td><td>
+			&nbsp;$row->contract_amount_final
+		</td></tr>";
+		}
+
+echo "</table></center>";
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

@@ -1,0 +1,145 @@
+<?
+require("fd_connect_settings.cfg");
+require("global-auth.inc");
+require("header.phtml");
+$today=date('m/d/Y');
+
+echo "
+<a href=$pagedir><font color=blue>Done</font></a>
+
+<table class=wideprint border=2 cellspacing=0 cellpadding=4>
+<tr bgcolor=$fd_color_4><td align=center colspan=6><div style=\"float: right;\"><i><font size=-1>$today</font></i></div><font size=+1><b>Job Sites Phone List</b></font></td></tr>
+
+<tr><td class=wideprint valign=top>
+	&nbsp;
+</td><td class=wideprint valign=top>
+	<b>Fife&nbsp;Office</b><br>
+	5009&nbsp;Pacific&nbsp;Highway&nbsp;East<br>
+	Suite&nbsp;13<br>
+	Fife,&nbsp;Washington&nbsp;98424
+</td><td class=wideprint valign=top>
+	<table border=0 cellspacing=0 cellpadding=1 width=100%>
+	<tr><td class=wideprint width=100%>
+		&nbsp;Main
+	</td><td class=wideprint>
+		253&minus;896&minus;0849
+	</td></tr>
+
+	<tr><td class=wideprint>
+		&nbsp;
+	</td><td class=wideprint>
+		253&minus;896&minus;1326
+	</td></tr>
+
+	<tr><td class=wideprint>
+		&nbsp;Fax
+	</td><td class=wideprint>
+		253&minus;896&minus;1327
+	</td></tr>
+	</table>
+</td></tr>
+	
+<tr><td class=wideprint valign=top>
+	&nbsp;
+</td><td class=wideprint valign=top>
+	<b>Nippon&nbsp;Paper</b><br>
+	<table border=0 cellspacing=0 cellpadding=5>
+		<tr><td>
+		<font size=-1><b>Mailing Address</b><br>
+		PO Box 271<br>
+		Port Angeles, WA 98362</font>
+	</td><td>
+		<font size=-1><b>Physical Address</b><br>
+		1902 Marine Drive<br>
+		Port Angeles, WA 98363</font>
+	</td></tr>
+	</table>
+</td><td class=wideprint valign=top>
+	<table border=0 cellspacing=0 cellpadding=1 width=100%>
+	<tr><td class=wideprint width=100%>
+		&nbsp;Phone
+	</td><td class=wideprint>
+		360&minus;417&minus;6156
+	</td></tr>
+
+	<tr><td class=wideprint>
+		&nbsp;Fax
+	</td><td class=wideprint>
+		360&minus;417&minus;6157
+	</td></tr>
+	</table>
+</td></tr>
+	
+
+<tr><td class=wideprint valign=top>
+	&nbsp;
+</td><td class=wideprint valign=top>
+	<b>Fred&nbsp;Hutchinson&nbsp;Cancer&nbsp;Research&nbsp;Center</b><br>
+	<table border=0 cellspacing=0 cellpadding=5>
+		<tr><td>
+		<font size=-1><b>Job&nbsp;Site&nbsp;Address&nbsp;&nbsp;&nbsp;</b><br>
+		1300 Valley Street<br>
+		Seattle, WA 98109</font>
+	</td><td>
+		<font size=-1><b>Main&nbsp;Campus</b><br>
+		1100 Fairview Ave N<br>
+		Seattle, WA 98109</font>
+	</td></tr>
+	</table>
+</td><td class=wideprint valign=top>
+	<table border=0 cellspacing=0 cellpadding=1 width=100%>
+	<tr><td class=wideprint width=100%>
+		&nbsp;Phone
+	</td><td class=wideprint>
+		206&minus;667&minus;1975
+	</td></tr>
+
+	<tr><td class=wideprint>
+		&nbsp;Fax
+	</td><td class=wideprint>
+		206&minus;667&minus;1950
+	</td></tr>
+	</table>
+</td></tr>
+	
+	
+	
+
+<style>
+@media print{
+td { font-size: 10pt; }
+th { font-size: 10pt; }
+}
+</style>";
+
+$query="select * from jobinfo where active = 'Y' and show_in_phone_list = 'Y' order by contract_num,display_name";
+//tabledump($query);
+$res=@mysql_query($query);
+
+while ($row=@mysql_fetch_object($res)) {
+	$row->job_site_address=ereg_replace("\n",'<br>',$row->job_site_address);
+	$row->job_site_address=ereg_replace("\r",'<br>',$row->job_site_address);
+	echo "
+	<tr><td class=wideprint valign=top>
+		<b>&nbsp;&nbsp;&nbsp;$row->contract_num&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+	</td><td class=wideprint valign=top>
+		<b>$row->display_name</b>&nbsp;&nbsp;<br>
+		$row->job_site_address
+		</td><td valign=top>
+			<table border=0 cellspacing=0 cellpadding=1 width=100%>
+			";
+			
+			$listres=@mysql_query("select * from jobinfo_phone_numbers where jobinfo_id = '$row->jobinfo_id' order by sort_priority,description");
+			while ($listrow=@mysql_fetch_object($listres)) {
+				//$listrow->phone_number=ereg_replace('-','&8722;',$listrow->phone_number);
+				$listrow->phone_number=ereg_replace('-','&minus;',$listrow->phone_number);
+				echo "<tr><td width=100%>&nbsp;$listrow->description</td><td align=right>&nbsp;&nbsp;&nbsp;$listrow->phone_number$listrow->extension</td></tr>";
+				}
+			echo"
+			</table>
+		</td></tr>
+		";
+	}
+
+echo "</table>";
+?>

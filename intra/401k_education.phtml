@@ -1,0 +1,32 @@
+<?
+
+require("intra-pw.inc");
+require_once('querylib.inc');
+$bgcolor="#bbbbff";
+
+
+
+
+
+require("header.phtml");
+
+
+
+
+echo "
+<p>&nbsp;<p>&nbsp;<p>
+<center>
+";
+include("recent_401k_performance_report.phtml");
+
+echo "
+<p>
+<a href=older_performance_reports.phtml><font color=blue>Older Performance Reports</font></a>
+<p>
+<a href=http://www.401save.com/><font color=blue>401 Save Web Site</font></a><p>
+
+<a href=http://www.merrimanberkmannext.com/><font color=blue>Merriman Berkman Investment information</font></a>
+
+</center>
+";
+?>

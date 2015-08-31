@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Form Creator\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-03-09 13:38+0400\n"
+"PO-Revision-Date: 2012-04-13 16:48+0400\n"
+"Last-Translator: Web-Dorado.com <info@web-dorado.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-SearchPath-0: C:\\wamp\\www\\wordpress\\wp-content\\plugins\\form_maker\n"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:148
+msgid "Title"
+msgstr "название"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:149
+msgid "First"
+msgstr "имя"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:150
+msgid "Last"
+msgstr "фамилия"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:151
+msgid "Middle"
+msgstr "средний"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:152
+msgid "January"
+msgstr "январь"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:153
+msgid "February"
+msgstr "февраль"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:154
+msgid "March"
+msgstr "март"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:155
+msgid "April"
+msgstr "апрель"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:156
+msgid "May"
+msgstr "май"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:157
+msgid "June"
+msgstr "июнь"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:158
+msgid "July"
+msgstr "июль"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:159
+msgid "August"
+msgstr "август"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:160
+msgid "September"
+msgstr "сентябрь"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:161
+msgid "October"
+msgstr "октябрь"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:162
+msgid "November"
+msgstr "ноябрь"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:163
+msgid "December"
+msgstr "декабрь"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:580
+msgid "The value of year is not valid"
+msgstr "Значение года не действует"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:762
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3265
+msgid "Sorry, you are not allowed to upload this type of file"
+msgstr "К сожалению, вы не можете загрузить этот тип файлов"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:770
+msgid "field is required"
+msgstr "поле обязательно для заполнения"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/Form_Maker.php:783
+msgid "This is not a valid email address"
+msgstr "Это не является действительным адресом электронной почты"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:22
+msgid "Form Maker"
+msgstr "Form Maker"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3078
+msgid "Error, incorrect Security code"
+msgstr "Ошибка неправильной, код безопасности"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3243
+msgid "The file exceeds the allowed size of"
+msgstr "Файл превышает допустимый размер"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3279
+msgid "Error, file cannot be moved"
+msgstr "Ошибка, файл не может быть перемещен"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3336
+msgid "Nothing was submitted"
+msgstr "Nothing was submitted"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3488
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3505
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3511
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3524
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3530
+msgid "Your form was successfully submitted"
+msgstr "Ваша форма была успешно представленных"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\form_maker/functions.php:3494
+msgid "Error, email was not sent"
+msgstr "Ошибка, по электронной почте был направлен не"
+

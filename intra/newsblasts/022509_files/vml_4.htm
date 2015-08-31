@@ -1,0 +1,235 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" 
+ xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5"/>
+<link rel="stylesheet" type="text/css" href="visio.css"/>
+<title>UMC Organizational Chart</title>
+<style type="text/css">
+	 v\:* { behavior: url(#default#VML); }
+</style>
+
+<script src="vml_1.js" type="text/jscript" language="jscript"></script>
+
+<script type="text/jscript" language="jscript">
+
+	var pageID = 0;
+	var viewMgr = null;
+
+	if (parent.g_FirstPageToLoad != null && parent.g_FirstPageToLoad.length > 0)
+	{
+		if (parent.g_FileList[parent.g_CurPageIndex].PageID != pageID)
+		{
+			location.replace(parent.g_FileList[parent.g_CurPageIndex].PriImage);
+		}
+
+		parent.g_FirstPageToLoad = null;
+	}
+
+	function getPNZ()
+	{
+		var rawHTML = VMLDiv.innerHTML;
+		var strReturn = ""
+		
+		strReturn = rawHTML.slice( rawHTML.indexOf( '<v:group' ), rawHTML.indexOf( "</v:shape>" ) );
+		strReturn += "</v:shape></v:group>\n";
+				
+		return strReturn;
+	}
+	
+	function load()
+	{
+		viewMgr = new parent.CViewMgr("ConvertedImage", "arrowDiv");
+
+		viewMgr.put_Location = ViewMgrSetVMLLocation;
+
+
+		viewMgr.visBBoxLeft = 0.578125;
+		viewMgr.visBBoxRight = 15.587250;
+		viewMgr.visBBoxBottom = 1.431247;
+		viewMgr.visBBoxTop = 10.562500;
+
+		viewMgr.Zoom = VMLZoomChange;
+		viewMgr.setView= VMLSetView;
+
+		viewMgr.SupportsDetails = true;
+		viewMgr.SupportsSearch = true;
+
+		parent.viewMgr = viewMgr;
+
+		fit();
+	}
+
+	function unload()
+	{
+		viewMgr = null;
+		parent.viewMgr = null;
+	}
+
+	function fit()
+	{
+		if(parent.frmToolbar)
+		{
+			if (parent.g_WidgetsLoaded)
+			{
+				var zoom100 = parent.frmToolbar.document.all('a100');
+				if (zoom100)
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					zoom100.click();
+				}
+				else
+				{
+					parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+					viewMgr.Zoom(100);
+				}
+			}
+			else
+			{
+				window.setTimeout("fit()", 500);
+			}
+		}	
+		else
+		{
+			parent.viewMgr.PostZoomProcessing = PostZoomProcessing;
+			viewMgr.Zoom(100);
+		}
+	}
+
+	function PostZoomProcessing (newZoomLevel)
+	{
+		parent.viewMgr.PostZoomProcessing = null;
+		var pageIndex = parent.PageIndexFromID (pageID);
+		parent.viewMgr.getPNZ = getPNZ;
+		parent.CurPageUpdate (pageIndex);
+	}
+
+
+	
+	var isUpLevel = parent.isUpLevel;
+	var OnShapeClick = parent.OnShapeClick;
+	var OnShapeKey = parent.OnShapeKey;
+	var UpdateTooltip = parent.UpdateTooltip;
+	var clickMenu = parent.clickMenu;
+	var toggleMenuDiv = parent.toggleMenuDiv;
+	var toggleMenuLink = parent.toggleMenuLink;
+	var GoToPage = parent.GoToPage;
+
+	window.onload = load;
+	window.onunload = unload;
+	document.onclick = clickMenu;
+
+
+
+
+</script>
+
+</head>
+
+<body style="MARGIN:10px" onresize="VMLOnResize();" onscroll="VMLOnScroll();">
+
+<div id="arrowdiv" style="position:absolute;top:0;left:0;visibility:hidden;z-index:5">
+<img id="arrowgif" alt="Shows the location of the selected shape" src="arrow.gif"/>
+</div>
+
+<div id="menu1" onclick="clickMenu()" class="hlMenu">
+</div>
+
+
+
+
+<div id="VMLDiv" >
+
+
+<v:group  id="ConvertedImage" style="width:6.574837in;height:4.000000in;position:absolute;visibility=hidden;" coordSize="3287,2000" coordOrigin="-1000,-1000" >
+
+<v:shapetype 
+  id="VISSHAPE"
+  target="_parent"
+  coordsize="3287,2000"
+  coordorigin="-1000,-1000"
+  stroked="f"
+  strokecolor="red"
+  filled="t"
+>
+<v:fill opacity="0.0"/>
+</v:shapetype>
+
+
+<v:shape style="top:-1000.0;left:-1000.0;width:3287.4;height:2000.0;position:absolute" coordSize="3287,2000" coordOrigin="-1000,-1000" >
+<v:imagedata src="vml_4.emz"/>
+</v:shape>
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Project Management  Group" origTitle="Project Management  Group"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 366,136 l 585,136 l 585,27 l 366,27 l 366,136xe" onmouseover="UpdateTooltip(this,0,1)" onclick="OnShapeClick(0,1)" onfocus="UpdateTooltip(this,0,1);" onkeyup="OnShapeKey(0,1)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Troy Lowery  Sr. Manager" origTitle="Troy Lowery  Sr. Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 795,349 l 1003,349 l 1003,250 l 795,250 l 795,349xe" onmouseover="UpdateTooltip(this,0,6)" onclick="OnShapeClick(0,6)" onfocus="UpdateTooltip(this,0,6);" onkeyup="OnShapeKey(0,6)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Audie Wallace Sr. Manager" origTitle="Audie Wallace Sr. Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 371,771 l 579,771 l 579,673 l 371,673 l 371,771xe" onmouseover="UpdateTooltip(this,0,11)" onclick="OnShapeClick(0,11)" onfocus="UpdateTooltip(this,0,11);" onkeyup="OnShapeKey(0,11)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Dan Lehr Sr. Manager" origTitle="Dan Lehr Sr. Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m -59,349 l 149,349 l 149,250 l -59,250 l -59,349xe" onmouseover="UpdateTooltip(this,0,16)" onclick="OnShapeClick(0,16)" onfocus="UpdateTooltip(this,0,16);" onkeyup="OnShapeKey(0,16)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Rosalie Baxter Project Engineer" origTitle="Rosalie Baxter Project Engineer"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 209,518 l 428,518 l 428,409 l 209,409 l 209,518xe" onmouseover="UpdateTooltip(this,0,27)" onclick="OnShapeClick(0,27)" onfocus="UpdateTooltip(this,0,27);" onkeyup="OnShapeKey(0,27)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Ralph Schaffer Manager" origTitle="Ralph Schaffer Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m -64,518 l 154,518 l 154,409 l -64,409 l -64,518xe" onmouseover="UpdateTooltip(this,0,33)" onclick="OnShapeClick(0,33)" onfocus="UpdateTooltip(this,0,33);" onkeyup="OnShapeKey(0,33)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Linda Pelletier Admin Assist." origTitle="Linda Pelletier Admin Assist."  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m -378,354 l -160,354 l -160,245 l -378,245 l -378,354xe" onmouseover="UpdateTooltip(this,0,42)" onclick="OnShapeClick(0,42)" onfocus="UpdateTooltip(this,0,42);" onkeyup="OnShapeKey(0,42)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Todd Smith Project Engineer" origTitle="Todd Smith Project Engineer"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 616,940 l 835,940 l 835,830 l 616,830 l 616,940xe" onmouseover="UpdateTooltip(this,0,53)" onclick="OnShapeClick(0,53)" onfocus="UpdateTooltip(this,0,53);" onkeyup="OnShapeKey(0,53)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Kathi Jenkins Admin. Assist." origTitle="Kathi Jenkins Admin. Assist."  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 51,776 l 270,776 l 270,667 l 51,667 l 51,776xe" onmouseover="UpdateTooltip(this,0,58)" onclick="OnShapeClick(0,58)" onfocus="UpdateTooltip(this,0,58);" onkeyup="OnShapeKey(0,58)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Marian Ladenburg Admin. Assist." origTitle="Marian Ladenburg Admin. Assist."  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 518,354 l 737,354 l 737,245 l 518,245 l 518,354xe" onmouseover="UpdateTooltip(this,0,66)" onclick="OnShapeClick(0,66)" onfocus="UpdateTooltip(this,0,66);" onkeyup="OnShapeKey(0,66)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Warren Rose Manager" origTitle="Warren Rose Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 1061,518 l 1280,518 l 1280,409 l 1061,409 l 1061,518xe" onmouseover="UpdateTooltip(this,0,72)" onclick="OnShapeClick(0,72)" onfocus="UpdateTooltip(this,0,72);" onkeyup="OnShapeKey(0,72)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Randy Bailey Manager" origTitle="Randy Bailey Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 790,518 l 1008,518 l 1008,409 l 790,409 l 790,518xe" onmouseover="UpdateTooltip(this,0,85)" onclick="OnShapeClick(0,85)" onfocus="UpdateTooltip(this,0,85);" onkeyup="OnShapeKey(0,85)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Richard Farmer Manager" origTitle="Richard Farmer Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 362,940 l 591,940 l 591,831 l 362,831 l 362,940xe" onmouseover="UpdateTooltip(this,0,90)" onclick="OnShapeClick(0,90)" onfocus="UpdateTooltip(this,0,90);" onkeyup="OnShapeKey(0,90)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Bryan Eppler Major Projects Manager" origTitle="Bryan Eppler Major Projects Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 372,-61 l 579,-61 l 579,-159 l 372,-159 l 372,-61xe" onmouseover="UpdateTooltip(this,0,104)" onclick="OnShapeClick(0,104)" onfocus="UpdateTooltip(this,0,104);" onkeyup="OnShapeKey(0,104)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Steve Otis Operations Manager" origTitle="Steve Otis Operations Manager"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 71,-61 l 279,-61 l 279,-159 l 71,-159 l 71,-61xe" onmouseover="UpdateTooltip(this,0,115)" onclick="OnShapeClick(0,115)" onfocus="UpdateTooltip(this,0,115);" onkeyup="OnShapeKey(0,115)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 175,199 l 175,182 l 158,190 l 175,199x m -141,182 l -141,199 l -124,190 l -141,182xe" onmouseover="UpdateTooltip(this,0,369)" onclick="OnShapeClick(0,369)" onfocus="UpdateTooltip(this,0,369);" onkeyup="OnShapeKey(0,369)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m -139,190 l -351,190 l -353,190 l -354,190 l -356,191 l -358,191 l -359,191 l -361,191 l -363,192 l -364,192 l -366,192 l -368,193 l -369,193 l -371,194 l -372,195 l -374,195 l -375,196 l -377,197 l -378,198 l -380,198 l -381,199 l -383,200 l -384,201 l -385,202 l -387,203 l -388,205 l -389,206 l -390,207 l -391,208 l -393,209 l -394,211 l -395,212 l -396,213 l -397,215 l -398,216 l -398,218 l -399,219 l -400,221 l -401,222 l -401,224 l -402,225 l -403,227 l -403,228 l -404,230 l -404,232 l -404,233 l -405,235 l -405,237 l -405,238 l -406,240 l -406,242 l -406,243 l -406,245 l -406,490 l -406,492 l -406,494 l -406,495 l -405,497 l -405,499 l -405,500 l -404,502 l -404,504 l -404,505 l -403,507 l -403,509 l -402,510 l -401,512 l -401,513 l -400,515 l -399,516 l -398,518 l -398,519 l -397,521 l -396,522 l -395,523 l -394,525 l -393,526 l -391,527 l -390,528 l -389,530 l -388,531 l -387,532 l -385,533 l -384,534 l -383,535 l -381,536 l -380,537 l -378,538 l -377,539 l -375,539 l -374,540 l -372,541 l -371,541 l -369,542 l -368,542 l -366,543 l -364,543 l -363,544 l -361,544 l -359,544 l -358,545 l -356,545 l -354,545 l -353,545 l -351,545 l 385,545 l 387,545 l 388,545 l 390,545 l 392,545 l 393,544 l 395,544 l 397,544 l 398,543 l 400,543 l 401,542 l 403,542 l 405,541 l 406,541 l 408,540 l 409,539 l 411,539 l 412,538 l 414,537 l 415,536 l 417,535 l 418,534 l 419,533 l 420,532 l 422,531 l 423,530 l 424,528 l 425,527 l 426,526 l 428,525 l 429,523 l 430,522 l 430,521 l 431,519 l 432,518 l 433,516 l 434,515 l 435,513 l 435,512 l 436,510 l 436,509 l 437,507 l 437,505 l 438,504 l 438,502 l 439,500 l 439,499 l 439,497 l 439,495 l 439,494 l 440,492 l 440,490 l 440,245 l 440,243 l 439,242 l 439,240 l 439,238 l 439,237 l 439,235 l 438,233 l 438,232 l 437,230 l 437,228 l 436,227 l 436,225 l 435,224 l 435,222 l 434,221 l 433,219 l 432,218 l 431,216 l 430,215 l 430,213 l 429,212 l 428,211 l 426,209 l 425,208 l 424,207 l 423,206 l 422,205 l 420,203 l 419,202 l 418,201 l 417,200 l 415,199 l 414,198 l 412,198 l 411,197 l 409,196 l 408,195 l 406,195 l 405,194 l 403,193 l 401,193 l 400,192 l 398,192 l 397,192 l 395,191 l 393,191 l 392,191 l 390,191 l 388,190 l 387,190 l 385,190 l 172,190 l 172,190 l 172,200 l 385,200 l 386,200 l 388,200 l 389,201 l 391,201 l 393,201 l 394,201 l 395,202 l 397,202 l 398,202 l 400,203 l 401,203 l 403,204 l 404,205 l 405,205 l 407,206 l 408,207 l 409,208 l 411,208 l 412,209 l 413,210 l 414,211 l 415,212 l 416,213 l 418,214 l 419,216 l 420,217 l 420,218 l 421,219 l 422,220 l 423,222 l 424,223 l 425,224 l 425,226 l 426,227 l 426,229 l 427,230 l 427,231 l 428,233 l 428,234 l 429,236 l 429,237 l 429,239 l 429,240 l 429,242 l 430,243 l 430,245 l 430,490 l 430,492 l 429,493 l 429,495 l 429,497 l 429,498 l 429,500 l 428,501 l 428,502 l 427,504 l 427,505 l 426,507 l 426,508 l 425,510 l 425,511 l 424,512 l 423,514 l 422,515 l 421,516 l 420,517 l 420,519 l 419,520 l 418,521 l 416,522 l 415,523 l 414,524 l 413,525 l 412,526 l 411,527 l 409,528 l 408,529 l 407,529 l 405,530 l 404,531 l 403,531 l 401,532 l 400,532 l 398,533 l 397,533 l 395,534 l 394,534 l 393,534 l 391,535 l 389,535 l 388,535 l 386,535 l 385,535 l -351,535 l -353,535 l -354,535 l -356,535 l -357,535 l -359,534 l -360,534 l -362,534 l -363,533 l -365,533 l -366,532 l -367,532 l -369,531 l -370,531 l -372,530 l -373,529 l -374,529 l -376,528 l -377,527 l -378,526 l -379,525 l -380,524 l -382,523 l -383,522 l -384,521 l -385,520 l -386,519 l -387,517 l -388,516 l -388,515 l -389,514 l -390,512 l -391,511 l -391,510 l -392,508 l -393,507 l -393,505 l -394,504 l -394,502 l -394,501 l -395,500 l -395,498 l -395,497 l -396,495 l -396,493 l -396,492 l -396,490 l -396,245 l -396,243 l -396,242 l -396,240 l -395,239 l -395,237 l -395,236 l -394,234 l -394,233 l -394,231 l -393,230 l -393,229 l -392,227 l -391,226 l -391,224 l -390,223 l -389,222 l -388,220 l -388,219 l -387,218 l -386,217 l -385,216 l -384,214 l -383,213 l -382,212 l -380,211 l -379,210 l -378,209 l -377,208 l -376,208 l -374,207 l -373,206 l -372,205 l -370,205 l -369,204 l -367,203 l -366,203 l -365,202 l -363,202 l -362,202 l -360,201 l -359,201 l -357,201 l -356,201 l -354,200 l -353,200 l -351,200 l -139,200xe" onmouseover="UpdateTooltip(this,0,369)" onclick="OnShapeClick(0,369)" onfocus="UpdateTooltip(this,0,369);" onkeyup="OnShapeKey(0,369)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 619,635 l 619,619 l 602,627 l 619,635x m 297,619 l 297,635 l 313,627 l 297,619xe" onmouseover="UpdateTooltip(this,0,370)" onclick="OnShapeClick(0,370)" onfocus="UpdateTooltip(this,0,370);" onkeyup="OnShapeKey(0,370)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 299,627 l 79,627 l 78,627 l 76,627 l 74,627 l 72,627 l 71,628 l 69,628 l 68,628 l 66,629 l 64,629 l 63,629 l 61,630 l 59,631 l 58,631 l 56,632 l 55,633 l 53,633 l 52,634 l 50,635 l 49,636 l 48,637 l 46,638 l 45,639 l 44,640 l 42,641 l 41,642 l 40,643 l 39,645 l 38,646 l 37,647 l 36,649 l 35,650 l 34,651 l 33,653 l 32,654 l 31,656 l 30,657 l 30,659 l 29,660 l 28,662 l 28,663 l 27,665 l 27,667 l 26,668 l 26,670 l 25,671 l 25,673 l 25,675 l 25,676 l 25,678 l 25,680 l 25,681 l 25,913 l 25,915 l 25,917 l 25,918 l 25,920 l 25,922 l 25,923 l 26,925 l 26,927 l 27,928 l 27,930 l 28,932 l 28,933 l 29,935 l 30,936 l 30,938 l 31,939 l 32,941 l 33,942 l 34,944 l 35,945 l 36,946 l 37,948 l 38,949 l 39,950 l 40,951 l 41,953 l 42,954 l 44,955 l 45,956 l 46,957 l 48,958 l 49,959 l 50,960 l 52,961 l 53,961 l 55,962 l 56,963 l 58,964 l 59,964 l 61,965 l 63,965 l 64,966 l 66,966 l 68,967 l 69,967 l 71,967 l 72,968 l 74,968 l 76,968 l 78,968 l 79,968 l 837,968 l 838,968 l 840,968 l 842,968 l 843,968 l 845,967 l 847,967 l 848,967 l 850,966 l 852,966 l 853,965 l 855,965 l 856,964 l 858,964 l 859,963 l 861,962 l 862,961 l 864,961 l 865,960 l 867,959 l 868,958 l 869,957 l 871,956 l 872,955 l 873,954 l 875,953 l 876,951 l 877,950 l 878,949 l 879,948 l 880,946 l 881,945 l 882,944 l 883,942 l 884,941 l 885,939 l 885,938 l 886,936 l 887,935 l 888,933 l 888,932 l 889,930 l 889,928 l 890,927 l 890,925 l 890,923 l 891,922 l 891,920 l 891,918 l 891,917 l 891,915 l 891,913 l 891,681 l 891,680 l 891,678 l 891,676 l 891,675 l 891,673 l 890,671 l 890,670 l 890,668 l 889,667 l 889,665 l 888,663 l 888,662 l 887,660 l 886,659 l 885,657 l 885,656 l 884,654 l 883,653 l 882,651 l 881,650 l 880,649 l 879,647 l 878,646 l 877,645 l 876,643 l 875,642 l 873,641 l 872,640 l 871,639 l 869,638 l 868,637 l 867,636 l 865,635 l 864,634 l 862,633 l 861,633 l 859,632 l 858,631 l 856,631 l 855,630 l 853,629 l 852,629 l 850,629 l 848,628 l 847,628 l 845,628 l 843,627 l 842,627 l 840,627 l 838,627 l 837,627 l 617,627 l 617,627 l 617,637 l 837,637 l 838,637 l 840,637 l 841,637 l 843,637 l 844,638 l 846,638 l 847,638 l 849,639 l 850,639 l 852,639 l 853,640 l 854,641 l 856,641 l 857,642 l 858,643 l 860,643 l 861,644 l 862,645 l 864,646 l 865,647 l 866,648 l 867,649 l 868,650 l 869,651 l 870,652 l 871,653 l 872,655 l 873,656 l 874,657 l 875,658 l 875,660 l 876,661 l 877,662 l 877,664 l 878,665 l 879,667 l 879,668 l 880,669 l 880,671 l 880,672 l 881,674 l 881,675 l 881,677 l 881,678 l 881,680 l 881,681 l 881,913 l 881,915 l 881,916 l 881,918 l 881,919 l 881,921 l 880,922 l 880,924 l 880,925 l 879,927 l 879,928 l 878,930 l 877,931 l 877,933 l 876,934 l 875,935 l 875,937 l 874,938 l 873,939 l 872,940 l 871,941 l 870,943 l 869,944 l 868,945 l 867,946 l 866,947 l 865,948 l 864,949 l 862,950 l 861,951 l 860,951 l 858,952 l 857,953 l 856,954 l 854,954 l 853,955 l 852,955 l 850,956 l 849,956 l 847,957 l 846,957 l 844,957 l 843,958 l 841,958 l 840,958 l 838,958 l 837,958 l 79,958 l 78,958 l 76,958 l 75,958 l 73,958 l 72,957 l 70,957 l 69,957 l 67,956 l 66,956 l 64,955 l 63,955 l 61,954 l 60,954 l 59,953 l 57,952 l 56,951 l 55,951 l 53,950 l 52,949 l 51,948 l 50,947 l 49,946 l 48,945 l 47,944 l 46,943 l 45,941 l 44,940 l 43,939 l 42,938 l 41,937 l 40,935 l 40,934 l 39,933 l 38,931 l 38,930 l 37,928 l 37,927 l 36,925 l 36,924 l 36,922 l 35,921 l 35,919 l 35,918 l 35,916 l 35,915 l 35,913 l 35,681 l 35,680 l 35,678 l 35,677 l 35,675 l 35,674 l 36,672 l 36,671 l 36,669 l 37,668 l 37,667 l 38,665 l 38,664 l 39,662 l 40,661 l 40,660 l 41,658 l 42,657 l 43,656 l 44,655 l 45,653 l 46,652 l 47,651 l 48,650 l 49,649 l 50,648 l 51,647 l 52,646 l 53,645 l 55,644 l 56,643 l 57,643 l 59,642 l 60,641 l 61,641 l 63,640 l 64,639 l 66,639 l 67,639 l 69,638 l 70,638 l 72,638 l 73,637 l 75,637 l 76,637 l 78,637 l 79,637 l 299,637xe" onmouseover="UpdateTooltip(this,0,370)" onclick="OnShapeClick(0,370)" onfocus="UpdateTooltip(this,0,370);" onkeyup="OnShapeKey(0,370)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 1075,199 l 1075,182 l 1058,190 l 1075,199x m 764,182 l 764,199 l 780,190 l 764,182xe" onmouseover="UpdateTooltip(this,0,372)" onclick="OnShapeClick(0,372)" onfocus="UpdateTooltip(this,0,372);" onkeyup="OnShapeKey(0,372)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 766,190 l 557,190 l 556,190 l 554,190 l 552,191 l 551,191 l 549,191 l 547,191 l 546,192 l 544,192 l 542,192 l 541,193 l 539,193 l 538,194 l 536,195 l 534,195 l 533,196 l 531,197 l 530,198 l 529,198 l 527,199 l 526,200 l 524,201 l 523,202 l 522,203 l 521,205 l 519,206 l 518,207 l 517,208 l 516,209 l 515,211 l 514,212 l 513,213 l 512,215 l 511,216 l 510,218 l 509,219 l 508,221 l 508,222 l 507,224 l 506,225 l 506,227 l 505,228 l 505,230 l 504,232 l 504,233 l 504,235 l 503,237 l 503,238 l 503,240 l 503,242 l 503,243 l 503,245 l 503,490 l 503,492 l 503,494 l 503,495 l 503,497 l 503,499 l 504,500 l 504,502 l 504,504 l 505,505 l 505,507 l 506,509 l 506,510 l 507,512 l 508,513 l 508,515 l 509,516 l 510,518 l 511,519 l 512,521 l 513,522 l 514,523 l 515,525 l 516,526 l 517,527 l 518,528 l 519,530 l 521,531 l 522,532 l 523,533 l 524,534 l 526,535 l 527,536 l 529,537 l 530,538 l 531,539 l 533,539 l 534,540 l 536,541 l 538,541 l 539,542 l 541,542 l 542,543 l 544,543 l 546,544 l 547,544 l 549,544 l 551,545 l 552,545 l 554,545 l 556,545 l 557,545 l 1281,545 l 1283,545 l 1285,545 l 1286,545 l 1288,545 l 1290,544 l 1291,544 l 1293,544 l 1295,543 l 1296,543 l 1298,542 l 1300,542 l 1301,541 l 1303,541 l 1304,540 l 1306,539 l 1307,539 l 1309,538 l 1310,537 l 1312,536 l 1313,535 l 1314,534 l 1316,533 l 1317,532 l 1318,531 l 1319,530 l 1321,528 l 1322,527 l 1323,526 l 1324,525 l 1325,523 l 1326,522 l 1327,521 l 1328,519 l 1329,518 l 1329,516 l 1330,515 l 1331,513 l 1332,512 l 1332,510 l 1333,509 l 1333,507 l 1334,505 l 1334,504 l 1335,502 l 1335,500 l 1335,499 l 1336,497 l 1336,495 l 1336,494 l 1336,492 l 1336,490 l 1336,245 l 1336,243 l 1336,242 l 1336,240 l 1336,238 l 1335,237 l 1335,235 l 1335,233 l 1334,232 l 1334,230 l 1333,228 l 1333,227 l 1332,225 l 1332,224 l 1331,222 l 1330,221 l 1329,219 l 1329,218 l 1328,216 l 1327,215 l 1326,213 l 1325,212 l 1324,211 l 1323,209 l 1322,208 l 1321,207 l 1319,206 l 1318,205 l 1317,203 l 1316,202 l 1314,201 l 1313,200 l 1312,199 l 1310,198 l 1309,198 l 1307,197 l 1306,196 l 1304,195 l 1303,195 l 1301,194 l 1300,193 l 1298,193 l 1296,192 l 1295,192 l 1293,192 l 1291,191 l 1290,191 l 1288,191 l 1286,191 l 1285,190 l 1283,190 l 1281,190 l 1073,190 l 1073,190 l 1073,200 l 1281,200 l 1283,200 l 1284,200 l 1286,201 l 1287,201 l 1289,201 l 1290,201 l 1292,202 l 1293,202 l 1295,202 l 1296,203 l 1298,203 l 1299,204 l 1301,205 l 1302,205 l 1303,206 l 1305,207 l 1306,208 l 1307,208 l 1308,209 l 1310,210 l 1311,211 l 1312,212 l 1313,213 l 1314,214 l 1315,216 l 1316,217 l 1317,218 l 1318,219 l 1319,220 l 1319,222 l 1320,223 l 1321,224 l 1322,226 l 1322,227 l 1323,229 l 1323,230 l 1324,231 l 1324,233 l 1325,234 l 1325,236 l 1325,237 l 1326,239 l 1326,240 l 1326,242 l 1326,243 l 1326,245 l 1326,490 l 1326,492 l 1326,493 l 1326,495 l 1326,497 l 1325,498 l 1325,500 l 1325,501 l 1324,502 l 1324,504 l 1323,505 l 1323,507 l 1322,508 l 1322,510 l 1321,511 l 1320,512 l 1319,514 l 1319,515 l 1318,516 l 1317,517 l 1316,519 l 1315,520 l 1314,521 l 1313,522 l 1312,523 l 1311,524 l 1310,525 l 1308,526 l 1307,527 l 1306,528 l 1305,529 l 1303,529 l 1302,530 l 1301,531 l 1299,531 l 1298,532 l 1296,532 l 1295,533 l 1293,533 l 1292,534 l 1290,534 l 1289,534 l 1287,535 l 1286,535 l 1284,535 l 1283,535 l 1281,535 l 557,535 l 556,535 l 554,535 l 553,535 l 551,535 l 550,534 l 548,534 l 547,534 l 545,533 l 544,533 l 542,532 l 541,532 l 540,531 l 538,531 l 537,530 l 535,529 l 534,529 l 533,528 l 532,527 l 530,526 l 529,525 l 528,524 l 527,523 l 526,522 l 525,521 l 524,520 l 523,519 l 522,517 l 521,516 l 520,515 l 519,514 l 518,512 l 518,511 l 517,510 l 516,508 l 516,507 l 515,505 l 515,504 l 514,502 l 514,501 l 514,500 l 513,498 l 513,497 l 513,495 l 513,493 l 513,492 l 513,490 l 513,245 l 513,243 l 513,242 l 513,240 l 513,239 l 513,237 l 514,236 l 514,234 l 514,233 l 515,231 l 515,230 l 516,229 l 516,227 l 517,226 l 518,224 l 518,223 l 519,222 l 520,220 l 521,219 l 522,218 l 523,217 l 524,216 l 525,214 l 526,213 l 527,212 l 528,211 l 529,210 l 530,209 l 532,208 l 533,208 l 534,207 l 535,206 l 537,205 l 538,205 l 540,204 l 541,203 l 542,203 l 544,202 l 545,202 l 547,202 l 548,201 l 550,201 l 551,201 l 553,201 l 554,200 l 556,200 l 557,200 l 766,200xe" onmouseover="UpdateTooltip(this,0,372)" onclick="OnShapeClick(0,372)" onfocus="UpdateTooltip(this,0,372);" onkeyup="OnShapeKey(0,372)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 475,-246 l 476,-164 l 476,-164 l 486,-164 l 485,-246xe" onmouseover="UpdateTooltip(this,0,373)" onclick="OnShapeClick(0,373)" onfocus="UpdateTooltip(this,0,373);" onkeyup="OnShapeKey(0,373)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Jerry Bush President / CEO" origTitle="Jerry Bush President / CEO"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 317,-252 l 634,-252 l 634,-405 l 317,-405 l 317,-252xe" onmouseover="UpdateTooltip(this,0,374)" onclick="OnShapeClick(0,374)" onfocus="UpdateTooltip(this,0,374);" onkeyup="OnShapeKey(0,374)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Brittney Spurlock Admin. Asst." origTitle="Brittney Spurlock Admin. Asst."  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 680,136 l 899,136 l 899,27 l 680,27 l 680,136xe" onmouseover="UpdateTooltip(this,0,110)" onclick="OnShapeClick(0,110)" onfocus="UpdateTooltip(this,0,110);" onkeyup="OnShapeKey(0,110)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 585,81 l 680,81 l 680,81 l 680,71 l 585,71xe" onmouseover="UpdateTooltip(this,0,121)" onclick="OnShapeClick(0,121)" onfocus="UpdateTooltip(this,0,121);" onkeyup="OnShapeKey(0,121)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 476,-55 l 475,27 l 475,27 l 485,27 l 486,-55xe" onmouseover="UpdateTooltip(this,0,122)" onclick="OnShapeClick(0,122)" onfocus="UpdateTooltip(this,0,122);" onkeyup="OnShapeKey(0,122)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 639,-328 l 776,-328 l 776,-328 l 776,-338 l 639,-338xe" onmouseover="UpdateTooltip(this,0,133)" onclick="OnShapeClick(0,133)" onfocus="UpdateTooltip(this,0,133);" onkeyup="OnShapeKey(0,133)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 776,-328 l 776,-164 l 776,-164 l 786,-164 l 786,-328xe" onmouseover="UpdateTooltip(this,0,152)" onclick="OnShapeClick(0,152)" onfocus="UpdateTooltip(this,0,152);" onkeyup="OnShapeKey(0,152)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="Kirk Baisch Safety Director" origTitle="Kirk Baisch Safety Director"  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 672,-61 l 880,-61 l 880,-159 l 672,-159 l 672,-61xe" onmouseover="UpdateTooltip(this,0,153)" onclick="OnShapeClick(0,153)" onfocus="UpdateTooltip(this,0,153);" onkeyup="OnShapeKey(0,153)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 476,831 l 475,776 l 475,776 l 465,777 l 466,831xe" onmouseover="UpdateTooltip(this,0,97)" onclick="OnShapeClick(0,97)" onfocus="UpdateTooltip(this,0,97);" onkeyup="OnShapeKey(0,97)"/> 
+
+<v:shape type="#VISSHAPE"   tabindex="1" title="" origTitle=""  style="top:-1000;left:-1000;width:3287;height:2000;position:absolute" path=" m 475,667 l 475,190 l 475,190 l 465,190 l 465,667xe" onmouseover="UpdateTooltip(this,0,40)" onclick="OnShapeClick(0,40)" onfocus="UpdateTooltip(this,0,40);" onkeyup="OnShapeKey(0,40)"/> 
+
+</v:group>
+
+
+
+</div>
+
+
+
+</body>
+</html>
+
