@@ -1,0 +1,45 @@
+<?
+//echo "hi";
+//if ($os_id=="") die("Application error!");
+if ($os_id!="") {
+	$os_id=addslashes($os_id);
+	$os_info=getone("select * from access_servers_oslist where os_id = '$os_id'");
+	$os_info->active=checkbreak($os_info->active);
+	}
+require('header.phtml');
+echo "
+<a href=$pagename?mode=server_lookups><font color=blue>Cancel</font></a><br>
+<form name=os_edit method=post action=$pagename>
+<input type=hidden name=mode value=access_servers_oslist_submit>
+<input type=hidden name=os_id value=\"$os_info->os_id\">
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><td colspan=2 align=center bgcolor=\"$umc_standard_blue\">
+	<b>OS&nbsp;Information</b>
+</td></tr>
+
+<tr><td>
+	<b>Name:</b>
+</td><td>
+	<input type=text name=name value=\"$os_info->name\">
+</td></tr>
+
+<tr><td valign=top>
+	<b>Notes:</b>
+</td><td>
+	<textarea name=notes rows=5 cols=40>$os_info->notes</textarea>
+</td></tr>
+
+<tr><td>
+	<b>Active:</b>
+</td><td>
+	<input type=checkbox name=active $os_info->active>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Save>
+</td></tr>
+</table>
+</form>
+";
+
+?>

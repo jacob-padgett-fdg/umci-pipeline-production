@@ -1,0 +1,38 @@
+<?require("pageheader.phtml");?>
+
+
+<form name= queryform method=post action=<?echo"$pagename";?>>
+<input type=hidden name=mode value=cdinfoquery>
+<input type=hidden name=nextaddtext value=" where ">
+<input type=text size=86 name=query value="select cdinfo_id,serial_num from <?echo"$cdinfo";?>">
+
+<P>
+<input type=text name=toadd size=15><br>
+<input type=button name=abutton value="Add Criteria" onclick=addcrit();>
+<input type=button name=asdf value="Search" onclick=submit();>
+<input type=button name=another value="Reset Form" onclick=resettwo();>
+<p>
+<hr>
+<input type=radio name=andor value=and checked>AND
+<input type=radio name=andor value=or>OR
+</form>
+
+<script>
+
+function addcrit () {
+	var tempadd;
+	tempadd=document.queryform.nextaddtext.value + document.queryform.toadd.value;
+	document.queryform.query.value=document.queryform.query.value + tempadd;
+	document.queryform.toadd.value="";
+	document.queryform.nextaddtext.value=document.queryform.andor.value;
+}
+
+function resettwo () {
+	document.queryform.query.value="select * from <?echo"$cdinfo";?>";
+	document.queryform.nextaddtext.value=" where ";
+	document.queryform.toadd.value="";
+</script>
+
+
+
+	

@@ -1,0 +1,22 @@
+<?
+
+require("settings.cfg");
+require("global-auth.inc");
+
+session_register('tempmode');
+session_register('lastmode');
+session_register('oldmode');
+
+if ($mode=="") $mode="main";
+$oldmode=$lastmode;
+$lastmode=$tempmode;
+$tempmode=$mode;
+
+//echo "oldmode: $oldmode<p>";
+if (isset($mode)) {
+	if (is_readable("$mode.phtml")) { 
+		include("$mode.phtml");  } else { include ("badmode.phtml"); }
+	} else {
+	include ("main.phtml");
+	}
+?>

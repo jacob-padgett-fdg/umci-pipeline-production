@@ -1,0 +1,27 @@
+<?
+require('header.phtml');
+require('querylib.inc');
+
+$product_id=escapeshellcmd($record_id);
+$field=escapeshellcmd($field);
+$value=escapeshellcmd($value);
+
+
+$mfg_info=getone("select * from engineering_products where product_id = '$product_id'");
+
+$mfg_info->mfg_name=escapeshellcmd($mfg_info->mfg_name);
+
+$query="update engineering_products set $field = '$value' where mfg_name = '$mfg_info->mfg_name'";
+
+//echo "<hr>$query<hr>";exit;
+
+@mysql_query($query);
+echo"
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+
+?>

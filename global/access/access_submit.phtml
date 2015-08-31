@@ -1,0 +1,46 @@
+<?
+$set_application_name=addslashes($set_application_name);
+$contacts_id=addslashes($contacts_id);
+$group_id=addslashes($group_id);
+$type=addslashes($type);
+$rightsmode=addslashes($rightsmode);
+$access_id=addslashes($access_id);
+
+if ($access_id=="") {
+	$query="insert into access (
+	application_name,
+	contacts_id,
+	group_id,
+	type,
+	rightsmode
+	) values (
+	'$set_application_name',
+	'$contacts_id',
+	'$group_id',
+	'$type',
+	'$rightsmode'
+	)";
+	} else {
+	$query="update access set
+	application_name = '$set_application_name',
+	contacts_id = '$contacts_id',
+	group_id = '$group_id',
+	type = '$type',
+	rightsmode = '$rightsmode'
+	where access_id = '$access_id'";
+	}
+
+$result=@mysql_query($query);
+
+if (!($result)) {
+	echo "Error running query: <hr> $query";
+	exit;
+	}
+
+if ($contacts_id>0) {
+	forward("user_list_permissions&access_contacts_id=$contacts_id");
+	} else {
+	$app_info=getone("select * from access_applications where application_name = '$set_application_name'");
+	forward("application_list_permissions&access_applications_id=$app_info->access_applications_id");
+	}
+?>

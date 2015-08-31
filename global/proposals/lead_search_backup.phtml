@@ -1,0 +1,100 @@
+<?
+require('header.phtml');
+
+
+$form_mode="search";
+$dropboxmode="multiple";
+$dropboxvaradd="[]";
+$dropboxsize="3";
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a><br>
+
+<h3>$dbdescription Search</h3><br>
+<form name=bidlist_edit method=post action=$pagename>
+Proposal/Bid #: <input type=text size=9 name=proposal_num>
+<input type=hidden name=proposal_num_radio value='='>
+<br>
+Output Mode: 
+<select name=search_output_mode>
+<option value=proposal_search_output_1>&nbsp;
+<option value=proposal_search_output_1>Search 1
+<option value=proposal_search_output_2>Search 2
+<option value=proposal_search_output_3>Search 3 (bidlist pdf)
+<option value=proposal_search_output_4>Search 4
+</select>
+&nbsp;Bid&nbsp;Statistics:&nbsp;Y<input type=radio name=proposals_show_search_stats value='Y'>&nbsp;N<input type=radio name=proposals_show_search_stats value='N' checked>&nbsp;
+
+
+
+
+Proposal/Bid Status
+<select name=status>
+<option value=\"\">Any
+<option>Active
+<option>Almost Complete
+<option>Complete
+<option>No Bid
+</select>
+<input type=hidden name=status_radio value=\"=\">
+<input type=hidden name=mode value=proposal_search_results>
+
+Proposal/Bid Initiator
+<input type=hidden name=creator_radio value=\"=\">
+";
+contactbox("select contacts_id as creator,display_name from bidlist,contacts where creator = contacts.contacts_id group by contacts.contacts_id order by alphasort");
+
+include("proposal_edit_form_required.phtml");
+echo "<table border=0 width=100%><tr><td valign=top>";
+include("proposal_edit_form_bid_results_search.phtml");
+include("proposal_edit_form_bidding_to_search.phtml");
+echo "</td><td valign=top>";
+include("proposal_edit_form_misc_search.phtml");echo "
+</td><td>";
+include("proposal_edit_form_estimating_assignments.phtml");
+echo "</td></tr></table>
+
+
+Sorted by: 
+<select name=query_order_by_1>
+<option value=''> </option>
+<option value='bid_date'>Bid Date</option>
+<option value='bid_time'>Bid Time</option>
+<option value='proposal_num'>Proposal/Bid #</option>
+<option value='status'>Status</option>
+<option value='umcgroups_id'>Group</option>
+<option value='start_date'>Start Date</option>
+<option value='complete_date'>End Date</option>
+<option value='probability'>Propbability</option>
+<option value='to_lead'>Lead ID</option>
+<option value='bld_square_feet'>Square Feet</option>
+<option value='contract_type'>Contract Type</option>
+</select>
+	A<input type=radio name=query_order_by_1_direction value='' checked>
+	D<input type=radio name=query_order_by_1_direction value='desc'>
+
+then by: 
+<select name=query_order_by_2>
+<option value=''> </option>
+<option value='bid_date'>Bid Date</option>
+<option value='bid_time'>Bid Time</option>
+<option value='proposal_num'>Proposal/Bid #</option>
+<option value='status'>Status</option>
+<option value='umcgroups_id'>Group</option>
+<option value='start_date'>Start Date</option>
+<option value='complete_date'>End Date</option>
+<option value='probability'>Propbability</option>
+<option value='to_lead'>Lead ID</option>
+<option value='bld_square_feet'>Square Feet</option>
+<option value='contract_type'>Contract Type</option>
+</select>
+	A<input type=radio name=query_order_by_2_direction value='' checked>
+	D<input type=radio name=query_order_by_2_direction value='desc'>
+
+
+<p><input type=submit value=Search><input type=reset value=Reset>
+</form>";
+
+
+
+?>

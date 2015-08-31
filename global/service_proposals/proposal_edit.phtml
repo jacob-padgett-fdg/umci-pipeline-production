@@ -1,0 +1,177 @@
+<?
+//require_once("querylib.inc");
+
+if ($svc_proposals_id != "") $svc_proposals_info=getone("select * from svc_proposals,contacts where contacts_id = sales_person and svc_proposals_id = '" . escapeshellcmd($svc_proposals_id) . "'");
+
+
+if (!($svc_proposals_info)) {
+	$svc_title="New Service Proposal";
+	$svc_daycount_warn="(expected)";
+	$svc_sales_person="$global_user->first_name $global_user->last_name";
+	$svc_proposals_info->proposal_date=date('m-d-Y');
+	$svc_proposal_contact=$global_user->contacts_id;
+	$svc_proposals_info->sales_person=$global_user->contacts_id;
+	$new=1;
+	} else {
+	$svc_title="Edit Service Proposal";
+	$svc_sales_person="$svc_proposals_info->first_name $svc_proposals_info->last_name";
+	$svc_proposals_info->proposal_date=invali_date($svc_proposals_info->proposal_date);
+	$svc_proposals_info->projected_bill_date=ereg_replace("-.*-..","/",invali_date($svc_proposals_info->projected_bill_date));
+	$svc_proposal_contact=$svc_proposals_info->contacts_id;
+	$new=0;
+	}
+
+
+$svc_proposal_mysql_date=vali_date($svc_proposals_info->proposal_date);
+$today_proposals_info=getone("select ifnull(max(proposal_daily_count),0) as daily_total from svc_proposals 
+where sales_person = '$svc_proposal_contact' and proposal_date = '$svc_proposal_mysql_date'");
+$today_proposals_info->daily_total=$today_proposals_info->daily_total + 1;
+echo "
+<html><head><title>$svc_title</title></head>
+<body bgcolor=white>
+
+<center><h2>$svc_title</h2></center>
+
+<form name=svc_proposal_edit action=\"$pagename\" method=post>
+<input type=hidden name=mode value=proposal_submit>
+<input type=hidden name=svc_proposals_id value=\"$svc_proposals_info->svc_proposals_id\">
+<table border=0 cellspacing=5>
+
+<tr><td>
+	<b>Sales Person</b>
+</td><td>
+	";if ($adminuser) {
+		dropbox("select contacts.contacts_id as sales_person,last_name,', ',first_name from contacts,access where contacts.contacts_id = access.contacts_id and application_name = 'service_proposals' order by last_name,first_name",$svc_proposals_info->sales_person,"","",1);
+		} else {
+		echo "
+		$svc_sales_person
+		<input type=hidden name=sales_person value='$svc_proposal_contact'>
+		";
+		}
+		echo"
+</td></tr>
+
+<tr><td>
+	<b>Proposal Date</b>
+</td><td>
+	<input type=text name=proposal_date value=\"$svc_proposals_info->proposal_date\">
+	<input type=hidden name=proposal_date_last value=\"$svc_proposals_info->proposal_date\">
+</td></tr>
+
+<tr><td>
+	<b>Proposal Count (by day)</b>
+</td><td>
+	$today_proposals_info->daily_total $svc_daycount_warn
+	<input type=hidden name=proposal_daily_count value=\"$svc_proposals_info->proposal_daily_count\">
+</td></tr>
+
+<tr><td valign=top>
+	<b>Customer</b>
+</td><td>
+	</script>
+	Select<br>
+	";dropbox("select customer as custname,customer from svc_proposals group by customer order by customer","$svc_proposals_info->customer","","	document.svc_proposal_edit.customer.value=document.svc_proposal_edit.custname.options[document.svc_proposal_edit.custname.selectedIndex].value;",1);echo "<br>
+	 or new<br><input type=text size=30 name=customer value=\"$svc_proposals_info->customer\">
+</td></tr>
+
+<tr><td valign=top>
+	<b>Description</b>
+</td><td>
+	<textarea rows=5 cols=40 name=description>$svc_proposals_info->description</textarea>
+</td></tr>
+
+<tr><td valign=top>
+	<b>Job Type</b>
+</td><td>
+	";
+	dropbox("select type,type from svc_proposals_type order by type",$svc_proposals_info->type,7);
+	echo"
+</td></tr>
+
+<tr><td valign=top>
+	<b>Market Type</b>
+</td><td>
+	";
+	dropbox("select mkt_type,mkt_type from svc_proposals_mkt_type order by svc_proposals_mkt_type_id",$svc_proposals_info->mkt_type,7,'',2);
+	echo"
+</td></tr>
+
+<tr><td>
+	<b>Proposal Amount</b>
+</td><td>
+	<input type=text name=proposal_amount value=\"$svc_proposals_info->proposal_amount\">
+</td></tr>
+
+<tr><td>
+	<b>Projected Bill Month</b>
+</td><td>
+	<input type=text name=projected_bill_date value=\"$svc_proposals_info->projected_bill_date\">
+</td></tr>
+
+<tr><td>
+	<b>Probability of close</b>
+</td><td>
+	<select name=probability>
+	<option value=$svc_proposals_info->probability>$svc_proposals_info->probability</option>
+	<option value=25>25</option>
+	<option value=50>50</option>
+	<option value=75>75</option>
+	<option value=100>100</option>
+	<option></option>
+	</select>
+</td><td>
+
+<tr><td>
+	<b>Estimated Man Hours</b>
+</td><td>
+	<input type=text size=5 name=estimated_hours value=\"$svc_proposals_info->estimated_hours\">
+</td></tr>
+
+<tr><td>
+	<b>Est Direct Margin</b>
+</td><td>
+	<input type=text size=4 name=estimated_margin_percent value=\"$svc_proposals_info->estimated_margin_percent\">%
+</td></tr>
+";
+
+if (!($new)) {
+echo "
+<tr><td>
+	<b>Status</b>
+</td><td>
+	";
+	dropbox("select status,status from svc_proposals_status order by status",$svc_proposals_info->status,7);
+	echo"
+</td></tr>
+
+<tr><td>
+	<b>Work Order #</b>
+</td><td>
+	<input type=text name=workorder_num value=\"$svc_proposals_info->workorder_num\">
+</td></tr>
+
+<tr><td>
+	<b>Competition:</b>
+</td><td>
+	<input type=text size=48 name=beaten_by value=\"$svc_proposals_info->beaten_by\">
+</td></tr>
+";
+} else {
+echo "<input type=hidden name=status value=New>";
+}
+echo "
+<tr><td>
+	<input type=submit value=Save>
+</td><td align=right>
+	<input type=button onclick=document.location=\"$pagename?mode=main\" value=\"Cancel\">
+</td></tr>
+
+</table>
+</form>
+";
+
+
+
+
+
+?>

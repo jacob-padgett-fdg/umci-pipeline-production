@@ -1,0 +1,44 @@
+<?
+require_once('querylib.inc');
+
+$query="select * from engineering_products group by rep_company,mfg_name order by rep_company,mfg_name";
+
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><br>
+<center><font size=+1><b>Product Reps</b></font></center><hr>
+
+<table border=0>";
+$mfg_res=mysql_query($query);
+
+while($mfg=mysql_fetch_object($mfg_res)) {
+	if ($mfg->rep_company=="") $mfg->rep_company="&lt;none&gt;";
+	echo "
+	<tr><td>
+	<a href=$pagename?mode=rep_info&record_id=$mfg->product_id><font color=blue>$mfg->rep_company</font></a>
+	</td><td>
+	$mfg->mfg_name
+	</td><td>
+	$mfg->rep_contact
+	</td><td>
+	$mfg->rep_phone
+	";
+
+	if($mfg->rep_url!="") echo "</td><td><a href=http://$mfg->rep_url target=rep_web_window>$mfg->rep_url</a>";
+
+	echo"</td></tr>";
+	}
+echo "</table>";
+
+
+
+require('footer.phtml');
+
+
+
+
+
+
+
+?>

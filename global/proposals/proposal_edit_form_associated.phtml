@@ -1,0 +1,199 @@
+<?
+
+if ($bid_info->bidlist_group >=1) {
+	
+$table_starter="<table border=1 cellspacing=0 cellpadding=2 width=100%>";	
+	
+	////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+	// First we want to see the records with the same proposal_num as the
+	// record what we're currently on....
+	////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+	if ($bid_info->proposal_num>=1) {
+	$ass_res=@mysql_query("select * from bidlist_associations left join bidlist using (bidlist_id) where bidlist_group = '$bid_info->bidlist_group' and proposal_num = '$bid_info->proposal_num' order by proposal_revision desc");
+	$asscount=@mysql_num_rows($ass_res);
+	echo "
+	$table_starter
+	<tr><td bgcolor=black><b><font color=white size=+1 font-weight=bold>Current</font></b></td></tr>
+	";
+	
+	while ($ass_row=@mysql_fetch_object($ass_res)) {
+		$ass_info=load_proposal_info($ass_row->bidlist_id);
+		$rtype="proposal";
+		
+		switch ($ass_info->status) {
+			case "Active":
+					$rtype="proposal";
+					$edit_target="proposal_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					if (($ass_row->revision=="") && ($ass_info->proposal_num=="$bid_info->proposal_num")) {
+						$rtype="main";
+						$ass_bg="green";
+						}
+					break;;
+			case "Almost Complete":
+					$rtype="proposal";
+					$edit_target="proposal_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					if (($ass_row->revision=="") && ($ass_info->proposal_num=="$bid_info->proposal_num")) {
+						$rtype="main";
+						$ass_bg="green";
+						}
+					break;;
+			case "Completed":
+					$rtype="proposal";
+					$edit_target="proposal_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					if (($ass_row->revision=="") && ($ass_info->proposal_num=="$bid_info->proposal_num")) {
+						$rtype="main";
+						$ass_bg="green";
+						}
+					break;;
+			case "Lead":
+					$rtype="lead";
+					$edit_target="lead_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					break;;
+			case "Dead Lead":
+					$rtype="lead";
+					$edit_target="lead_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					break;;
+			case "No Bid":
+					$rtype="nobid";
+					$edit_target="proposal_edit";
+					$ass_bg="#dddddd";
+					break;;
+			default:
+					$rtype="error";
+					$ass_bg="red";
+					break;;
+			}
+		
+		$ass_bg="#4444aa";
+		if ($ass_info->revision!="") $ass_bg="#666666";
+		if ($ass_row->bidlist_id==$bid_info->bidlist_id) $ass_bg="#aa4444";
+		
+		//$ass_info->proposal_num=$ass_info->proposal_num . $ass_info->revision;
+		if ($ass_info->proposal_revision>0) $ass_info->proposal_num=$ass_info->proposal_num . ".$ass_info->proposal_revision";
+		
+		if ($rtype=="lead") $ass_info->proposal_num="Lead" . $ass_info->bidlist_id;
+		echo "<tr bgcolor=$ass_bg><td>
+				<a href=\"$pagename?mode=$edit_target&bidlist_id=$ass_row->bidlist_id\"><b><font color=white title=\"$ass_row->description\" size=+1>$ass_info->proposal_num</font></b></a>
+			</td></tr>
+			";
+		if (($ass_info->revision=="")&&($asscount>1)) {
+			echo "</table>$table_starter<font size=-4><br></font>
+			<tr><td bgcolor=black><b><font color=white size=+1 font-weight=bold>Revisions</font></b></td></tr>
+			
+			
+			";
+			
+			//<tr><td><font size=-3>&nbsp;</font></td></tr>";
+			}
+		}
+	echo "</table><p>&nbsp;<p>";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$ass_res=@mysql_query("select * from bidlist_associations left join bidlist using (bidlist_id) where bidlist_group = '$bid_info->bidlist_group' and proposal_num != '$bid_info->proposal_num' order by proposal_num, revision");
+	$asscount=@mysql_num_rows($ass_res);
+	
+	if ($asscount >= 1) {
+	echo "
+	$table_starter
+	
+	<tr><td bgcolor=black><b><font color=white size=+1 font-weight=bold>Associated</font></b></td></tr>
+	";
+	
+	while ($ass_row=@mysql_fetch_object($ass_res)) {
+		$ass_info=load_proposal_info($ass_row->bidlist_id);
+		$rtype="proposal";
+		
+		switch ($ass_info->status) {
+			case "Active":
+					$rtype="proposal";
+					$edit_target="proposal_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					if (($ass_row->revision=="") && ($ass_info->proposal_num=="$bid_info->proposal_num")) {
+						$rtype="main";
+						$ass_bg="green";
+						}
+					break;;
+			case "Almost Complete":
+					$rtype="proposal";
+					$edit_target="proposal_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					if (($ass_row->revision=="") && ($ass_info->proposal_num=="$bid_info->proposal_num")) {
+						$rtype="main";
+						$ass_bg="green";
+						}
+					break;;
+			case "Completed":
+					$rtype="proposal";
+					$edit_target="proposal_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					if (($ass_row->revision=="") && ($ass_info->proposal_num=="$bid_info->proposal_num")) {
+						$rtype="main";
+						$ass_bg="green";
+						}
+					break;;
+			case "Lead":
+					$rtype="lead";
+					$edit_target="lead_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					break;;
+			case "Dead Lead":
+					$rtype="lead";
+					$edit_target="lead_edit";
+					$ass_bg="$ass_info->bid_date_color";
+					break;;
+			case "No Bid":
+					$rtype="nobid";
+					$edit_target="proposal_edit";
+					$ass_bg="#dddddd";
+					break;;
+			default:
+					$rtype="error";
+					$ass_bg="red";
+					break;;
+			}
+		
+		$ass_bg="#4444aa";
+		if ($ass_info->revision!="") $ass_bg="#666666";
+		if ($ass_row->bidlist_id==$bid_info->bidlist_id) $ass_bg="#aa4444";
+		$ass_info->proposal_num=$ass_info->proposal_num . $ass_info->revision;
+		if ($rtype=="lead") $ass_info->proposal_num="Lead" . $ass_info->bidlist_id;
+		echo "<tr bgcolor=$ass_bg><td>
+				<a href=\"$pagename?mode=$edit_target&bidlist_id=$ass_row->bidlist_id\"><b><font color=white title=\"$ass_row->description\" size=+1>$ass_info->proposal_num</font></b></a>
+			</td></tr>
+			";
+		}
+		
+		echo "</table>";
+		}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	}
+
+?>

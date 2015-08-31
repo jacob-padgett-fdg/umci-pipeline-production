@@ -1,0 +1,90 @@
+<?
+require('header.phtml');
+$server_info=FALSE;
+if ($server_id!="") {
+	$server_id=addslashes($server_id);
+	$server_info=getone("select * from access_servers where server_id = '$server_id'");
+	}
+if (!($server_info)) die("Error: Invalid server information");
+
+
+echo "
+<a href=$pagename?mode=server_list><font color=blue>Return to server list...</font></a><p>
+
+
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td bgcolor=#dddddd colspan=2 align=center>
+	<font size=+1><b>Server Information</b></font>&nbsp;<a href=$pagename?mode=server_edit&server_id=$server_info->server_id><font color=blue><i>Edit</i></font></a>
+</td><td bgcolor=#dddddd align=center>
+	<b>Configured&nbsp;Services</b>
+</td><td rowspan=7>
+	<img src=$pagename?mode=graph_server_bu_size&server_id=$server_info->server_id>
+</td></tr>
+
+<tr><td>
+	<b>Server Name</b>
+</td><td>
+	$server_info->name
+</td><td rowspan=17 valign=top>
+	<table border=0 cellspacing=0 cellpadding=4>
+	";
+	$slist_query="select * from access_servers_services left join access_service_types on (access_servers_services.service_type_id = access_service_types.service_type_id) where server_id = '$server_info->server_id' order by name";
+	//tabledump($slist_query);
+	$slist_res=@mysql_query($slist_query);
+	while ($slist_row=@mysql_fetch_object($slist_res)) {
+		echo "<tr><td>
+				<a href=javascript:show_service_info($slist_row->service_type_id)><font color=blue>$slist_row->name</font></a>
+			</td></tr>
+			";	
+		}
+	echo "
+	</table>
+</td></tr>
+
+<tr><td>
+	<b>Description</b>
+</td><td>
+	$server_info->description
+</td></tr>
+
+<tr><td>
+	<b>Admin Account</b>
+</td><td>
+	$server_info->admin_account
+</td></tr>
+
+<tr><td>
+	<b>OS</b>
+</td><td>
+	";
+	//dropbox("select os_id,name from access_servers_oslist order by name",$server_info->os_id,"","",1);
+	$os_info=getone("select * from access_servers_oslist where os_id = '$server_info->os_id'");
+	echo "
+	$os_info->name
+</td></tr>
+
+<tr><td>
+	<b>IP Address</b>
+</td><td>
+	$server_info->ip_addr
+</td></tr>
+
+<tr><td>
+	<b>Remote Admin Method</b>
+</td><td>
+	$server_info->remote_admin_method
+</td></tr>
+
+</table>
+";
+
+
+//if ($server_info->server_id > 0 ) {
+	//tabledump("select * from access_servers_log where server_id = '$server_info->server_id' order by entry_date desc");
+	server_log_interface($server_info->server_id);
+//	}
+
+
+
+
+?>

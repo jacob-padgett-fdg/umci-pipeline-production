@@ -1,0 +1,11 @@
+<?
+$supplies_id=addslashes($supplies_id);
+$row=getoneb("select * from supplies where supplies_id = '$supplies_id' and status = 'new'");
+
+if (($adminuser)||($row->contacts_id==$global_user->contacts_id)) {
+	@mysql_query("update supplies set status = 'deleted' where supplies_id = '$supplies_id'");
+	} else {
+	die_security();
+	}
+forward('main');
+?>

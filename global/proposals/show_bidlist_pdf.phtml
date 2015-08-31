@@ -1,0 +1,42 @@
+<?
+$today=date('m/d/Y g:ia');
+require_once('querylib.inc');
+require_once('pdf_lib2.inc');
+
+$paper_size=$global_user->pref_paper_size;
+if ($paper_size=="") $paper_size="letter";
+
+$pdf=&new Cezpdf("$paper_size","landscape");
+$pdf->selectFont("$pdf_font_path/Helvetica.afm");
+$datetm=date('m/d/Y G:i');
+
+$default_title="UMC <b>Confidential</b> Bid List";
+if ($title!="") {
+	$title=escapeshellcmd($title);
+	$default_title="$title";
+	}
+
+$pdf->ezSetMargins(85,36,36,36);
+$pdf->ez_umc_header_start("$default_title <i>($datetm)</i>",16,$textopts=array('justification'=>'center'));
+$pdf->ezTableDumpStart();
+$pdf->ezTableDumpAdd("<b>Prop/Bid","Date","Time","Project","Location","Lead","Plum","Heat","S/M","Proc","Prop","BB","GC List</b>");
+
+if ($force_query!="") $res=@mysql_query($force_query);
+else $res=@mysql_query($last_bidlist_query);
+while($row=@mysql_fetch_object($res)) {
+	if (getoneb("select * from bidlist_results where bidlist_id = $row->bidlist_id and company = '968'")) {
+		if ($mode=="show_bidlist_pdf") continue;
+		}
+	$bid_info=load_proposal_info($row->bidlist_id);
+	$bid_date=ereg_replace("-....$","",$bid_info->bid_date);
+	$bt=$bid_info->bid_time;
+	$bt=ereg_replace(":00 "," ",$bt);
+	$bt=ereg_replace(" ","",$bt);
+	$bt=ereg_replace("m","",$bt);
+	if ($bid_info->comments!="") $comment_text="\r\n--\r\nComments: $bid_info->comments";
+	else $comment_text="";
+	$pdf->ezTableDumpAdd("$bid_info->proposal_num","$bid_date","$bt","$bid_info->project$comment_text","$bid_info->location","$bid_info->to_lead_initials","$bid_info->to_plm_initials","$bid_info->to_htg_initials","$bid_info->to_metal_initials","$bid_info->to_proc_initials","$bid_info->to_prop_initials","$bid_info->bid_bond","$bid_info->gc_text_list");
+	}
+$pdf->ezTableDumpPrint(1,array('colGap'=>'5','width'=>($pdf->ez['pageWidth'] - $pdf->ez['leftMargin'] - $pdf->ez['rightMargin']) - 2,'fontSize'=>'8','cols'=>array('0'=>array('width'=>'47'),'1'=>array('width'=>'32'),'2'=>array('width'=>'32'),'4'=>array('width'=>'50'),'5'=>array('width'=>'29'),'6'=>array('width'=>'30'),'7'=>array('width'=>'29'),'8'=>array('width'=>'29'),'9'=>array('width'=>'29'),'10'=>array('width'=>'29'),'11'=>array('width'=>'22'))));
+$pdf->ezStream();
+?>

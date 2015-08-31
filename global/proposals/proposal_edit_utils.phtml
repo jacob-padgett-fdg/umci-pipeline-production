@@ -1,0 +1,300 @@
+<?
+$bidlist_id=escapeshellcmd($bidlist_id);
+$bid_info=load_proposal_info($bidlist_id);
+
+if ($refresh=="true") {
+	forward("proposal_edit_utils&bidlist_id=$bidlist_id",3);
+	include("header.phtml");
+	echo "<b><font size=+2><p>Saving Record... Please Wait</font></b>";
+	exit;
+	}
+
+if ($add=="true") {
+	$contact=escapeshellcmd($contact);
+	if ($bid_info->record_maintainer=="true")
+		if (!(getoneb("select * from bidlist_permissions where bidlist_id = '$bidlist_id' and contact = '$contact'"))) 
+			@mysql_query("insert into bidlist_permissions set bidlist_id = '$bidlist_id',contact='$contact',permission_creator='$global_user_id'");
+	}
+
+
+if ($delete=="true") {
+	$pmid=escapeshellcmd($pmid);
+	$row=getoneb("select * from bidlist_permissions where bidlist_id = '$bidlist_id' and permissions_id = '$pmid' limit 1");
+	if ($row) {
+		if (($bid_info->record_owner=="true")||($row->contact==$global_user_id)) {
+			@mysql_query("delete from bidlist_permissions where permissions_id = '$pmid'");
+			}
+		}
+	}
+
+include("header.phtml");
+
+
+$our_bid_info=getoneb("select * from bidlist_results where bidlist_id = '$bid_info->bidlist_id' and company = '968'");
+$allow_mark_complete="true";
+
+if ($bid_info->umc_bid_results!="Y") {
+	$allow_mark_complete="false";
+	$allow_mark_complete_message="There is not UMC bid result!";
+	}
+
+//if (($our_bid_info->winning_bid=='Y')&&($bid_info->jobinfo_id < 1)){
+//	$allow_mark_complete="false";
+//	$allow_mark_complete_message="UMC won bid, but no job specified.";
+//	}
+
+if ($bid_info->awarded=='P') {
+	$allow_mark_complete="false";
+	$allow_mark_complete_message="Bid results -> awarded is still pending! (Did you save?)";
+	}
+
+if (($bid_info->refundable=='Y') && ($bid_info->dwgs_returned!='Y') && ($bid_info->umc_bid_won!='Y')) {
+	$allow_mark_complete="false";
+	$allow_mark_complete_message="Bid docs depsoit refundable, but dwgs not returned!";
+	}
+
+if (($bid_info->bid_bond=='Y') && ($bid_info->bid_bond_returned!='Y')) {
+	$allow_mark_complete="false";
+	$allow_mark_complete_message="Bid bond required, but not returned!";
+	}
+
+if ($bid_info->proposal_type == "RFQ/Preq/Eleg") {
+	$allow_mark_complete="true";
+	$allow_mark_complete_message="";
+	}
+
+echo "
+<script>
+function mark_lead_dead() {
+	if(confirm('Are you sure you want to kill this lead?'))
+	document.location='$pagename?mode=mark_lead_dead&bidlist_id=$bid_info->bidlist_id';
+	}
+
+function mark_lead_active() {
+	if(confirm('Are you sure you want to make this lead active?'))
+	document.location='$pagename?mode=mark_lead_active&bidlist_id=$bid_info->bidlist_id';
+	}
+
+function mark_as_active() {
+	if(confirm('Are you sure you want to mark this item \"ACTIVE\" again?'))
+	document.location='$pagename?mode=mark_as_active&bidlist_id=$bid_info->bidlist_id';
+	}
+
+function mark_no_bid() {
+	if(confirm('Are you sure you want to mark this item \"NO BID\"?'))
+	document.location='$pagename?mode=mark_no_bid&bidlist_id=$bid_info->bidlist_id';
+	}
+
+function mark_completed_admin_force() {
+	if (confirm('Are you sure?')) document.location='$pagename?mode=mark_complete_admin_force&bidlist_id=$bid_info->bidlist_id';
+	}
+
+function save_reload() {
+	opener.apply_changes();
+	document.location=\"$pagename?mode=proposal_edit_utils&bidlist_id=$bidlist_id&refresh=true\";
+	}
+
+";
+
+
+
+if ($allow_mark_complete=="true") {
+	echo "
+	function mark_completed() {
+		document.location='$pagename?mode=mark_complete&bidlist_id=$bid_info->bidlist_id';
+		}";
+	} else {
+	echo "
+	function mark_completed() {
+		alert('$allow_mark_complete_message');
+		}";
+}
+
+echo "</script>";
+
+
+echo "
+<table border=0>
+<tr><td>
+	<b>Project:&nbsp;&nbsp;&nbsp;</b>
+</td><td>
+	$bid_info->project</b>
+</td></tr>
+
+<tr><td>
+	<b>Created by:&nbsp;&nbsp;&nbsp;</b>
+</td><td>
+	$bid_info->record_owner_display_name
+</td></tr>
+
+<tr><td>
+	<b>Status:&nbsp;&nbsp;&nbsp;</b>
+</td><td>
+	$bid_info->status</b>
+</td></tr>
+</table>
+<hr>
+
+<a href=javascript:save_reload();><font color=blue>Apply Changes</font></a><p>
+
+<table border=0 cellspacing=0 cellpadding=3 width=100%>
+<tr><td valign=top>
+";
+
+if ($bid_info->status=='Lead') {
+	echo "
+	<a href=javascript:mark_lead_active();><font color=blue>TURN THIS INTO A PROPOSAL/BID</font></a><br>
+	<a href=javascript:mark_lead_dead();><font color=blue>MARK THIS LEAD DEAD</font></a><br>
+	";
+	}
+
+if ($bid_info->status=='Active') {
+	echo "<a href=javascript:mark_no_bid();><font color=blue>MARK RECORD NO BID</font></a><br>
+	<a href=javascript:mark_completed();><font color=blue>MARK RECORD COMPLETED</font></a><br>";
+	}
+
+if (($bid_info->status!='Active')&&($bid_info->status!='Lead')) {
+	echo "<a href=javascript:mark_as_active();><font color=blue>MARK RECORD AS ACTIVE AGAIN</font></a><br>";
+	}
+
+if (($adminuser)&&($bid_info->status=='Almost Complete')) {
+	echo "<a href=javascript:mark_completed_admin_force();><font color=blue>FORCE RECORD COMPLETION</font></a><br>";
+	}
+
+echo "
+<p>
+<table border=1 cellspacing=0 cellpadding=0 class=\"tableobj\">
+<tr><td>
+<table border=0 cellspacing=0 cellpadding=4 width=100%><tr><td colspan=2 bgcolor=$table_dark><b>Other Users</b></td></tr>";
+$res=@mysql_query("select * from bidlist_permissions,contacts where bidlist_id = '$bidlist_id' and contacts.contacts_id = bidlist_permissions.contact");
+while($row=@mysql_fetch_object($res)) {
+	echo "
+	<tr><td>
+		$row->display_name
+	</td><td>";
+	
+	if (($bid_info->record_owner=="true")||($row->contact==$global_user_id)) {
+		echo "<a href=$pagename?mode=proposal_edit_utils&bidlist_id=$bidlist_id&delete=true&pmid=$row->permissions_id><font color=blue><i>Delete</i></font></a>";
+		} else {
+		echo "<i><font color=gray>Delete</font></i>";
+		}
+	echo "
+	</td></tr>
+	";
+	
+	}
+echo "</table><p>
+<form name=something_fun method=post action=$pagename>
+<input type=hidden name=mode value=proposal_edit_utils>
+<input type=hidden name=add value=true>
+<input type=hidden name=bidlist_id value='$bidlist_id'>
+&nbsp;";
+//dropbox("select contacts_id as contact,display_name from contacts where umc_emp = 'Y' and current = 'Y' and login_name != '' order by alphasort","","","",1);
+contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y' and login_name != ''","","contact","",2);
+
+$current_group_info=getoneb("select * from bidlist_associations where bidlist_id = '$bid_info->bidlist_id'");
+
+if ($current_group_info) {
+	$suggested_group_description=$current_group_info->description;
+	} else {
+	$suggested_group_description=addslashes($bid_info->project);
+	}
+
+echo"
+&nbsp;<a href=javascript:document.something_fun.submit();><font color=blue><i>Add</i></font></a>&nbsp;
+</form>
+</td></tr></table>
+
+<p>
+<a href=javascript:self.close();>Close/Cancel</a>
+
+</td><td valign=top>
+
+<a href=javascript:confirm_new_rev();><font color=blue>Create a new revision</font></a>
+
+<p>
+<form name=ass_new method=post action=$pagename>
+<input type=hidden name=mode value=proposal_edit_create_new_association>
+<input type=hidden name=current_bidlist_id value=\"$bid_info->bidlist_id\">
+<table border=1 cellspacing=0 cellpadding=2 width=100% class=\"tableobj\">
+<tr><td colspan=2 align=center bgcolor=\"$table_dark\"><b><font size=+1>Associations</font></b></td></tr>
+
+<tr><th>
+	Lead/Prop#
+</th><th>
+	Description
+</th></tr>
+
+<tr><td align=center>
+	<b><font color=black size=+1>";
+	if ($bid_info->proposal_num > 0) {
+		$jobidtag=$bid_info->proposal_num;
+		//echo "$bid_info->proposal_num";
+	} else {
+		$jobidtag=$bid_info->bidlist_id;
+		//echo "$bid_info->bidlist_id";
+	}
+	echo "$jobidtag</font></b>
+</td><td>
+	<input type=text size=35 maxlength=100 name=association_description value=\"$suggested_group_description\">
+</td></tr>
+
+<tr><td align=center>
+	<input size=11 type=text name=associate_proposal_num> 
+</td><td valign=top>
+	<input type=text size=35 maxlength=100 name=association_description_2>
+</td></tr>
+
+<tr><td colspan=2>
+	<input type=button onclick=check_assoc(); value=\"New Association\">";
+	if ($current_group_info) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onclick=change_assoc_description(); value=\"Change $jobidtag Description\">";
+echo"</td></tr>";
+
+if ($current_group_info) {
+	echo "	
+	<tr><td colspan=2 align=center>
+		<a href=$pagename?mode=proposal_edit_remove_associations&bidlist_id=$bid_info->bidlist_id><font color=blue>Remove associations</font></a>
+	</td></tr>
+	";
+	}
+
+echo "
+</table>
+</form>
+<script>
+function check_assoc() {
+	if (document.ass_new.associate_proposal_num.value=='') 
+		alert ('ERROR: Please specify a proposal or lead number!');
+	else document.ass_new.submit();
+	}
+function change_assoc_description() {
+	description=escape(document.ass_new.association_description.value);
+	document.location='$pagename?mode=proposal_edit_update_association_description&bidlist_id=$bid_info->bidlist_id&description=' + description;
+	}
+</script>
+
+
+
+
+
+</td></tr>
+</table>
+
+
+<script>
+function confirm_new_rev() {
+	if(confirm('Create a new revision based off this item?')) {
+		//alert('Creating new revision!');
+		document.location='$pagename?mode=proposal_edit_create_new_revision&bidlist_id=$bidlist_id';
+		}
+	}
+</script>
+
+
+
+
+
+";
+
+
+?>

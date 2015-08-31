@@ -1,0 +1,17 @@
+<?
+
+//echo "$bidlist_id<br>$description";
+$bidlist_id=addslashes($bidlist_id);
+$description=addslashes($description);
+
+@mysql_query("update bidlist_associations set description = '$description' where bidlist_id = '$bidlist_id'");
+
+
+echo "
+<script>
+opener.document.location.reload();
+self.close();
+</script>
+";
+
+?>

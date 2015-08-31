@@ -1,0 +1,76 @@
+<?
+
+if ($report_type=="") die("ERROR: No report type selected!");
+else $report_type=addslashes($report_type);
+
+//echo "<hr>$report_type<hr>";
+
+
+if ($report_format=="") die("ERROR: No report format selected!");
+else $report_format=addslashes($report_format);
+
+if ($log_entry_count!="") $log_entry_count=addslashes($log_entry_count);
+else $log_entry_count=10;
+
+
+$query="select * from access_servers,access_servers_backup_styles where
+access_servers.backup_style_id = access_servers_backup_styles.backup_style_id";
+
+
+if ($in_production!="") {
+	if ($in_production=='Y') {
+		$query=$query . " and in_production = 'Y'";
+		} else {
+		$query=$query . " and in_production = 'N'";
+		}
+	}
+
+if ($active!="") {
+	if ($active=='Y') {
+		$query=$query . " and active = 'Y'";
+		} else {
+		$query=$query . " and active = 'N'";
+		}
+	}
+
+if ($job_site_server!="") {
+	if ($job_site_server=='Y') {
+		$query=$query . " and job_site_server = 'Y'";
+		} else {
+		$query=$query . " and job_site_server = 'N'";
+		}
+	}
+
+if ($report_backups!="") {
+	if ($report_backups=='Y') {
+		$query=$query . " and report_backups = 'Y'";
+		} else {
+		$query=$query . " and report_backups = 'N'";
+		}
+	}
+
+$query=$query . " order by access_servers.name";
+
+$results=@mysql_query($query);
+
+require("header.phtml");
+echo"<center><h1><font color=red>CONFIDENTIAL</font></h1></center><hr><br style=\"page-break-after:always;\">";
+
+while ($row=@mysql_fetch_object($results)) {
+	$function_to_call="server_report_${report_format}_${report_type}";
+	//echo "<br>$function_to_call";
+	$function_to_call($row->server_id,$log_entry_count);
+	//server_report_${report_format}_${report_type}($row->server_id,$log_entry_count);
+	}
+
+
+
+
+
+
+//echo "<hr>$query<hr>";
+
+//tabledump($query);
+
+
+?>

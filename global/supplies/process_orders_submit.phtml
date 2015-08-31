@@ -1,0 +1,10 @@
+<?
+if (!($adminuser)) die_security();
+
+$query="update supplies set status = 'ordered' where status = 'new'";
+//die("<hr>$query<hr>");
+$result=mysql_query($query);
+
+//include("main.phtml");
+forward('main');
+?>

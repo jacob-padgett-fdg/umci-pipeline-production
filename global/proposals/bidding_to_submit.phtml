@@ -1,0 +1,22 @@
+<?
+
+if ($bidding_to_id=="") die('Application Error: No bidding_to_id! Please contact your system administrator!');
+$bidding_to_id=addslashes($bidding_to_id);
+$general_contact=addslashes($general_contact);
+
+$query="update bidlist_bidding_to set general_contact = '$general_contact' where bidding_to_id = '$bidding_to_id'";
+
+if (!(getoneb("select * from contacts where company_id = '$general_id' and contacts_id = '$general_contact'"))) $general_contact=0;
+
+$res=@mysql_query($query);
+
+if (!($res)) die ("ERROR: Error with query. Data not saved!!! <br>Failed Query:<hr>$query<p>");
+
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+?>

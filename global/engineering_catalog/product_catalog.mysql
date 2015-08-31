@@ -1,0 +1,25 @@
+drop table if exists product;
+
+create table product (
+	product_id	int not null auto_increment,
+	name		char(50),
+	mfg_name	char(75),
+	mfg_url		char(100),
+	rep_company	char(75),
+	rep_contact	char(50),
+	rep_address	char(100),
+	rep_address2	char(100),
+	rep_city	char(50),
+	rep_state	char(30),
+	rep_zip		char(10),
+	rep_phone	char(50),
+	rep_fax		char(50),
+	rep_url		char(100),
+	update_date	char(25),
+	t_stamp		timestamp,
+	primary key	(product_id),
+	key			(name),
+	key			(mfg_name),
+	key			(rep_company),
+	key			(rep_contact)
+	);

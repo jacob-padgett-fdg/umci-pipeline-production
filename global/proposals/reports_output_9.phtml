@@ -1,0 +1,23 @@
+<?
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=reports><font color=blue>Return to reports</font></a><br>
+
+<h2>Please select options for this report:</h2><hr>
+
+<table border=0 cellspacing=0 cellpadding=5>
+<form name=report_9_form method=post action=$pagename>
+<input type=hidden name=mode value=reports_output_9b>
+
+<b>History Length (days):</b>&nbsp;
+
+<input type=text size=4 name=history_length value=\"90\">
+<tr><td colspan=2 align=right>
+	<input type=submit value='Go'>
+</td></tr>
+
+</table>
+";
+
+?>

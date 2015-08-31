@@ -1,0 +1,25 @@
+<?
+if ($bidlist_id != "") $bidlist_id=escapeshellcmd($bidlist_id);
+else die("ERROR: Missing bidlist_id. Contact your system administrator, or try again.");
+
+$type=escapeshellcmd($type);
+$contacts_id=escapeshellcmd($contacts_id);
+$sort_priority=escapeshellcmd($sort_priority);
+$notes=escapeshellcmd($notes);
+
+$query="insert into bidlist_references set 
+type = '$type',
+contacts_id = '$contacts_id',
+bidlist_id = '$bidlist_id',
+sort_priority = '$sort_priority',
+notes = '$notes'";
+
+@mysql_query($query);
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+?>

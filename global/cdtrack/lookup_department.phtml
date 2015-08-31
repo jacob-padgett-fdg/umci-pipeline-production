@@ -1,0 +1,30 @@
+<?require("lookup_deny.inc");?>
+<?require("pageheader.phtml");?>
+<?require("querylib.inc");?>
+<?
+$lookupmode=ereg_replace("^lookup_","",$mode);
+$query="select * from ${$lookupmode}";
+
+if ($mode=="lookup_department") {
+	$query="select * from $departments";
+	}
+if ($mode=="lookup_dbnames") {
+	$query="select * from $databases";
+	}
+
+?>
+
+
+
+<font size=+2>
+<i>
+<?echo"$lookupmode";?>:
+</i>
+</font>
+
+
+
+<?lookuptabledump($query,$lookupmode);?>
+
+<?require("footer.phtml");?>
+

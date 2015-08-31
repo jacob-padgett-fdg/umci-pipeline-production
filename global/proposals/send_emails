@@ -1,0 +1,187 @@
+#!/usr/local/bin/php
+<?
+
+require('querylib.inc');
+require('settings.cfg');
+require('global_connect_rw.phtml');
+
+function send_mail($contact_id,$type,$error_message,$bid_info) {
+	if ($contact_id==0) {
+		$contact_id=2;
+		$error_message="(CONTACT ID = 0): $error_message";
+		}
+	$contact_info=getoneb("select * from contacts where contacts_id = '$contact_id'");
+	if (!($contact_info)) echo "ERROR: Error sending email. Contact information is invalid.
+	debug info:
+	contact_id: -$contact_id-
+	type: -$type-
+	error_message: -$error_message-
+	bidinfo_bidinfo_id: $bid_info->bidinfo_id
+	
+	";
+	
+	
+	$subject="$error_message$type";
+
+	if ($type=="Job Walk") {
+		$jwdate=invali_date($bid_info->job_walk_date);
+		$jwtime=timebreak($bid_info->job_walk_time);
+		$message="
+		This is a <b>$type reminder</b> for traxx item# <a href=http://pipeline.umci.com/global/proposals?mode=proposal_edit&bidlist_id=$bid_info->bidlist_id>$bid_info->proposal_num</a>.
+		A job walk is scheduled for $jwdate $jwtime for project described: $bid_info->project.<p>
+		If you need more information, please follow the link to the item above, or contact your lead regarding the matter.
+		";
+		}
+	if ($type=="Bid Docs Requested") {
+		$message="
+		This is a <b>$type reminder</b> for traxx item# <a href=http://pipeline.umci.com/global/proposals?mode=proposal_edit&bidlist_id=$bid_info->bidlist_id>$bid_info->proposal_num</a>.
+		Bid Documents are required, but not yet requested for the project described: $bid_info->project.<p>
+		If you need more information, please follow the link to the item above, or contact your lead regarding the matter.
+		";
+		}
+
+	if ($type=="Maintenence Required") {
+		$message="
+		This is a <b>$type reminder</b> for traxx item# <a href=http://pipeline.umci.com/global/proposals?mode=proposal_edit&bidlist_id=$bid_info->bidlist_id>$bid_info->proposal_num</a>.
+		The bid date has passed, but the project status is still \"Active\". Please fill in required information and complete the project described: $bid_info->project.<p>
+		If you need more information, please follow the link to the item above, or contact your lead regarding the matter.
+		";
+		}
+	if ($type=="Bid Bond Required") {
+		$message="
+		This is a <b>$type reminder</b> for traxx item# <a href=http://pipeline.umci.com/global/proposals?mode=proposal_edit&bidlist_id=$bid_info->bidlist_id>$bid_info->proposal_num</a>.
+		A Bid bond is required, but not yet requested for the project described: $bid_info->project.<p>
+		If you need more information, please follow the link to the item above, or contact your lead regarding the matter.
+		";
+		}
+	if ($type=="Bid Date Approaching") {
+		$message="
+		This is a <b>$type reminder</b> for traxx item# <a href=http://pipeline.umci.com/global/proposals?mode=proposal_edit&bidlist_id=$bid_info->bidlist_id>$bid_info->proposal_num</a>.
+		The bid date is approaching for the project described: $bid_info->project.<p>
+		If you need more information, please follow the link to the item above, or contact your lead regarding the matter.
+		";
+		}
+	if ($type=="Bid List Item Changed") {
+		$message="
+		This is a <b>$type notification</b> for traxx item# <a href=http://pipeline.umci.com/global/proposals?mode=proposal_edit&bidlist_id=$bid_info->bidlist_id>$bid_info->proposal_num</a>.
+		Some vital piece of information such as bid date, time, or status has 
+		changed for the traxx item described: $bid_info->project.<p>
+		If you need more information, please follow the link to the item above, or contact your lead regarding the matter.
+		";
+		}
+	queue_email($contact_id,$subject,$message);
+	}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//	Job Walk Emails
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+$jwdate_1=date('Y-m-d',strtotime("+3 days"));
+$jwdate_2=date('Y-m-d',strtotime("+1 days"));
+
+$query_jw="select * from bidlist where walk_through = 'Y' and ((walk_through_date = '$jwdate_1') or (walk_through_date = '$jwdate_2'))";
+$res_jw=@mysql_query($query_jw);
+while($row_jw=@mysql_fetch_object($res_jw)) {
+	
+	//////////////// Lead if needed /////////////////////////
+	if ($row_jw->walk_through_remind_lead=="Y") {
+		if ($row_jw->to_lead > 0) {
+			send_mail($row_jw->to_lead,"Job Walk","",$row_jw);
+		} else {
+			send_mail($row_jw->creator,"Job Walk","LEAD ERROR:",$row_jw);
+		}
+	}
+	//////////////////////// Contact ////////////////////////
+	if ($row_jw->walk_through_employee > 0) {
+		send_mail($row_jw->walk_through_employee,"Job Walk","",$row_jw);
+	} else {
+		send_mail($row_jw->creator,"Job Walk","CONTACT ERROR:",$row_jw);
+	}
+}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//	Bid Docs Emails
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+$bd_query="select * from bidlist where bid_docs = 'Y' and dwgs_ordered != 'Y'";
+$bd_res=@mysql_query($bd_query);
+while($bd_row=@mysql_fetch_object($bd_res)) {
+	$bd_init=invali_date($bd_row->bid_docs_init);
+	if ($bd_init=="") {
+		@mysql_query("update bidlist set bid_docs_init = now() where bidlist_id = $bd_row->bidlist_id");
+		send_mail(158,"Bid Docs Requested","",$bd_row);
+		} else {
+		if (is_reminder_day($bd_init,2,0,1,0)) send_mail(158,"Bid Docs Requested","LATE:",$bd_row);
+		}
+	}
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//	Old dead proposals
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+$dead_query="select * from bidlist where status = 'Active' and bid_date < now()";
+//tabledump($dead_query);exit;
+$dead_res=@mysql_query($dead_query);
+while($dead_row=@mysql_fetch_object($dead_res)) {
+	$dead_date=$dead_row->bid_date;
+	$dead_date=invali_date($dead_date);
+	if (is_reminder_day($dead_date,7,0,0,1)) {
+		if ($dead_row->to_lead<=0) $mr_contact=$dead_row->creator;
+		else $mr_contact=$dead_row->to_lead;
+		send_mail($mr_contact,"Maintenence Required","",$dead_row);
+		}
+	}
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//	Bid Bond Required
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+$bbreqdate=date('Y-m-d',strtotime('+4 days'));
+$bb_req_query="select * from bidlist where status = 'Active' and bid_date > now() and bid_bond = 'Y' and bid_bond_requested != 'Y' and bid_date = '$bbreqdate'";
+$bb_res=@mysql_query($bb_req_query);
+while($bb_row=@mysql_fetch_object($bb_res)) {
+	if ($bb_row->to_lead>0) {
+		send_mail($bb_row->to_lead,"Bid Bond Required","",$bb_row);
+		} else {
+		send_mail($bb_row->creator,"Bid Bond Required","LEAD ERROR: ",$bb_row);
+		}
+	}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//	Bid Date Approaching
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+$biddate_1=date('Y-m-d',strtotime("+1 days"));
+
+$biddate_1_qry="select * from bidlist where status = 'Active' and bid_date = '$biddate_1'";
+$bd_res=@mysql_query($biddate_1_qry);
+while($bd_row=@mysql_fetch_object($bd_res)) {
+	send_mail("158","Bid Date Approaching","",$bd_row);
+	}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//	Bidlist Changes
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+$bidlist_qry="select * from bidlist where (status = 'Active' or status = 'No Bid') and bid_date > now() and show_in_bidlist = 'Y' and notified = 'N'";
+
+$bidlist_qry_res=@mysql_query($bidlist_qry);
+
+while($bidlist_row=@mysql_fetch_object($bidlist_qry_res)) {
+	@mysql_query("update bidlist set notified = 'Y' where bidlist_id = '$bidlist_row->bidlist_id'");
+	
+	$bl_emails=@mysql_query("select * from bidlist_notifications ");
+	while ($bl_email_row=@mysql_fetch_object($bl_emails)) {
+		send_mail("$bl_email_row->contacts_id","Bid List Item Changed","",$bidlist_row);
+		}
+	}
+?>

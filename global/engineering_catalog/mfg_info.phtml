@@ -1,0 +1,43 @@
+<?
+$product_id=escapeshellcmd($record_id);
+require('header.phtml');
+require('querylib.inc');
+$mfg_info=getone("select * from engineering_products where product_id = '$product_id'");
+
+
+echo "
+<a href=$pagename?mode=list_by_mfg><font color=blue>Return to Mfg list</font></a><br>
+<h2>$mfg_info->mfg_name</h2><hr>
+<form name=mfg_form method=post action=$pagename>
+<table border=0>
+
+<tr><td>
+	Mfg Name
+</td><td>
+	<input type=text size=30 name=mfg_name value=\"$mfg_info->mfg_name\">
+	<input type=button value=Apply onclick=apply_change('mfg_name',document.mfg_form.mfg_name.value)>
+</td></tr>
+
+<tr><td>
+	Mfg URL
+</td><td>
+	<input type=text size=30 name=mfg_url value=\"$mfg_info->mfg_url\">
+	<input type=button value=Apply onclick=apply_change('mfg_url',document.mfg_form.mfg_url.value)>
+</td></tr>
+
+</table>
+</form>
+
+<a href=$pagename?mode=list_mfg_products&record_id=$product_id><font color=blue>Show All $mfg_info->mfg_name Products</font></a>
+<script>
+function apply_change(field,value) {
+	if(confirm('This will change all records for this manufacturer.'))
+	 open('$pagename?mode=mfg_update&record_id=$mfg_info->product_id&field=' + field + '&value=' + value,'mfg_modify_win','width=500,height=400,scrollbars=yes' )
+	}
+
+</script>
+
+";
+
+
+?>

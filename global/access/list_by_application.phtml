@@ -1,0 +1,51 @@
+<?
+require('querylib.inc');
+echo "
+<html><body bgcolor=white>
+<center><h2>Global Database Access Control</h2></center><hr>
+
+<a href=$pagename?mode=main><font color=blue>Main menu</font></a><p>
+";
+session_register('access_orderbyfield');
+
+if ($access_orderbyfield_set!="") $access_orderbyfield=escapeshellcmd($access_orderbyfield_set);
+if ($access_orderbyfield=="") $access_orderbyfield="last_name";
+
+$query="select * from access,contacts where access.contacts_id = contacts.contacts_id group by contacts.contacts_id order by $access_orderbyfield";
+
+$result=@mysql_query($query);
+if (!($result)) {
+	echo "Error in lookup query: <hr>$query";
+	exit;
+	}
+
+echo "<table border=1 cellpadding=3 cellspacing=0>
+	<tr bgcolor=#eeeeee><td>
+		<a href=$pagename?access_orderbyfield_set=last_name><font color=black>
+		User
+		</font></a>
+	</td><td>
+		<a href=$pagename?access_orderbyfield_set=login_name><font color=black>
+		Login Name
+		</font></a>
+	</td></tr>";
+
+while ($row=@mysql_fetch_object($result))
+	echo "
+	<tr><td>
+		<a href=$pagename?mode=access_list&access_contacts_id=$row->contacts_id><font color=blue>
+		$row->last_name, $row->first_name
+		</font></a>
+	</td><td>
+		$row->login_name
+	</td></tr>";
+	
+echo "</table>";
+
+
+
+
+
+
+require('footer.phtml');
+?>

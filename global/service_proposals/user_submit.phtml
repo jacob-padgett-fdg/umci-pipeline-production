@@ -1,0 +1,19 @@
+<?
+//require_once('querylib.inc');
+if ($contacts_id == "") die ("APPLICATION ERROR: No user specified. Please contact you system administrator!<p>");
+$contacts_id=escapeshellcmd($contacts_id);
+$initials=escapeshellcmd($initials);
+
+$query="update contacts set initials = '$initials' where contacts_id = '$contacts_id'";
+
+$res=@mysql_query($query);
+if(!($res)) {
+	echo "APPLICATION ERROR: Please contact your system administrator.<p>";
+	exit;
+	}
+forward('main');
+
+
+
+
+?>

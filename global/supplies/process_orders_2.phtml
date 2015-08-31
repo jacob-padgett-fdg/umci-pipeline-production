@@ -1,0 +1,68 @@
+<?
+if ($tmuser!=$vendid) {
+	echo "Error, Authentication denied!";
+	include("main.phtml");
+	exit;
+	}
+
+if ($tmpass!=$vendpw) {
+	echo "Error, Authentication denied!";
+	include("main.phtml");
+	exit;
+	}
+
+require("header.phtml");
+include("querylib.inc");
+
+echo "<font size=+1>Currently on order:</front>";
+
+$query="select * from supplies where status = 'new' order by lastaction";
+$result=mysql_query($query);
+
+echo "
+<table border=0 cellspacing=0 cellpadding=6>
+<tr bgcolor=$oddrowtint><td>
+	User
+</td><td>
+	Quantity
+</td><td>
+	Product #
+</td><td>
+	Description
+</td></tr>
+";	
+while($row=@mysql_fetch_object($result)) {
+	if ($counter=="1") {
+		$counter=0;
+		$bgtint=$oddrowtint;
+		} else {
+		$counter=1;
+		$bgtint="";
+		}
+		
+	echo "	<tr $bgtint><td>
+				$row->username
+			</td><td>
+				<center>$row->quantity</center>
+			</td><td>
+				$row->vendorcode
+			</td><td>
+				$row->description
+			</td></tr>
+			";
+	}
+
+echo "</table>
+<form name=clearall method=post action=$PHP_SELF>
+<input type=hidden name=mode value=process_orders_submit>
+<input type=hidden name=tmuser value=$tmuser>
+<input type=hidden name=tmpass value=$tmpass>
+</form>
+<script>
+if(confirm(\"Mark everything listed as ordered and remove from list?\")) {
+	document.clearall.submit();
+	}
+</script>
+";
+
+?>

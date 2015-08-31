@@ -1,0 +1,120 @@
+
+<?require("pageheader.phtml");?>
+<?
+//require("querylib.inc");
+?>
+<?require("customer.inc");?>
+<?
+$new=0;
+
+if ("$cd_jobinfo_id" != "") {
+	$cd_jobinfo=getone("select * from cdtrack_jobinfo where jobinfo_id = '$cd_jobinfo_id'");
+	}
+if ("$cd_jobinfo_id" == "") {
+	$new=1;
+	$cd_jobinfo=new bsclass;
+	}
+
+
+$cd_jobinfo->customer=custgetname($cd_jobinfo->customer);
+
+if ($cd_jobinfo->b_dwg=="yes") { $cd_jobinfo->b_dwg="checked"; }
+if ($cd_jobinfo->b_txt=="yes") { $cd_jobinfo->b_txt="checked"; }
+if ($cd_jobinfo->b_jpg=="yes") { $cd_jobinfo->b_jpg="checked"; }
+if ($cd_jobinfo->b_tif=="yes") { $cd_jobinfo->b_tif="checked"; }
+if ($cd_jobinfo->b_bmp=="yes") { $cd_jobinfo->b_bmp="checked"; }
+if ($cd_jobinfo->b_oth=="yes") { $cd_jobinfo->b_oth="checked"; }
+?>
+
+
+<?
+
+echo "
+<form name=fooberry method=post action=$pagename>
+	<input type=hidden name=cd_jobinfo_id value=\"$cd_jobinfo->jobinfo_id\">
+	<input type=hidden name=mode value=cd_jobinfo_submit>
+	<input type=hidden name=cdinfo_id value=\"$cd_jobinfo->cdinfo_id\">
+Job info:
+<table border=0>
+<tr><td>
+	Job Number
+</td><td>
+	<input type=text size=10  name=job_num value=\"$cd_jobinfo->job_num\">
+</td></tr>
+
+<tr><td>
+	Job Name
+</td><td>
+	<input type=text name=job_name value=\"$cd_jobinfo->job_name\">
+</td></tr>
+
+<tr><td>
+	Customer
+</td><td>
+	<input type=text name=customer value=\"$cd_jobinfo->customer\">
+</td></tr>
+
+<tr><td>
+	Project Manager
+</td><td>
+	<input type=text name=manager value=\"$cd_jobinfo->manager\">
+</td></tr>
+
+<tr><td>
+	Year Ended
+</td><td>
+	<input type=text name=year_ended value=\"$cd_jobinfo->year_ended\" size=6>
+</td></tr>
+
+<tr><td valign=top>
+	Type of data
+</td><td>
+	<table border=1 cellspacing=0 cellpadding=0>
+    <tr><td>
+    <table border=0 cellspacing=0 cellpadding=0>
+        <tr><td>
+            <font size=-1><input type=checkbox name=b_dwg $cd_jobinfo->b_dwg></font>
+        </td><td>
+            <font size=-1>DWG</font>  
+        </td><td>
+            <font size=-1><input type=checkbox name=b_tif $cd_jobinfo->b_tif></font>
+        </td><td>
+            <font size=-1>TIF</font>  
+        </td><td>
+            <font size=-1><input type=checkbox name=b_jpg $cd_jobinfo->b_jpg></font>
+        </td><td>
+            <font size=-1>JPG</font>  
+        </td></tr>
+        
+        <tr><td>
+            <font size=-1><input type=checkbox name=b_txt $cd_jobinfo->b_txt></font>
+        </td><td>
+            <font size=-1>TXT</font>  
+        </td><td>
+            <font size=-1><input type=checkbox name=b_bmp $cd_jobinfo->b_bmp></font>
+        </td><td>
+            <font size=-1>BMP</font>  
+        </td><td>
+            <font size=-1><input type=checkbox name=b_oth $cd_jobinfo->b_oth></font>
+        </td><td>
+            <font size=-1>Other</font>
+        </td></tr>
+    </table>
+    </td></tr>
+    </table>
+<font size=-1><input type=button value=Save onclick=checkcust2();></font>
+
+</table>
+";
+require("footer.phtml");
+?>
+
+<?
+echo "<script>
+function checkcust2 () {
+var desturl;
+desturl=\"$pagename?mode=custcheck2&customer=\" + escape(document.fooberry.customer.value);
+open(desturl,\"checkcust\",\"width=450,height=500,resizable,dependent,alwaysRaised\");
+}
+</script>
+";?>

@@ -1,0 +1,8 @@
+<?
+$bidlist_id=escapeshellcmd($bidlist_id);
+$description=escapeshellcmd($description);
+$type=escapeshellcmd($type);
+require('header.phtml');
+show_bidlist_log($bidlist_id,$type,$description,99999);
+
+?>

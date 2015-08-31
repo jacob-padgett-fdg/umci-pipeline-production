@@ -1,0 +1,15 @@
+<?
+require("settings.inc");
+require_once("global-auth.inc");
+//if ($desktop_cookie == "") {
+	//$cookiebait=microtime();
+//	setcookie("desktop_cookie","$cookiebait");
+//	}
+
+if ($mode == "") $mode="main";
+if (is_readable("$mode.phtml")) {
+	include("$mode.phtml");  
+} else { 
+	include ("badmode.phtml"); 
+	}
+?>

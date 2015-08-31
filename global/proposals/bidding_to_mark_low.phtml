@@ -1,0 +1,29 @@
+<?
+$bidding_to_id=escapeshellcmd($bidding_to_id);
+
+$bidding_to_info=getone("select * from bidlist_bidding_to where bidding_to_id = '$bidding_to_id'");
+if ($bidding_to_info->low_bid=="Y") $newstatus="N";
+else $newstatus="Y";
+
+require('header.phtml');
+echo "Marking bid as low bid<p>";
+flush();
+$query="update bidlist_bidding_to set low_bid = 'N' where bidlist_id = '$bidding_to_info->bidlist_id'";
+$query2="update bidlist_bidding_to set low_bid = '$newstatus' where bidding_to_id = '$bidding_to_id'";
+
+//echo "$query<hr>$query2<hr>";
+
+@mysql_query($query);
+@mysql_query($query2);
+echo"
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+
+
+
+
+?>

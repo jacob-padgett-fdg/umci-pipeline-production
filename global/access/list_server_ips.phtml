@@ -1,0 +1,9 @@
+<?
+require_once('querylib.inc');
+echo "<a href=$pagename?mode=server_list><font color=blue>Exit</font></a><p>";
+echo "<a href=https://pipeline.umci.com/global/access-devel/slocud.phtml?force_push=Y><font color=blue>Force push to Electric Arrow</font></a><p>";
+
+tabledump("select * from access_server_locations where current = 'Y'");
+
+
+?>

@@ -1,0 +1,89 @@
+<?
+require('header.phtml');
+
+$today=date('m-d-Y');
+$awhileback=date('m-d-Y',strtotime('-45 days'));
+
+$year_list=@mysql_query("select year(bid_date) as the_year from bidlist where year(bid_date) > 0 group by the_year");
+echo "
+
+<script>
+function lffd () {
+	document.report_2_input.start_date.value='$awhileback'
+	document.report_2_input.end_date.value='$today'
+	}
+function setyear(year) {
+	document.report_2_input.start_date.value='01-01-' + year;
+	document.report_2_input.end_date.value='12-31-' + year;
+	}
+
+</script>
+	
+
+<a href=$pagename?mode=reports><font color=blue>Cancel</font></a><p>
+
+<form name=report_2_input>
+
+
+";
+
+while ($ylrow=@mysql_fetch_object($year_list)) {
+	echo "
+	<a href=javascript:setyear($ylrow->the_year);><font color=blue>$ylrow->the_year</font></a>&nbsp;&nbsp;&nbsp;
+	";
+	
+	}
+
+echo"
+<br>
+<input type=hidden name=mode value=reports_output_2b_pdf>
+<table border=0>
+<tr><td>
+	Start Date:
+</td><td>
+	";datebox('','report_2_input.start_date');echo"
+</td></tr>
+
+<tr><td>
+	End Date:
+</td><td>
+	";datebox('','report_2_input.end_date');echo"
+</td></tr>
+
+<tr><td>
+	&nbsp;
+</td><td>
+	<input type=button onclick=lffd() value=\"Last 45 Days\">
+</td></tr>
+
+<tr><td>
+	Dept:
+</td><td>
+	";
+	dropbox("select umcgroups_id as 'umcgroups_id[]',name from bidlist_umcgroups order by name","","5","",1,"multiple",1);
+	echo"
+</td><td>
+	Proposal&nbsp;Type:
+</td><td>
+	";
+	dropbox("select proposal_type as 'proposal_type[]',proposal_type from bidlist where proposal_type != '' group by proposal_type order by proposal_type","","5","",1,"multiple",1);
+	echo"
+</td</tr>
+
+<tr><td>
+	<font title=\"Including records normally left out of bid totals\">Every<br>Record</font>
+</td><td>
+	<input type=checkbox name=show_all_records>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+<input type=submit value=Search>
+</td></tr>
+
+
+</form>
+</table>
+";
+
+
+?>

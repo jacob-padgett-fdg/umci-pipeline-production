@@ -1,0 +1,27 @@
+<?
+require('header.phtml');
+require_once('querylib.inc');
+
+$query="select * from hr_openings where active = 'Y' order by deadline";
+
+echo "<center>";
+
+if ($private!=TRUE) {
+	list_openings_public($query);
+	} else {
+	list_openings($query);
+	}
+echo "
+
+<table border=1 cellspacing=0 cellpadding=3 width=375><tr><td>
+If none of the positions listed are suitable you may still <a href=$pagename?mode=apply><font color=blue>submit an application</font></a>. We will keep your application on file and review it when new positions are listed.
+</td></tr></table>
+<p>
+<table border=1 cellspacing=0 cellpadding=3 width=375><tr><td>
+If you have previously submitted an application you may <a href=$pagename?mode=application_find><font color=blue>click here to update or edit</font></a> your existing application. <i><b>*NOTE*</b> This option is only available to those who chose to select a PIN number for their application.
+</td></tr></table>
+<p>
+</center>
+";
+
+?>

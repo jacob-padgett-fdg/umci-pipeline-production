@@ -1,0 +1,85 @@
+<?
+require("querylib.inc");
+
+
+	$name=escapeshellcmd($name);
+	$mfg_name=escapeshellcmd($mfg_name);
+	$mfg_url=escapeshellcmd($mfg_url);
+	$rep_company=escapeshellcmd($rep_company);
+	$rep_contact=escapeshellcmd($rep_contact);
+	$rep_other_contacts=escapeshellcmd($rep_other_contacts);
+	$rep_address=escapeshellcmd($rep_address);
+	$rep_address2=escapeshellcmd($rep_address2);
+	$rep_city=escapeshellcmd($rep_city);
+	$rep_state=escapeshellcmd($rep_state);
+	$rep_zip=escapeshellcmd($rep_zip);
+	$rep_phone=escapeshellcmd($rep_phone);
+	$rep_fax=escapeshellcmd($rep_fax);
+	$rep_url=escapeshellcmd($rep_url);
+	$update_date=escapeshellcmd($update_date);
+	$new=0;
+
+if ("$product_id" != "") {
+	$product_id=escapeshellcmd($product_id);
+$query="update engineering_products set  
+	name = '$name', 
+	mfg_name = '$mfg_name', 
+	mfg_url = '$mfg_url', 
+	rep_company = '$rep_company', 
+	rep_contact = '$rep_contact', 
+	rep_other_contacts = '$rep_other_contacts', 
+	rep_address = '$rep_address', 
+	rep_address2 = '$rep_address2', 
+	rep_city = '$rep_city', 
+	rep_state = '$rep_state', 
+	rep_zip = '$rep_zip', 
+	rep_phone = '$rep_phone', 
+	rep_fax = '$rep_fax', 
+	rep_url = '$rep_url', 
+	update_date = '$update_date'
+	where product_id = '$product_id'";
+} else {
+$query="insert into engineering_products ( 
+	name,
+	mfg_name,
+	mfg_url,
+	rep_company,
+	rep_contact,
+	rep_other_contacts,
+	rep_address,
+	rep_address2,
+	rep_city,
+	rep_state,
+	rep_zip,
+	rep_phone,
+	rep_fax,
+	rep_url,
+	update_date ) values ( 
+	'$name',
+	'$mfg_name',
+	'$mfg_url',
+	'$rep_company',
+	'$rep_contact',
+	'$rep_other_contacts',
+	'$rep_address',
+	'$rep_address2',
+	'$rep_city',
+	'$rep_state',
+	'$rep_zip',
+	'$rep_phone',
+	'$rep_fax',
+	'$rep_url',
+	'$update_date' )";
+	$new=1;
+}
+
+$result=mysql_query($query);
+if (!($result)) {
+	include("product_submit_error.phtml");
+	exit;
+	} else {
+	include("product_submit_success.phtml");
+	exit;
+	}
+?>
+

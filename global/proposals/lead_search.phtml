@@ -1,0 +1,126 @@
+<?
+require('header.phtml');
+
+
+$form_mode="search";
+$dropboxmode="multiple";
+$dropboxvaradd="[]";
+$dropboxsize="3";
+
+echo "
+<table border=0 cellspacing=0 cellpadding=5><tr><td valign=top>
+<a href=$pagename?mode=main><font color=blue>Return&nbsp;to&nbsp;main&nbsp;menu</font></a><p>
+";
+
+if ($last_search_query!="") {
+	echo "<a href=$pagename?mode=proposal_search_repeat><font color=blue>Repeat&nbsp;Last&nbsp;Search</font></a><br>";
+	echo "<a href=$pagename?mode=proposal_save_search><font color=blue>Save&nbsp;Last&nbsp;Search</font></a><br>";
+	}
+echo "</td><td width=100% valign=top></td>&nbsp;<td valign=top rowspan=2 >";
+require("proposal_saved_searches_list.phtml");
+echo "</td></tr>";
+
+echo "
+<tr><td>
+<h3>$dbdescription Search</h3></td></tr></table>
+<form name=bidlist_edit method=post action=$pagename>
+Proposal/Bid #: <input type=text size=9 name=proposal_num>
+<input type=hidden name=proposal_num_radio value='='>
+<br>
+Output Mode: 
+<select name=search_output_mode>
+<option value=proposal_search_output_1>&nbsp;
+<option value=proposal_search_output_1>Minimal Info
+<option value=proposal_search_output_2>Lead/Prop Info
+<option value=proposal_search_output_3>Lead/Prop Bidlist Fmt
+<option value=proposal_search_output_4>Proposal %/$ info
+<option value=proposal_search_output_6>Lead Summary
+<option value=proposal_search_output_7>7_under construction
+</select>
+&nbsp;Bid&nbsp;Statistics:&nbsp;Y<input type=radio name=proposals_show_search_stats value='Y'>&nbsp;N<input type=radio name=proposals_show_search_stats value='N' checked>&nbsp;
+
+
+
+
+Proposal/Bid Status
+";if ((getoneb("select * from bidlist_leads_users where contacts_id = '$global_user_id'"))||($adminuser)) {
+	echo "<i><a href=\"javascript:alert('* items in status must be explicitly selected')\"><font color=blue>*</font></a></i>";
+	}echo "
+
+<select name=status[] size=3 multiple>
+<option value=\"\">Any
+<option>Active
+<option>Almost Complete
+<option>Completed
+<option>No Bid
+";
+if ((getoneb("select * from bidlist_leads_users where contacts_id = '$global_user_id'"))||($adminuser)) {
+	echo "<option value=\"Lead\">Lead *
+	<option value=\"Dead Lead\">Dead Lead *
+	";
+	}
+echo "
+</select>
+
+<input type=hidden name=status_radio value=\"=\">
+<input type=hidden name=mode value=proposal_search_results>
+
+Proposal/Bid Initiator
+<input type=hidden name=creator_radio value=\"=\">
+";
+contactbox("select contacts_id as creator,display_name from bidlist,contacts where creator = contacts.contacts_id group by contacts.contacts_id order by alphasort");
+
+include("proposal_edit_form_required.phtml");
+echo "<table border=0 width=100%><tr><td valign=top>";
+include("proposal_edit_form_bid_results_search.phtml");
+include("proposal_edit_form_bidding_to_search.phtml");
+echo "</td><td valign=top>";
+include("proposal_edit_form_misc_search.phtml");echo "
+</td><td>";
+include("proposal_edit_form_estimating_assignments.phtml");
+echo "</td></tr></table>
+
+
+Sorted by: 
+<select name=query_order_by_1>
+<option value=''> </option>
+<option value='bid_date'>Bid Date</option>
+<option value='bid_time'>Bid Time</option>
+<option value='proposal_num'>Proposal/Bid #</option>
+<option value='status'>Status</option>
+<option value='umcgroups_id'>Group</option>
+<option value='start_date'>Start Date</option>
+<option value='complete_date'>End Date</option>
+<option value='probability'>Propbability</option>
+<option value='to_lead'>Lead ID</option>
+<option value='bld_square_feet'>Square Feet</option>
+<option value='contract_type'>Contract Type</option>
+</select>
+	A<input type=radio name=query_order_by_1_direction value='' checked>
+	D<input type=radio name=query_order_by_1_direction value='desc'>
+
+then by: 
+<select name=query_order_by_2>
+<option value=''> </option>
+<option value='bid_date'>Bid Date</option>
+<option value='bid_time'>Bid Time</option>
+<option value='proposal_num'>Proposal/Bid #</option>
+<option value='status'>Status</option>
+<option value='umcgroups_id'>Group</option>
+<option value='start_date'>Start Date</option>
+<option value='complete_date'>End Date</option>
+<option value='probability'>Propbability</option>
+<option value='to_lead'>Lead ID</option>
+<option value='bld_square_feet'>Square Feet</option>
+<option value='contract_type'>Contract Type</option>
+</select>
+	A<input type=radio name=query_order_by_2_direction value='' checked>
+	D<input type=radio name=query_order_by_2_direction value='desc'>
+
+
+<p><input type=submit value=Search><input type=reset value=Reset>
+</form>";
+
+
+
+?>

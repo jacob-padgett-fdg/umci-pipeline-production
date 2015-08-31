@@ -1,0 +1,16 @@
+<?
+
+$query="
+
+select bidlist.bidlist_id as bidlist_id from bidlist
+left join bidlist_bid_projtypes using (bidlist_id)
+left join bidlist_bidding_to using (bidlist_id)
+left join bidlist_results using (bidlist_id)
+where project_type_id = '21' or project_type_id = '37' or project_type_id = '38'
+group by bidlist_id
+";
+
+echo "<h2><font color=red>Warning: This report is not complete. This report is only showing Traxx information, and is not pulling information from the list of actual jobs. Once the jobs are linked to the traxx tracking data, this report will need to be modified to include the information from the job database.</font></h2>";
+proposal_search_output_6($query,"Restaurant/Remodel/Renovations");
+
+?>

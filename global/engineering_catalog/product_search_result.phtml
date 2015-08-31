@@ -1,0 +1,27 @@
+<?
+require("header.phtml");
+include("querylib.inc");
+session_register('last_search_value');
+if ("$search_text" != "") {
+	$last_search_value=$search_text;
+	} else {
+	$search_text=$last_search_value;
+	}
+if ("$search_text" == "") {
+	$search_text="University Mechanical";
+	}
+
+echo "
+<form name=blahblahblah method=post action=$pagename>
+<input type=hidden name=mode value=product_edit>
+";
+clicktable("select product_id,mfg_name as 'Manufacturer' ,name as 'Products/Description' from engineering_products where name like '%$search_text%' or mfg_name like '%$search_text%'","#444444","1"); 
+
+echo "
+</form>
+
+
+";
+
+require("footer.phtml");
+?>

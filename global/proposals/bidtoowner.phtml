@@ -1,0 +1,19 @@
+<?
+$bidlist_id=escapeshellcmd($bidlist_id);
+$bid_info=getone("select * from bidlist where bidlist_id = '$bidlist_id'");
+
+if (getoneb("select * from bidlist_bidding_to where bidlist_id = '$bid_info->bidlist_id' and general_id = '$bid_info->owner'")) {
+	$query="delete from bidlist_bidding_to where bidlist_id = '$bid_info->bidlist_id' and general_id = '$bid_info->owner'";
+	} else {
+	$query="insert into bidlist_bidding_to set bidlist_id = '$bidlist_id', general_id = '$bid_info->owner', general_contact = '$bid_info->owner_contact_id'";
+	}
+
+@mysql_query($query);
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+?>

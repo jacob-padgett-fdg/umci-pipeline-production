@@ -1,0 +1,71 @@
+<?
+require('querylib.inc');
+require('header.phtml');
+$today=date('m-d-Y');
+$today_mysql=date('Y-m-d');
+
+require('main_selectbar.phtml');
+
+
+$traxx_main_menu_tab='main_joblist';
+
+echo "<table border=1 cellspacing=0 cellpadding=0 width=100%><tr><td>";
+
+$query="select * from jobinfo where active = 'Y' and ( project_manager_id = '$global_user_id' or project_sponsor_id = '$global_user_id' or gc_project_manager_id = '$global_user_id' or cust_id = '$global_user_id' or general_id = '$global_user_id' or owner_id = '$global_user_id' or architect_id = '$global_user_id' or superintendent_id = '$global_user_id' or mech_engineer = '$global_user_id' or proj_engineer = '$global_user_id' or estimator = '$global_user_id' or contract_admin = '$global_user_id' ) and contract_num < 'AA000' order by contract_num desc limit 50";
+
+echo "
+<tr><td colspan=4 width=100%>
+	<table border=1 cellpadding=3 cellspacing=0 width=100%><tr><td width=100% bgcolor=#dddddd align=center><b><font size=+1>My Active Jobs</font></b></td></tr></table>
+</td></tr>
+
+<tr><td colspan=4 valign=top>
+<table border=1 cellspacing=0 cellpadding=0 width=100%>
+	<tr><td>";
+	
+	job_list_output_format_1($query);
+	echo "</td></tr>
+</table>
+</td></tr>
+
+</table>
+</td></tr>
+";
+
+
+
+if ($proposals_job_view_limit=="") {
+	session_register('proposals_job_view_limit');
+	$proposals_job_view_limit="20";
+	}
+if ($job_view_limit!="") {
+	$proposals_job_view_limit=clean_int($job_view_limit);
+	}
+session_register('job_search_text');
+if ($clearjob=="Y") $job_search_text=escapeshellcmd($proposals_job_search_text);
+
+
+
+
+if ($job_search_text != "") $job_search_text=escapeshellcmd($job_search_text);
+
+
+
+echo "
+<tr><td colspan=4 width=100%>
+	<table border=1 cellpadding=3 cellspacing=0 width=100%><tr><td width=100% bgcolor=#dddddd align=center><b><font size=+1>
+	<form name=job_search method=post action=$pagename>
+	Last&nbsp;<input type=hidden name=mode value=main_joblist>
+	<input align=right type=text name=job_view_limit size=3 value=$proposals_job_view_limit onchange=submit()>
+	<input type=hidden name=clearjob value=Y>
+	&nbsp; Jobs Containing: <input type=text size=10 name=proposals_job_search_text onfocus=document.text_field_focus=1 onblur=document.text_field_focus=0 value=\"$job_search_text\" onchange=submit()></font></b></td></tr></table>
+	</form>
+</td></tr>
+<tr><td>
+";
+
+
+$query="select * from jobinfo where active = 'Y' and contract_num < 'AA000' and job_name like '%$job_search_text%' order by contract_num desc limit $proposals_job_view_limit";
+job_list_output_format_1($query);
+
+echo "</td></tr></table></center>";
+?>

@@ -1,0 +1,21 @@
+<?
+require('header.phtml');
+
+echo "
+<center><font size=+2><b>Engineering Catalog</b></font></center><hr>
+<table border=0 width=40%><tr><td><i>
+If you notice anything in here that is incorrect, please fix it. Please only change rep information from the rep list, and manufacturer information from the manufacturer list. Any changes made on a product information page, only apply to the one item/product.
+</i></td></tr><tr><td>&nbsp;</td></tr></table>
+<a href=$pagename?mode=search_simple><font color=blue>Quick Search</font></a><p>
+<a href=$pagename?mode=search><font color=blue>Search</font></a><p>
+<a href=$pagename?mode=list_by_rep><font color=blue>List Rep's</font></a><p>
+<a href=$pagename?mode=list_by_mfg><font color=blue>List Manufacturer's</font></a><p>
+";
+
+require('footer.phtml');
+
+
+
+
+
+?>

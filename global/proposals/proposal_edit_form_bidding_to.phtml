@@ -1,0 +1,104 @@
+<?
+echo"
+
+<tr><td><b><font color=red>General(s)</font></b>:</td><td>";contactsbox("select * from contacts where is_general = 'Y'","",'general_to_add',"opener.apply_changes()",128);echo"</td></tr>
+
+<table border=1 cellspacing=0 cellpadding=2 width=100%>
+	<tr><td bgcolor=\"#dddddd\" width=100%>
+		<b style=\"color: black\">General(s):</b>
+	</td><td bgcolor=\"#dddddd\">";
+		$bto_text="Add&nbsp;the&nbsp;owner";
+		if (getoneb("select * from bidlist_bidding_to where bidlist_id = '$bid_info->bidlist_id' and general_id = '$bid_info->owner' limit 1")) $bto_text="Remove&nbsp;owner";
+		
+		if ($bid_info->owner>=1) {
+			echo "<a href=javascript:bidtoowner(); style=\"color: black; font-weight: bold;\">$bto_text</a>";
+			} else {
+			echo "<a href=\"javascript:alert('You must specify an owner and save (apply) changes first');\" style=\"color: black; font-weight: bold;\">$bto_text</a>";
+			}
+
+
+		echo"
+	</td></tr></table>";
+
+//$bto_text="Bid to owner";
+//if (getoneb("select * from bidlist_bidding_to where bidlist_id = '$bid_info->bidlist_id' and general_id = '$bid_info->owner' limit 1")) $bto_text="Cancel Bid to owner";
+//
+//if ($bid_info->owner>=1) {
+//	echo "<a href=javascript:bidtoowner(); style=\"color: white; font-weight: bold;\">$bto_text</a>";
+//	} else {
+//	echo "<a href=\"javascript:alert('You must specify an owner and save (apply) changes first');\" style=\"color: white; font-weight: bold;\">$bto_text</a>";
+//	}
+
+echo "
+
+<script>
+function add_bidding_to(bidding_to_id) {
+	open('$pagename?mode=bidding_to_add&bidlist_id=$bidlist_id&bidding_to_id=' + bidding_to_id,'bidding_to_win','width=500,height=500,scrollbars=yes');
+	}
+function mark_low(bidding_to_id) {
+	open('$pagename?mode=bidding_to_mark_low&bidding_to_id=' + bidding_to_id,'bidtomarklow','width=500,height=500');
+	}
+</script>";
+
+if ($bid_info->bidding_to_count > 0) {
+
+$gc_query="select * from contacts,bidlist_bidding_to where contacts_id = bidlist_bidding_to.general_id and bidlist_id = '$bid_info->bidlist_id' order by low_bid desc,alphasort";
+$res=@mysql_query($gc_query);
+
+echo "
+<input type=hidden name=proposal_form_bidding_to value=true>
+<table border=1 cellpadding=0 cellspacing=0 width=100% class=\"biddingto\">
+<tr><td>
+<table border=1 cellspacing=0 cellpadding=3 width=100%>
+	
+	<tr><th>
+		Name
+	</th><th>
+		Contact
+	</th><th>
+		Phone
+	</th><th>
+		Email
+	</th><th>
+		Fax
+	</th><th>
+		Awarded (GC)
+	</th></tr>
+";
+	
+	while($gcrow=@mysql_fetch_object($res)) {
+		$btgencon=getoneb("select * from contacts where contacts_id = '$gcrow->general_contact'");
+		if ($is_awarded_bidder=getoneb("select * from bidlist_bidding_to where bidding_to_id = '$gcrow->bidding_to_id' and low_bid = 'Y'")) $row_bgcolor="#aaddaa";
+		else $row_bgcolor="#dddddd";
+		echo "
+		<tr><td bgcolor=$row_bgcolor>
+			<a href=javascript:add_bidding_to('$gcrow->bidding_to_id')>$gcrow->display_name</a>
+		</td><td bgcolor=$row_bgcolor>
+			$btgencon->display_name&nbsp;
+		</td><td bgcolor=$row_bgcolor>
+			$btgencon->phone&nbsp;
+		</td><td bgcolor=$row_bgcolor>
+			<a href=mailto:$btgencon->email>$btgencon->email</a>&nbsp;
+		</td><td bgcolor=$row_bgcolor>
+			$btgencon->phone_fax&nbsp;
+		</td><td bgcolor=$row_bgcolor>
+			";
+		if ($is_awarded_bidder)
+			echo "<b><a href=javascript:mark_low('$gcrow->bidding_to_id')><font color=green>Yes</font></a></b>";
+			else echo "<a href=javascript:mark_low('$gcrow->bidding_to_id')>No</a>";
+			echo"
+		</td></tr>
+		";
+		}
+	
+
+	echo"
+
+	</table>
+	</td></tr>
+	</table>
+
+";
+}
+?>
+

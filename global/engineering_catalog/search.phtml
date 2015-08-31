@@ -1,0 +1,120 @@
+<?
+require('header.phtml');
+echo "
+<form name=generic_search method=post action=$pagename>
+<input type=hidden name=mode value=search_submit>
+
+<a href=$pagename?mode=main><font color=blue>Return to main</font></a><br>
+<h3>Enter Your Search Criteria</h3><hr>
+
+<table border=0>
+<tr><td>
+	Product or Trade Name
+</td><td>
+	<input type=text name=name>
+</td></tr>
+
+<tr><td>
+	Manufacturer
+</td><td>
+	<input type=text name=mfg_name>
+</td></tr>
+
+<tr><td>
+	Rep Company
+</td><td>
+	<input type=text name=rep_company>
+</td></tr>
+
+<tr><td>
+	Rep Contact
+</td><td>
+	<input type=text name=rep_contact>
+</td></tr>
+
+<tr><td>
+	Rep Other Contacts
+</td><td>
+	<input type=text name=rep_other_contacts>
+</td></tr>
+
+<tr><td>
+	Rep Address
+</td><td>
+	<input type=text name=rep_address>
+</td></tr>
+
+<tr><td>
+	Rep Address (cont)
+</td><td>
+	<input type=text name=rep_addres2>
+</td></tr>
+
+<tr><td>
+	Rep City
+</td><td>
+	<input type=text name=rep_city
+</td></tr>
+
+<tr><td>
+	Rep State
+</td><td>
+	<input type=text name=rep_state>
+</td></tr>
+
+<tr><td>
+	Rep Zip
+</td><td>
+	<input type=text name=rep_zip>
+</td></tr>
+
+<tr><td> 
+	Order by <select name=query_order_by_1> 
+	<option value=''> </option>
+	<option value='name'>Product/Trade Name</option> 
+	<option value='mfg_name'>Mfg Name</option> 
+	<option value='rep_company'>Rep Company</option> 
+	<option value='rep_contact'>Rep Contact</option>
+	<option value='rep_other_contacts'>Rep Other Contacts</option>
+	<option value='rep_address'>Rep Address</option>
+	<option value='rep_address2'>Rep Address (cont)</option>
+	<option value='rep_city'>Rep City</option>
+	<option value='rep_zip'>Rep Zip</option>
+	</select>	
+</td><td>
+	Order by <select name=query_order_by_2> 
+	<option value=''> </option>
+	<option value='name'>Product/Trade Name</option> 
+	<option value='mfg_name'>Mfg Name</option> 
+	<option value='rep_company'>Rep Company</option> 
+	<option value='rep_contact'>Rep Contact</option>
+	<option value='rep_other_contacts'>Rep Other Contacts</option>
+	<option value='rep_address'>Rep Address</option>
+	<option value='rep_address2'>Rep Address (cont)</option>
+	<option value='rep_city'>Rep City</option>
+	<option value='rep_zip'>Rep Zip</option>
+	</select>	
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Search>
+</td></tr>
+
+
+
+
+
+
+
+
+
+</form>
+";
+
+
+
+
+
+
+
+?>

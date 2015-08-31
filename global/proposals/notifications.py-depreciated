@@ -1,0 +1,96 @@
+#!/usr/bin/python
+
+#----------------------------------------------------------
+#
+#	Watches the notification table for the
+#	problem resolution database, and mails
+#	notifications to those that need them.
+#
+#----------------------------------------------------------
+
+import MySQLdb
+import os
+import string
+import sys
+import re
+import time
+
+sqlhost="reddwarf"
+sqluser="jeffb"
+sqlpass="bongsrolinge"
+sqldata="global"
+
+#
+#	E-mail Message Stuff
+#
+mailprettyname="BIDLIST"
+mailreturn="webmaster@umci.com"
+
+mailsubject="UMC Bidlist Change Notification"
+
+mailmessage_part1='''
+<center><font size=+2>University Mechanical Bidlist Update</font></center><p>
+
+The University Mechanical Bidlist has been updated (something was added since I mailed you last). To view the changes you can follow the link below, or browse to the bidlist from the UMC Insider link on our homepage.
+<hr>
+
+
+<a href=http://pipeline.umci.com/intra/bidlist.html>UMC Bidlist</a>
+
+<p>
+'''
+mailmessage_part3='''
+If you have any quesitons, please send and email to ''' + mailreturn + '''.
+
+'''
+
+# This had better be sendmail, or something *just* like it..
+# (and you better be a trusted user)
+sendmail="/usr/sbin/sendmail"
+
+def mail_user(address,message_bidlist):
+	mimetag='''------------=_3E260B33.3708D0F9\r\n'''
+	mailcommand=sendmail + " -f " + mailreturn + " -F \"" + mailprettyname + "\" -- " + address
+	mailglomhead="From: " + mailprettyname + " <" + mailreturn + ">\r\nTo: " + address + "\r\n" + "Subject: " + mailsubject + "\r\n"
+	mailglomhead=mailglomhead + '''Content-Type: text/html; charset=utf-8\r\n'''
+	mailglomhead=mailglomhead + '''Content-Description: Automatic notification from UMC Bidlist System\r\n'''
+	mailglomhead=mailglomhead + '''Content-Disposition: inline\r\n'''
+	mailglomhead=mailglomhead + '''Content-Transfer-Encoding: 8bit\r\n'''
+	mailpipe=os.popen(mailcommand,'w')
+	mailpipe.write(mailglomhead)
+	mailpipe.write(mailmessage_part1)
+	mailpipe.write(message_bidlist)
+	mailpipe.write(mailmessage_part3)
+	mailpipe.close()
+
+globaldb=MySQLdb.connect(host=sqlhost,user=sqluser,passwd=sqlpass,db=sqldata)
+
+bidlist_check=globaldb.cursor(MySQLdb.cursors.DictCursor)
+bidlist_check.execute("select * from bidlist where notified = 'N' and show_in_bidlist = 'Y' limit 1")
+
+if (bidlist_check.rowcount==1):
+	bidlist_check.execute("select * from bidlist where notified = 'N' and show_in_bidlist = 'Y'")
+	message_bidlist="""<p>Summary of changed bids:<p>
+	"""
+	for changed_bid in bidlist_check.fetchall():
+		bid_id_int=changed_bid['proposal_num']
+		bid_id_string='%(bid_id_int)d' % vars()
+		if (changed_bid['status']=="Active"):
+			message_bidlist=message_bidlist + bid_id_string + """ changed<br>
+"""
+		else:
+			message_bidlist=message_bidlist + bid_id_string + """ <i>(no longer active)</i><br>
+"""
+	message_bidlist=message_bidlist + "<p>"	
+	user_list=globaldb.cursor(MySQLdb.cursors.DictCursor)
+	user_list.execute("select * from contacts,bidlist_notifications where bidlist_notifications.contacts_id = contacts.contacts_id")
+	people=user_list.fetchall()
+	for person in people:
+		mail_user(person['email'],message_bidlist)
+
+bidlist_clear=globaldb.cursor(MySQLdb.cursors.DictCursor)
+bidlist_clear.execute("update bidlist set notified_recent = 'N' where show_in_bidlist = 'Y'")
+bidlist_clear.execute("update bidlist set notified_recent = 'Y' where notified = 'N' and show_in_bidlist = 'Y'")
+bidlist_clear.execute("update bidlist set notified = 'Y' where show_in_bidlist = 'Y'")
+
+sys.exit()

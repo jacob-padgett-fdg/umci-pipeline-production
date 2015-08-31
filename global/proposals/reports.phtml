@@ -1,0 +1,59 @@
+<?
+
+function rep_button($rep_id,$text,$override_url="") {
+	$text=str_pad($text,32," ",STR_PAD_BOTH);
+	echo "
+	<form name=rp1 method=get action=\"$override_url\">
+	<input type=hidden name=mode value=\"reports_output_$rep_id\">
+	<input type=submit value=\"$text\" style=\"font: 900 11px 'Courier New'\">
+	</form>";
+	}
+
+require("header.phtml");
+echo "
+<a href=$pagename?mode=main><font color=blue>Return to main menu</font></a>
+<h2>Reports</h2><hr>
+
+";rep_button(11,"Data Exceptions Report");echo"
+
+";
+rep_button(10,"Hit Rates by Group");
+echo"
+
+";
+rep_button(1,"Proposal Log by Group");
+echo"
+
+";
+rep_button(2,"Bid Activity - $ & Qty");
+echo"
+
+";
+//rep_button(3,"Restaurant Jobs");
+echo"
+
+";
+rep_button(6,"Followup Report");
+echo"
+";
+rep_button(9,"Job Resource Report");
+echo"
+
+
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td bgcolor=#dddddd align=center><b>Future Resources Reports</b></td></tr>
+<tr><td>
+<a href=$pagename?mode=reports_output_incomplete_job_data><font color=blue>
+Incomplete Job Data List
+</font></a>
+
+
+
+
+</td></tr>
+</table>
+
+</body></html>
+";
+
+?>

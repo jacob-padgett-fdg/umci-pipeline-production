@@ -1,0 +1,11 @@
+<?
+$bidlist_id=escapeshellcmd($bidlist_id);
+$project_type_id=escapeshellcmd($project_type_id);
+$query="insert into bidlist_bid_projtypes set project_type_id = '$project_type_id', bidlist_id = '$bidlist_id'";
+//echo "$query";
+if ( $project_type_id > 0 ) @mysql_query($query);
+forward("project_types_edit&bidlist_id=$bidlist_id");
+
+
+
+?>

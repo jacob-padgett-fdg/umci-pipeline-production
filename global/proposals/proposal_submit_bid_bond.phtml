@@ -1,0 +1,16 @@
+<?
+
+$bid_bond=addslashes($bid_bond);
+$bid_bond_requested=addslashes($bid_bond_requested);
+$bid_bond_returned=addslashes($bid_bond_returned);
+$bid_bond_remind_contact=addslashes($bid_bond_remind_contact);
+
+$query_data=$query_data . "$data_seperator
+bid_bond = '$bid_bond',
+bid_bond_requested = '$bid_bond_requested',
+bid_bond_returned = '$bid_bond_returned',
+bid_bond_remind_contact = '$bid_bond_remind_contact'";
+
+$data_seperator=",";
+
+?>

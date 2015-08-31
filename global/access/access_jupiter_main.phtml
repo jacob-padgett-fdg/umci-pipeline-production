@@ -1,0 +1,61 @@
+<?
+require('header.phtml');
+//tabledump("select * from access_jupiter_devices");
+echo "
+<a href=$pagename?mode=main><font color=blue>Cancel</font></a><p>
+<a href=$pagename?mode=access_jupiter_share_edit><font color=blue>Create New Share</font></a><p>
+
+<table border=1 cellspacing=0 cellpadding=2>
+<tr bgcolor=#dddddd><td align=center colspan=2><font size=+2><b>Audit Permissions</b></font></td></tr>
+<form name=audit_user method=post action=$pagename>
+	<input type=hidden name=mode value=audit_user_permissions>
+<tr><td>
+	<b>User:</b>
+</td><td>
+	";contactsbox("select * from contacts where umc_emp = 'Y' and current = 'Y'","","contacts_id");echo"
+</td></tr>
+
+<tr><td>
+	<b>Verbose:</b>
+</td><td>
+	<input type=checkbox name=verbose>
+</td></tr>
+
+<tr><td>
+	<b>Noisy:</b>
+</td><td>
+	<input type=checkbox name=noisy>
+</td><td>
+	
+
+<tr><td colspan=2 align=right>
+	<input type=submit>
+</td></tr>
+
+</table>
+";
+
+echo"
+</form>
+<h2>Available Shares</h2><hr>
+";
+$res=@mysql_query("select * from access_jupiter_sharelist order by share_path");
+
+echo "<table border=1 cellspacing=0 cellpadding=0><tr><td><table border=0>
+<tr><td bgcolor=#dddddd><b>Name</b></td><td bgcolor=#dddddd><b>Owner</b></td><td bgcolor=#dddddd>&nbsp;</td><td bgcolor=#dddddd>&nbsp;</td></tr>
+";
+$formcount=0;
+while ($row=@mysql_fetch_object($res)) {
+	echo "<tr><td>
+			<a href=$pagename?mode=access_jupiter_share_show&sharelist_id=$row->sharelist_id><font color=blue>$row->share_path</font></a>
+		</td><form name=formnum$formcount><td>
+			";contactsbox("select * from contacts where contacts_id = '$row->share_owner'",$row->share_owner,"share_owner","",1);echo"
+		</td></form><td>
+			<a href=$pagename?mode=access_jupiter_share_edit&sharelist_id=$row->sharelist_id><font color=blue><i>Edit</i></font></a>
+		</td></form><td>
+			<a href=$pagename?mode=audit_share_permissions&sharelist_id=$row->sharelist_id><font color=blue><i>Audit Permissions</i></font></a>
+		</td></tr>";
+	$formcount++;
+	}
+echo "</table></td></tr></table>";
+?>

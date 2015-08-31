@@ -1,0 +1,19 @@
+<?
+
+$lead_prime_contact=addslashes($lead_prime_contact);
+$lead_source=addslashes($lead_source);
+$lead_next_activity=vali_date($lead_next_activity);
+$lead_ranking=addslashes($lead_ranking);
+$lead_confidental=addslashes($lead_confidential);
+
+
+$query_data=$query_data . "$data_seperator
+lead_prime_contact = '$lead_prime_contact',
+lead_source = '$lead_source',
+lead_next_activity = '$lead_next_activity',
+lead_ranking = '$lead_ranking',
+lead_confidential = '$lead_confidential'";
+
+$data_seperator=",";
+
+?>

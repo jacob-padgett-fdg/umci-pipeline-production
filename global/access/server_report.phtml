@@ -1,0 +1,104 @@
+<?
+require('header.phtml');
+
+
+echo "
+<a href=$pagename?mode=server_list><font color=blue>Done</font></a><br>
+<h2>Server Information Reporting</h2>
+<form name=server_report_form method=post action=\"$pagename\">
+<input type=hidden name=mode value=server_report_output>
+<font color=red>*</font>=<i>required</i>
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td>
+	Report Type
+</td><td>
+	<select name=report_type>
+	<option></option>
+	<option value=full>Full Detail</option>
+	<option value=medium>Medium Detail</option>
+	<option value=terse>Minimal Detail</option>
+	</select><font color=red>*</font>
+</td></tr>
+
+<tr><td>
+	Report Format
+</td><td>
+	<select name=report_format>
+	<option></option>
+	<option value=html>HTML</option>
+	</select><font color=red>*</font>
+</td></tr>
+
+<tr><td>
+	In Production
+</td><td>
+	<select name=in_production>
+	<option></option>
+	<option selected>Y</option>
+	<option>N</option>
+	<option value=\"\">?</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Job Site Servers
+</td><td>
+	<select name=job_site_server>
+	<option></option>
+	<option>Y</option>
+	<option>N</option>
+	<option value=\"\">?</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Active
+</td><td>
+	<select name=active>
+	<option></option>
+	<option selected>Y</option>
+	<option>N</option>
+	<option value=\"\">?</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Backups Required
+</td><td>
+	<select name=report_backups>
+	<option></option>
+	<option>Y</option>
+	<option>N</option>
+	<option value=\"\">?</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	Log Entries
+</td><td>
+	<input type=text size=3 name=log_entry_count value=10> most recent entries
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=submit value=Search>
+</td></tr>
+
+</table>
+
+
+
+
+</form>
+
+
+
+";
+
+
+
+
+
+
+
+
+?>

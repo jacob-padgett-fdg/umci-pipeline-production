@@ -1,0 +1,71 @@
+<?
+
+if (($search_active_list=="")||($search_active_list=="Y")) {
+	$search_active_list="Y";
+	$added=" and active = 'Y' ";
+	}
+
+if ($search_text!="") {
+	$search_text=escapeshellcmd($search_text);
+	$query="select * from jobinfo where job_name like '%$search_text%' $added order by length(contract_num), contract_num desc";
+	} else {
+	$query="select * from jobinfo where 1 = 1 $added order by length(contract_num), contract_num desc";
+	}
+
+echo "
+<form>
+<table border=0>
+<input type=hidden name=mode value=job_selection_win>
+<tr><td>
+	Search Text:
+</td><td>
+	<input type=text name=search_text value=\"$search_text\">
+</td><td rowspan=2 valign=bottom>
+	<input type=submit value=Search>
+</td></tr>
+
+<tr><td>
+	 Active only
+</td><td>
+	<select name=search_active_list><option>$search_active_list</option><option>Y</option><option>N</option></select>	
+</td></tr>
+</table>
+</form>
+";
+
+$res=@mysql_query($query);
+
+echo "
+<script>
+function select_job(jobinfo_id) {
+	opener.document.bidlist_edit.jobinfo_id.value=jobinfo_id;
+	opener.apply_changes();
+	self.close();
+	}
+</script>
+
+<a href=javascript:select_job('')><font color=blue>No Job Associated</font></a><br>
+
+<table border=1 cellspacing=0 cellpadding=4>
+<tr bgcolor=#eeeeee><td>
+	<b>Job Num</b>
+</td><td>
+	<b>Description</b>
+</td></tr>
+";
+
+while ($row=@mysql_fetch_object($res)) {
+
+if ($row->contract_num=="") $row->contract_num="&nbsp;";
+echo "
+<tr><td>
+	<a href=javascript:select_job($row->jobinfo_id)><font color=blue>$row->contract_num</font></a>
+</td><td>
+	$row->job_name
+</td></tr>
+";
+
+}
+
+echo "</table>";
+?>

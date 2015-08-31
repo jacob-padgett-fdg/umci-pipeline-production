@@ -1,0 +1,22 @@
+<?
+if ($global_user->pref_proposals_show_advanced_ownerbox=='Y') {
+	$message="Well, it's not marked poison... I'll take a sip.";
+	$setting="N";
+	} else {
+	$message="Maybe just a bite...";
+	$setting="Y";
+	}
+
+require('header.phtml');
+echo "<b><center>$message</center></b>";
+$query="update contacts set pref_proposals_show_advanced_ownerbox = '$setting' where contacts_id = '$global_user_id'";
+
+@mysql_query($query);
+echo "
+<script>
+opener.apply_changes();
+self.close();
+</script>
+";
+
+?>

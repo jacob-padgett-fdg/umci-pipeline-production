@@ -1,0 +1,201 @@
+<?
+$today=date('m/d/Y g:ia');
+
+
+
+function lead_header_pdf($page_info) {
+	pdf_setcolor($page_info->pdf,"fill","gray","1");
+	$page_info=pdf_font($page_info,"Times-Bold");
+	
+//	$page_info=pdf_font($page_info,"Courier-Bold");
+	$fontid=pdf_get_value($page_info->pdf,'font');
+	$descender=pdf_get_value($page_info->pdf,'descender',$fontid);
+	$descenderpts=$descender * $page_info->fontsize;
+	
+	pdf_rect($page_info->pdf,
+		$page_info->sidemargins,
+		($page_info->currenty + ($descenderpts*3)),
+		($page_info->startx - ($page_info->sidemargins * 2)),
+		(2 * $page_info->fontsize));
+	pdf_closepath_fill_stroke($page_info->pdf);
+	pdf_setcolor($page_info->pdf,"fill","gray","0");
+	
+	$page_info=pdf_set_col($page_info,$page_info->al_x_lead_id);
+	pdf_show($page_info->pdf,"  #");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_project);
+	pdf_show($page_info->pdf,"Project Name");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_lead_next_activity);
+	pdf_show($page_info->pdf,"Next Actn");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_lead_ranking);
+	pdf_show($page_info->pdf,"Rank");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_to_lead_initials);
+	pdf_show($page_info->pdf,"Lead");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_start_date);
+	pdf_show($page_info->pdf,"Start");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_project_type_list);
+	pdf_show($page_info->pdf,"Project Type");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_approx_total_budget);
+	pdf_show($page_info->pdf,"Total Value");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_rom);
+	pdf_show($page_info->pdf,"Mech Value");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_gc_text_list);
+	pdf_show($page_info->pdf,"GC");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_lead_lead_notes);
+	pdf_show($page_info->pdf,"Notes");
+
+	$page_info=pdf_font($page_info);
+	$page_info=pdf_crlf($page_info,"","1.3");
+	return ($page_info);
+	}
+
+
+
+function lead_row_pdf($page_info,$bidlist_id) {
+	$bid_info=load_proposal_info($bidlist_id);
+	$date_p1=ereg_replace('-[^-]*$','',$bid_info->start_date);
+	$date_p2=ereg_replace('^.*-','',$bid_info->start_date);
+	$date_p2=ereg_replace('^20','',$date_p2);
+	
+	$page_info=pdf_font($page_info,"Times-Roman");
+	$page_info=pdf_fontsize($page_info,7);
+	
+	$page_info=pdf_set_col($page_info,$page_info->al_x_lead_id);
+	pdf_show($page_info->pdf,"$bid_info->bidlist_id");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_project);
+	pdf_show($page_info->pdf,"$bid_info->project");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_lead_next_activity);
+	pdf_show($page_info->pdf,"$bid_info->lead_next_activity");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_lead_ranking);
+	pdf_show($page_info->pdf,"$bid_info->lead_ranking");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_to_lead_initials);
+	pdf_show($page_info->pdf,"$bid_info->creator_initials");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_start_date);
+	pdf_show($page_info->pdf,"$date_p1-$date_p2");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_approx_total_budget);
+	pdf_show($page_info->pdf,"$bid_info->approx_total_budget");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_rom);
+	pdf_show($page_info->pdf,"$bid_info->rom");
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_gc_text_list);
+	pdf_show_truncated($page_info,"$bid_info->gc_text_list",$page_info->al_x_lead_lead_notes - $page_info->al_x_gap);
+
+	$page_info=pdf_set_col($page_info,$page_info->al_x_lead_lead_notes);
+	pdf_show($page_info->pdf,"$bid_info->lead_lead_notes");
+
+
+	$crlf_already=FALSE;
+	$page_info=pdf_set_col($page_info,$page_info->al_x_project_type_list);
+	$bid_info->project_type_list=pdf_show_truncated($page_info,"$bid_info->project_type_list",$page_info->al_x_approx_total_budget - $page_info->al_x_gap);
+
+	while($bid_info->project_type_list!="") {
+		$page_info=pdf_crlf($page_info,"","1.3");
+		$crlf_already=TRUE;
+		$page_info=pdf_set_col($page_info,$page_info->al_x_project_type_list);
+		$bid_info->project_type_list=pdf_show_truncated($page_info,"$bid_info->project_type_list",$page_info->al_x_approx_total_budget - $page_info->al_x_gap);
+		}
+
+
+
+
+
+
+
+
+	$page_info=pdf_fontsize($page_info);
+	$page_info=pdf_font($page_info);
+	//if (!($crlf_already)) $page_info=pdf_crlf($page_info,"","1.3");
+	$page_info=pdf_crlf($page_info,"","1.3");
+	return ($page_info);
+	}
+
+
+
+
+
+require_once('pdf_lib2.inc');
+require_once('querylib.inc');
+//$page_info=pdf_page_info_create($global_user->pref_paper_size);
+$page_info=pdf_page_info_create("letter-landscape");
+$page_info=pdf_start($page_info);
+
+$default_title="Upcoming Projects";
+if ($title!="") {
+	$title=escapeshellcmd($title);
+	$default_title="$title";
+	}
+
+
+$page_info->header_text="$default_title                              ($today)";
+$page_info=pdf_new_page($page_info);
+$page_info->header_text="$default_title                ($today)";
+
+$page_info=pdf_font($page_info,"Courier");
+$page_info=pdf_fontsize($page_info,9);
+
+$page_info->al_x_gap=5;
+$page_info->al_x_lead_id=$page_info->sidemargins;
+$page_info->al_x_project=$page_info->al_x_lead_id + 25;
+$page_info->al_x_lead_next_activity=$page_info->al_x_project + 160;
+$page_info->al_x_lead_ranking=$page_info->al_x_lead_next_activity + 48;
+$page_info->al_x_to_lead_initials=$page_info->al_x_lead_ranking + 25;
+$page_info->al_x_start_date=$page_info->al_x_to_lead_initials + 25;
+$page_info->al_x_project_type_list=$page_info->al_x_start_date + 45;
+$page_info->al_x_approx_total_budget=$page_info->al_x_project_type_list + 70;
+$page_info->al_x_rom=$page_info->al_x_approx_total_budget + 70;
+$page_info->al_x_gc_text_list=$page_info->al_x_rom + 70;
+$page_info->al_x_lead_lead_notes=$page_info->al_x_gc_text_list + 35;
+
+
+
+
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//	Start printing the actual bid information
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+
+$query="
+select bidlist.bidlist_id as bidlist_id from bidlist
+left join bidlist_bid_projtypes using (bidlist_id)
+left join bidlist_bidding_to using (bidlist_id)
+left join bidlist_results using (bidlist_id)
+where status = 'Lead'
+group by bidlist_id
+order by lead_ranking,start_date
+";
+
+
+//tabledump($query);exit;
+
+$res=@mysql_query($query);
+while($row=@mysql_fetch_object($res)) {
+	if ($page_info->page_number!=$last_page_number) {
+		$page_info=lead_header_pdf($page_info);
+		$last_page_number=$page_info->page_number;
+		}
+	$page_info=lead_row_pdf($page_info,$row->bidlist_id);
+	}
+
+pdf_end_page($page_info->pdf);
+pdf_end($page_info);
+
+?>

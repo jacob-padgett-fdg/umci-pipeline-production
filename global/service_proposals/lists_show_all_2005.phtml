@@ -1,0 +1,15 @@
+<?
+//require_once("querylib.inc");
+//require_once('local.inc');
+
+echo "
+<html><head><title>Service Proposals - List All</title></head>
+<body bgcolor=white>
+<a href=$pagename?mode=proposal_lists><font color=blue>Return to proposal lists</font></a><hr>
+";
+
+
+$query="select svc_proposals_id from svc_proposals,contacts where contacts_id = sales_person and proposal_date > '2004-12-31' and proposal_date < '2006-01-01' order by proposal_date,last_name,first_name,proposal_daily_count";
+proplist($query);
+
+?>

@@ -1,0 +1,219 @@
+<?
+$server_info=FALSE;
+if ($server_id!="") {
+	$server_id=addslashes($server_id);
+	$server_info=getone("select * from access_servers where server_id = '$server_id'");
+	} else {
+	$server_info->reliable_storage='Y';
+	$server_info->backup_empty_ok='N';
+	$server_info->in_production='Y';
+	$server_info->active='Y';
+	$server_info->job_site_server='N';
+	}
+$server_info->reliable_storage=checkbreak($server_info->reliable_storage);
+$server_info->backup_empty_ok=checkbreak($server_info->backup_empty_ok);
+$server_info->in_production=checkbreak($server_info->in_production);
+$server_info->active=checkbreak($server_info->active);
+$server_info->job_site_server=checkbreak($server_info->job_site_server);
+
+require('header.phtml');
+
+echo "
+<a href=$pagename?mode=server_list><font color=blue>Continue....</font></a><p>
+
+
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><td bgcolor=#dddddd colspan=2 align=center>
+	<font size=+1><b>Server Information Form</b></font>
+</td><td bgcolor=#dddddd align=center>
+	<b>Configured&nbsp;Services</b>";
+	if ($server_info->server_id > 0) {
+		echo "&nbsp;(<a href=$pagename?mode=servers_services_edit&server_id=$server_info->server_id><i><font color=blue>Add</font></i></a>)";
+		}
+	echo"
+</td><td bgcolor=#dddddd align=center>
+	<b>Backup History</b>
+</td></tr>
+
+<tr><td>
+	<b>Server Name</b>
+</td><td>
+	<form name=server_edit action=$pagename method=post>
+	<input type=hidden name=mode value=\"server_submit\">
+	<input type=hidden name=server_id value=\"$server_info->server_id\">
+	<input type=text name=name  maxlength=50 value=\"$server_info->name\">
+</td><td rowspan=17 valign=top>
+	<table border=0 cellspacing=0 cellpadding=4>
+	";
+	$slist_query="select * from access_servers_services left join access_service_types on (access_servers_services.service_type_id = access_service_types.service_type_id) where server_id = '$server_info->server_id' order by name";
+	//tabledump($slist_query);
+	$slist_res=@mysql_query($slist_query);
+	while ($slist_row=@mysql_fetch_object($slist_res)) {
+		echo "<tr><td>
+				<a href=javascript:show_service_info($slist_row->service_type_id)><font color=blue>$slist_row->name</font></a>
+			</td><td>
+				<a href=$pagename?mode=servers_services_edit&service_id=$slist_row->service_id><i>Edit</i></a>
+			</td></tr>
+			";	
+		}
+	
+	echo "
+	</table>
+</td><td rowspan=17 valign=top>
+		<img src=$pagename?mode=graph_server_bu_size&server_id=$server_info->server_id>
+</td></tr>
+
+<tr><td>
+	<b>Name Description</b>
+</td><td>
+	<input type=text name=name_description maxlength=255 value=\"$server_info->name_description\">
+</td></tr>
+
+<tr><td>
+	<b>Description</b>
+</td><td>
+	<input type=text name=description maxlength=255 value=\"$server_info->description\">
+</td></tr>
+
+<tr><td>
+	<b>Admin Account</b>
+</td><td>
+	<input type=text name=admin_account maxlength=30 value=\"$server_info->admin_account\">
+</td></tr>
+
+<tr><td>
+	<b>Admin Password</b>
+</td><td>
+	<input type=text name=admin_password maxlength=30 value=\"$server_info->admin_password\">
+</td></tr>
+
+<tr><td>
+	<b>OS</b>
+</td><td>
+	";
+	if ($server_info->active==' checked') {
+		//echo "hello";
+		dropbox("select access_servers_oslist.os_id as os_id,access_servers_oslist.name as name from access_servers_oslist left join access_servers on (access_servers_oslist.os_id = access_servers.os_id) where access_servers_oslist.active = 'Y' or (access_servers.active = 'Y') group by os_id order by name",$server_info->os_id,"","",1);
+		} else {
+		//echo "active: $server_info->active<br>";
+		dropbox("select os_id,name from access_servers_oslist order by name",$server_info->os_id,"","",1);
+		}
+	echo "&nbsp;sp&nbsp;<input type=text size=2 name=service_pack value=\"$server_info->service_pack\">
+</td></tr>
+
+<tr><td>
+	<b>IP Address</b>
+</td><td>
+	<input type=text name=ip_addr maxlength=20 value=\"$server_info->ip_addr\">
+</td></tr>
+
+<tr><td>
+	<b>Netmask</b>
+</td><td>
+	<input type=text name=ip_mask maxlength=20 value=\"$server_info->ip_mask\">
+</td></tr>
+
+<tr><td>
+	<b>Reliable Storage</b>
+</td><td>
+	<input type=checkbox name=reliable_storage $server_info->reliable_storage>
+</td></tr>
+
+<tr><td>
+	<b>Storage Capacity</b>
+</td><td>
+	<input type=text name=storage_capacity value=\"$server_info->storage_capacity\">
+</td></tr>
+
+<tr><td>
+	<b>Remote Admin Method</b>
+</td><td>
+	<select name=remote_admin_method>
+	<option>$server_info->remote_admin_method</option>
+	<option>Remote Desktop</option>
+	<option>RPC</option>
+	<option>SSH</option>
+	<option>Telnet</option
+	<option>VNC</option>
+	</select>
+</td></tr>
+
+<tr><td>
+	<b>Backup Method</b>
+</td><td>
+	";dropbox("select backup_style_id,name from access_servers_backup_styles order by name",$server_info->backup_style_id,"","",1);echo "
+</td></tr>
+
+<tr><td>
+	<b>Ingore Empty Backups</b>
+</td><td>
+	<input type=checkbox name=backup_empty_ok $server_info->backup_empty_ok>
+</td></tr>
+
+<tr><td>
+	<b>Backup Notes</b>
+</td><td>
+	<textarea name=backup_notes rows=5 cols=40>$server_info->backup_notes</textarea>
+</td></tr>
+
+<tr><td>
+	<b>In Production</b>
+</td><td>
+	<input type=checkbox name=in_production $server_info->in_production>
+</td></tr>
+
+<tr><td>
+	<b title=\"Not decommisioned yet\">Active</b>
+</td><td>
+	<input type=checkbox name=active $server_info->active>
+</td></tr>
+
+<tr><td>
+	<b>Job Site Server</b>
+</td><td>
+	<input type=checkbox onchange=\"check_job_site()\" name=job_site_server $server_info->job_site_server>
+</td></tr>
+
+<tr id=\"remote_network\"><td valign=top>
+	<b>Remote Network</b>
+</td><td valign=top>
+	<input type=text name=remote_network value=\"$server_info->remote_network\">
+</td></tr>
+
+<tr id=\"site_notes\"><td>
+	<b>Site Notes</b>
+</td><td> 
+	<textarea name=job_site_notes rows=3 cols=30>$server_info->job_site_notes</textarea>
+</td></tr>
+
+<tr><td colspan=2 align=right><input type=submit value=Save></td></tr>
+</table>
+</form>
+
+
+
+<script>
+function check_job_site() {
+	var display;
+	if (document.server_edit.job_site_server.checked) display='table-row';
+	else display='none';
+	document.getElementById('remote_network').style.display=display;		
+	document.getElementById('site_notes').style.display=display;		
+	}
+check_job_site();
+
+
+</script>
+
+";
+
+
+server_log_interface($server_info->server_id,0);
+//if ($server_info->server_id > 0 ) {
+//	tabledump("select * from access_servers_log where server_id = '$server_info->server_id' order by entry_date desc");
+//	}
+
+
+
+
+?>

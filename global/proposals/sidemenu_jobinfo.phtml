@@ -1,0 +1,35 @@
+<?
+
+$menu_array=array();
+$target_array=array();
+
+if ($bid_info) {
+if ($bid_info->record_maintainer=="true") {
+	array_push($menu_array,"Lead Data");
+	array_push($target_array,"$pagename?mode=lead_edit&bidlist_id=$bid_info->bidlist_id");
+	}
+
+if ($bid_info->status!="Lead") {
+	array_push($menu_array,"Proposal Data");
+	array_push($target_array,"$pagename?mode=proposal_edit&bidlist_id=$bid_info->bidlist_id");
+	}
+
+} else {
+	array_push($menu_array,"Proposals");
+	array_push($target_array,"$pagename?mode=jobinfo_find_proposal&jobinfo_id=$jobinfo->jobinfo_id");
+}
+
+if ($bid_info->jobinfo_id>0) {
+	array_push($menu_array,"Job Data");
+	array_push($target_array,"$pagename?mode=jobinfo_edit&jobinfo_id=$bid_info->jobinfo_id");
+	}
+
+array_push($menu_array,"Properties");
+array_push($target_array,"javascript:open_utils()");
+
+
+
+prop_side_menu("Menu",$menu_array,$target_array);
+
+
+?>

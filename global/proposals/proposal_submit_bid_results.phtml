@@ -1,0 +1,40 @@
+<?
+
+$umc_costs_lms=clean_int($umc_costs_lms);
+$awarded=addslashes($awarded);
+$jobinfo_id=addslashes($jobinfo_id);
+
+//echo "<hr>$awarded<hr>";
+
+//echo "<hr>$bid_info->proposal_type/$proposal_type<hr>";exit;
+
+if ($bid_info->proposal_type!=$proposal_type) {
+	if (($proposal_type=="Budget")||($proposal_type=="RFQ/Preq/Eleg")) {
+		$awarded="NA";
+		}
+	}
+
+if ($awarded=="") {
+	if (($proposal_type=="Budget") || ($proposal_type=="RFQ/Preq/Eleg")) {
+		$awarded="NA";
+		} else {
+		if ($status=="No Bid") {
+			$awarded="NA";
+			} else {
+			$awarded=="P";
+			}
+		}
+	}
+
+
+//echo "<hr>$awarded<hr>";exit;
+
+
+$query_data=$query_data . "$data_seperator
+umc_costs_lms = '$umc_costs_lms',
+jobinfo_id = '$jobinfo_id',
+awarded = '$awarded'";
+
+$data_seperator=",";
+
+?>

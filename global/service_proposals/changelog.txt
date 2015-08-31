@@ -1,0 +1,108 @@
+
+----------------------------------------------------------------------------
+Fri Aug 29 17:28:47 PDT 2003
+service_proposals-0.11
+----------------------------------------------------------------------------
+
+Update permissions system to make the read_only group not update anyone else's items.
+Update read_write group to be able to modify WO#,status, and competition for someone elses items.
+Fix accidental change of ownership scenario caused by incomplete management of various permissions levels.
+
+
+
+----------------------------------------------------------------------------
+Tue Sep 30 16:06:30 PDT 2003
+service_proposals-0.12
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+Wed Jan 21 15:19:44 PST 2004
+service_proposals-0.13
+----------------------------------------------------------------------------
+modifications for automatic filtering by proposal year
+
+
+----------------------------------------------------------------------------
+Thu Nov  4 10:17:07 PST 2004
+service_proposals-0.14
+----------------------------------------------------------------------------
+added ability to use comparisons for probability on the search page.
+
+Was asked to do the same for projected bill month, but it appears as though it's already like that, so I skipped it.
+
+
+
+----------------------------------------------------------------------------
+Tue Dec 14 14:27:19 PST 2004
+service_proposals-0.15
+----------------------------------------------------------------------------
+fixed typo on main menu
+
+
+----------------------------------------------------------------------------
+Tue Mar  1 16:21:57 PST 2005
+service_proposals-0.16
+----------------------------------------------------------------------------
+made 2005 the default year for proposal lists
+
+
+----------------------------------------------------------------------------
+Wed May  4 11:46:35 PDT 2005
+service_proposals-0.17
+----------------------------------------------------------------------------
+updated authentication
+
+
+----------------------------------------------------------------------------
+Tue Apr  4 10:01:03 PDT 2006
+service_proposals-0.18
+----------------------------------------------------------------------------
+added 2006 proposals section
+
+
+----------------------------------------------------------------------------
+Tue Aug 29 17:19:29 PDT 2006
+service_proposals-0.19
+----------------------------------------------------------------------------
+added an option to download the fx customer list so it can be mail merged
+
+
+----------------------------------------------------------------------------
+Wed Jan  3 09:11:07 PST 2007
+service_proposals-0.20
+----------------------------------------------------------------------------
+turned on show 2007 proposals, and fixed the show 2006 proposals..
+Not sure why no one complained about 2006 proposal link being broken (pointed
+to 2005)... 
+curious...
+
+
+
+----------------------------------------------------------------------------
+Mon Dec 31 13:40:40 PST 2007
+service_proposals-0.21
+----------------------------------------------------------------------------
+security update and year end
+
+
+----------------------------------------------------------------------------
+Thu Jan 29 16:37:16 PST 2009
+service_proposals-0.22
+----------------------------------------------------------------------------
+update for permissions db change
+
+
+----------------------------------------------------------------------------
+Tue Feb 10 16:35:28 PST 2009
+service_proposals-0.23
+----------------------------------------------------------------------------
+updated for 2009
+
+
+----------------------------------------------------------------------------
+Tue Mar 10 12:22:51 PDT 2009
+service_proposals-0.24
+----------------------------------------------------------------------------
+added a bit of info to aid in business planning/mgmt
+

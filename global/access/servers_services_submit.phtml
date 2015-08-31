@@ -1,0 +1,37 @@
+<?
+
+if (($server_id=="") || ($server_id<1)) {
+	die("Application error! Invalid server ID. Please contact your system administrator");
+	}
+if ($service_id!="") {
+	$service_id=addslashes($service_id);
+	$query_start="update access_servers_services set ";
+	$query_end=" where service_id = '$service_id'";
+	} else {
+	$query_start="insert into access_servers_services set ";
+	$query_end="";
+	}
+
+$server_id=addslashes($server_id);
+$active=checkfix($active);
+$config_details=addslashes($config_details);
+
+
+$query_middle="
+server_id = '$server_id',
+service_type_id = '$service_type_id',
+active = '$active',
+config_details = '$config_details'
+";
+
+$query_full=$query_start . $query_middle . $query_end;
+
+
+//echo "<hr>$query_full<hr>";
+$res=@mysql_query($query_full);
+if (!($res)) {
+	die("Update failed! Failed query:<hr>$query_full");
+	}
+forward("server_edit&server_id=$server_id");
+
+?>

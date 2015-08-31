@@ -1,0 +1,272 @@
+<?
+$browser="MOZILLA";
+if (eregi("msie",$HTTP_USER_AGENT)) $browser="IE";
+
+
+$font_family="Tahoma";
+//$font_family="Times New Roman";
+//$font_family="arial, verdana, ms sans serif";
+$font_color="#000000";
+$font_size='9pt';
+$font_size_big='11pt';
+$table_light="#ffffff";
+$table_dark="#000066";
+$table_title="white";
+$table_bg="white";
+$table_sidecol="#dddddd";
+$form_color="white";
+$main_table_padding="6";
+$general_table="#660066";
+$general_table="#bbbbbb";
+$general_links="black";
+$general_title_bg="#bbbbbb";
+$general_body_bg="#dddddd";
+$main_bgcolor="#bbccee";
+$main_bgcolor="#ccddee";
+$required_bgcolor="#cc6666";
+$required_bgcolor="#ffffff";
+$required_textcolor="#dd6666";
+$required_bordercolor="#aabbcc";
+$required_bordercolor="#8899cc";
+
+$rtc_start="<font style=\"color: #dd8800; font-weight: 800;\">";
+$rtc_end="</font>";
+
+
+echo "
+<html>
+<head>
+<title>$dbdescription</title>
+</head>
+
+<style type=\"text/css\">
+	.required_info {
+		background-color: $required_bgcolor;
+		border-style: outset;
+		border-color: $required_bordercolor;
+		color: $required_textcolor;
+		textcolor: $required_textcolor;
+		}
+	.required_info td {
+		color: $required_textcolor;
+		font-weight: 900;
+		}
+	.biddingto {
+		background-color: $general_table;
+		color: $general_links;
+		}
+	.biddingto td {
+		color: $general_links;
+		}
+	.biddingto a {
+		color: $general_links;
+		}
+	.biddingto b {
+		color: $general_links;
+		}
+	.biddingto th {
+		background-color: $general_title_bg;
+		color: $general_links;
+		}
+	.biddingto tr {
+		background-color: $general_body_bg;
+		color: $general_links;
+		}
+	.tableobj {
+		background-color: $table_bg;
+		}
+	.tableobj b {
+		color: $table_title;
+		}
+	th {
+		background-color: $table_sidecol;
+		font-weight: 500;
+		text-align: left;
+		}
+	CHECKBOX {
+		background-color: $form_color ;
+		}
+	RADIOBUTTON {
+		background-color: $form_color ;
+		}
+	.radioStyle {
+		background-color: $form_color ;
+		color: $form_color ;
+		}
+	SELECT {
+		background-color: $form_color ;
+		font-size: $font_size;
+		text-size: $font_size;
+		}
+	INPUT {
+		background-color: $form_color ; 
+		font-size: $font_size;
+		text-size: $font_size;
+		}
+	form {
+		text-size: $font_size;
+		}
+	TEXTAREA {
+		background-color: $form_color ; 
+		font-size: $font_size;
+		text-size: $font_size;
+		}
+	document {
+		font-size: $font_size;
+		text-size: $font_size;
+		}
+	tr {
+		font-size: $font_size;
+		}
+	table {
+		font-size: $font_size;
+		}
+	td {
+		font-size: $font_size;
+		}
+	h1 { 
+		font-family: $font_family; 
+		font-size: $font_size;
+		}
+	h2 { 
+		font-family: $font_family;
+		font-size: $font_size;
+		}
+	h3 { 
+		font-family: $font_family; 
+		font-size: $font_size;
+		}
+	p 	{ 
+		font-family: $font_family ; 		   
+		font-size: $font_size ;
+		}
+	bold { 
+		font-family: $font_family; 
+		font-size: $font_size;
+		}
+	b 	{ 
+		font-family: $font_family; 
+		font-size: $font_size_big;
+		}
+
+	h1 	{ 
+		color: $font_color; 
+		font-size: $font_size;
+		}
+	h2 	{ 
+		color: $font_color;
+		font-size: $font_size;
+		}
+	h3 	{
+		color: $font_color;
+		font-size: $font_size;
+		}
+	p 	{ 
+		color: $font_color; 
+		font-size: $font_size;
+		}
+	body{
+		margin-top: 5px;
+		margin-left: 16px;
+	 	color: $font_color;
+		font-family: $font_family ;
+		font-size: $font_size ;
+		background-color: $main_bgcolor;
+	 	}
+	bold{ 
+		color: $font_color;
+		font-size: $font_size;
+		}
+	b 	{ 
+		color: $font_color; 
+		font-size: $font_size;
+		}
+
+.bidlistpu {
+	position: absolute;
+	left: 200px;
+	top: 150px;
+	height: 78px;
+	min-width: 200px;
+	max-width: 400px;
+	border: solid #000000 2px;
+	padding-left: 1em;
+	padding-right: 1em;
+	background-color: #dddddd;
+	color: #000000;
+	visibility: hidden;
+	}
+	
+
+.navigation {
+";
+
+if ($browser=="MOZILLA") {
+	echo "	
+	position: fixed;
+	width: 58%;
+	";
+	}
+
+if ($browser=="IE") {
+	echo "	
+	width:expression(document.body.clientWidth > 600? \"600px\": \"auto\" );
+	position: absolute;
+	";
+	}
+
+echo "
+	top: 3px;
+	left: 0px;
+	height: 18px;
+	min-width: 450px;
+	max-width: 700px;
+	border: solid #000000 2px;
+	padding-left: 1em;
+	padding-right: 1em;
+	background-color: #dddddd;
+	color: #000000;
+	}
+
+.key {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	height: auto;
+	width: 230px;
+	align: right;
+	border: solid #000000 2px;
+	background-color: #ffffff;
+	color: #000000;
+	}
+
+
+.sidemenu {
+	position: absolute;
+	top: 23px;
+	left: 25px;
+	width: 0px;
+	height: 400px;
+	padding-left: -20px;
+	padding-right: -20px;
+	color: #000000;
+	}
+
+
+td.menu{background:lightblue}
+
+table.nav
+{
+background:#dddddd;
+position:relative;
+top:1px;
+left:-135px;
+}
+
+</style>
+
+<body bgcolor=white>
+";
+
+
+?>
