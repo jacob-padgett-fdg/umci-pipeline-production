@@ -209,7 +209,8 @@ if (!($auth_backend_user_logged_in)) {
         if ($SYSTEM_AUTH_REQUESTED == '1') {
             $auth_user_name = escapeshellcmd($auth_user_name);
             $auth_user_pass_db_store = addslashes($auth_user_pass);
-            $auth_user_pass = escapeshellcmd($auth_user_pass);
+    // FRON-4 Do not change the password as it will break LDAP auth...
+           //$auth_user_pass=escapeshellcmd($auth_user_pass);
 
             $smb_auth_response = ldap_test_pw($auth_user_name, $auth_user_pass);
 
