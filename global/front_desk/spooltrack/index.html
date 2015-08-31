@@ -4,7 +4,7 @@ require("global-auth.inc");
 
 if (isset($mode)) {
 	if (is_readable("$mode.phtml")) { 
-		include("$mode.php");  } else { include ("badmode.phtml"); }
+		include("$mode.phtml");  } else { include ("badmode.phtml"); }
 	} else {
 	include ("main.phtml");
 	}
