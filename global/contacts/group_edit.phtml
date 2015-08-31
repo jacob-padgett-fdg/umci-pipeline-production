@@ -1,0 +1,106 @@
+<?
+if($jobinfo_id!="") $jobinfo_id=addslashes($jobinfo_id);
+if ($group_id!="") {
+	$group_id=addslashes($group_id);
+	$group_info=getoneb("select * from contacts_groups where group_id = '$group_id'");
+	$new=FALSE;
+	$group_info->umc_employee_required=checkbreak($group_info->umc_employee_required);
+	$group_info->login_required=checkbreak($group_info->login_required);
+	$group_info->email_required=checkbreak($group_info->email_required);
+	$group_info->current_contact_required=checkbreak($group_info->current_contact_required);
+	$group_info->active=checkbreak($group_info->active);
+	} else {
+	$group_info="";
+	$new=TRUE;
+	$group_info->active="checked";
+	$group_info->jobinfo_id=$jobinfo_id;
+	$group_info->current_contact_required="Y";
+	}
+
+require('header.phtml');
+echo "
+<script>
+function checkform () {
+	if (document.gedit.description.value=='') {
+		alert('Hey: group name/description required');
+		return 0;
+		}
+	document.gedit.submit();
+	}
+</script>
+
+<h2>Group Setup</h2><hr>
+<table border=0>
+<form name=gedit method=post action=\"$pagename\">
+<input type=hidden name=mode value=\"group_submit\">
+<input type=hidden name=group_id value=\"$group_info->group_id\">
+<tr><td align=right>
+	<b>Group Name:</b>
+</td><td>
+	<input type=text name=description value=\"$group_info->description\">
+</td></tr>
+";
+
+if ($new) {
+	echo "
+	<tr><td align=right>
+		<b>Job:</b>
+	</td><td>
+		";dropbox("select jobinfo_id,contract_num,' - ', job_name from jobinfo where active = 'Y' order by contract_num",$group_info->jobinfo_id,"","",1);echo "
+	</td></tr>
+	";
+	} else {
+	echo "<input type=hidden name=jobinfo_id value=\"$group_info->jobinfo_id\">";
+	}
+
+echo "
+<tr><td align=right>
+	<b>Require Login:</b>
+</td><td>
+	<input type=checkbox name=login_required $group_info->login_required>
+</td></tr>
+
+<tr><td align=right>
+	<b>Require email:</b>
+</td><td>
+	<input type=checkbox name=email_required $group_info->email_required>
+</td></tr>
+
+<tr><td align=right>
+	<b>Employees Only:</b>
+</td><td>
+	<input type=checkbox name=umc_employee_required $group_info->umc_employee_required>
+</td></tr>
+
+<tr><td align=right>
+	<b>Current Contacts Only:</b>
+</td><td>
+	<input type=checkbox name=current_contact_required $group_info->current_contact_required>
+</td></tr>
+
+<tr><td align=right>
+	<b>Active:</b>
+</td><td>
+	<input type=checkbox name=active $group_info->active>
+</td></tr>
+
+<tr><td colspan=2 align=right>
+	<input type=button value=\"Save\" onclick=checkform();>
+</td></tr>
+
+</form>
+</table>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>
