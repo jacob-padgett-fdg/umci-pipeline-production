@@ -1,29 +1,41 @@
 function ajaxProc(x,elname,mode) {
-if (elname!='verynull')
-if (x.readyState==4&&x.status==200) {
-	if (mode=='load_js') {
-		var getheadTag=document.getElementsByTagName('head')[0];
-		setjs=document.createElement('script');
-		setjs.setAttribute('type','text/javascript');
-		getheadTag.appendChild(setjs);
-		setjs.text=x.responseText;
-		} else {
-		if (elname!='null') {
-			el=document.getElementById(elname);
-			try { el.innerHTML=x.responseText; } catch (e) {}
-			if (mode=='load_form') document.getElementById('ajax_form_data_field').focus()
-			}
-		}
-	for (i=0; i < el.childNodes.length; i++) {
-		anyobj=el.childNodes[i];
-		if (typeof(anyobj.onload)=='function') {
-			anyobj.onload();
-			//break;
-		}
-	}
-	if (typeof(ajax_trigger)=='function') if (el.ajax_trigger!='never') ajax_trigger(elname,mode);
-	if (el.ajax_trigger_function!='') {	eval(el.ajax_trigger_function); el.ajax_trigger_function=''; }
-	}
+    if (elname!='verynull') {
+        if (x.readyState == 4 && x.status == 200) {
+            if (mode == 'load_js') {
+                var getheadTag = document.getElementsByTagName('head')[0];
+                setjs = document.createElement('script');
+                setjs.setAttribute('type', 'text/javascript');
+                getheadTag.appendChild(setjs);
+                setjs.text = x.responseText;
+            } else {
+                if (elname != 'null') {
+                    el = document.getElementById(elname);
+                    try {
+                        el.innerHTML = x.responseText;
+                    } catch (e) {
+                    }
+                    if (mode == 'load_form') {
+                        document.getElementById('ajax_form_data_field').focus()
+                    }
+                }
+            }
+            if (typeof el != 'undefined') {
+                for (i = 0; i < el.childNodes.length; i++) {
+                    anyobj = el.childNodes[i];
+                    if (typeof(anyobj.onload) == 'function') {
+                        anyobj.onload();
+                    }
+                }
+                if (typeof(ajax_trigger) == 'function')
+                    if (el.ajax_trigger != 'never')
+                        ajax_trigger(elname, mode);
+                if (el.ajax_trigger_function != '') {
+                    eval(el.ajax_trigger_function);
+                    el.ajax_trigger_function = '';
+                }
+            }
+        }
+    }
 }
 
 function ajaxManager() {
