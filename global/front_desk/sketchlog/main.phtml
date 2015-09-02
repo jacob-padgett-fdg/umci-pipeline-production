@@ -99,7 +99,7 @@ if ($global_jobinfo) {
 		if ($row->submitted_to_consultant=='Y') { $st_text=$st_text . $s_sep . "consultant";$s_sep=","; }
 		if ($st_text=="") $st_text="&nbsp;";
 		if (getoneb("select * from sketchlog_notes where sketchlog_id = '$row->sketchlog_id' limit 1")) {
-			$notesimage="<img src=/images/note.png>";
+			$notesimage="<img src=/images/note.gif>";
 			} else {
 			$notesimage="&nbsp;";
 			}
