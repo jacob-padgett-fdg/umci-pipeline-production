@@ -1,9 +1,0 @@
-<?
-
-if (($global_user_name=="bendres")||($global_user_name=="jeffb")) {
-	$adminuser="1";
-	} else {
-	$adminuser="0";
-	}
-
-?>

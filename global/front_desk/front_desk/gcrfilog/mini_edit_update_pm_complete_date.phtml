@@ -1,6 +1,0 @@
-<?
-include ('fd_document_box_header.phtml');
-$pm_complete_date=vali_date($pm_complete_date);
-@mysql_query("update gcrfilog set pm_complete_date = '$pm_complete_date', pm_complete_user = '$global_user_id' where gcrfi_id = '$doc_edit_info->app_record_id'");
-datebox2($pm_complete_date, 'form1.pm_complete_date', "fd_doc_gcrfi_change_pm_complete_date(this.id,$doc_info->doc_id,$doc_edit_info->doc_id)");
-?>

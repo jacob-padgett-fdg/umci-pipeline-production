@@ -1,5 +1,0 @@
-<?
-if ($guest) die_security("guest user in datadump area of oiclog");
-$date=date('m-d-Y');
-excel_dump("select * from oiclog where jobinfo_id = '$jobinfo_id' order by oic_number","oiclog_$date.xls");
-?>

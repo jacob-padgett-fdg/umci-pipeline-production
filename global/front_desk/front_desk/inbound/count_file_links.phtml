@@ -1,6 +1,0 @@
-<?
-
-$doc_id=addslashes($doc_id);
-$sum=getoneb("select sum(1) as total from documents_links where doca = '$doc_id'");
-echo "$sum->total";
-?>

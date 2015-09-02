@@ -1,7 +1,0 @@
-<?
-if (!($adminuser)) die_security();
-if ($section!="") $section=addslashes($section);
-else die("Application error: No section specified. Please contact your system administrator!");
-@mysql_query("insert into drawinglog_sections set section = '$section', jobinfo_id = '$global_jobinfo_id'");
-forward('manage_sections');
-?>

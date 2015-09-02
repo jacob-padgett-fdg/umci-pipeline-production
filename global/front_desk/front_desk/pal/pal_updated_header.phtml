@@ -1,9 +1,0 @@
-<?
-if ($pal_id!="") {
-	$pal_info=getone("select * from pal where pal_id = '$pal_id'");
-	$doc_info=getone("select * from documents where app_record_id = '$pal_info->pal_id' and doc_type = 'pal'");
-	} else {
-	die('Application Error! Bad Pal ID.');
-	}
-pal_item_show($doc_info,$open);
-?>

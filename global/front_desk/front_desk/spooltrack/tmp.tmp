@@ -1,7 +1,0 @@
-	$spool->drawn_date=vali_date($drawn_date);
-	$spool->released_to_fab_date=vali_date($released_to_fab_date);
-	$spool->fab_shop_name=vali_date($fab_shop_name);
-	$spool->date_needed=vali_date($date_needed);
-	$spool->material_ordered=vali_date($material_ordered);
-	$spool->material_required=vali_date($material_required);
-	$spool->material_received=vali_date($material_received);
