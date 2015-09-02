@@ -19,7 +19,7 @@ function ajaxProc(x,elname,mode) {
                     }
                 }
             }
-            if (typeof el != 'undefined') {
+            if (typeof el != 'undefined' && el != null) {
                 for (i = 0; i < el.childNodes.length; i++) {
                     anyobj = el.childNodes[i];
                     if (typeof(anyobj.onload) == 'function') {
