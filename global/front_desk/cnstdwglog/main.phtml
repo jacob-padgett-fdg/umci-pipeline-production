@@ -46,10 +46,14 @@ $query = "select * from cnstdwglog right join documents on ( doc_type = 'cnstdwg
 //die($query);
 //tabledump ("explain " . $query);die;
 $res = @mysql_query($query);
+ReportTable::cnstdwglogSearchFilters(2, array(
+    'Drawing #', 'Description', 'Current Revision', 'Current Issuance', 'DWG Type'
+), $issuance_list);
+/*
 ReportTable::boss_search_filter(2, array(
    'Drawing #', 'Description', 'Current Revision', 'Current Issuance', 'DWG Type'
 ), "#cnstdwglog");
-
+*/
 //if ($_SESSION['cnstdwglog_paging'] == 'Y') include("fd_log_paging.php");
 session_write_close();
 

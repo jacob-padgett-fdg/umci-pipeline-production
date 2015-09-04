@@ -32,7 +32,7 @@ while ($dwg = @mysql_fetch_object($res)) {
     // vent errors in display
     //////////////////////////////
     $cnstdwglog_info = getoneb("select * from cnstdwglog_files right join cnstdwglog_issuances on (cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id) right join webfile_groups on ( cnstdwglog_files.file_group_id = webfile_groups.file_group_id ) right join webfile_files on ( webfile_groups.file_group_id = webfile_files.file_group_id ) where cnstdwglog_id = '$dwg->cnstdwglog_id' and cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id order by cnstdwglog_issuances.issuance_type, cnstdwglog_issuances.issuance_date desc, cnstdwglog_issuances.sort_priority desc, cnstdwglog_issuances.name desc limit 1");
-    $paperclip_link = webfile_paperclip_view($cnstdwglog_info->file_group_id);
+    $paperclip_link = webfile_paperclip_view($cnstdwglog_info->file_group_id, "&nbsp;", false);
    if (!empty($last_issuance_id)) {
         $last_file_info = getoneb("select * from cnstdwglog_files where cnstdwglog_id = '$dwg->cnstdwglog_id' and issuance_id = '$last_issuance_id'");
     }
@@ -74,7 +74,7 @@ while ($dwg = @mysql_fetch_object($res)) {
         $issuances_res = @mysql_query("select * from cnstdwglog_files right join cnstdwglog_issuances on (cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id) left join webfile_groups on ( cnstdwglog_files.file_group_id = webfile_groups.file_group_id ) left join webfile_files on ( webfile_groups.file_group_id = webfile_files.file_group_id ) where cnstdwglog_files.cnstdwglog_id = '$dwg->cnstdwglog_id' and cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id and cnstdwglog_issuances.jobinfo_id = '{$_SESSION['global_jobinfo_id']}' group by cnstdwglog_issuances.issuance_id order by cnstdwglog_issuances.issuance_type desc, cnstdwglog_issuances.issuance_date, cnstdwglog_issuances.sort_priority, cnstdwglog_issuances.name");
         $rowcount = @mysql_num_rows($issuances_res);
         while ($issuance_row = @mysql_fetch_object($issuances_res)) {
-            $paperclip_link = webfile_paperclip_view($issuance_row->file_group_id);
+            $paperclip_link = webfile_paperclip_view($issuance_row->file_group_id, "&nbsp;", true);
             $bgcolortext = "";
             if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " style='width:100%;background_color:" . $fd_color_6 . "'";
             if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " style='width:100%;background_color:" . $fd_color_5 . "'";

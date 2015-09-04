@@ -74,6 +74,71 @@ class ReportTable {
         <?php
     }
 
+
+    public static function cnstdwglogSearchFilters($initial_index, $search_terms, $issuance_list) {
+        //initially - from boss
+        ?>
+        <div class="tablesearcherholder">
+            <div style="float:left;">Filter data</div>
+            <script>
+                function clear_inputs ()
+                {
+                    window.location.reload(true);
+                }
+            </script>
+            <div class="reset_control">
+                <a class="std_link" href="javascript:clear_inputs()">
+                    reset
+                </a>
+            </div>
+            <br/>
+            <table class='tablesearcher' cellpadding="3" cellspacing="0" border="0">
+                <tbody>
+                <?php
+                $i = $initial_index;
+                $j = 0;
+                while ($j < count($search_terms)) {
+                    ?>
+                    <tr id="filter_col<?php echo $j + 1; ?>" data-column="<?php echo $i; ?>">
+                        <td><?php echo $search_terms[$j]; ?></td>
+                        <td align="center"><input placeholder='search text' type="text" class="column_filter"
+                                                  id="col<?php echo $i; ?>_filter"></td>
+                    </tr>
+                <?php
+                    $i++;
+                    $j++;
+                }
+                if (($_SESSION['cnstdwglog_view'] == "expanded") && ($issuance_list)) {
+                    reset($issuance_list);
+                    $current_id = current($issuance_list);
+                    $current_name = next($issuance_list);
+                    $current_type = next($issuance_list);
+                    $current_current = next($issuance_list);
+                    while (!($current_id === FALSE)) {
+                        ?>
+                        <tr id="filter_col<?php echo $j + 1; ?>" data-column="<?php echo $i; ?>">
+                            <td><?php echo $current_name; ?></td>
+                            <td align="center"><input placeholder='enter x to filter' type="text" class="column_filter"
+                                                      id="col<?php echo $i; ?>_filter"></td>
+                        </tr>
+
+                        <?php
+
+                        $current_id = next($issuance_list);
+                        $current_name = next($issuance_list);
+                        $current_type = next($issuance_list);
+                        $current_current = next($issuance_list);
+                        $i++;
+                        $j++;
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+    }
+
     public static function cnstdwglogTable ($jobinfo_id, $section, $issuance_id) {
         ?>
         </tbody></table>
