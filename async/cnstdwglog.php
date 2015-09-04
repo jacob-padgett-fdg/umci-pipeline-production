@@ -6,12 +6,11 @@ require("global-auth.inc");
 
 $jobinfo_id = $_GET["jobinfo_id"];
 
-file_put_contents("./foo.txt", "jobinfo_id is $jobinfo_id");
-
 $current_cnstdwglog_section = $_GET["section"];
+//die($current_cnstdwglog_section);
 $last_issuance_id = $_GET["issuance_id"];
-$query = "select * from cnstdwglog right join documents on ( doc_type = 'cnstdwglog' and documents.app_record_id = cnstdwglog.cnstdwglog_id ) where ( cnstdwglog.jobinfo_id = '$jobinfo_id' and cnstdwglog.section = '$section') order by cnstdwglog.drawing_type, documents.sort_rank, documents.doc_id, cnstdwglog.drawing_num";
-
+$query = "select * from cnstdwglog right join documents on ( doc_type = 'cnstdwglog' and documents.app_record_id = cnstdwglog.cnstdwglog_id ) where ( cnstdwglog.jobinfo_id = '$jobinfo_id' and cnstdwglog.section = '$current_cnstdwglog_section') order by cnstdwglog.drawing_type, documents.sort_rank, documents.doc_id, cnstdwglog.drawing_num";
+//die($query);
 //tabledump ("explain " . $query);die;
 $res = @mysql_query($query);
 $last_drawing_type = '';

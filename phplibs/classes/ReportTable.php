@@ -89,7 +89,7 @@ class ReportTable {
             $(document).ready(function() {
                 $('#cnstdwglog').dataTable(
                 {
-                'paging': false,
+                'paging': true,
                 'info': false,
                 'order': [], //no initial order
                 'language': {

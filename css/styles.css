@@ -484,3 +484,7 @@ div.floating_header {
     float: left;
     margin: 0 150px;
 }
+
+a.paginate_button {
+    padding: 0 3px;
+}
