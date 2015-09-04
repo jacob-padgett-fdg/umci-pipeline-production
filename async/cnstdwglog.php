@@ -11,7 +11,6 @@ file_put_contents("./foo.txt", "jobinfo_id is $jobinfo_id");
 $current_cnstdwglog_section = $_GET["section"];
 $last_issuance_id = $_GET["issuance_id"];
 $query = "select * from cnstdwglog right join documents on ( doc_type = 'cnstdwglog' and documents.app_record_id = cnstdwglog.cnstdwglog_id ) where ( cnstdwglog.jobinfo_id = '$jobinfo_id' and cnstdwglog.section = '$section') order by cnstdwglog.drawing_type, documents.sort_rank, documents.doc_id, cnstdwglog.drawing_num";
-//$query = "select * from cnstdwglog right join documents on ( doc_type = 'cnstdwglog' and documents.app_record_id = cnstdwglog.cnstdwglog_id ) where ( cnstdwglog.jobinfo_id = '$jobinfo_id') order by cnstdwglog.drawing_type, documents.sort_rank, documents.doc_id, cnstdwglog.drawing_num";
 
 //tabledump ("explain " . $query);die;
 $res = @mysql_query($query);
@@ -78,8 +77,8 @@ while ($dwg = @mysql_fetch_object($res)) {
         while ($issuance_row = @mysql_fetch_object($issuances_res)) {
             $paperclip_link = webfile_paperclip_view($issuance_row->file_group_id);
             $bgcolortext = "";
-            if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " style=\"width:100%;background_color:$fd_color_6\"";
-            if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " style=\"width:100%;background_color:$fd_color_5\"";
+            if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " style='width:100%;background_color:" . $fd_color_6 . "'";
+            if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " style='width:100%;background_color:" . $fd_color_5 . "'";
 
             $payload .=  ", \"<div $bgcolortext>$paperclip_link</div>\"";
         }
