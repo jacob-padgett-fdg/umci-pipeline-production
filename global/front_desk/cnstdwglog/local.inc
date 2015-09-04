@@ -129,7 +129,7 @@ function select_a_section() {
 function select_section_box() {
 	global $global_jobinfo_id,$mode,$adminuser,$pagename,$application_name;
 	$global_section_name='current_' . $application_name . '_section';
-	echo "<form class=\"noprint\" style=\"display: inline;\" name=select_section method=post action=$pagename>Section&nbsp;<input type=hidden name=mode value=\"$mode\">";dropbox("select section as new_application_section,section from ${application_name}_sections where jobinfo_id = '$global_jobinfo_id' and active = 'Y'",$GLOBALS[$global_section_name],1,"submit()");
+    echo "<form class=\"noprint\" style=\"display: inline;\" name=select_section method=post action=$pagename>Section&nbsp;<input type=hidden name=mode value=\"$mode\">";dropbox("select section as new_application_section,section from ${application_name}_sections where jobinfo_id = '$global_jobinfo_id' and active = 'Y'",$GLOBALS[$global_section_name],1,"submit()");
 	if ($adminuser) echo "&nbsp;&nbsp;<a class=\"noprint\" href=$pagename?mode=manage_sections><font class=\"noprint\" color=blue><i>Edit List</i></font></a>";
 	echo"</form>";
 	}

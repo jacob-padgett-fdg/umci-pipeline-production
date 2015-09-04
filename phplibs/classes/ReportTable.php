@@ -74,6 +74,47 @@ class ReportTable {
         <?php
     }
 
+    public static function cnstdwglogTable ($jobinfo_id, $section, $issuance_id) {
+        ?>
+        </tbody></table>
+        <script>
+
+
+            function filterColumn ( i, useRegex, useSmartSearch ) {
+                $('#cnstdwglog').DataTable().column( i ).search(
+                    $('#col'+i+'_filter').val(), useRegex, useSmartSearch
+                ).draw();
+            }
+
+            $(document).ready(function() {
+                $('#cnstdwglog').dataTable(
+                {
+                'paging': false,
+                'info': false,
+                'order': [], //no initial order
+                'language': {
+                    'search': 'Find _INPUT_ in filtered results'
+                  } ,
+                "search": {
+                    "regex": false,
+                    "smart": true
+                  },
+
+                /*"processing": true,
+                "serverSide": true,*/
+                "ajax": "/async/cnstdwglog.php?jobinfo_id=<?php echo $jobinfo_id; ?>&section=<?php echo $section;?>&last_issuance_id=<?php echo $issuance_id; ?>",
+                "deferRender": true
+                } );
+
+                $('input.column_filter').on( 'keyup click', function () {
+                    filterColumn( $(this).parents('tr').attr('data-column'), true, false );
+                } );
+            } );
+        </script>
+        <?php
+    }
+
+
     public static function generateTableHeader($rowHeaders, $tableId, $pagename, $color4, $color3)
     {
 

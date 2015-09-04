@@ -85,7 +85,7 @@ echo "
 <b><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UMC&nbsp;Construction&nbsp;Drawing&nbsp;Log&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></b>
 <br>$today<br>";
 
-if ($_SESSION['cnstdwglog_paging'] == 'Y') echo "$page_page_insert";
+//if ($_SESSION['cnstdwglog_paging'] == 'Y') echo "$page_page_insert";
 
 echo "<br>";
 
@@ -96,9 +96,7 @@ echo "
 </center></td></tr></table></div><div class='clearfix'></div>";
 
 
-echo "
-<table class='standard' id='cnstdwglog' border=1 cellspacing=0 cellpadding=3\";>
-";
+echo " <table class='standard' id='cnstdwglog' border=1 cellspacing=0 cellpadding=3> ";
 ?>
 <thead>
 <tr bgcolor=<?php echo $fd_color_4; ?>>
@@ -156,51 +154,47 @@ if (($_SESSION['cnstdwglog_view'] == "expanded") && ($issuance_list)) {
     }
 }
 echo "</tr></thead><tbody>";
+if (false) {
+    $last_drawing_type = '';
+    while ($dwg = @mysql_fetch_object($res)) {
 
-$last_drawing_type ='';
-while ($dwg = @mysql_fetch_object($res)) {
-    /*
-    if ($dwg->drawing_type != $last_drawing_type) {
-        echo "<tr bgcolor=$fd_color_4><td colspan=$base_columns align=center><b>$dwg->drawing_type</td></tr>";
-        $last_drawing_type = $dwg->drawing_type;
-    } TBC */
-    $cookie_link = batch_this_document($dwg->doc_id);
-    //////////////////////////////
-    // look at this next line and
-    // include jobinfo_id to pre-
-    // vent errors in display
-    //////////////////////////////
-    $cnstdwglog_info = getoneb("select * from cnstdwglog_files right join cnstdwglog_issuances on (cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id) right join webfile_groups on ( cnstdwglog_files.file_group_id = webfile_groups.file_group_id ) right join webfile_files on ( webfile_groups.file_group_id = webfile_files.file_group_id ) where cnstdwglog_id = '$dwg->cnstdwglog_id' and cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id order by cnstdwglog_issuances.issuance_type, cnstdwglog_issuances.issuance_date desc, cnstdwglog_issuances.sort_priority desc, cnstdwglog_issuances.name desc limit 1");
-    $paperclip_link = webfile_paperclip_view($cnstdwglog_info->file_group_id);
-    if (!empty($last_issuance_info)) {
-        $last_file_info = getoneb("select * from cnstdwglog_files where cnstdwglog_id = '$dwg->cnstdwglog_id' and issuance_id = '$last_issuance_info->issuance_id'");
-    }
-    if (!empty($last_file_info)) {
-        $addenda_files = getoneb("select sum(1) as count from cnstdwglog_addenda where files_id = '$last_file_info->files_id' and required_in_this_issuance = 'Y' and posted = 'N'");
-    }
-
-    $drawing_num_text = $dwg->drawing_num;//preg_replace('/ /', '&nbsp;', $dwg->drawing_num);
-    $drawing_num_text = $drawing_num_text; //preg_replace('/-/', '&#x2011;', $drawing_num_text);
-    if ($drawing_num_text == "") $drawing_num_text = "??????";
-
-    if ($write) {
-        $edit_record_link = "<a href=$pagename?mode=cnstdwglog_edit&cnstdwglog_id=$dwg->cnstdwglog_id>$drawing_num_text</a>";
-        if (!isset($addenda_files)) {
-            $addenda_files = (object) array();
-            $addenda_files->count = 0;
+        $cookie_link = batch_this_document($dwg->doc_id);
+        //////////////////////////////
+        // look at this next line and
+        // include jobinfo_id to pre-
+        // vent errors in display
+        //////////////////////////////
+        $cnstdwglog_info = getoneb("select * from cnstdwglog_files right join cnstdwglog_issuances on (cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id) right join webfile_groups on ( cnstdwglog_files.file_group_id = webfile_groups.file_group_id ) right join webfile_files on ( webfile_groups.file_group_id = webfile_files.file_group_id ) where cnstdwglog_id = '$dwg->cnstdwglog_id' and cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id order by cnstdwglog_issuances.issuance_type, cnstdwglog_issuances.issuance_date desc, cnstdwglog_issuances.sort_priority desc, cnstdwglog_issuances.name desc limit 1");
+        $paperclip_link = webfile_paperclip_view($cnstdwglog_info->file_group_id);
+        if (!empty($last_issuance_info)) {
+            $last_file_info = getoneb("select * from cnstdwglog_files where cnstdwglog_id = '$dwg->cnstdwglog_id' and issuance_id = '$last_issuance_info->issuance_id'");
         }
-        $addenda_count = "<a href=\"$pagename?mode=cnstdwglog_edit&cnstdwglog_id=$dwg->cnstdwglog_id&showmode=current_only\">$addenda_files->count</a>";
-    } else {
-        $edit_record_link = "$drawing_num_text";
-        $addenda_count = "$addenda_files->count";
-    }
+        if (!empty($last_file_info)) {
+            $addenda_files = getoneb("select sum(1) as count from cnstdwglog_addenda where files_id = '$last_file_info->files_id' and required_in_this_issuance = 'Y' and posted = 'N'");
+        }
 
-    $bgcolortext = "";
-    if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " bgcolor=\"$fd_color_6\"";
-    if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " bgcolor=\"$fd_color_5\"";
-    if ($cnstdwglog_info->issuance_type == "") $bgcolortext = " bgcolor=\"$fd_color_2\"";
+        $drawing_num_text = $dwg->drawing_num;//preg_replace('/ /', '&nbsp;', $dwg->drawing_num);
+        $drawing_num_text = $drawing_num_text; //preg_replace('/-/', '&#x2011;', $drawing_num_text);
+        if ($drawing_num_text == "") $drawing_num_text = "??????";
 
-    echo "
+        if ($write) {
+            $edit_record_link = "<a href=$pagename?mode=cnstdwglog_edit&cnstdwglog_id=$dwg->cnstdwglog_id>$drawing_num_text</a>";
+            if (!isset($addenda_files)) {
+                $addenda_files = (object)array();
+                $addenda_files->count = 0;
+            }
+            $addenda_count = "<a href=\"$pagename?mode=cnstdwglog_edit&cnstdwglog_id=$dwg->cnstdwglog_id&showmode=current_only\">$addenda_files->count</a>";
+        } else {
+            $edit_record_link = "$drawing_num_text";
+            $addenda_count = "$addenda_files->count";
+        }
+
+        $bgcolortext = "";
+        if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " bgcolor=\"$fd_color_6\"";
+        if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " bgcolor=\"$fd_color_5\"";
+        if ($cnstdwglog_info->issuance_type == "") $bgcolortext = " bgcolor=\"$fd_color_2\"";
+
+        echo "
 	<tr>
 	<td>
 		<table border=0 cellspacing=0 cellpadding=1>
@@ -214,30 +208,35 @@ while ($dwg = @mysql_fetch_object($res)) {
 	</td><td>
 		$edit_record_link
 	</td><td>
-		<font size=-1>" . /*preg_replace('/ /', '&nbsp;',*/ $dwg->description . "</font>
+		<font size=-1>" . /*preg_replace('/ /', '&nbsp;',*/
+            $dwg->description . "</font>
 	</td><td>
-		" . /*preg_replace('/ /', '&nbsp;',*/ $cnstdwglog_info->revision . "&nbsp;
+		" . /*preg_replace('/ /', '&nbsp;',*/
+            $cnstdwglog_info->revision . "&nbsp;
 	</td><td$bgcolortext>
-		" . /*preg_replace('/-/', '&#x2011;', preg_replace('/ /', '&nbsp;',*/ $cnstdwglog_info->name/*))*/ . "
+		" . /*preg_replace('/-/', '&#x2011;', preg_replace('/ /', '&nbsp;',*/
+            $cnstdwglog_info->name/*))*/ . "
 	</td><td>" . $dwg->drawing_type .
-    "</td>";
-    if ($_SESSION['cnstdwglog_view'] == "expanded") {
-        // Just revised to hide errant extra data.. There are extra cnstdwglog_files items from a different job showing up.. they have
-        // the cnstdwglog_id from a record in job a, but have a issuance_id from a issuance in job b - must look into.
-        $issuances_res = @mysql_query("select * from cnstdwglog_files right join cnstdwglog_issuances on (cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id) left join webfile_groups on ( cnstdwglog_files.file_group_id = webfile_groups.file_group_id ) left join webfile_files on ( webfile_groups.file_group_id = webfile_files.file_group_id ) where cnstdwglog_files.cnstdwglog_id = '$dwg->cnstdwglog_id' and cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id and cnstdwglog_issuances.jobinfo_id = '{$_SESSION['global_jobinfo_id']}' group by cnstdwglog_issuances.issuance_id order by cnstdwglog_issuances.issuance_type desc, cnstdwglog_issuances.issuance_date, cnstdwglog_issuances.sort_priority, cnstdwglog_issuances.name");
-        $rowcount = @mysql_num_rows($issuances_res);
-        while ($issuance_row = @mysql_fetch_object($issuances_res)) {
-            $paperclip_link = webfile_paperclip_view($issuance_row->file_group_id);
-            $bgcolortext = "";
-            if ($issuance_row->issuance_type == "Design") $bgcolortext = " bgcolor=\"$fd_color_6\"";
-            if ($issuance_row->issuance_type == "Construction Orig Issue") $bgcolortext = " bgcolor=\"$fd_color_5\"";
-            echo "<td$bgcolortext>$paperclip_link</td>";
+            "</td>";
+        if ($_SESSION['cnstdwglog_view'] == "expanded") {
+            // Just revised to hide errant extra data.. There are extra cnstdwglog_files items from a different job showing up.. they have
+            // the cnstdwglog_id from a record in job a, but have a issuance_id from a issuance in job b - must look into.
+            $issuances_res = @mysql_query("select * from cnstdwglog_files right join cnstdwglog_issuances on (cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id) left join webfile_groups on ( cnstdwglog_files.file_group_id = webfile_groups.file_group_id ) left join webfile_files on ( webfile_groups.file_group_id = webfile_files.file_group_id ) where cnstdwglog_files.cnstdwglog_id = '$dwg->cnstdwglog_id' and cnstdwglog_issuances.issuance_id = cnstdwglog_files.issuance_id and cnstdwglog_issuances.jobinfo_id = '{$_SESSION['global_jobinfo_id']}' group by cnstdwglog_issuances.issuance_id order by cnstdwglog_issuances.issuance_type desc, cnstdwglog_issuances.issuance_date, cnstdwglog_issuances.sort_priority, cnstdwglog_issuances.name");
+            $rowcount = @mysql_num_rows($issuances_res);
+            while ($issuance_row = @mysql_fetch_object($issuances_res)) {
+                $paperclip_link = webfile_paperclip_view($issuance_row->file_group_id);
+                $bgcolortext = "";
+                if ($issuance_row->issuance_type == "Design") $bgcolortext = " bgcolor=\"$fd_color_6\"";
+                if ($issuance_row->issuance_type == "Construction Orig Issue") $bgcolortext = " bgcolor=\"$fd_color_5\"";
+                echo "<td$bgcolortext>$paperclip_link</td>";
+            }
         }
+        echo "</tr>";
     }
-    echo "</tr>";
+    ReportTable::closeTable2('#cnstdwglog');
+} //if false
+else {
+    ReportTable::cnstdwglogTable($global_jobinfo->jobinfo_id, $_SESSION['current_cnstdwglog_section'], $last_issuance_info->issuance_id);
 }
-
-ReportTable::closeTable2('#cnstdwglog');
-
 
 fd_navs_footer();

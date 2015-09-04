@@ -10,7 +10,7 @@ $color_4 = isset($fd_color_4) ? $fd_color_4 : '#888'; // GPH Cleanup warnings
     <link rel="icon" type="image/png" href="/favicon.png">
     <script src='/javascript/jquery-1.11.3.min.js'></script>
     <script src='/javascript/jquery-ui.min.js'></script>
-    <script src="/javascript/jquery.dataTables.min.js"></script>
+    <script src="/javascript/jquery.dataTables.js"></script>
     <title><?php echo $dbdescription; ?></title>
 </head>
 <body>

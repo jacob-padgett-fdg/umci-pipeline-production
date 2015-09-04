@@ -926,13 +926,13 @@ function calendar_register_event($jobinfo_id,$category,$start_date,$unique_id=""
         $doc = getoneb("select * from documents where doc_id = '$the_doc_id'");
         if (!($doc)) return ("&nbsp;");
         if (getoneb("select * from front_desk_doc_queue where doc_id = '$the_doc_id' and contacts_id = '$global_user_id' and jobinfo_id = '$global_jobinfo_id' limit 1")) {
-            return ("<div style=\"background: black;\" onclick=\"javascript:add_doc_to_batch('$the_doc_id',this)\">
-		<img title=\"Bake a batch\" src=/images/cookie_batch.png border=0>
-		</div>");
+            return ("<div style='background: black;' onclick='javascript:add_doc_to_batch(" . $the_doc_id. ",this)'>" .
+		                "<img title='Bake a batch' src=/images/cookie_batch.png border=0>" .
+		            "</div>");
         } else {
-            return ("<div onclick=\"javascript:add_doc_to_batch('$the_doc_id',this)\">
-		<img title=\"Bake a batch\" src=/images/cookie_batch.png border=0>
-		</div>");
+            return ("<div onclick='javascript:add_doc_to_batch(" . $the_doc_id .",this)'>" .
+                        "<img title='Bake a batch' src=/images/cookie_batch.png border=0>" .
+                    "</div>");
         }
     }
 
@@ -941,7 +941,7 @@ function calendar_register_event($jobinfo_id,$category,$start_date,$unique_id=""
     {
         $link = webfile_possible_view_link($file_group_id);
         if ($link) {
-            return ("<a target=\"paperclip_$file_group_id\" href=\"$link\"><img border=0 src=\"/images/paperclip.gif\"></a>");
+            return ("<a target='paperclip_" . $file_group_id . "' href='" . $link . "'><img border=0 src='/images/paperclip.gif'></a>");
         } else {
             return ($falsevalue);
         }
@@ -951,7 +951,7 @@ function calendar_register_event($jobinfo_id,$category,$start_date,$unique_id=""
     {
         $link = webfile_possible_download_link($file_group_id);
         if ($link) {
-            return ("<a href=\"$link\"><img border=0 src=\"/images/paperclip.gif\"></a>");
+            return ("<a href='".$link."'><img border=0 src='/images/paperclip.gif'></a>");
         } else {
             return ($falsevalue);
         }
