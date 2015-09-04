@@ -943,7 +943,7 @@ function calendar_register_event($jobinfo_id,$category,$start_date,$unique_id=""
         if ($link) {
             //return ("<a target='paperclip_" . $file_group_id . "' href='" . $link . "'>je</a>");
             if ($outputX)
-                return ("<a target='paperclip_" . $file_group_id . "' href='" . $link . "'><span style='font-size:1px'>X</span><img border=0 src='/images/paperclip.gif'></a>");
+                return ("<a target='paperclip_" . $file_group_id . "' href='" . $link . "'><span style='font-size:1px;'>y</span><img border=0 src='/images/paperclip.gif'></a>");
             else
                 return ("<a target='paperclip_" . $file_group_id . "' href='" . $link . "'><img border=0 src='/images/paperclip.gif'></a>");
         } else {

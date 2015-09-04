@@ -488,3 +488,7 @@ div.floating_header {
 a.paginate_button {
     padding: 0 3px;
 }
+
+div#cnstdwglog_paginate {
+    clear: both;
+}
