@@ -118,7 +118,7 @@ class ReportTable {
                         ?>
                         <tr id="filter_col<?php echo $j + 1; ?>" data-column="<?php echo $i; ?>">
                             <td><?php echo $current_name; ?></td>
-                            <td align="center"><input placeholder='y/n' type="text" class="column_filter"
+                            <td align="center"><input placeholder='enter x to filter' type="text" class="column_filter"
                                                       id="col<?php echo $i; ?>_filter"></td>
                         </tr>
 
