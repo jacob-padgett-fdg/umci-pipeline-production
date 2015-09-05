@@ -54,7 +54,7 @@ class ReportTable {
             $(document).ready(function() {
                 $('<?php echo $tableName; ?>').dataTable(
                 {
-                'paging': false,
+                'paging': true,
                 'info': false,
                 'order': [], //no initial order
                 'language': {

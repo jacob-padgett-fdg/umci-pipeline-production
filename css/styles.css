@@ -427,7 +427,6 @@ table.standard thead tr th.sorting_desc, table.standard thead tr th.sorting_asc 
 }
 
 div#submittallog_filter {
-    padding-left:20px;
     padding-top:5px;
 }
 
@@ -487,4 +486,12 @@ div.floating_header {
 
 a.paginate_button {
     padding: 0 3px;
+}
+
+div.dataTables_length, div#submittallog_paginate {
+    clear: both;
+}
+
+div.container-fluid {
+    padding: 0;
 }
