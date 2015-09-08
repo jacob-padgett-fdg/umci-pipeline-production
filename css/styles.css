@@ -399,7 +399,7 @@ table.standard thead {
 table.standard thead tr th {
     font-weight: bold;
     font-size: .9em;
-    padding: 3px 0;
+    padding: 3px 7px 3px 2px;
     text-align: center;
 }
 table.standard thead tr th span {
@@ -488,7 +488,7 @@ a.paginate_button {
     padding: 0 3px;
 }
 
-div.dataTables_length, div#submittallog_paginate {
+div.dataTables_length, div#submittallog_paginate, div#cnstdwglog_paginate {
     clear: both;
 }
 
