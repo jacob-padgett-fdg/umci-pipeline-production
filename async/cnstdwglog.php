@@ -56,9 +56,9 @@ while ($dwg = @mysql_fetch_object($res)) {
     }
 
     $bgcolortext = "";
-    if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " style='width:100%;background_color:$fd_color_6''";
-    if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " style='width:100%;background_color:$fd_color_5''";
-    if ($cnstdwglog_info->issuance_type == "") $bgcolortext = " style='width:100%;background_color:$fd_color_2'";
+    if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " style='width:100%;background-color:$fd_color_6''";
+    if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " style='width:100%;background-color:$fd_color_5''";
+    if ($cnstdwglog_info->issuance_type == "") $bgcolortext = " style='width:100%;background-color:$fd_color_2'";
 
     $payload .= "\"<table border=0 cellspacing=0 cellpadding=1><tr><td width=10px>$paperclip_link</td><td>$cookie_link</td></tr></table>\", ";
     $payload .= "\"$addenda_count&nbsp;\", ";
@@ -76,9 +76,10 @@ while ($dwg = @mysql_fetch_object($res)) {
         while ($issuance_row = @mysql_fetch_object($issuances_res)) {
             $paperclip_link = webfile_paperclip_view($issuance_row->file_group_id, "&nbsp;", true);
             $bgcolortext = "";
-            if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " style='width:100%;background_color:" . $fd_color_6 . "'";
-            if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " style='width:100%;background_color:" . $fd_color_5 . "'";
-
+            if ($paperclip_link != "&nbsp;") {
+                if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " style='width:100%;background-color:" . $fd_color_6 . "'";
+                if ($cnstdwglog_info->issuance_type == "Construction Orig Issue") $bgcolortext = " style='width:100%;background-color:" . $fd_color_5 . "'";
+            }
             $payload .=  ", \"<div $bgcolortext>$paperclip_link</div>\"";
         }
     }
