@@ -60,10 +60,12 @@ function save_data(dwg_id,field,item) {
 ";
 
 if ($global_jobinfo) {
-    $query_search_add= ''; // do it all client side - was query_search_add_text();
-	$query="select * from drawinglog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '{$_SESSION['current_drawinglog_section']}' $query_search_add order by type,sort_priority,sheet_num";
-	$res=@mysql_query($query);
-	include("fd_log_paging.php");
+    if (true) {
+        $query_search_add = ''; // do it all client side - was query_search_add_text();
+        $query = "select * from drawinglog where jobinfo_id = '$global_jobinfo->jobinfo_id' and section = '{$_SESSION['current_drawinglog_section']}' $query_search_add order by type,sort_priority,sheet_num";
+        $res = @mysql_query($query);
+    }
+	//include("fd_log_paging.php");
     ReportTable::boss_search_filter(1, array(
         'Current', 'Area', 'Sheet #', 'Sheet Title', 'Rev', 'Rev Date', 'Orig Issue', 'Issued for Construction',
         'Sub to Eng', 'Ret from Eng', 'Resubmit Reqd', 'Submittal Status', 'Cur Sub Date', 'Sent to Field', 'Submitted to',
