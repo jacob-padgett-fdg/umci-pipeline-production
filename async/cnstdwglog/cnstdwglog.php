@@ -49,7 +49,7 @@ while ($dwg = @mysql_fetch_object($res)) {
             $addenda_files = (object)array();
             $addenda_files->count = 0;
         }
-        $addenda_count = "<a href=\"$pagename?mode=cnstdwglog_edit&cnstdwglog_id=$dwg->cnstdwglog_id&showmode=current_only\">$addenda_files->count</a>";
+        $addenda_count = "<a href='$pagename?mode=cnstdwglog_edit&cnstdwglog_id=$dwg->cnstdwglog_id&showmode=current_only'>$addenda_files->count</a>";
     } else {
         $edit_record_link = "$drawing_num_text";
         $addenda_count = "$addenda_files->count";
