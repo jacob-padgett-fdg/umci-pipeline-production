@@ -15,6 +15,9 @@ $query = "select * from cnstdwglog right join documents on ( doc_type = 'cnstdwg
 $res = @mysql_query($query);
 $last_drawing_type = '';
 
+$cnstpagename = "/global/front_desk/cnstdwglog/index.php";
+$pagename = $cnstpagename;
+
 $payload =  " { \"data\": [ ";
 $first_time = true;
 while ($dwg = @mysql_fetch_object($res)) {
@@ -49,11 +52,12 @@ while ($dwg = @mysql_fetch_object($res)) {
             $addenda_files = (object)array();
             $addenda_files->count = 0;
         }
-        $addenda_count = "<a href='$pagename?mode=cnstdwglog_edit&cnstdwglog_id=$dwg->cnstdwglog_id&showmode=current_only'>$addenda_files->count</a>";
+        //$addenda_count = "<a href='$pagename?mode=cnstdwglog_edit&cnstdwglog_id=$dwg->cnstdwglog_id&showmode=current_only'>$addenda_files->count</a>";
     } else {
         $edit_record_link = "$drawing_num_text";
-        $addenda_count = "$addenda_files->count";
     }
+
+    $addenda_count = "$addenda_files->count";
 
     $bgcolortext = "";
     if ($cnstdwglog_info->issuance_type == "Design") $bgcolortext = " style='width:100%;background-color:$fd_color_6''";
