@@ -16,7 +16,8 @@ if ($current_files_id=="") {
 	} else {
 	$current_files_id=addslashes($current_files_id);
 	}
-
+//debugerring
+//echo "select * from webfile_files where file_group_id = '$queue_info->file_group_id' and ( file_name like '%-$contract_num-%' or file_name like '%-${contract_num}_%' ) order by files_id limit 1";
 if ($current_files_id<1) {
 	echo "
 	<meta http-equiv=\"refresh\" content=\"30;url=$pagename?mode=$mode\">
