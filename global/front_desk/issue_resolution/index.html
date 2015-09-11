@@ -6,11 +6,12 @@ if ($global_job_just_changed) {
 	$issue_res_application_id="";
 	}
 require("category_resolution.phtml");
-	
+
 if (($mode!="csv_download")&&($mode!="filter_win")) {
     // GPH Modified - phplibs should already be in the include directories, so absolute is unnecessary.
-	// require('/data/web/phplibs/header.phtml');
-	require('header.phtml');
+    // TC - incorrect! there is a header.phtml in the local folder included by main.phtml so need absolute path!
+	require('/data/web/phplibs/header.phtml');
+	//require('header.phtml');
 	fd_navs_header();
 	}
 
