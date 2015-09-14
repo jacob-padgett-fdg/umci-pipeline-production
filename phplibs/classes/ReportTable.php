@@ -169,7 +169,8 @@ class ReportTable {
                 "serverSide": true,*/
                 "ajax": "/async/cnstdwglog/cnstdwglog.php?jobinfo_id=<?php echo $jobinfo_id; ?>&section=<?php echo $section;?>&last_issuance_id=<?php echo $issuance_id; ?>",
                 "deferRender": true,
-                "autoWidth": false
+                "autoWidth": false,
+                "stateSave": true
                 } );
 
                 $('input.column_filter').on( 'keyup click', function () {
