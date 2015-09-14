@@ -63,7 +63,8 @@ class ReportTable {
                 "search": {
                     "regex": true,
                     "smart": false
-                  }
+                  },
+                "stateSave": true
                 } );
 
                 $('input.column_filter').on( 'keyup click', function () {
