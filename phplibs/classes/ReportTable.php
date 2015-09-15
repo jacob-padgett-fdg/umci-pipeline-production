@@ -239,6 +239,7 @@ class ReportTable {
                             $query = "select distinct type from drawinglog where jobinfo_id='$jobinfo_id' order by type asc";
                             $res = @mysql_query($query);
                             echo "<select class='column_filter' id='col{$i}_filter'>";
+                            echo "<option></option>";
                             while($row=@mysql_fetch_object($res)) {
                                 echo "<option>{$row->type}</option>";
                             }
