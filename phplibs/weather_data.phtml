@@ -6,7 +6,10 @@ function collect_weather_data($jobinfo) {
 	global $_fd_weather_data,$xml_current_tag_state;
 	$station=$jobinfo->weather_station_code;
 	$url="http://www.weather.gov/data/current_obs/${station}.xml";
-	$web_data=file_get_contents($url);
+    //following line added to present as web browser after site implemented
+    //anti-scraping security
+    ini_set('user_agent','Mozilla/4.0 (compatible; MSIE 6.0)');
+    $web_data=file_get_contents($url);
 	$weather_data=@simplexml_load_string($web_data);
 	$_fd_weather_data=array();
 	$_fd_weather_data["location"] = $weather_data->location;
