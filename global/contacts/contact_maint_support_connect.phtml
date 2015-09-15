@@ -3,11 +3,7 @@ set_time_limit(900);
 //////////////////////////////////////////////////////////////////////
 //	Connect to both databases
 //////////////////////////////////////////////////////////////////////
-// GPH TEMP - get past this
-return;
-// GPH MARK - absolute path
-require("/vagrant/public/pipeline/global/contacts/settings.cfg");
-//require("/data/web/pipeline/global/contacts/settings.cfg");
+require("/data/web/pipeline/global/contacts/settings.cfg");
 //@mssql_connect("viewpoint","reddwarf","cl01st3r");
 //@mssql_select_db("Viewpoint");
 include("viewpoint_connect_ro.phtml");

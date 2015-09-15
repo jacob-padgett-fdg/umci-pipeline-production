@@ -153,7 +153,8 @@ function print_mode_tab($mode,$text) {
 		echo "$text</td>";
 	}
 
-if (AccessControl::isAdmin($global_user_id)) $devel="-devel";
+//if (AccessControl::isAdmin($global_user_id)) $devel="-devel";
+$devel = "";
 
 if (($display_mode=="project")&&($options['jobinfo_id']=="")) $display_mode="normal";
 

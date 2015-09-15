@@ -1,5 +1,4 @@
 <?
-// GPH MARK 2014-12-10
 session_write_close();
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -26,28 +25,28 @@ $ticker=0;
 while ($ef_row=@mysql_fetch_object($emp_first_res)) {
 	//$ticker++;echo "$ticker<br>"; flush();
 	$ms_qry="select * from HRRM with (NOLOCK) where HRCo = 1 and HRRef = '$ef_row->employee_num'";
-	
+
 	$vp_info=ms_getoneb($ms_qry);
 	$vp_pr_emp_info=ms_getoneb("select * from PREH with (NOLOCK) where PRCo = 1 and Employee = '$ef_row->employee_num'");
-	
+
 	//if (!($vp_info)) die("FATAL ERROR: No Viewpoint information, but has non-null employee_num!<hr>$ms_qry");
-	
-	
+
+
 	if ($vp_info->ActiveYN=='Y') update_trade($ef_row->contacts_id);
 	//$must_update='Y';
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
 	if ($vp_info->ActiveYN=='Y') $current='Y';
 	else {
 		$standby_res=@mssql_query("select top (1) * from HREH with (NOLOCK) where HRRef = '$ef_row->employee_num' and HRCo = 1 order by Seq desc");
@@ -58,41 +57,41 @@ while ($ef_row=@mysql_fetch_object($emp_first_res)) {
 			}
 		else $current='N';
 		}
-	
+
 	//if ($vp_info->HRRef=='6909') {
 	//	echo "<pre>";
 	//	print_r($vp_info);
 	//	echo "</pre>";
 	//	//die();
 	//	}
-	
-	if ($vp_info->udNickName!="") { 
+
+	if ($vp_info->udNickName!="") {
 		$first_name=$vp_info->udNickName;
 		$first_name_real=$vp_info->FirstName;
-		} else { 
+		} else {
 		$first_name=$vp_info->FirstName;
 		$first_name_real="";
 		}
 
 	$last_name=$vp_info->LastName;
 	$employee_group=$vp_info->PRGroup;
-	
+
 	if ($first_name!=$ef_row->first_name) {
 		$must_update='Y';
 		}
-	
+
 	if ($ef_row->timesheet_payroll_sequence_num < 1) {
 		$must_update='Y';
 		}
-	
+
 	if ($first_name_real!=$ef_row->first_name_real) {
 		$must_update='Y';
 		}
-	
+
 	if ($last_name!=$ef_row->last_name) {
 		$must_update='Y';
 		}
-	
+
 	if ($current!=$ef_row->current) {
 		$must_update='Y';
 		if($ef_row->login_name!="") {
@@ -105,20 +104,20 @@ while ($ef_row=@mysql_fetch_object($emp_first_res)) {
 			}
 		//if ($
 		}
-	
+
 	/*if ($ef_row->employee_dept=="") {
 		$must_update='Y';
 		}
 	*/
-	
+
 	if ($ef_row->employee_dept!=$vp_pr_emp_info->PRDept) {
 		$must_update='Y';
 		}
-	
+
 	if ($employee_group!=$ef_row->employee_group) {
 		$must_update='Y';
 		}
-	
+
 	//if ($ef_row->contacts_id==2) {
 	//if ($ef_row->phone=="") {
 		$phone_number="";
@@ -128,7 +127,7 @@ while ($ef_row=@mysql_fetch_object($emp_first_res)) {
 			}
 		if (($ef_row->phone_ext>=200)&&($ef_row->phone_ext<=259)){
 			$phone_number="206-368-6$ef_row->phone_ext";
-			} 
+			}
 		if (($ef_row->phone_ext>=260)&&($ef_row->phone_ext<=289)) {
 			$two_digits=$ef_row->phone_ext - 200;
 			$phone_number="206-368-69$two_digits";
@@ -136,22 +135,22 @@ while ($ef_row=@mysql_fetch_object($emp_first_res)) {
 		if ($phone_number!="") {
 			@mysql_query("update contacts set phone = '$phone_number' where contacts_id = '$ef_row->contacts_id'");
 			}
-	
+
 	if ($must_update=="Y") {
 		if ($ef_row->timesheet_payroll_sequence_num < 1) {
 			if ($employee_group==1) $ef_row->timesheet_payroll_sequence_num=1;
 			if ($employee_group==3) $ef_row->timesheet_payroll_sequence_num=3;
 			if ($ef_row->timesheet_payroll_sequence_num < 1) $ef_row->timesheet_payroll_sequenc_num=1;
 			}
-		
+
 		//if ($vp_info->HRRef=='6909') {
 		//	echo "<hr>$must_update<hr>";
 		//	echo "<hr>$current/$ef_row->current<hr>";
-			
+
 		//	$query="update contacts set contact_type = 'contact', first_name = '" . addslashes($first_name) . "', first_name_real = '" . addslashes($first_name_real) . "' , last_name = '" . addslashes($last_name) . "' , current = '$current' , employee_group = '$employee_group' , employee_dept = '$vp_pr_emp_info->PRDept', umc_emp = 'Y' , timesheet_payroll_sequence_num = '$ef_row->timesheet_payroll_sequence_num' where contacts_id = '$ef_row->contacts_id'";
 			//echo "query:<pre>$query</pre>";die();
 		//	}
-		
+
 		$query="update contacts set contact_type = 'contact', first_name = '" . addslashes($first_name) . "', first_name_real = '" . addslashes($first_name_real) . "' , last_name = '" . addslashes($last_name) . "' , current = '$current' , employee_group = '$employee_group' , employee_dept = '$vp_pr_emp_info->PRDept', umc_emp = 'Y' , timesheet_payroll_sequence_num = '$ef_row->timesheet_payroll_sequence_num' where contacts_id = '$ef_row->contacts_id'";
 		//$query="update contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , current = '$current' , employee_group = '$employee_group' , employee_dept = '$vp_pr_emp_info->PRDept', umc_emp = 'Y' , timesheet_payroll_sequence_num = '$ef_row->timesheet_payroll_sequence_num' where contacts_id = '$ef_row->contacts_id'";
 		@mysql_query($query);
@@ -178,35 +177,47 @@ while($vp_info=@mssql_fetch_object($ms_res2)) {
 	if (!(getoneb("select * from contacts where employee_num = '$vp_info->HRRef'"))) {
 		if ($vp_info->ActiveYN=='Y') $current='Y';
 		else $current='N';
-		if ($vp_info->udNickName!="") { 
+		if ($vp_info->udNickName!="") {
 			$first_name=addslashes($vp_info->udNickName);
 			$first_name_real=addslashes($vp_info->FirstName);
-			} else { 
+			} else {
 			$first_name=addslashes($vp_info->FirstName);
 			$first_name_real="";
 			}
 		$last_name=addslashes($vp_info->LastName);
 		$employee_group=$vp_info->PRGroup;
-		
+
 		if ($employee_group==1) $timesheet_payroll_sequence_num=2;
 		if ($employee_group==3) $timesheet_payroll_sequence_num=1;
 		if ($timesheet_payroll_sequence_num < 1) $timesheet_payroll_sequenc_num=1;
-        // GPH MARK 2014-12-10: login_name = '$vp_info->udusername yields a login_name that is blank.
-        // The goal here is instead to build a string concatenation of first char of first_name followed by last_name
-        // Impact analysis: Check for other areas.
-		$query="insert into contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , display_name = '$last_name, $first_name' , login_name = '$vp_info->udusername', current = '$current' , employee_num = '$vp_info->HRRef' , employee_group = '$employee_group' , umc_emp = 'Y', timesheet_payroll_sequence_num = '$timesheet_payroll_sequence_num'";
+
+        // FRON-2 Construct a username if $vp_info->udusername is blank.
+        // Note we are using first_name and not first_name_real.
+        // "William 'Bill' Smith" will be BSmith.
+        $loginName = $vp_info->udusername;
+        if(empty($loginName)) {
+            $loginName = ucwords(substr($first_name, 1, 1), ucwords($last_name));
+        }
+
+		$query="insert into contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , display_name = '$last_name, $first_name' , login_name = '$loginName', current = '$current' , employee_num = '$vp_info->HRRef' , employee_group = '$employee_group' , umc_emp = 'Y', timesheet_payroll_sequence_num = '$timesheet_payroll_sequence_num'";
 		@mysql_query($query);
 		$new_employee_id=@mysql_insert_id();
 		@update_trade($new_employee_id);
 		} else {
 			echo "getone succeeded..(select * from contacts where employee_num = '$vp_info->HRRef')<br>\r\n";
 		}
+
+        // FRON-5 Whenever we insert into contacts we need a corresponding record added to
+        // contacts_groups_members, so we will do this now...
+        $groupId = 104;     // GPH TODO: Hardcoded group id for Front Desk Users
+        $query="insert into contacts_groups_members values(null, $groupId, $new_employee_id)";
+        @mysql_query($query);
 	}
 
 }
 ////////////////////////////////////////////
 ////////////////////////////////////////////
-// Update 
+// Update
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 mysql_query("update contacts set company_id = '968', company = '$umc_info->company' where umc_emp = 'Y'");
