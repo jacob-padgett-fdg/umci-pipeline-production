@@ -70,6 +70,15 @@ class ReportTable {
                 $('input.column_filter').on( 'keyup click', function () {
                     filterColumn( $(this).parents('tr').attr('data-column'), true, false );
                 } );
+                $('select.column_filter').on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        $('<?php echo $tableName; ?>').DataTable().column( $(this).parents('tr').attr('data-column') )
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
             } );
         </script>
         <?php
@@ -201,7 +210,7 @@ class ReportTable {
         echo "</tr></thead><tbody>";
     }
 
-    public static function boss_search_filter ($initial_index, $search_terms, $tablename) {
+    public static function drawinglog_search_filter ($initial_index, $search_terms, $jobinfo_id) {
         ?>
         <div class="tablesearcherholder">
             <div style="float:left;">Filter data</div>
@@ -224,8 +233,27 @@ class ReportTable {
                     ?>
                     <tr id="filter_col<?php echo $j + 1; ?>" data-column="<?php echo $i; ?>">
                         <td><?php echo $search_terms[$j]; ?></td>
-                        <td align="center"><input placeholder='search text' type="text" class="column_filter"
-                                                  id="col<?php echo $i; ?>_filter"></td>
+                        <td align="center">
+                        <?php
+                        if ('Type' == $search_terms[$j]) {
+                            $query = "select distinct type from drawinglog where jobinfo_id='$jobinfo_id' order by type asc";
+                            $res = @mysql_query($query);
+                            echo "<select class='column_filter' id='col{$i}_filter'>";
+                            while($row=@mysql_fetch_object($res)) {
+                                echo "<option>{$row->type}</option>";
+                            }
+                            echo "</select>";
+                        ?>
+                            <!--input placeholder='<?php echo $query; ?>' type="text" class="column_filter" id="col<?php echo $i; ?>_filter"-->
+                        <?php
+                        } else {
+                        ?>
+                            <input placeholder='search text' type="text" class="column_filter"
+                                                      id="col<?php echo $i; ?>_filter">
+                        <?php
+                        }
+                        ?>
+                        </td>
                     </tr>
                 <?php
                 }

@@ -66,11 +66,11 @@ if ($global_jobinfo) {
         $res = @mysql_query($query);
     }
 	//include("fd_log_paging.php");
-    ReportTable::boss_search_filter(1, array(
+    ReportTable::drawinglog_search_filter(1, array(
         'Current', 'Area', 'Sheet #', 'Sheet Title', 'Rev', 'Rev Date', 'Orig Issue', 'Issued for Construction',
         'Sub to Eng', 'Ret from Eng', 'Resubmit Reqd', 'Submittal Status', 'Cur Sub Date', 'Sent to Field', 'Submitted to',
         'Notes', 'Type'
-    ), '#sub_application_main_table');
+    ), $global_jobinfo->jobinfo_id);
     echo "
     <div class='floating_header'>
     <center>
