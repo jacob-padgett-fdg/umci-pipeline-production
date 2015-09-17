@@ -31,7 +31,16 @@ if ($mode != "") {
     $mode = ereg_replace("[^a-zA-Z0-9_]", "", $mode);
 }
 
-$config = parse_ini_file($_SERVER['DOCUMENT_ROOT'] . '/config/config.ini');
+//* always looking at $_SERVER['DOCUMENT_ROOT'] causes failure when running scripts
+//* this is one untested portable solution (probably)
+//if (strlen($_SERVER['DOCUMENT_ROOT']) > 0)
+//    $inifile = $_SERVER['DOCUMENT_ROOT'] . '/config/config.ini'; //run on webserver
+//else
+//* but the following well-tested old code should renable scripts w/o breaking webserver
+    if (file_exists(realpath('/data/web/pipeline/config/config.ini')))
+        $inifile = '/data/web/pipeline/config/config.ini';
+
+$config = parse_ini_file($inifile);
 
 // FRON-41 Read in company id if it's present; This is used to
 // restrict invoice tallies by company.
