@@ -14,8 +14,10 @@ if ($rowcount<1) {
 	} else {
 	while($row=@mysql_fetch_object($res)) {
 		$row->type=htmlspecialchars($row->type);
-		if ($row->approval_required_age <= $age) $linkcolor="yellow";
-		else $linkcolor="blue";
+        //TBC - evidently users do not want to see yellow here - it is hard to read
+		//if ($row->approval_required_age <= $age) $linkcolor="yellow";
+		//else
+		$linkcolor="blue";
 		echo "<a href=$pagename?mode=svc_agreement_equipment_add_4&agreement_id=$agreement_id&category_id=$category_id&age=$age&equip_type_id=$row->equip_type_id>
 		<font color=$linkcolor>
 		$row->type
