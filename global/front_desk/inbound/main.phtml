@@ -94,7 +94,7 @@ function watch_the_show() {
 		if (ds_obj.value != 'undefined') {
 			if (ds_obj.value!=document.show_id_last) {
 				document.show_id_last=ds_obj.value;
-				pdflink='https://pipeline.umci.com/global/webfile$devel/index.html/files/inbound_preview.pdf?mode=webfile_view&files_id=' + ds_obj.value;
+				pdflink='/global/webfile$devel/index.html/files/inbound_preview.pdf?mode=webfile_view&files_id=' + ds_obj.value;
 				document.getElementById('doc_viewport').src=pdflink;
 				}
 			}
