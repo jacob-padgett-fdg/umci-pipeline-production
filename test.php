@@ -1,5 +1,5 @@
 <?php
 
 $i = 1;
-echo "HELLO WORLD!";
+print_r($GLOBALS);
 ?>
