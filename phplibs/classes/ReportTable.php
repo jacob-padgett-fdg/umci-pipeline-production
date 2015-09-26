@@ -89,19 +89,8 @@ class ReportTable {
         //initially - from boss
         ?>
         <div class="tablesearcherholder">
-            <div style="float:left;">Filter data</div>
-            <script>
-                function clear_inputs ()
-                {
-                    window.location.reload(true);
-                }
-            </script>
-            <div class="reset_control">
-                <a class="std_link" href="javascript:clear_inputs()">
-                    reset
-                </a>
-            </div>
-            <br/>
+            <? ReportTable::doResetControl(); ?>
+
             <table class='tablesearcher' cellpadding="3" cellspacing="0" border="0">
                 <tbody>
                 <?php
@@ -161,6 +150,8 @@ class ReportTable {
                 ).draw();
             }
 
+
+
             $(document).ready(function() {
                 $('#cnstdwglog').dataTable(
                 {
@@ -182,10 +173,10 @@ class ReportTable {
                 "autoWidth": false,
                 "stateSave": true
                 } );
+            } )
 
-                $('input.column_filter').on( 'keyup click', function () {
-                    filterColumn( $(this).parents('tr').attr('data-column'), true, false );
-                } );
+            $('input.column_filter').on( 'keyup click', function () {
+                filterColumn( $(this).parents('tr').attr('data-column'), true, false );
             } );
         </script>
         <?php
@@ -210,14 +201,22 @@ class ReportTable {
         echo "</tr></thead><tbody>";
     }
 
-    public static function drawinglog_search_filter ($initial_index, $search_terms, $jobinfo_id) {
+    public static function doResetControl() {
         ?>
-        <div class="tablesearcherholder">
             <div style="float:left;">Filter data</div>
             <script>
-                function clear_inputs ()
+                function clear_inputs()
                 {
-                    window.location.reload(true);
+                    $('input.column_filter').each(function( index ) {
+                        $( this ).val('');
+                    });
+                    $('select.column_filter').each(function( index ) {
+                        $( this ).val('');
+                    });
+                    $('.dataTable').DataTable()
+                        .search( '' )
+                        .columns().search( '' )
+                        .draw();
                 }
             </script>
             <div class="reset_control">
@@ -226,6 +225,13 @@ class ReportTable {
                 </a>
             </div>
             <br/>
+        <?
+    }
+    public static function drawinglog_search_filter ($initial_index, $search_terms, $jobinfo_id) {
+        ?>
+        <div class="tablesearcherholder">
+            <? ReportTable::doResetControl(); ?>
+
             <table class='tablesearcher' cellpadding="3" cellspacing="0" border="0">
                 <tbody>
                 <?php

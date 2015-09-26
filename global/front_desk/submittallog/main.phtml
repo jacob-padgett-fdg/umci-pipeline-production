@@ -94,13 +94,8 @@ fd_navs_header();
 echo "<div class='container-fluid'>";
 ?>
 <div class="tablesearcherholder">
-    <div style="float:left;">Filter data</div>
-    <div class="reset_control">
-        <a class="std_link" href="javascript:window.location.reload(true)">
-            reset
-        </a>
-    </div>
-    <br/>
+    <? ReportTable::doResetControl(); ?>
+    
     <table class='tablesearcher' cellpadding="3" cellspacing="0" border="0">
         <tbody>
             <tr id="filter_col1" data-column="1">
