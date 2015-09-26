@@ -1065,7 +1065,7 @@ function calendar_register_event($jobinfo_id,$category,$start_date,$unique_id=""
         if ($dontclose == 0) $return_to = "close_popup_win";
         else $return_to = $GLOBALS['REQUEST_URI'];
         $return_to = base64_encode($return_to);
-        echo "<a href=index.html?mode=contacts_edit&contacts_id=$contacts_id&return_to=$return_to><font color=blue>$link_text</font></a>";
+        echo "<a href=index.php?mode=contacts_edit&contacts_id=$contacts_id&return_to=$return_to><font color=blue>$link_text</font></a>";
     }
 
     function contact_rulecheck_die($rule, $text)
