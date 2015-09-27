@@ -44,17 +44,25 @@ class ReportTable {
         </tbody></table>
         <script>
 
+            var localReportTable; //one per page
 
             function filterColumn ( i, useRegex, useSmartSearch ) {
                 myValue = $('#col'+i+'_filter').val();
                 $('<?php echo $tableName; ?>').DataTable().column( i ).search(
                     myValue, useRegex, useSmartSearch
                 ).draw();
-                ('<?php echo $tableName; ?>').dataTable().stateSaveCallback(null, '{ ' + '"#col'+i+'_filter" : "' + myValue + '" }"' );
+                localReportTable.state().save();
             }
 
+            $(document).on( 'init.dt', function ( e, settings ) {
+                var api = new $.fn.dataTable.Api( settings );
+                var state = api.state.loaded();
+
+                // ... use `state` to restore information
+            } );
+
             $(document).ready(function() {
-                $('<?php echo $tableName; ?>').dataTable(
+                localReportTable = $('<?php echo $tableName; ?>').dataTable(
                 {
                 'paging': true,
                 'info': false,
@@ -66,7 +74,7 @@ class ReportTable {
                     "regex": true,
                     "smart": false
                   },
-                "stateSave": true,
+                "stateSave": true/*,
                 "stateSaveCallback": function (settings, data) {
                     var x;
 
@@ -98,7 +106,7 @@ class ReportTable {
                     } );
 
                     return o;
-                  }
+                  }*/
                 });
                 $('input.column_filter').on( 'keyup click', function () {
                     filterColumn( $(this).parents('tr').attr('data-column'), true, false );
