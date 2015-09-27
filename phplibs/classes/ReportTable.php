@@ -21,30 +21,10 @@ class ReportTable {
         $this->outputElementName = $outputElementName;
     }
 
-    public static function closeTable($tableName) {
-        echo "</tbody></table>
-            <script>
-                $(function(){
-                    //$('\#$tableName').tablesorter();
-                    $('\#$tableName').DataTable(
-                    {
-                    'paging': false,
-                    'info': false,
-                    'order': [], //no initial order
-                    'language': {
-                        'search': 'Find _INPUT_ in search results'
-                      }
-                    } );
-                });
-            </script>";
-    }
-
     public static function closeTable2 ($tableName, $appname) {
         ?>
         </tbody></table>
         <script>
-
-            var localReportTable; //one per page
 
             function filterColumn ( i, useRegex, useSmartSearch ) {
                 myValue = $('#col'+i+'_filter').val();
@@ -60,13 +40,15 @@ class ReportTable {
                 // must be done manually for some browsers e.g, Mozilla
                 if (null != state) {
                     for (i = 0; i < state.columns.length; i++) {
-                        $('#col'+i+'_filter').val(state.columns[i].search.search);
+                        tmp = state.columns[i].search.search;
+                        tmp = tmp.replace(/^\^/, '').replace(/\$$/,'').replace(/\\-/g, '/');
+                        $('#col'+i+'_filter').val(tmp);
                     }
                 }
             } );
 
             $(document).ready(function() {
-                localReportTable = $('<?php echo $tableName; ?>').dataTable(
+                $('<?php echo $tableName; ?>').dataTable(
                 {
                 'bStateSave' : true,
                 'paging': true,
@@ -103,7 +85,7 @@ class ReportTable {
         //initially - from boss
         ?>
         <div class="tablesearcherholder">
-            <? ReportTable::doResetControl(); ?>
+            <? ReportTable::doCommonControls(); ?>
 
             <table class='tablesearcher' cellpadding="3" cellspacing="0" border="0">
                 <tbody>
@@ -186,39 +168,7 @@ class ReportTable {
                 "deferRender": true,
                 "autoWidth": false,
                 "stateSave": true,
-                "stateSaveCallback": function (settings, data) {
-                    var x;
-
-                    //Send an Ajax request to the server with the state object
-                    $.ajax( {
-                      "url": "/async/state_save/cnstdwglog.php",
-                      "data": data,
-                      "dataType": "json",
-                      "type": "POST",
-                      "success": function () {
-                            var o = true;
-                            return true;
-                        }
-                      }
-                    );
-                 },
-                  "stateLoadCallback": function (settings) {
-                    var o;
-
-                    // Send an Ajax request to the server to get the data. Note that
-                    // this is a synchronous request since the data is expected back from the
-                    // function
-                    $.ajax( {
-                      "url": "/async/state_load/cnstdwglog.php",
-                      "async": false,
-                      "dataType": "json",
-                      "success": function (json) {
-                        o = json;
-                      }
-                    } );
-
-                    return o;
-                  }
+                "bStateSave": true
                 } );
             } );
 
@@ -248,7 +198,7 @@ class ReportTable {
         echo "</tr></thead><tbody>";
     }
 
-    public static function doResetControl() {
+    public static function doCommonControls() {
         ?>
             <div style="float:left;">Filter data</div>
             <script>
@@ -277,7 +227,7 @@ class ReportTable {
     public static function drawinglog_search_filter ($initial_index, $search_terms, $jobinfo_id) {
         ?>
         <div class="tablesearcherholder">
-            <? ReportTable::doResetControl(); ?>
+            <? ReportTable::doCommonControls(); ?>
 
             <table class='tablesearcher' cellpadding="3" cellspacing="0" border="0">
                 <tbody>
