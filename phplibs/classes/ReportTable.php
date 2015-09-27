@@ -68,7 +68,7 @@ class ReportTable {
                 "stateSaveCallback": function (settings, data) {
                     var x;
 
-                    Send an Ajax request to the server with the state object
+                    //Send an Ajax request to the server with the state object
                     $.ajax( {
                       "url": "/async/state_save/<?php echo $appname; ?>.php",
                       "data": data,
