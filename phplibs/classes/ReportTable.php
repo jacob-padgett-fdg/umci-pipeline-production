@@ -64,7 +64,7 @@ class ReportTable {
                     "regex": true,
                     "smart": false
                   },
-                "stateSave": true/*,
+                "stateSave": true,
                 "stateSaveCallback": function (settings, data) {
                     var x;
 
@@ -96,7 +96,7 @@ class ReportTable {
                     } );
 
                     return o;
-                  }*/
+                  }
                 });
                 $('input.column_filter').on( 'keyup click', function () {
                     filterColumn( $(this).parents('tr').attr('data-column'), true, false );
