@@ -110,7 +110,7 @@ class ReportTable {
                             .search( val ? '^'+val+'$' : '', true, false )
                             .draw();
                     } );
-            };
+            });
         </script>
         <?php
     }
@@ -217,7 +217,7 @@ class ReportTable {
                             return true;
                         }
                       }
-                    } );
+                    );
                  },
                   "stateLoadCallback": function (settings) {
                     var o;
@@ -237,7 +237,7 @@ class ReportTable {
                     return o;
                   }
                 } );
-            } )
+            } );
 
             $('input.column_filter').on( 'keyup click', function () {
                 filterColumn( $(this).parents('tr').attr('data-column'), true, false );
