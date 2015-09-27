@@ -46,10 +46,11 @@ class ReportTable {
 
 
             function filterColumn ( i, useRegex, useSmartSearch ) {
+                myValue = $('#col'+i+'_filter').val();
                 $('<?php echo $tableName; ?>').DataTable().column( i ).search(
-                    $('#col'+i+'_filter').val(), useRegex, useSmartSearch
+                    myValue, useRegex, useSmartSearch
                 ).draw();
-                ('<?php echo $tableName; ?>').dataTable().stateSaveCallback(null, '{ ' + '"#col'+i+'_filter" : " + $('#col'+i+'_filter').val() + '" }") );
+                ('<?php echo $tableName; ?>').dataTable().stateSaveCallback(null, '{ ' + '"#col'+i+'_filter" : "' + myValue + '" }") );
             }
 
             $(document).ready(function() {
