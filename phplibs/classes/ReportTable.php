@@ -39,7 +39,7 @@ class ReportTable {
             </script>";
     }
 
-    public static function closeTable2 ($tableName) {
+    public static function closeTable2 ($tableName, $appname) {
         ?>
         </tbody></table>
         <script>
@@ -64,8 +64,40 @@ class ReportTable {
                     "regex": true,
                     "smart": false
                   },
-                "stateSave": true
-                } );
+                "stateSave": true,
+                "stateSaveCallback": function (settings, data) {
+                    var x;
+
+                    Send an Ajax request to the server with the state object
+                    $.ajax( {
+                      "url": "/async/state_save/<?php echo $appname;?>.php",
+                      "data": data,
+                      "dataType": "json",
+                      "type": "POST",
+                      "success": function () {
+                            var o = true;
+                            return true;
+                        }
+                      }
+                    } );
+                 },
+                  "stateLoadCallback": function (settings) {
+                    var o;
+
+                    // Send an Ajax request to the server to get the data. Note that
+                    // this is a synchronous request since the data is expected back from the
+                    // function
+                    $.ajax( {
+                      "url": "/async/state_load/<?php echo $appname;?>.php",
+                      "async": false,
+                      "dataType": "json",
+                      "success": function (json) {
+                        o = json;
+                      }
+                    } );
+
+                    return o;
+                  }
 
                 $('input.column_filter').on( 'keyup click', function () {
                     filterColumn( $(this).parents('tr').attr('data-column'), true, false );
@@ -171,7 +203,40 @@ class ReportTable {
                 "ajax": "/async/cnstdwglog/cnstdwglog.php?jobinfo_id=<?php echo $jobinfo_id; ?>&section=<?php echo $section;?>&last_issuance_id=<?php echo $issuance_id; ?>",
                 "deferRender": true,
                 "autoWidth": false,
-                "stateSave": true
+                "stateSave": true,
+                "stateSaveCallback": function (settings, data) {
+                    var x;
+
+                    Send an Ajax request to the server with the state object
+                    $.ajax( {
+                      "url": "/async/state_save/cnstdwglog.php",
+                      "data": data,
+                      "dataType": "json",
+                      "type": "POST",
+                      "success": function () {
+                            var o = true;
+                            return true;
+                        }
+                      }
+                    } );
+                 },
+                  "stateLoadCallback": function (settings) {
+                    var o;
+
+                    // Send an Ajax request to the server to get the data. Note that
+                    // this is a synchronous request since the data is expected back from the
+                    // function
+                    $.ajax( {
+                      "url": "/async/state_load/cnstdwglog.php",
+                      "async": false,
+                      "dataType": "json",
+                      "success": function (json) {
+                        o = json;
+                      }
+                    } );
+
+                    return o;
+                  }
                 } );
             } )
 
