@@ -49,6 +49,7 @@ class ReportTable {
                 $('<?php echo $tableName; ?>').DataTable().column( i ).search(
                     $('#col'+i+'_filter').val(), useRegex, useSmartSearch
                 ).draw();
+                ('<?php echo $tableName; ?>').dataTable().stateSaveCallback(null, '{ ' + '"#col'+i+'_filter" : " + $('#col'+i+'_filter').val() + '" }") );
             }
 
             $(document).ready(function() {
