@@ -70,7 +70,7 @@ class ReportTable {
 
                     Send an Ajax request to the server with the state object
                     $.ajax( {
-                      "url": "/async/state_save/<?php echo $appname;?>.php",
+                      "url": "/async/state_save/<?php echo $appname; ?>.php",
                       "data": data,
                       "dataType": "json",
                       "type": "POST",
@@ -78,8 +78,7 @@ class ReportTable {
                             var o = true;
                             return true;
                         }
-                      }
-                    } );
+                      });
                  },
                   "stateLoadCallback": function (settings) {
                     var o;
@@ -88,7 +87,7 @@ class ReportTable {
                     // this is a synchronous request since the data is expected back from the
                     // function
                     $.ajax( {
-                      "url": "/async/state_load/<?php echo $appname;?>.php",
+                      "url": "/async/state_load/<?php echo $appname; ?>.php",
                       "async": false,
                       "dataType": "json",
                       "success": function (json) {
@@ -98,7 +97,7 @@ class ReportTable {
 
                     return o;
                   }
-
+                });
                 $('input.column_filter').on( 'keyup click', function () {
                     filterColumn( $(this).parents('tr').attr('data-column'), true, false );
                 } );
@@ -111,7 +110,7 @@ class ReportTable {
                             .search( val ? '^'+val+'$' : '', true, false )
                             .draw();
                     } );
-            } );
+            };
         </script>
         <?php
     }
@@ -207,7 +206,7 @@ class ReportTable {
                 "stateSaveCallback": function (settings, data) {
                     var x;
 
-                    Send an Ajax request to the server with the state object
+                    //Send an Ajax request to the server with the state object
                     $.ajax( {
                       "url": "/async/state_save/cnstdwglog.php",
                       "data": data,
