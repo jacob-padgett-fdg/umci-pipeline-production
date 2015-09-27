@@ -51,19 +51,24 @@ class ReportTable {
                 $('<?php echo $tableName; ?>').DataTable().column( i ).search(
                     myValue, useRegex, useSmartSearch
                 ).draw();
-                localReportTable.state().save();
             }
 
             $(document).on( 'init.dt', function ( e, settings ) {
                 var api = new $.fn.dataTable.Api( settings );
                 var state = api.state.loaded();
-
-                // ... use `state` to restore information
+                // ... use `state` to restore information for filters
+                // must be done manually for some browsers e.g, Mozilla
+                if (null != state) {
+                    for (i = 0; i < state.columns.length; i++) {
+                        $('#col'+i+'_filter').val(state.columns[i].search.search ));
+                    }
+                }
             } );
 
             $(document).ready(function() {
                 localReportTable = $('<?php echo $tableName; ?>').dataTable(
                 {
+                'bStateSave' : true,
                 'paging': true,
                 'info': false,
                 'order': [], //no initial order
@@ -74,39 +79,7 @@ class ReportTable {
                     "regex": true,
                     "smart": false
                   },
-                "stateSave": true/*,
-                "stateSaveCallback": function (settings, data) {
-                    var x;
-
-                    //Send an Ajax request to the server with the state object
-                    $.ajax( {
-                      "url": "/async/state_save/<?php echo $appname; ?>.php",
-                      "data": data,
-                      "dataType": "json",
-                      "type": "POST",
-                      "success": function () {
-                            var o = true;
-                            return true;
-                        }
-                      });
-                 },
-                  "stateLoadCallback": function (settings) {
-                    var o;
-
-                    // Send an Ajax request to the server to get the data. Note that
-                    // this is a synchronous request since the data is expected back from the
-                    // function
-                    $.ajax( {
-                      "url": "/async/state_load/<?php echo $appname; ?>.php",
-                      "async": false,
-                      "dataType": "json",
-                      "success": function (json) {
-                        o = json;
-                      }
-                    } );
-
-                    return o;
-                  }*/
+                "stateSave": true
                 });
                 $('input.column_filter').on( 'keyup click', function () {
                     filterColumn( $(this).parents('tr').attr('data-column'), true, false );
