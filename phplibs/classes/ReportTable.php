@@ -60,7 +60,7 @@ class ReportTable {
                 // must be done manually for some browsers e.g, Mozilla
                 if (null != state) {
                     for (i = 0; i < state.columns.length; i++) {
-                        $('#col'+i+'_filter').val(state.columns[i].search.search ));
+                        $('#col'+i+'_filter').val(state.columns[i].search.search);
                     }
                 }
             } );
