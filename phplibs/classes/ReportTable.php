@@ -33,20 +33,6 @@ class ReportTable {
                 ).draw();
             }
 
-            $(document).on( 'init.dt', function ( e, settings ) {
-                var api = new $.fn.dataTable.Api( settings );
-                var state = api.state.loaded();
-                // ... use `state` to restore information for filters
-                // must be done manually for some browsers e.g, Mozilla
-                if (null != state) {
-                    for (i = 0; i < state.columns.length; i++) {
-                        tmp = state.columns[i].search.search;
-                        tmp = tmp.replace(/^\^/, '').replace(/\$$/,'').replace(/\\-/g, '/');
-                        $('#col'+i+'_filter').val(tmp);
-                    }
-                }
-            } );
-
             $(document).ready(function() {
                 $('<?php echo $tableName; ?>').dataTable(
                 {
@@ -85,7 +71,7 @@ class ReportTable {
         //initially - from boss
         ?>
         <div class="tablesearcherholder">
-            <? ReportTable::doCommonControls(); ?>
+            <? ReportTable::doCommonControls('#cnstdwglog'); ?>
 
             <table class='tablesearcher' cellpadding="3" cellspacing="0" border="0">
                 <tbody>
@@ -198,10 +184,24 @@ class ReportTable {
         echo "</tr></thead><tbody>";
     }
 
-    public static function doCommonControls() {
+    public static function doCommonControls($tableName) {
         ?>
             <div style="float:left;">Filter data</div>
             <script>
+                $(document).on( 'init.dt', function ( e, settings ) {
+                    var api = new $.fn.dataTable.Api( settings );
+                    var state = api.state.loaded();
+                    // ... use `state` to restore information for filters
+                    // must be done manually for some browsers e.g, Mozilla
+                    if (null != state) {
+                        for (i = 0; i < state.columns.length; i++) {
+                            tmp = state.columns[i].search.search;
+                            tmp = tmp.replace(/^\^/, '').replace(/\$$/,'').replace(/\\-/g, '/'); //strip out escape and terminal regex ^ and $
+                            $('#col'+i+'_filter').val(tmp);
+                        }
+                    }
+                } );
+
                 function clear_inputs()
                 {
                     $('input.column_filter').each(function( index ) {
@@ -227,7 +227,7 @@ class ReportTable {
     public static function drawinglog_search_filter ($initial_index, $search_terms, $jobinfo_id) {
         ?>
         <div class="tablesearcherholder">
-            <? ReportTable::doCommonControls(); ?>
+            <? ReportTable::doCommonControls('drawinglog'); //?>
 
             <table class='tablesearcher' cellpadding="3" cellspacing="0" border="0">
                 <tbody>
