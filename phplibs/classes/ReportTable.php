@@ -50,7 +50,7 @@ class ReportTable {
                 $('<?php echo $tableName; ?>').DataTable().column( i ).search(
                     myValue, useRegex, useSmartSearch
                 ).draw();
-                ('<?php echo $tableName; ?>').dataTable().stateSaveCallback(null, '{ ' + '"#col'+i+'_filter" : "' + myValue + '" }") );
+                ('<?php echo $tableName; ?>').dataTable().stateSaveCallback(null, '{ ' + '"#col'+i+'_filter" : "' + myValue + '" }"' );
             }
 
             $(document).ready(function() {
