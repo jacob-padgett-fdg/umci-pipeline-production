@@ -196,7 +196,7 @@ class ReportTable {
                     if (null != state) {
                         for (i = 0; i < state.columns.length; i++) {
                             tmp = state.columns[i].search.search;
-                            tmp = tmp.replace(/^\^/, '').replace(/\$$/,'').replace(/\\-/g, '/'); //strip out escape and terminal regex ^ and $
+                            tmp = tmp.replace(/^\^/, '').replace(/\$$/,'').replace(/\\-/g, '-'); //strip out escape and terminal regex ^ and $
                             $('#col'+i+'_filter').val(tmp);
                         }
                     }
