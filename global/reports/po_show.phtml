@@ -299,9 +299,9 @@ while ($row=@mssql_fetch_object($res)) {
 			$row->OrigUnits\\$row->RecvdUnits
 		</td><td>
 			$row->UM
-		</td><td>
+		</td><td class=\"po-cost\">
 			" . format_long_decimal($row->CurUnitCost,2) . "
-		</td><td>
+		</td><td class=\"po-cost\">
 			" . format_long_decimal($total_cost,2) . "
 		</td><td>
 			$row->TaxType

@@ -1,0 +1,17 @@
+table.wideprint { width: 100%; }
+
+tr.noprint { display: none; }
+
+td.noprint { height: 0px; width: 0px; }
+
+div.noprint { display: none; position: relative; border: 15px solid black;}
+
+a.noprint { display: none; }
+
+form.noprint { display: none; }
+
+font.noprint { display: none; }
+
+br.noprint { display: none; }
+
+p.noprint { display: none; }
