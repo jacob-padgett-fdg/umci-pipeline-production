@@ -1,11 +1,20 @@
 <?
+require("querylib.inc");
+//require("local.inc");
+
+$mysql_link = mysql_connect("localhost", "globalreadwrite", "poilkjbnm") or die(mysql_error());
+mysql_select_db("global");
+
 if ($agreement_id=="") die("ERROR: Application error. Please call your system administrator!");
 $agreement_info=load_agreement_info($agreement_id);
 if (!($agreement_info)) die("ERROR: Invalid agreement. Application error! Please contact your system administrator!");
+
+/*
 if ($agreement_info->status!="New") {
 	forward("svc_agreement_edit_finalize&agreement_id=$agreement_id");
 	exit;
 	}
+*/
 
 $filename="equipment_list.csv";
 //header("Content-type: application/octet-stream");
