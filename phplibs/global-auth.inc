@@ -61,7 +61,7 @@ $encryption_seed = $config['encryption_seed'];
 //session_name('sess-' . $auth_database_name);
 //session_start();
 session_register('auth_backend_user_logged_in');
-    session_register('auth_backend_database_username');
+session_register('auth_backend_database_username');
 session_register('auth_backend_database_password');
 session_register('auth_backend_database_global_user_id');
 session_register('global_jobinfo_id');
