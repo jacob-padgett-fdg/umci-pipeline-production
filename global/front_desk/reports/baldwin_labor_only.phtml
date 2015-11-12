@@ -210,7 +210,9 @@ function print_ct_j_totals($job) {
 	";
 	}
 
-function add_to_ct_totals($ct) {
+
+function add_to_ct_totals($ct)
+{
 	global 	$ct_j_total_rows,$ct_j_totals,$ct_total_rows,$ct_type_last,$tbrow,$ct_totals,$lastjob,$this_job,$ct_g_totals,$ct_g_total_rows;
 	if ($ct_total_rows=="") $ct_total_rows=0;
 	if (($ct_type_last!=$ct)||($lastjob!=$this_job)) {
@@ -219,38 +221,44 @@ function add_to_ct_totals($ct) {
 		}
 	$ct_type_last=$ct;
 	$ct_total_rows=$ct_total_rows + 1;
-	$ct_totals->h_est=$ct_totals->h_est + $tbrow->CurrEstHours;
-	$ct_totals->h_act=$ct_totals->h_act + $tbrow->ActualHours;
-	$ct_totals->h_rem=$ct_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
-	$ct_totals->c_est=$ct_totals->c_est + $tbrow->CurrEstCost;
-	$ct_totals->c_act=$ct_totals->c_act + $tbrow->ActualCost;
-	$ct_totals->c_cmt=$ct_totals->c_cmt + $tbrow->RemainCmtdCost;
-	$ct_totals->c_rem=$ct_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
-	$ct_totals->r_hrs=$ct_totals->r_hrs + $tbrow->RangeHours;
-	$ct_totals->r_cst=$ct_totals->r_cst + $tbrow->RangeCosts;
 	
-	$ct_g_total_rows=$ct_g_total_rows + 1;
-	$ct_g_totals->h_est=$ct_g_totals->h_est + $tbrow->CurrEstHours;
-	$ct_g_totals->h_act=$ct_g_totals->h_act + $tbrow->ActualHours;
-	$ct_g_totals->h_rem=$ct_g_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
-	$ct_g_totals->c_est=$ct_g_totals->c_est + $tbrow->CurrEstCost;
-	$ct_g_totals->c_act=$ct_g_totals->c_act + $tbrow->ActualCost;
-	$ct_g_totals->c_cmt=$ct_g_totals->c_cmt + $tbrow->RemainCmtdCost;
-	$ct_g_totals->c_rem=$ct_g_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
-	$ct_g_totals->r_hrs=$ct_g_totals->r_hrs + $tbrow->RangeHours;
-	$ct_g_totals->r_cst=$ct_g_totals->r_cst + $tbrow->RangeCosts;
-
-	$ct_j_total_rows=$ct_j_total_rows + 1;
-	$ct_j_totals->h_est=$ct_j_totals->h_est + $tbrow->CurrEstHours;
-	$ct_j_totals->h_act=$ct_j_totals->h_act + $tbrow->ActualHours;
-	$ct_j_totals->h_rem=$ct_j_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
-	$ct_j_totals->c_est=$ct_j_totals->c_est + $tbrow->CurrEstCost;
-	$ct_j_totals->c_act=$ct_j_totals->c_act + $tbrow->ActualCost;
-	$ct_j_totals->c_cmt=$ct_j_totals->c_cmt + $tbrow->RemainCmtdCost;
-	$ct_j_totals->c_rem=$ct_j_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
-	$ct_j_totals->r_hrs=$ct_j_totals->r_hrs + $tbrow->RangeHours;
-	$ct_j_totals->r_cst=$ct_j_totals->r_cst + $tbrow->RangeCosts;
+	if ($tbrow->Phase != 25 && $tbrow->Phase != 33 && $tbrow->Phase != 55)
+	{
+	
+		$ct_totals->h_est=$ct_totals->h_est + $tbrow->CurrEstHours;
+		$ct_totals->h_act=$ct_totals->h_act + $tbrow->ActualHours;
+		$ct_totals->h_rem=$ct_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+		$ct_totals->c_est=$ct_totals->c_est + $tbrow->CurrEstCost;
+		$ct_totals->c_act=$ct_totals->c_act + $tbrow->ActualCost;
+		$ct_totals->c_cmt=$ct_totals->c_cmt + $tbrow->RemainCmtdCost;
+		$ct_totals->c_rem=$ct_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+		$ct_totals->r_hrs=$ct_totals->r_hrs + $tbrow->RangeHours;
+		$ct_totals->r_cst=$ct_totals->r_cst + $tbrow->RangeCosts;
+		
+		$ct_g_total_rows=$ct_g_total_rows + 1;
+		$ct_g_totals->h_est=$ct_g_totals->h_est + $tbrow->CurrEstHours;
+		$ct_g_totals->h_act=$ct_g_totals->h_act + $tbrow->ActualHours;
+		$ct_g_totals->h_rem=$ct_g_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+		$ct_g_totals->c_est=$ct_g_totals->c_est + $tbrow->CurrEstCost;
+		$ct_g_totals->c_act=$ct_g_totals->c_act + $tbrow->ActualCost;
+		$ct_g_totals->c_cmt=$ct_g_totals->c_cmt + $tbrow->RemainCmtdCost;
+		$ct_g_totals->c_rem=$ct_g_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+		$ct_g_totals->r_hrs=$ct_g_totals->r_hrs + $tbrow->RangeHours;
+		$ct_g_totals->r_cst=$ct_g_totals->r_cst + $tbrow->RangeCosts;
+	
+		$ct_j_total_rows=$ct_j_total_rows + 1;
+		$ct_j_totals->h_est=$ct_j_totals->h_est + $tbrow->CurrEstHours;
+		$ct_j_totals->h_act=$ct_j_totals->h_act + $tbrow->ActualHours;
+		$ct_j_totals->h_rem=$ct_j_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+		$ct_j_totals->c_est=$ct_j_totals->c_est + $tbrow->CurrEstCost;
+		$ct_j_totals->c_act=$ct_j_totals->c_act + $tbrow->ActualCost;
+		$ct_j_totals->c_cmt=$ct_j_totals->c_cmt + $tbrow->RemainCmtdCost;
+		$ct_j_totals->c_rem=$ct_j_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+		$ct_j_totals->r_hrs=$ct_j_totals->r_hrs + $tbrow->RangeHours;
+		$ct_j_totals->r_cst=$ct_j_totals->r_cst + $tbrow->RangeCosts;
 	}
+}
+
 $ct_type_last=0;
 clear_ct_totals();
 
