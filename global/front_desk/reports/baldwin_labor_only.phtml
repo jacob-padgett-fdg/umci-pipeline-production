@@ -214,7 +214,7 @@ function add_to_ct_totals($ct) {
 	global 	$ct_j_total_rows,$ct_j_totals,$ct_total_rows,$ct_type_last,$tbrow,$ct_totals,$lastjob,$this_job,$ct_g_totals,$ct_g_total_rows;
 	if ($ct_total_rows=="") $ct_total_rows=0;
 	if (($ct_type_last!=$ct)||($lastjob!=$this_job)) {
-		if ($ct_total_rows>1) print_ct_totals($ct_type_last,$lastjob);
+		//if ($ct_total_rows>1) print_ct_totals($ct_type_last,$lastjob);
 		clear_ct_totals();
 		}
 	$ct_type_last=$ct;
@@ -432,27 +432,33 @@ while ($tbrow=@mssql_fetch_object($tbres)) {
 	$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
 	$cost_remaining=gap_num($cost_remaining);
 	$cttext=$ct_array[$tbrow->CostType];
-	echo "
-	<tr><td class=l>";
-		if ($tbrow->Phase==55) {
-			echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->Phase-$category ($cttext)</font></a>";
-			} else {
-			echo "$tbrow->Phase-$category ($cttext)";
-			}
-		echo "
-	</td><td>
-		$tbrow->CurrEstHours
-	</td><td>
-		$tbrow->ActualHours
-	</td><td style=\"border-right: 1px solid black;\">
-		$hours_remaining
-	</td>
 	
 	
-	<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
-		" . gap_num($weekly_sums->Hours) . "
-	</td></tr>
-	";
+	
+		if ($tbrow->Phase != 25 && $tbrow->Phase != 33 && $tbrow->Phase != 55)
+		{
+			echo "
+			<tr><td class=l>";
+				if ($tbrow->Phase==55) {
+					echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->Phase-$category ($cttext)</font></a>";
+					} else {
+					echo "$tbrow->Phase-$category ($cttext)";
+					}
+				echo "
+			</td><td>
+				$tbrow->CurrEstHours
+			</td><td>
+				$tbrow->ActualHours
+			</td><td style=\"border-right: 1px solid black;\">
+				$hours_remaining
+			</td>
+			
+			
+			<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+				" . gap_num($weekly_sums->Hours) . "
+			</td></tr>
+			";
+		}
 	}
 if ($debug==1) tcheck("before printing final totals");
 

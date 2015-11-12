@@ -225,7 +225,7 @@ function add_to_ct_totals($ct) {
 	if ($ct_total_rows=="") $ct_total_rows=0;
 	//echo "<tr><td>$lastjob</td><td>$this_job</td></tr>";
 	if (($ct_type_last!=$ct)||($lastjob!=$this_job)) {
-		if ($ct_total_rows>1) print_ct_totals($ct_type_last,$lastjob);
+		//if ($ct_total_rows>1) print_ct_totals($ct_type_last,$lastjob);
 		clear_ct_totals();
 		}
 	if ($lastjob!=$this_job) {
@@ -433,24 +433,30 @@ while ($tbrow=@mssql_fetch_object($tbres)) {
 	$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
 	$cost_remaining=gap_num($cost_remaining);
 	
-	
 	$cttext=$ct_array[$tbrow->CostType];
-	echo "
-	<tr><td class=l>
-		$phase_info->Phase&nbsp;-&nbsp;$phase_info->Description ($cttext)
-	</td><td>
-		$tbrow->CurrEstHours
-	</td><td>
-		$tbrow->ActualHours
-	</td><td style=\"border-right: 1px solid black;\">
-		$hours_remaining
-	</td>
 	
+	$phase_flag = substr($phase_info->Phase,0,2);
+	//print $phase_info->Phase;
 	
-	<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
-		" . gap_num($weekly_sums->Hours) . "
-	</td></tr>
-	";
+	if ($phase_flag != 25 && $phase_flag != 33 && $phase_flag != 55)	
+	{
+		echo "
+		<tr><td class=l>
+			$phase_info->Phase&nbsp;-&nbsp;$phase_info->Description ($cttext)
+		</td><td>
+			$tbrow->CurrEstHours
+		</td><td>
+			$tbrow->ActualHours
+		</td><td style=\"border-right: 1px solid black;\">
+			$hours_remaining
+		</td>
+		
+		
+		<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+			" . gap_num($weekly_sums->Hours) . "
+		</td></tr>
+		";
+	}
 	}
 $this_job=0;
 add_to_ct_totals($ct_type_last);
