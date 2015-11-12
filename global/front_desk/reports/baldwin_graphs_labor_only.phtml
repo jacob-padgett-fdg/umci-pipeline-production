@@ -1,0 +1,39 @@
+<?
+//require('header.phtml');
+//fd_navs_header();
+/*
+echo "<table border=0 cellspacing=0 cellpadding=4>
+<tr><td  bgcolor=$fd_color_2  style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\">
+	<b><a href=$pagename?mode=main><font color=blue><b>General Information</b></font></a>
+</td>";
+	
+$baldwin_rpt_qry="select * from front_desk_reports_permissions left join front_desk_reports on ( front_desk_reports_permissions.report_id = front_desk_reports.report_id ) where report_name = 'baldwin' and contacts_id = '$global_user_id' and ( only_for_job = 0 || only_for_job = '$global_jobinfo->jobinfo_id')";
+if ((getoneb($baldwin_rpt_qry))||(pm_for_this_job())) {
+		echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>Financial Summary</b></td>";
+		}
+	echo "
+	<td  bgcolor=$fd_color_2  style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=main_job_reports><font color=blue>
+			<b>Job Reports</b></font></a></td>
+	</td>";
+
+
+if (($adminuser)||($fd_manager)) {
+	echo "<td bgcolor=$fd_color_2 style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=manage_jobs&jobinfo_id=$global_jobinfo->jobinfo_id><font color=blue><b>Job Setup</b></font></a></td>";
+	}
+
+echo "</tr></table>
+*/
+session_write_close();
+echo "
+
+<div id=baldwin_graph_inline_1>
+	<img src='$pagename?mode=report_show&report_name=graph_hours_by_week&show_jobinfo_id=$global_jobinfo_id'>
+</div>
+
+<div style=\"display: flex;\" id=baldwin_graph_inline_2>
+	<img $width src='$pagename?mode=report_show&report_name=graph_plumbing_hours&show_jobinfo_id=$global_jobinfo_id'>
+    <img $width src='$pagename?mode=report_show&report_name=graph_pipe_hours&show_jobinfo_id=$global_jobinfo_id'>
+    <img $width src='$pagename?mode=report_show&report_name=graph_sheet_hours&show_jobinfo_id=$global_jobinfo_id'>
+</div>
+";
+?>
