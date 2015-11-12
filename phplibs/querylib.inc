@@ -1216,6 +1216,7 @@ function calendar_register_event($jobinfo_id,$category,$start_date,$unique_id=""
         $jobinfo_id = addslashes($jobinfo_id);
         $jobinfo = getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
         $pm = getoneb("select * from contacts where contacts_id = '$jobinfo->project_manager_id'");
+        $px = getoneb("select * from contacts where contacts_id = '$jobinfo->project_sponsor_id'");
         $det = getoneb("select * from contacts where contacts_id = '$jobinfo->detailing_lead_id'");
         $c_admin = getoneb("select * from contacts where contacts_id = '$jobinfo->contract_admin'");
         $safety = getoneb("select * from contacts where contacts_id = '$jobinfo->safetyrep'");
@@ -1231,7 +1232,11 @@ function calendar_register_event($jobinfo_id,$category,$start_date,$unique_id=""
 	<div style=\"background-color: #ffffff; border: 2px solid;\" id=\"project_team_list\"><table border=0 cellspacing=0 cellpadding=3>
 	<tr><td colspan=3 align=center bgcolor=$fd_color_4><b>Project Team</b></td></tr>";
 
-        if ($pm) {
+        if ($pm || $px) {
+            
+            if (!$pm)
+                $pm = $px;
+                
             $link = contact_view_link($pm->contacts_id);
             echo "<tr bgcolor=$fd_color_1><td>";
             if ($callback != "") echo "</td>&nbsp;<td>";
@@ -1422,11 +1427,15 @@ function calendar_register_event($jobinfo_id,$category,$start_date,$unique_id=""
         } else {
             $jobinfo = $global_jobinfo;
         }
+        
         //if (($global_user_id==11)||($global_user_id==352)||($global_user_id==133)||($global_user_id==22)||($global_user_id==3)||($global_user_id==4)||($global_user_id==20)) return (TRUE);
         if (AccessControl::isProjectManager($global_user_id)) {
             return (TRUE);
         }
-        if ($jobinfo->project_manager_id == $global_user_id) return (TRUE);
+        if ($jobinfo->project_manager_id == $global_user_id) {
+            return (TRUE);
+        }
+        
         return (getoneb("select * from front_desk_job_pms where jobinfo_id = '$jobinfo->jobinfo_id' and contacts_id = '$global_user_id'"));
         //return (FALSE);
     }
@@ -4272,10 +4281,21 @@ function findsubmitform (formid,fieldname,value,submit) {
         global $global_user_id;
         if ($contacts_id == "") $contacts_id = addslashes($global_user_id);
         $admin = getoneb("select * from front_desk_job_admins where jobinfo_id = '$jobinfo_id' and contacts_id = '$contacts_id' limit 1");
+        
         if (!($admin)) {
-            //$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+            
             //if ($jobinfo->project_manager_id==$contacts_id) $admin=TRUE;
-            if (pm_for_this_job($jobinfo_id)) $admin = TRUE;
+            if (pm_for_this_job($jobinfo_id))
+            {
+                return TRUE;
+            }
+            else
+            {
+                $jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+                
+                if ($jobinfo->project_sponsor_id == $contacts_id && $contacts_id != "")
+                    return TRUE;
+            }
         }
         return $admin;
     }
@@ -5193,16 +5213,16 @@ function position_menus() {
     {
         global $report_name, $global_user_id, $adminuser, $global_jobinfo_id;
         /*if ($report_name_special!="") $rname=$report_name_special;
-	else $rname=$report_name;
-	if ($rname=="") die_security();
-	$rname=addslashes($rname);
-	$perms=getoneb("select * from front_desk_reports natural join front_desk_reports_permissions where contacts_id = '$global_user_id' and report_name = '$rname' and only_for_job = '$global_jobinfo_id' and only_for_job != 0");
-	if (!($perms)) $perms=getoneb("select * from front_desk_reports natural join front_desk_reports_permissions where contacts_id = '$global_user_id' and report_name = '$rname'");
-	if (!($perms)) die_security();
-	if ($perms->admin_user=='Y') $adminuser=TRUE;
-	else $adminuser=FALSE;
-	return ($perms);
-	*/
+            else $rname=$report_name;
+            if ($rname=="") die_security();
+            $rname=addslashes($rname);
+            $perms=getoneb("select * from front_desk_reports natural join front_desk_reports_permissions where contacts_id = '$global_user_id' and report_name = '$rname' and only_for_job = '$global_jobinfo_id' and only_for_job != 0");
+            if (!($perms)) $perms=getoneb("select * from front_desk_reports natural join front_desk_reports_permissions where contacts_id = '$global_user_id' and report_name = '$rname'");
+            if (!($perms)) die_security();
+            if ($perms->admin_user=='Y') $adminuser=TRUE;
+            else $adminuser=FALSE;
+            return ($perms);
+        */
         $perms = get_report_permissions();
         if (!($perms)) die_security();
     }
