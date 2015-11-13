@@ -4272,10 +4272,21 @@ function findsubmitform (formid,fieldname,value,submit) {
         global $global_user_id;
         if ($contacts_id == "") $contacts_id = addslashes($global_user_id);
         $admin = getoneb("select * from front_desk_job_admins where jobinfo_id = '$jobinfo_id' and contacts_id = '$contacts_id' limit 1");
+        
         if (!($admin)) {
-            //$jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+            
             //if ($jobinfo->project_manager_id==$contacts_id) $admin=TRUE;
-            if (pm_for_this_job($jobinfo_id)) $admin = TRUE;
+            if (pm_for_this_job($jobinfo_id))
+            {
+                return TRUE;
+            }
+            else
+            {
+                $jobinfo=getoneb("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+                
+                if ($jobinfo->project_sponsor_id == $contacts_id && $contacts_id != "")
+                    return TRUE;
+            }
         }
         return $admin;
     }
