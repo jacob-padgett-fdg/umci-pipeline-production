@@ -7,64 +7,11 @@ echo "
 
 <head>
 <link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\">
+<link rel=\"stylesheet\" type=\"text/css\" href=\"styles.css\">
+<link rel=\"stylesheet\" type=\"text/css\" href=\"print.css\" media=\"print\">
 <title>$dbdescription</title>
 </head>
-<body style=\"background: white; margin: 1px;\">
+<body>
 
-
-
-
-<style>
-@media print {
-	table.wideprint { width: 100%; }
-	tr.noprint { display: none; }
-	td.noprint { height: 0px; width: 0px; }
-	div.noprint { display: none; position: relative; border: 15px solid black;}
-	a.noprint { display: none; }
-	form.noprint { display: none; }
-	font.noprint { display: none; }
-	br.noprint { display: none; }
-	p.noprint { display: none; }
-	}
-
-@media screen {
-	tr.floatheader {
-        position: relative;
-        top: -1px;
-        background-color:$color_4;
-        overflow: visible !important;
-        }
-    tbody.floatheader {
-        overflow: auto;
-        overflow-x: visible;
-        overflow-y: auto;   
-        height: 100%;
-        }
-	}
-td.normnav:hover { background: $color_4; }
-div.hover { color: green; }
-
-td.normnav {
-	border: 1px solid black;
-	border-collapse: collapse;
-	}
-.normnav {
-	border-collapse: collapse;
-	border: 1px solid black;  
-	cursor: pointer; 
-	cursor: hand;    
-	}
-.selectnav {
-	background: white;             
-	border: 1px solid black; 
-	cursor: pointer; 
-	cursor: hand;    
-	}
-td.filler {
-	border: 0px solid black;
-	border-right: 1px solid black;
-	border-left: 1px solid black; 
-	}
-</style>
 ";
 ?>

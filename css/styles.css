@@ -83,10 +83,12 @@ td.normnav {
 .normnav {
     border-collapse: collapse;
     border: 1px solid black;
+    cursor: pointer;
 }
 .selectnav {
     background: white;
     border: 1px solid black;
+    cursor: pointer;
 }
 td.filler {
     border-right: 1px solid black;
@@ -494,4 +496,8 @@ div.dataTables_length, div#submittallog_paginate, div#cnstdwglog_paginate {
 
 div.container-fluid {
     padding: 0;
+}
+
+td.po-cost {
+    text-align: right;
 }
