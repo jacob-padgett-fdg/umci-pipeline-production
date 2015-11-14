@@ -1,1 +1,1 @@
-../openings-devel/local.inc
+../openings/local.inc

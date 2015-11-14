@@ -152,6 +152,7 @@ echo "
 if (is_admin()) {
 	echo "<a href=$pagename?mode=svc_agreement_executive_summary&agreement_id=$agreement_info->agreement_id><font color=blue>Download Executive Summary</font></a><br>";
 	echo "<a target=_pdf_agreement_win href=$pagename?mode=show_inspection_summary_pdf&show_turnover_info=1&agreement_id=$agreement_info->agreement_id&blah=blah/inspection_summary-$agreement_id.pdf><font color=blue>Download Turnover Document</font></a><br>";
+        echo "<a href=$pagename?mode=svc_agreement_download_equipment&agreement_id=$agreement_info->agreement_id><font color=blue><i>Download Equipment List to Excel</font></a>";
 	}
 
 echo "
