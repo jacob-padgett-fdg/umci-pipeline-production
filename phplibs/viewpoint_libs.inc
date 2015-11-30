@@ -1,24 +1,68 @@
-<?
-/////////////////////////////////////////////////////////////////////////////////////////
-function ms_getone ($query,$link="") {
-//echo "<hr>Z<hr>";	
-if ($link=="") $result=(@mssql_query($query));
-	else $result=(@mssql_query($query,$link));
-if ((mssql_num_rows($result)) != 1) {   
-	echo "Error: Non unique or missing record in function \"getone()\"<p>";
-	exit;
+<?php
+////////////////////////////////////////////////////////////////////////////////////////
+function ms_getone ($query,$link="")
+{
+	global $conn;
+	//echo "<hr>Z<hr>";
+	if ($link=="")
+		$result=(@odbc_exec($conn,$query));
+	else
+		$result=(@odbc_exec($conn,$query));
+		
+	if ((odbc_num_rows($result)) != 1)
+	{
+		echo "Error: Non unique or missing record in function \"getone()\"<p>";
+		exit;
 	}
-return(mssql_fetch_object($result));
+	return(odbc_fetch_object($result));
 }
-                         
+	
+	
 /////////////////////////////////////////////////////////////////////////////////////////
-function ms_getoneb($query,$link="") {
-if ($link=="") $result=@mssql_query($query);
-else $result=(@mssql_query($query,$link));
-if ((@mssql_num_rows($result)) != 1) {   
-	return FALSE;
+function ms_getoneb($query,$link="")
+{
+	$user = 'reddwarf';
+	$pass = 'cl01st3r';
+	$server = 'hilly\viewpoint';
+	$database = 'Viewpoint';
+	
+	// No changes needed from now on
+	$connection_string = "DRIVER={SQL Server};SERVER=$server;DATABASE=$database"; 
+	$conn = odbc_connect($connection_string,$user,$pass);
+	
+	
+	//$serverName = "hilly\viewpoint"; //serverName\instanceName
+	//$connectionInfo = array( "Database"=>"Viewpoint", "UID"=>"reddwarf", "PWD"=>"cl01st3r");
+	//$conn = sqlsrv_connect( $serverName, $connectionInfo);
+	
+	//$result=sqlsrv_query($conn, $query);
+	$result=odbc_exec($conn, $query);
+	
+	if (odbc_num_rows($result) != 1)
+		return FALSE;
+	
+	return odbc_fetch_object($result);
+	
+	//if ($link=="")
+		//$result=@sqlsrv_query($query);
+//else $result=(@sqlsrv_query($query,$link));
+
+	//if ((@sqlsrv_num_rows($result)) != 1)
+	//{   
+		//return FALSE;
+	//}
+	//return(sqlsrv_fetch_object($result));
+	/*
+	if ($link=="")
+		$result=odbc_query($query);
+	else $result=(odbc_query($query,$link));
+
+	if ((odbc_num_rows($result)) != 1)
+	{   
+		return FALSE;
 	}
-return(mssql_fetch_object($result));
+	return(odbc_fetch_object($result));
+	*/
 }
 
 

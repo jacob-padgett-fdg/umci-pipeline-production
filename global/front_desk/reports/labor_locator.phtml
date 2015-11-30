@@ -7,7 +7,7 @@ require_once("viewpoint_libs.inc");
 require('mh_lib.inc');
 require('report_lib.inc');
 mh_navs_header();
-check_report_permissions();
+//check_report_permissions();
 
 
 if ($week_ending!="") {
@@ -34,10 +34,10 @@ if (!($payroll_closed)) {
 	}
 
 // Cycle through the list of whatever viewpoint has for the week...
-$query="select Employee,sum(Hours) as JobHours, Job from PRTH with (NOLOCK) where (PREndDate = '$we_date') and 
+$query="select Employee,sum(Hours) as JobHours, Job, Craft from PRTH with (NOLOCK) where (PREndDate = '$we_date') and 
 		(Job is not null) and (PRCo =1) and Hours > 0
-		group by Employee,Job
-		order by Employee,sum(Hours) desc";
+		group by Employee,Job, Craft
+		order by Craft desc, Employee,sum(Hours) desc";
                 
 $we_date_mysql=vali_date($we_date);
 @mysql_query("delete from vp_locator_cache where week_ending = '$we_date_mysql'");
@@ -51,12 +51,26 @@ while ($row=@mssql_fetch_object($res)) {
 	$hours=round($row->JobHours);
 	$craft=$emp_info->employee_trade;
 	$class_text=$emp_info->employee_class;
+	$on_site = 1;
+	
+	if (
+			strtoupper($row->Craft) == "66D" ||
+			strtoupper($row->Craft) == "26D" ||
+			strtoupper($row->Craft) == "32D" ||
+			$row->Craft == "174" ||
+			substr($row->Craft, 0, 3) == "265" 
+		)
+	{
+		$on_site = 0;
+	}
+	
 	$insres=@mysql_query("insert into vp_locator_cache set
 					employee_num = '$row->Employee',
 					hours = '$hours',
 					job = '$job',
 					week_ending = '$we_date_mysql',
-					craft_text = '$craft', 
+					craft_text = '$craft',
+					on_site = '$on_site',
 					class_text = '$class_text'");
 	if (!($insres)) die("foo inserting data");
 	}
@@ -70,13 +84,32 @@ $lastjob="";
 $lastcraft="";
 $lastclass="";
 $html_out="";
+$last_onsite="";
 $html_out=$html_out . "<table border=0 cellspacing=0 cellpadding=2 style=\"border: 1px solid black;\">";
-$query="select * from vp_locator_cache left join contacts on (vp_locator_cache.employee_num = contacts.employee_num) where employee_group = $employee_group and week_ending = '$we_date_mysql' order by job,craft_text,class_text,alphasort";
+$query="select
+					*
+				from
+					vp_locator_cache
+					left join contacts on (vp_locator_cache.employee_num = contacts.employee_num)
+				where
+					employee_group = $employee_group and
+					week_ending = '$we_date_mysql'
+				order by
+					job,
+					on_site desc,
+					craft_text,
+					class_text,
+					alphasort
+				";
 //tabledump($query); die();
 //tabledump($query);
 $res=@mysql_query($query);
 while ($row=@mysql_fetch_object($res)) {
-	if ($lastjob!=$row->job) {
+	if ($lastjob!=$row->job)
+	{
+		if ($lastjob != '')
+		 $html_out .= "</td></tr>";
+		 
 		$job_cleaned=ereg_replace("-.*$","",$row->job);
 		$contract_info=ms_getoneb("select top 1 * from JCCM with (NOLOCK) where JCCo = 1 and Contract like '$job_cleaned%'");
 		$dept=$contract_info->Department;
@@ -90,15 +123,30 @@ while ($row=@mysql_fetch_object($res)) {
 		$contract_num=$contract_num - 1;
 		$lastcraft="";
 		$lastclass="";
+		$last_onsite = "";
 		$jobinfo=getoneb("select * from jobinfo where contract_num = '$contract_num'");
 		if ($jobinfo->display_name=="") $jobinfo->display_name = $jobinfo->job_name;
 		
 		$job_head_count=getoneb("select sum(1) as total from vp_locator_cache left join contacts on (vp_locator_cache.employee_num = contacts.employee_num) where employee_group = $employee_group and week_ending = '$we_date_mysql' and job = '$row->job'");
-
 		
-		$html_out=$html_out . "<tr bgcolor=$fd_color_4><td style=\"border: 1px solid black;\" colspan=5 align=center>$row->job - $jobinfo->display_name ($job_head_count->total) (Dept: $contract_info->Department)</td></tr>";
+		$html_out = $html_out . "<tr bgcolor=$fd_color_4><td style=\"border: 1px solid black;\" colspan=5 align=center>$row->job - $jobinfo->display_name ($job_head_count->total) (Dept: $contract_info->Department)</td></tr>";
 		$lastjob=$row->job;
+	}
+	
+	if ($row->on_site != $last_onsite)
+	{
+		if ($row->on_site)
+		{
+			$html_out = $html_out . "<tr bgcolor=\"#cccccc\"><td style=\"border: 1px solid black;\" colspan=5 align=center>On-site</td></tr>";
 		}
+		else
+		{
+			$html_out = $html_out . "<tr bgcolor=\"#cccccc\"><td style=\"border: 1px solid black;\" colspan=5 align=center>Off-site</td></tr>";
+		}
+		
+		$last_onsite = $row->on_site;
+	}
+	
 	if ($row->craft_text!=$lastcraft) {
 		$craft_count=getoneb("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and craft_text = '$row->craft_text'");
 		//tabledump("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and craft_text = '$row->craft_text'");
@@ -112,9 +160,14 @@ while ($row=@mysql_fetch_object($res)) {
 		}
 	$html_out=$html_out . "&nbsp;$row->first_name $row->last_name,";
 
-	if ($contract_info->Department=="")$contract_info->Department="FOOBAR";
-	$department_totals[$contract_info->Department]=$department_totals[$contract_info->Department] + 1;
-	if ($row->class_text=="") $row->class_text="FUBAR";
+	if ($contract_info->Department=="")
+		$contract_info->Department="FOOBAR";
+	
+	$department_totals[$contract_info->Department] = $department_totals[$contract_info->Department] + 1;
+	
+	if ($row->class_text=="")
+		$row->class_text="FUBAR";
+	
 	$class_totals[$row->class_text]=$class_totals[$row->class_text] + 1;
 	//if ($row->craft_text=="") {
 	//	$row->craft_text="fubar";
@@ -144,6 +197,7 @@ function print_array_as_table($array,$title="Results") {
 		}
 	echo "</table>";
 	}
+
 
 function print_dept_array_as_table($array,$title="Results") {
 	global $fd_color_4;

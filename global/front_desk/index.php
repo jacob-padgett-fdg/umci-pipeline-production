@@ -11,6 +11,7 @@ if (isset($auth_backend_target_uri)) {
 }
 
 require_once("settings.cfg");
+require_once("querylib.inc");
 require_once("global-auth.inc");
 
 //if ($adminuser) echo "ADMIN!";

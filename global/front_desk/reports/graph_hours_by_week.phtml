@@ -23,9 +23,26 @@ $contract_num=get_vp_contract_num();
 ////////////////$res=@mssql_query("select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' group by PREndDate order by PREndDate");
 ////////////////ms_tabledump("select top 10 * from PRJC where Job like '$contract_num%'");die();
 //$res=@mssql_query("select Mth as PREndDate,sum(Hrs) as Hours from PRJC with (NOLOCK) where Job like '$contract_num%' group by Mth order by Mth");
-$res=@mssql_query("select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' group by PREndDate order by PREndDate");
 
-$results_count=@mssql_num_rows($res);
+$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' ";
+
+if (!empty($week_starting))
+{
+	$sql .= " AND PREndDate >= '$week_starting' ";
+}
+
+if (!empty($week_ending))
+{
+	$sql .= " AND PREndDate <= '$week_ending' ";
+}
+
+$sql .= " group by PREndDate order by PREndDate";
+
+
+
+$res=odbc_exec($conn,$sql);
+
+$results_count=odbc_num_rows($res);
 if ($results_count<1) {
     // GPH MARK - absolute path
 	$fullpath="/data/web/pipeline/images/na.jpg";
@@ -39,7 +56,7 @@ if ($results_count<1) {
 //$start_date=date('Y-m-d',strtotime('1 year ago'));
 //$query="select * from access_servers_backup_media_logs where backup_date > '$start_date' and media_tag != 'Mo' and media_tag != 'Tu' and media_tag != 'We' and media_tag != 'Th' and media_tag != 'Fr' order by backup_date";
 //$res=@mysql_query($query);
-while ($row=@mssql_fetch_object($res)) {
+while ($row=odbc_fetch_object($res)) {
 	if ($row->Hours > $max) $max=$row->Hours;
 	//echo "<hr>$row->Hours";
 	array_push($ydata,$row->Hours);

@@ -1,0 +1,115 @@
+<?
+include('header.phtml');
+include("report_lib.inc");
+require("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+//require('header.phtml');
+//fd_navs_header();
+/*
+echo "<table border=0 cellspacing=0 cellpadding=4>
+<tr><td  bgcolor=$fd_color_2  style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\">
+	<b><a href=$pagename?mode=main><font color=blue><b>General Information</b></font></a>
+</td>";
+	
+$baldwin_rpt_qry="select * from front_desk_reports_permissions left join front_desk_reports on ( front_desk_reports_permissions.report_id = front_desk_reports.report_id ) where report_name = 'baldwin' and contacts_id = '$global_user_id' and ( only_for_job = 0 || only_for_job = '$global_jobinfo->jobinfo_id')";
+if ((getoneb($baldwin_rpt_qry))||(pm_for_this_job())) {
+		echo "<td style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><b>Financial Summary</b></td>";
+		}
+	echo "
+	<td  bgcolor=$fd_color_2  style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=main_job_reports><font color=blue>
+			<b>Job Reports</b></font></a></td>
+	</td>";
+
+
+if (($adminuser)||($fd_manager)) {
+	echo "<td bgcolor=$fd_color_2 style=\"border: 2px solid black; -moz-border-radius-topleft: 10px;-moz-border-radius-topright: 10px;\"><a href=$pagename?mode=manage_jobs&jobinfo_id=$global_jobinfo->jobinfo_id><font color=blue><b>Job Setup</b></font></a></td>";
+	}
+
+echo "</tr></table>
+*/
+session_write_close();
+
+$query_limit_add="";
+if ($cap_month=="") $month_text="To Date";
+else {
+	$cap_month_orig=$cap_month;
+	$cap_month=ereg_replace('/','/1/',$cap_month);
+	$mdate_stamp=strtotime($cap_month);
+	$mdate=date('m/Y',$mdate_stamp);
+	$mdate_query_date=date('m/d/Y',$mdate_stamp);
+	$mdate_compare=date('Ym',$mdate_stamp);
+	$month_text=$mdate;
+	$query_limit_add=" and Mth <= '$mdate_query_date' ";
+	}
+
+$last_closed_grp_1=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 1 and Status = 1 order by PREndDate desc");
+$last_closed_grp_3=ms_getoneb("select top 1 * from PRPC with (NOLOCK) where PRCo = 1 and PRGroup = 3 and Status = 1 order by PREndDate desc");
+$lcg1date=date('Ymd',strtotime($last_closed_grp_1->PREndDate));
+$lcg3date=date('Ymd',strtotime($last_closed_grp_3->PREndDate));
+if ($lcg1date>$lcg3date) {
+	$closed_date=date('m/d/Y',strtotime($last_closed_grp_3->PREndDate));
+	} else {
+	$closed_date=date('m/d/Y',strtotime($last_closed_grp_1->PREndDate));
+	}
+
+
+if ($week_ending=="") $week_ending=$closed_date;
+$date_info=date_info($week_ending);
+
+if ($mth_hack==1) {
+if ($cap_month!="") {
+	$we_compare=date('Ym',strtotime("$date_info->week_end_mysql"));
+	if ($we_compare>$mdate_compare) {
+		$date_info=date_info(date('m/d/Y',strtotime("-1 days",strtotime("+1 month",$mdate_stamp))));
+		//$new_compare=date('Ym',$date_info->week_end_unixtime2);
+		//if ($new_compare>$mdate_compare) {
+		//	$date_info=date_info($date_info->last_week_end);
+		//	}
+		$constraint_warning="<font color=red><h2>Note: The 'right side' dates are constrained by the 'left side', so 'right side' dates were modified.</h2></font>";
+		$week_starting="";
+		} 
+	}
+}
+
+$week_ending_mssql=$date_info->week_end_slashes;
+
+if ($week_starting=="") {
+	$date_starting_info=date_info($date_info->week_end);
+	} else {
+	$date_starting_info=date_info($week_starting);
+	}
+$week_starting_mssql=$date_starting_info->week_start_slashes;
+//$we_short=date('m/d/y',strtotime("$week_ending_mssql"));
+$ws_short=date('m/d/y',strtotime("$date_starting_info->week_start_slashes"));
+
+if ($week_ending_mssql=="") die("Application error: Week ending error!");
+
+echo "
+
+<div>
+";
+
+if ($show_both=="Y")
+    datebox2($week_starting_mssql,"select_we.week_starting","update_graphs_full()");
+else
+{
+    echo "<a href=\"javascript:baldwin_graph_both_dates()\"><font color=blue>$ws_short</font></a>";
+	//echo "<a href=\"$pagename?mode=$mode&report_name=baldwin_full_labor_only&show_both=Y&week_ending=$week_ending\"><font color=blue>$ws_short</font></a>";
+}
+echo "<br>"; 
+
+datebox2($week_ending_mssql,"select_we.week_ending","update_graphs_full()");
+
+echo "</div>
+
+<div id=baldwin_graph_inline_1>
+	<img src='$pagename?mode=report_show&report_name=graph_hours_by_week&show_jobinfo_id=$global_jobinfo_id&week_starting=$week_starting_mssql&week_ending=$week_ending_mssql'>
+</div>
+
+<div style=\"display: flex;\" id=baldwin_graph_inline_2>
+	<img $width src='$pagename?mode=report_show&report_name=graph_plumbing_hours&show_jobinfo_id=$global_jobinfo_id&week_starting=$week_starting_mssql&week_ending=$week_ending_mssql'>
+    <img $width src='$pagename?mode=report_show&report_name=graph_pipe_hours&show_jobinfo_id=$global_jobinfo_id&week_starting=$week_starting_mssql&week_ending=$week_ending_mssql'>
+    <img $width src='$pagename?mode=report_show&report_name=graph_sheet_hours&show_jobinfo_id=$global_jobinfo_id&week_starting=$week_starting_mssql&week_ending=$week_ending_mssql'>
+</div>
+";
+?>

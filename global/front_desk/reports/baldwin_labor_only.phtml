@@ -26,7 +26,6 @@ include("report_lib.inc");
 require("viewpoint_connect_ro.phtml");
 require_once("viewpoint_libs.inc");
 $report_name="baldwin";
-
 if (!(pm_for_this_job())) check_report_permissions();
 if ($debug==1) tcheck("after requires and permission check");
 $fd_color_5="#CCAA55";
@@ -34,6 +33,8 @@ $fd_color_5="#DDBB66";
 $fd_color_6="#EE9999";
 $ct_array=cost_type_array();
 //$debug=1;
+
+
 $query_limit_add="";
 if ($cap_month=="") $month_text="To Date";
 else {
@@ -56,6 +57,7 @@ if ($lcg1date>$lcg3date) {
 	} else {
 	$closed_date=date('m/d/Y',strtotime($last_closed_grp_1->PREndDate));
 	}
+
 
 if ($week_ending=="") $week_ending=$closed_date;
 $date_info=date_info($week_ending);
@@ -82,6 +84,7 @@ $week_starting_mssql=$date_starting_info->week_start_slashes;
 $ws_short=date('m/d/y',strtotime("$date_starting_info->week_start_slashes"));
 
 if ($week_ending_mssql=="") die("Application error: Week ending error!");
+
 
 function is_valid_viewpoint_job($job_num) {   
 	$job_num=strtoupper(escapeshellcmd($job_num));
@@ -120,11 +123,9 @@ function is_valid_viewpoint_job($job_num) {
 	return $job_res;
 }
 
+
 $job=is_valid_viewpoint_job($global_jobinfo->contract_num);
-
-
 $summary_info=job_financial_summary("$job->job");
-
 if ($debug==1) tcheck("after financial summary call");
 function clear_ct_totals() {
 	global $ct_totals,$ct_total_rows;
@@ -170,20 +171,11 @@ function print_ct_totals($ct,$job) {
 		" . gap_num($ct_totals->h_act) . "
 	</td><td style=\"border-right: 1px solid black;\">
 		" . gap_num($ct_totals->h_rem) . "
-	</td><td>
-		" . gap_num($ct_totals->c_est) . "
-	</td><td>
-		" . gap_num($ct_totals->c_act) . "
-	</td><td>
-		" . gap_num($ct_totals->c_cmt) . "
-	</td><td>
-		" . gap_num($ct_totals->c_rem) . " 
-	</td><td style=\"border-left: 1px solid black;\">
-		$composite	
-	</td><td class=h onclick=\"d('','$job','$ct','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
+	</td>
+	
+	
+	<td class=h onclick=\"d('','$job','$ct','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
 		" . gap_num($ct_totals->r_hrs) . "
-	</td><td class=c onclick=\"d('','$job','$ct','c3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
-		" . gap_num($ct_totals->r_cst) . " 
 	</td></tr>
 	";
 	}
@@ -204,7 +196,8 @@ function print_ct_j_totals($job) {
 		" . gap_num($ct_j_totals->h_act) . "
 	</td><td style=\"border-right: 1px solid black;\">
 		" . gap_num($ct_j_totals->h_rem) . "
-	</td><td>
+	</td>
+	<td>
 		" . gap_num($ct_j_totals->c_est) . "
 	</td><td>
 		" . gap_num($ct_j_totals->c_act) . "
@@ -212,57 +205,66 @@ function print_ct_j_totals($job) {
 		" . gap_num($ct_j_totals->c_cmt) . "
 	</td><td>
 		" . gap_num($ct_j_totals->c_rem) . " 
-	</td><td class=h onclick=\"d('','$job','','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
+	</td>
+	
+	<td class=h onclick=\"d('','$job','','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
 		" . gap_num($ct_j_totals->r_hrs) . " 
-	</td><td class=c onclick=\"d('','$job','','c3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
-		" . gap_num($ct_j_totals->r_cst) . " 
 	</td></tr>
 	";
 	}
 
-function add_to_ct_totals($ct) {
+
+function add_to_ct_totals($ct)
+{
 	global 	$ct_j_total_rows,$ct_j_totals,$ct_total_rows,$ct_type_last,$tbrow,$ct_totals,$lastjob,$this_job,$ct_g_totals,$ct_g_total_rows;
 	if ($ct_total_rows=="") $ct_total_rows=0;
 	if (($ct_type_last!=$ct)||($lastjob!=$this_job)) {
-		if ($ct_total_rows>1) print_ct_totals($ct_type_last,$lastjob);
+		//if ($ct_total_rows>1) print_ct_totals($ct_type_last,$lastjob);
 		clear_ct_totals();
 		}
 	$ct_type_last=$ct;
 	$ct_total_rows=$ct_total_rows + 1;
-	$ct_totals->h_est=$ct_totals->h_est + $tbrow->CurrEstHours;
-	$ct_totals->h_act=$ct_totals->h_act + $tbrow->ActualHours;
-	$ct_totals->h_rem=$ct_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
-	$ct_totals->c_est=$ct_totals->c_est + $tbrow->CurrEstCost;
-	$ct_totals->c_act=$ct_totals->c_act + $tbrow->ActualCost;
-	$ct_totals->c_cmt=$ct_totals->c_cmt + $tbrow->RemainCmtdCost;
-	$ct_totals->c_rem=$ct_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
-	$ct_totals->r_hrs=$ct_totals->r_hrs + $tbrow->RangeHours;
-	$ct_totals->r_cst=$ct_totals->r_cst + $tbrow->RangeCosts;
 	
-	$ct_g_total_rows=$ct_g_total_rows + 1;
-	$ct_g_totals->h_est=$ct_g_totals->h_est + $tbrow->CurrEstHours;
-	$ct_g_totals->h_act=$ct_g_totals->h_act + $tbrow->ActualHours;
-	$ct_g_totals->h_rem=$ct_g_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
-	$ct_g_totals->c_est=$ct_g_totals->c_est + $tbrow->CurrEstCost;
-	$ct_g_totals->c_act=$ct_g_totals->c_act + $tbrow->ActualCost;
-	$ct_g_totals->c_cmt=$ct_g_totals->c_cmt + $tbrow->RemainCmtdCost;
-	$ct_g_totals->c_rem=$ct_g_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
-	$ct_g_totals->r_hrs=$ct_g_totals->r_hrs + $tbrow->RangeHours;
-	$ct_g_totals->r_cst=$ct_g_totals->r_cst + $tbrow->RangeCosts;
-
-	$ct_j_total_rows=$ct_j_total_rows + 1;
-	$ct_j_totals->h_est=$ct_j_totals->h_est + $tbrow->CurrEstHours;
-	$ct_j_totals->h_act=$ct_j_totals->h_act + $tbrow->ActualHours;
-	$ct_j_totals->h_rem=$ct_j_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
-	$ct_j_totals->c_est=$ct_j_totals->c_est + $tbrow->CurrEstCost;
-	$ct_j_totals->c_act=$ct_j_totals->c_act + $tbrow->ActualCost;
-	$ct_j_totals->c_cmt=$ct_j_totals->c_cmt + $tbrow->RemainCmtdCost;
-	$ct_j_totals->c_rem=$ct_j_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
-	$ct_j_totals->r_hrs=$ct_j_totals->r_hrs + $tbrow->RangeHours;
-	$ct_j_totals->r_cst=$ct_j_totals->r_cst + $tbrow->RangeCosts;
+	if ($tbrow->Phase != 25 && $tbrow->Phase != 33 && $tbrow->Phase != 55)
+	{
+	
+		$ct_totals->h_est=$ct_totals->h_est + $tbrow->CurrEstHours;
+		$ct_totals->h_act=$ct_totals->h_act + $tbrow->ActualHours;
+		$ct_totals->h_rem=$ct_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+		$ct_totals->c_est=$ct_totals->c_est + $tbrow->CurrEstCost;
+		$ct_totals->c_act=$ct_totals->c_act + $tbrow->ActualCost;
+		$ct_totals->c_cmt=$ct_totals->c_cmt + $tbrow->RemainCmtdCost;
+		$ct_totals->c_rem=$ct_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+		$ct_totals->r_hrs=$ct_totals->r_hrs + $tbrow->RangeHours;
+		$ct_totals->r_cst=$ct_totals->r_cst + $tbrow->RangeCosts;
+		
+		$ct_g_total_rows=$ct_g_total_rows + 1;
+		$ct_g_totals->h_est=$ct_g_totals->h_est + $tbrow->CurrEstHours;
+		$ct_g_totals->h_act=$ct_g_totals->h_act + $tbrow->ActualHours;
+		$ct_g_totals->h_rem=$ct_g_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+		$ct_g_totals->c_est=$ct_g_totals->c_est + $tbrow->CurrEstCost;
+		$ct_g_totals->c_act=$ct_g_totals->c_act + $tbrow->ActualCost;
+		$ct_g_totals->c_cmt=$ct_g_totals->c_cmt + $tbrow->RemainCmtdCost;
+		$ct_g_totals->c_rem=$ct_g_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+		$ct_g_totals->r_hrs=$ct_g_totals->r_hrs + $tbrow->RangeHours;
+		$ct_g_totals->r_cst=$ct_g_totals->r_cst + $tbrow->RangeCosts;
+	
+		$ct_j_total_rows=$ct_j_total_rows + 1;
+		$ct_j_totals->h_est=$ct_j_totals->h_est + $tbrow->CurrEstHours;
+		$ct_j_totals->h_act=$ct_j_totals->h_act + $tbrow->ActualHours;
+		$ct_j_totals->h_rem=$ct_j_totals->h_rem + $tbrow->CurrEstHours - $tbrow->ActualHours;
+		$ct_j_totals->c_est=$ct_j_totals->c_est + $tbrow->CurrEstCost;
+		$ct_j_totals->c_act=$ct_j_totals->c_act + $tbrow->ActualCost;
+		$ct_j_totals->c_cmt=$ct_j_totals->c_cmt + $tbrow->RemainCmtdCost;
+		$ct_j_totals->c_rem=$ct_j_totals->c_rem + $tbrow->CurrEstCost - $tbrow->ActualCost;
+		$ct_j_totals->r_hrs=$ct_j_totals->r_hrs + $tbrow->RangeHours;
+		$ct_j_totals->r_cst=$ct_j_totals->r_cst + $tbrow->RangeCosts;
 	}
+}
+
 $ct_type_last=0;
 clear_ct_totals();
+
 
 if ($debug==1) tcheck("after function definitions");
 
@@ -281,12 +283,12 @@ echo "
 <input type=hidden name=report_name value=\"baldwin_full\">
 <input type=hidden name=show_both value=\"$show_both\">
 <table style=\"border: 1px solid black; text-align: right; font-size: 75%; width: 950px;\" cellspacing=0 cellpadding=2>
-<tr bgcolor=$fd_color_4><td colspan=9 align=center>
+<tr bgcolor=$fd_color_4><td colspan=4 align=center>
 ";
 
 //echo "</table></form>&nbsp;there";exit;////////////////////////////////////////////////////////////////////////
 echo "
-	<b>Financial summary:</b>";
+	<b>Hours summary:</b>";
 	//if ($mth_hack==1) {
 	//echo "
 	//<select name=cap_month onchange=\"submit()\">
@@ -300,7 +302,7 @@ echo "
 	//}
 
 	echo "
-</td><td colspan=2 rowspan=1 align=center class=h style=\"background: $fd_color_4;\">
+</td><td colspan=1 rowspan=1 align=center class=h style=\"background: $fd_color_4;\">
 	Range From/To
 </td></tr>
 
@@ -308,11 +310,8 @@ echo "
 	Cost Type
 </td><td colspan=3 align=center style=\"border-right: 1px solid black;\">
 	Hours
-</td><td colspan=4 align=center>
-	Cost
-</td><td style=\"border-left: 1px solid black;\" align=center>
-	Composite
-</td><td rowspan=2 colspan=2 style=\"background: $fd_color_4; border: 1px solid black; border-right: none;\">
+</td>
+<td rowspan=2 colspan=1 style=\"background: $fd_color_4; border: 1px solid black; border-right: none;\">
 	";
 	if ($show_both=="Y") datebox2($week_starting_mssql,"select_we.week_starting","update_baldwin()");
 	else {
@@ -330,17 +329,9 @@ echo "
 	Act
 </td><td align=center style=\"border-right: 1px solid black;\">
 	Remain
-</td><td align=center>
-	Est
-</td><td align=center>
-	Act
-</td><td align=center>
-	Rem Cmtd
-</td><td align=center>
-	Remain
-</td><td style=\"border-left: 1px solid black;\" align=center>
-	Rates
-</td></form></tr>
+</td>
+
+</form></tr>
 ";
 
 
@@ -406,14 +397,15 @@ order by CASE when CostType = 4 then 3 when CostType = 3 then 4 else CostType EN
 ";
 
 $weekly_sums_array=array();
-$ws_res=odbc_exec($conn, $tbquery2);
+$ws_res=odbc_exec($conn,$tbquery2);
 while ($ws_row=odbc_fetch_object($ws_res)) {
 	$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Cost"]=$ws_row->Cost;
 	$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Hours"]=$ws_row->Hours;
 	}
 if ($debug==1) tcheck("just after figuring out all the weekly stuff");
+
 $tbres=odbc_exec($conn, $tbquery);
-while ($tbrow=@odbc_fetch_object($tbres)) {
+while ($tbrow=odbc_fetch_object($tbres)) {
 	if (($tbrow->CurrEstHours==0)&&
 		($tbrow->ActualHours==0)&&
 		($tbrow->RemainCmtdCost==0)&&
@@ -437,7 +429,7 @@ while ($tbrow=@odbc_fetch_object($tbres)) {
 	if ($lastjob!=$this_job) {
 		$lastjob=$this_job;
 		$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
-		echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=8><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">&nbsp;</td><td style=\"border-left: 1px solid black;\">Hours</td><td>Cost</tr>";
+		echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=4><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td></tr>";
 		}
 	$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
 	$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
@@ -450,36 +442,33 @@ while ($tbrow=@odbc_fetch_object($tbres)) {
 	$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
 	$cost_remaining=gap_num($cost_remaining);
 	$cttext=$ct_array[$tbrow->CostType];
-	echo "
-	<tr><td class=l>";
-		if ($tbrow->Phase==55) {
-			echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->Phase-$category ($cttext)</font></a>";
-			} else {
-			echo "$tbrow->Phase-$category ($cttext)";
-			}
-		echo "
-	</td><td>
-		$tbrow->CurrEstHours
-	</td><td>
-		$tbrow->ActualHours
-	</td><td style=\"border-right: 1px solid black;\">
-		$hours_remaining
-	</td><td>
-		$tbrow->CurrEstCost
-	</td><td>
-		$tbrow->ActualCost
-	</td><td>
-		$tbrow->RemainCmtdCost
-	</td><td>
-		$cost_remaining
-	</td><td style=\"border-left: 1px solid black;\">
-		$composite
-	</td><td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
-		" . gap_num($weekly_sums->Hours) . "
-	</td><td class=c onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','c3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
-		" . gap_num($weekly_sums->Cost) . "
-	</td></tr>
-	";
+	
+	
+	
+		if ($tbrow->Phase != 25 && $tbrow->Phase != 33 && $tbrow->Phase != 55)
+		{
+			echo "
+			<tr><td class=l>";
+				if ($tbrow->Phase==55) {
+					echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->Phase-$category ($cttext)</font></a>";
+					} else {
+					echo "$tbrow->Phase-$category ($cttext)";
+					}
+				echo "
+			</td><td>
+				$tbrow->CurrEstHours
+			</td><td>
+				$tbrow->ActualHours
+			</td><td style=\"border-right: 1px solid black;\">
+				$hours_remaining
+			</td>
+			
+			
+			<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+				" . gap_num($weekly_sums->Hours) . "
+			</td></tr>
+			";
+		}
 	}
 if ($debug==1) tcheck("before printing final totals");
 
@@ -495,20 +484,11 @@ echo "
 	" . gap_num($ct_g_totals->h_act) . "
 </td><td style=\"border-right: 1px solid black;\">
 	" . gap_num($ct_g_totals->h_rem) . "
-</td><td>
-	" . gap_num($ct_g_totals->c_est) . "
-</td><td bgcolor=$fd_color_3>
-	" . gap_num($ct_g_totals->c_act) . "
-</td><td>
-	" . gap_num($ct_g_totals->c_cmt) . "
-</td><td>
-	" . gap_num($ct_g_totals->c_rem) . "
-</td><td style=\"border-left: 1px solid black;\">
-		$summary_info->total_composite_rate_decimal
-</td><td class=h onclick=\"d('','$job->Job','','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
+</td>
+
+
+<td class=h onclick=\"d('','$job->Job','','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
 	" . gap_num($ct_g_totals->r_hrs) . "
-</td><td class=c onclick=\"d('','$job->Job','','c3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\" style=\"background: $fd_color_5;\">
-	" . gap_num($ct_g_totals->r_cst) . "
 </td></tr>
 
 </table>

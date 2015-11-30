@@ -20,9 +20,10 @@ function gap_decimal($number,$digits=2,$prefix="",$suffix="") {
 	}
 
 function cost_type_array() {
+	global $conn;
 	$ct_array=array();
-	$ctlistres=@mssql_query("select * from JCCT with (NOLOCK) where PhaseGroup = 1");
-	while ($ctrow=@mssql_fetch_object($ctlistres)) {
+	$ctlistres=@odbc_exec($conn, "select * from JCCT with (NOLOCK) where PhaseGroup = 1");
+	while ($ctrow=@odbc_fetch_object($ctlistres)) {
 		$ct_array[$ctrow->CostType]=$ctrow->Description;
 		}
 	return ($ct_array);
@@ -113,15 +114,19 @@ function cache_financial_summary($results) {
 
 
 function job_financial_summary($contract_number="",$week_ending_date="",$permanent='N') {
+	//echo "debug info";
 	global $global_jobinfo_id,$debug;
 	if ($debug==1) {
+		echo "am I here";
         tcheck("start of financial summary");
     }
+	//echo("did i make it again");
 	if ($contract_number=="") $contract_number=get_vp_contract_num($global_jobinfo_id);
 	
 	//echo ("select * from front_desk_financials_cache where contract = '$contract_number' and permanent = 'N'");
 	//die();
 	$results=getoneb("select * from front_desk_financials_cache where contract = '$contract_number' and permanent = 'N' and timestampadd(MINUTE,65,last_updated_time) > now()");
+	
 	if (TRUE) {
 	$results="";
 	if ($debug==1) tcheck("summary: before JCCM main lookup");

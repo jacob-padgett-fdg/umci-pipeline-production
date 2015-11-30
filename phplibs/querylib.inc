@@ -3003,10 +3003,13 @@ Application: $application
 
     function getoneb($query, $link = "")
     {
+        //die($query);
+
         if ($link == "")
             $result = mysql_query($query);
         else
             $result = mysql_query($query, $link);
+        
         if ((mysql_num_rows($result)) != 1) {
             return FALSE;
         }

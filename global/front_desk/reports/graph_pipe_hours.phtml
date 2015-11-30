@@ -11,9 +11,24 @@ $ydata=array();
 $textx=array();
 $max=0;
 $contract_num=get_vp_contract_num();
-$res=@mssql_query("select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '16%' group by PREndDate order by PREndDate");
 
-$results_count=@mssql_num_rows($res); 
+$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '16%' ";
+
+if (!empty($week_starting))
+{
+	$sql .= " AND PREndDate >= '$week_starting' ";
+}
+
+if (!empty($week_ending))
+{
+	$sql .= " AND PREndDate <= '$week_ending' ";
+}
+
+$sql .= " group by PREndDate order by PREndDate";
+
+$res=odbc_exec($conn, $sql);
+
+$results_count=odbc_num_rows($res); 
 if ($results_count<1) {
     // GPH MARK - absolute path
 	$fullpath="/data/web/pipeline/images/na.jpg";
@@ -23,7 +38,7 @@ if ($results_count<1) {
 	exit;
 	}
 
-while ($row=@mssql_fetch_object($res)) {
+while ($row=odbc_fetch_object($res)) {
 	if ($row->Hours > $max) $max=$row->Hours;
 	array_push($ydata,$row->Hours);
 	$wedate=date('m/d/y',strtotime($row->PREndDate));
