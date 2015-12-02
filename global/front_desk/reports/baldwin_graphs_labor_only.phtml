@@ -73,8 +73,10 @@ if ($cap_month!="") {
 
 $week_ending_mssql=$date_info->week_end_slashes;
 
+
+
 if ($week_starting=="") {
-	$date_starting_info=date_info($date_info->week_end);
+	$date_starting_info=date_info($date_info->week_start_slashes);
 	} else {
 	$date_starting_info=date_info($week_starting);
 	}
