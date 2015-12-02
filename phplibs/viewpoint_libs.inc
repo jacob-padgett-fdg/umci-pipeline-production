@@ -3,7 +3,7 @@
 function ms_getone ($query,$link="")
 {
 	global $conn;
-	//echo "<hr>Z<hr>";
+	
 	if ($link=="")
 		$result=(@odbc_exec($conn,$query));
 	else
@@ -31,38 +31,13 @@ function ms_getoneb($query,$link="")
 	$conn = odbc_connect($connection_string,$user,$pass);
 	
 	
-	//$serverName = "hilly\viewpoint"; //serverName\instanceName
-	//$connectionInfo = array( "Database"=>"Viewpoint", "UID"=>"reddwarf", "PWD"=>"cl01st3r");
-	//$conn = sqlsrv_connect( $serverName, $connectionInfo);
-	
-	//$result=sqlsrv_query($conn, $query);
 	$result=odbc_exec($conn, $query);
 	
 	if (odbc_num_rows($result) != 1)
 		return FALSE;
 	
 	return odbc_fetch_object($result);
-	
-	//if ($link=="")
-		//$result=@sqlsrv_query($query);
-//else $result=(@sqlsrv_query($query,$link));
 
-	//if ((@sqlsrv_num_rows($result)) != 1)
-	//{   
-		//return FALSE;
-	//}
-	//return(sqlsrv_fetch_object($result));
-	/*
-	if ($link=="")
-		$result=odbc_query($query);
-	else $result=(odbc_query($query,$link));
-
-	if ((odbc_num_rows($result)) != 1)
-	{   
-		return FALSE;
-	}
-	return(odbc_fetch_object($result));
-	*/
 }
 
 
