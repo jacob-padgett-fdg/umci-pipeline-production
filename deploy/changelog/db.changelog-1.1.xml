@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+  http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<!--
+ALTER TABLE `global`.`vp_locator_cache` 
+ADD COLUMN `on_site` INT(11) NOT NULL DEFAULT 1 AFTER `class_text`;
+-->
+  <changeSet author="nathansc" id="1">
+    <addColumn schemaName="global"
+               tableName="vp_locator_cache">
+      <column name="on_site"
+              type="INT(11)"
+              defaultValue="1"
+              afterColumn="class_text">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
+</databaseChangeLog>
