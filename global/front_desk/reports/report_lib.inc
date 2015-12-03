@@ -21,11 +21,22 @@ function gap_decimal($number,$digits=2,$prefix="",$suffix="") {
 
 function cost_type_array() {
 	global $conn;
+	global $use_odbc;
 	$ct_array=array();
-	$ctlistres=@odbc_exec($conn, "select * from JCCT with (NOLOCK) where PhaseGroup = 1");
-	while ($ctrow=@odbc_fetch_object($ctlistres)) {
-		$ct_array[$ctrow->CostType]=$ctrow->Description;
-		}
+	if ($use_odbc)
+	{
+		$ctlistres=@odbc_exec($conn, "select * from JCCT with (NOLOCK) where PhaseGroup = 1");
+		while ($ctrow=@odbc_fetch_object($ctlistres)) {
+			$ct_array[$ctrow->CostType]=$ctrow->Description;
+			}
+	}
+	else
+	{
+		$ctlistres=@mssql_query( "select * from JCCT with (NOLOCK) where PhaseGroup = 1");
+		while ($ctrow=@mssql_fetch_object($ctlistres)) {
+			$ct_array[$ctrow->CostType]=$ctrow->Description;
+			}
+	}
 	return ($ct_array);
 	}
 

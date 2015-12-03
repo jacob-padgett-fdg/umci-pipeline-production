@@ -1,6 +1,7 @@
 <?
 //$debug=1;
 #$mth_hack=1;
+global $use_odbc;
 $debug = 0;
 if ($debug==1) {
 $me_last_time=0;
@@ -318,11 +319,23 @@ function d(phase,job,ct,detailmode) {
 	echo "
 	<select name=cap_month onchange=\"submit()\">
 	<option value=\"$cap_month_orig\">$month_text</option>";
-	$mthres=odbc_exec($conn,"select Mth from JCCP with (NOLOCK) where Job like '$job->job' group by Mth order by Mth desc");
-	while ($mthrow=odbc_fetch_object($mthres)) {
-		$mth=date('m/Y',strtotime($mthrow->Mth));
-		echo "<option value=\"$mth\">$mth</option>";
-		}
+	
+	if ($use_odbc)
+	{
+		$mthres=odbc_exec($conn,"select Mth from JCCP with (NOLOCK) where Job like '$job->job' group by Mth order by Mth desc");
+		while ($mthrow=odbc_fetch_object($mthres)) {
+			$mth=date('m/Y',strtotime($mthrow->Mth));
+			echo "<option value=\"$mth\">$mth</option>";
+			}
+	}
+	else
+	{
+		$mthres=mssql_query("select Mth from JCCP with (NOLOCK) where Job like '$job->job' group by Mth order by Mth desc");
+		while ($mthrow=mssql_fetch_object($mthres)) {
+			$mth=date('m/Y',strtotime($mthrow->Mth));
+			echo "<option value=\"$mth\">$mth</option>";
+			}
+	}
 	echo "</select>";
 	}
 	echo "
@@ -390,84 +403,170 @@ if ($week_ending_mssql=="") {
 //die();
 $lastjob="";
 
-$tbres=odbc_exec($conn, $tbquery);
-while ($tbrow=odbc_fetch_object($tbres)) {
-	if (($tbrow->CurrEstHours==0)&&
-		($tbrow->ActualHours==0)&&
-		($tbrow->RemainCmtdCost==0)&&
-		($tbrow->ActualCost==0)&&
-		($tbrow->CurrEstCost==0)) continue;
-	//$this_job=ereg_replace("[- ]*","",$tbrow->Job);
-	$this_job=$tbrow->Job;
-	$phase_info=ms_getoneb("select top 1 * from JCJP with (NOLOCK) where Job = '$tbrow->Job' and Phase = '$tbrow->Phase' and JCCo = 1 and PhaseGroup = 1");
-	$phase_info->Phase=ereg_replace("[ -]*$","",$phase_info->Phase);
+if ($use_odbc)
+{
+	$tbres=odbc_exec($conn, $tbquery);
+	while ($tbrow=odbc_fetch_object($tbres)) {
+		if (($tbrow->CurrEstHours==0)&&
+			($tbrow->ActualHours==0)&&
+			($tbrow->RemainCmtdCost==0)&&
+			($tbrow->ActualCost==0)&&
+			($tbrow->CurrEstCost==0)) continue;
+		//$this_job=ereg_replace("[- ]*","",$tbrow->Job);
+		$this_job=$tbrow->Job;
+		$phase_info=ms_getoneb("select top 1 * from JCJP with (NOLOCK) where Job = '$tbrow->Job' and Phase = '$tbrow->Phase' and JCCo = 1 and PhaseGroup = 1");
+		$phase_info->Phase=ereg_replace("[ -]*$","",$phase_info->Phase);
+		
+		$weekly_sums_query="
+		select sum(ActualHours) as Hours, sum(ActualCost) as Cost
+		from JCCD with (NOLOCK)
+		where 
+		JCCo = 1 and 
+		Job = '$tbrow->Job' and 
+		CostType = '$tbrow->CostType' and
+		PhaseGroup = 1 and
+		Phase = '$tbrow->Phase' and 
+		PostedDate >= '$date_starting_info->week_start_slashes' and
+		PostedDate <= '$date_info->week_end_slashes'
+		group by CostType,Phase
+		";
+		$weekly_sums=ms_getoneb($weekly_sums_query);
+		if (!($weekly_sums)) {
+			$weekly_sums->Hours=0;
+			$weekly_sums->Cost=0;
+			}
+		$tbrow->RangeHours=$weekly_sums->Hours;
+		$tbrow->RangeCosts=$weekly_sums->Cost;
+		add_to_ct_totals($tbrow->CostType);
+		if ($lastjob!=$this_job) {
+			//echo "<tr><td>boo</td></tr>";
+			$lastjob=$this_job;
+			$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
+			echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=4><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td></tr>";
+			} else {
+			//echo "<tr><td>$lastjob/$this_job</td></tr>";
+			}
 	
-	$weekly_sums_query="
-	select sum(ActualHours) as Hours, sum(ActualCost) as Cost
-	from JCCD with (NOLOCK)
-	where 
-	JCCo = 1 and 
-	Job = '$tbrow->Job' and 
-	CostType = '$tbrow->CostType' and
-	PhaseGroup = 1 and
-	Phase = '$tbrow->Phase' and 
-	PostedDate >= '$date_starting_info->week_start_slashes' and
-	PostedDate <= '$date_info->week_end_slashes'
-	group by CostType,Phase
-	";
-	$weekly_sums=ms_getoneb($weekly_sums_query);
-	if (!($weekly_sums)) {
-		$weekly_sums->Hours=0;
-		$weekly_sums->Cost=0;
+		$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+		$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+		$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+		$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+		$hours_remaining=gap_num($hours_remaining);
+		
+		$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+		$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+		$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
+		$cost_remaining=gap_num($cost_remaining);
+		
+		$cttext=$ct_array[$tbrow->CostType];
+		
+		$phase_flag = substr($phase_info->Phase,0,2);
+		//print $phase_info->Phase;
+		
+		if ($phase_flag != 25 && $phase_flag != 33 && $phase_flag != 55 && $phase_flag != 26 && $phase_flag != 27 && $phase_flag != 28 && $phase_flag != 29)	
+		{
+			echo "
+			<tr><td class=l>
+				$phase_info->Phase&nbsp;-&nbsp;$phase_info->Description ($cttext)
+			</td><td>
+				$tbrow->CurrEstHours
+			</td><td>
+				$tbrow->ActualHours
+			</td><td style=\"border-right: 1px solid black;\">
+				$hours_remaining
+			</td>
+			
+			
+			<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+				" . gap_num($weekly_sums->Hours) . "
+			</td></tr>
+			";
 		}
-	$tbrow->RangeHours=$weekly_sums->Hours;
-	$tbrow->RangeCosts=$weekly_sums->Cost;
-	add_to_ct_totals($tbrow->CostType);
-	if ($lastjob!=$this_job) {
-		//echo "<tr><td>boo</td></tr>";
-		$lastjob=$this_job;
-		$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
-		echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=4><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td></tr>";
-		} else {
-		//echo "<tr><td>$lastjob/$this_job</td></tr>";
 		}
 
-	$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
-	$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
-	$tbrow->ActualHours=gap_num($tbrow->ActualHours);
-	$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
-	$hours_remaining=gap_num($hours_remaining);
-	
-	$tbrow->ActualCost=gap_num($tbrow->ActualCost);
-	$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
-	$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
-	$cost_remaining=gap_num($cost_remaining);
-	
-	$cttext=$ct_array[$tbrow->CostType];
-	
-	$phase_flag = substr($phase_info->Phase,0,2);
-	//print $phase_info->Phase;
-	
-	if ($phase_flag != 25 && $phase_flag != 33 && $phase_flag != 55 && $phase_flag != 26 && $phase_flag != 27 && $phase_flag != 28 && $phase_flag != 29)	
-	{
-		echo "
-		<tr><td class=l>
-			$phase_info->Phase&nbsp;-&nbsp;$phase_info->Description ($cttext)
-		</td><td>
-			$tbrow->CurrEstHours
-		</td><td>
-			$tbrow->ActualHours
-		</td><td style=\"border-right: 1px solid black;\">
-			$hours_remaining
-		</td>
+}
+else
+{
+		$tbres=mssql_query($tbquery);
+	while ($tbrow=mssql_fetch_object($tbres)) {
+		if (($tbrow->CurrEstHours==0)&&
+			($tbrow->ActualHours==0)&&
+			($tbrow->RemainCmtdCost==0)&&
+			($tbrow->ActualCost==0)&&
+			($tbrow->CurrEstCost==0)) continue;
+		//$this_job=ereg_replace("[- ]*","",$tbrow->Job);
+		$this_job=$tbrow->Job;
+		$phase_info=ms_getoneb("select top 1 * from JCJP with (NOLOCK) where Job = '$tbrow->Job' and Phase = '$tbrow->Phase' and JCCo = 1 and PhaseGroup = 1");
+		$phase_info->Phase=ereg_replace("[ -]*$","",$phase_info->Phase);
 		
-		
-		<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
-			" . gap_num($weekly_sums->Hours) . "
-		</td></tr>
+		$weekly_sums_query="
+		select sum(ActualHours) as Hours, sum(ActualCost) as Cost
+		from JCCD with (NOLOCK)
+		where 
+		JCCo = 1 and 
+		Job = '$tbrow->Job' and 
+		CostType = '$tbrow->CostType' and
+		PhaseGroup = 1 and
+		Phase = '$tbrow->Phase' and 
+		PostedDate >= '$date_starting_info->week_start_slashes' and
+		PostedDate <= '$date_info->week_end_slashes'
+		group by CostType,Phase
 		";
-	}
-	}
+		$weekly_sums=ms_getoneb($weekly_sums_query);
+		if (!($weekly_sums)) {
+			$weekly_sums->Hours=0;
+			$weekly_sums->Cost=0;
+			}
+		$tbrow->RangeHours=$weekly_sums->Hours;
+		$tbrow->RangeCosts=$weekly_sums->Cost;
+		add_to_ct_totals($tbrow->CostType);
+		if ($lastjob!=$this_job) {
+			//echo "<tr><td>boo</td></tr>";
+			$lastjob=$this_job;
+			$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
+			echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=4><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td></tr>";
+			} else {
+			//echo "<tr><td>$lastjob/$this_job</td></tr>";
+			}
+	
+		$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+		$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+		$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+		$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+		$hours_remaining=gap_num($hours_remaining);
+		
+		$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+		$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+		$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
+		$cost_remaining=gap_num($cost_remaining);
+		
+		$cttext=$ct_array[$tbrow->CostType];
+		
+		$phase_flag = substr($phase_info->Phase,0,2);
+		//print $phase_info->Phase;
+		
+		if ($phase_flag != 25 && $phase_flag != 33 && $phase_flag != 55 && $phase_flag != 26 && $phase_flag != 27 && $phase_flag != 28 && $phase_flag != 29)	
+		{
+			echo "
+			<tr><td class=l>
+				$phase_info->Phase&nbsp;-&nbsp;$phase_info->Description ($cttext)
+			</td><td>
+				$tbrow->CurrEstHours
+			</td><td>
+				$tbrow->ActualHours
+			</td><td style=\"border-right: 1px solid black;\">
+				$hours_remaining
+			</td>
+			
+			
+			<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h1','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+				" . gap_num($weekly_sums->Hours) . "
+			</td></tr>
+			";
+		}
+		}
+	
+}
 $this_job=0;
 add_to_ct_totals($ct_type_last);
 

@@ -1,5 +1,6 @@
 <?
 session_write_close();
+global $use_odbc;
 $debug = 0;
 if ($debug==1) {
 $me_last_time=0;
@@ -397,79 +398,162 @@ order by CASE when CostType = 4 then 3 when CostType = 3 then 4 else CostType EN
 ";
 
 $weekly_sums_array=array();
-$ws_res=odbc_exec($conn,$tbquery2);
-while ($ws_row=odbc_fetch_object($ws_res)) {
-	$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Cost"]=$ws_row->Cost;
-	$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Hours"]=$ws_row->Hours;
-	}
-if ($debug==1) tcheck("just after figuring out all the weekly stuff");
 
-$tbres=odbc_exec($conn, $tbquery);
-while ($tbrow=odbc_fetch_object($tbres)) {
-	if (($tbrow->CurrEstHours==0)&&
-		($tbrow->ActualHours==0)&&
-		($tbrow->RemainCmtdCost==0)&&
-		($tbrow->ActualCost==0)&&
-		($tbrow->CurrEstCost==0)) continue;
-	
-	if ($tbrow->ActualHours>0) {
-		$composite=round($tbrow->ActualCost / $tbrow->ActualHours,2);
-		} else {
-		$composite="N/A";
+if ($use_odbc)
+{
+	$ws_res=odbc_exec($conn,$tbquery2);
+	while ($ws_row=odbc_fetch_object($ws_res)) {
+		$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Cost"]=$ws_row->Cost;
+		$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Hours"]=$ws_row->Hours;
 		}
-	$this_job=$tbrow->Job;
-	$category=phase_cat($tbrow->Phase);
-	$weekly_sums->Hours="";
-	$weekly_sums->Cost="";
-	$weekly_sums->Hours=$weekly_sums_array[$tbrow->Phase][$tbrow->CostType]["Hours"];
-	$weekly_sums->Cost=$weekly_sums_array[$tbrow->Phase][$tbrow->CostType]["Cost"];
-	$tbrow->RangeHours=$weekly_sums->Hours;
-	$tbrow->RangeCosts=$weekly_sums->Cost;
-	add_to_ct_totals($tbrow->CostType);
-	if ($lastjob!=$this_job) {
-		$lastjob=$this_job;
-		$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
-		echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=4><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td></tr>";
-		}
-	$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
-	$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
-	$tbrow->ActualHours=gap_num($tbrow->ActualHours);
-	$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
-	$hours_remaining=gap_num($hours_remaining);
+	if ($debug==1) tcheck("just after figuring out all the weekly stuff");
 	
-	$tbrow->ActualCost=gap_num($tbrow->ActualCost);
-	$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
-	$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
-	$cost_remaining=gap_num($cost_remaining);
-	$cttext=$ct_array[$tbrow->CostType];
-	
-	
-	
-		if ($tbrow->Phase != 25 && $tbrow->Phase != 33 && $tbrow->Phase != 55)
-		{
-			echo "
-			<tr><td class=l>";
-				if ($tbrow->Phase==55) {
-					echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->Phase-$category ($cttext)</font></a>";
-					} else {
-					echo "$tbrow->Phase-$category ($cttext)";
-					}
+	$tbres=odbc_exec($conn, $tbquery);
+	while ($tbrow=odbc_fetch_object($tbres)) {
+		if (($tbrow->CurrEstHours==0)&&
+			($tbrow->ActualHours==0)&&
+			($tbrow->RemainCmtdCost==0)&&
+			($tbrow->ActualCost==0)&&
+			($tbrow->CurrEstCost==0)) continue;
+		
+		if ($tbrow->ActualHours>0) {
+			$composite=round($tbrow->ActualCost / $tbrow->ActualHours,2);
+			} else {
+			$composite="N/A";
+			}
+		$this_job=$tbrow->Job;
+		$category=phase_cat($tbrow->Phase);
+		$weekly_sums->Hours="";
+		$weekly_sums->Cost="";
+		$weekly_sums->Hours=$weekly_sums_array[$tbrow->Phase][$tbrow->CostType]["Hours"];
+		$weekly_sums->Cost=$weekly_sums_array[$tbrow->Phase][$tbrow->CostType]["Cost"];
+		$tbrow->RangeHours=$weekly_sums->Hours;
+		$tbrow->RangeCosts=$weekly_sums->Cost;
+		add_to_ct_totals($tbrow->CostType);
+		if ($lastjob!=$this_job) {
+			$lastjob=$this_job;
+			$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
+			echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=4><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td></tr>";
+			}
+		$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+		$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+		$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+		$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+		$hours_remaining=gap_num($hours_remaining);
+		
+		$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+		$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+		$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
+		$cost_remaining=gap_num($cost_remaining);
+		$cttext=$ct_array[$tbrow->CostType];
+		
+		
+		
+			if ($tbrow->Phase != 25 && $tbrow->Phase != 33 && $tbrow->Phase != 55)
+			{
 				echo "
-			</td><td>
-				$tbrow->CurrEstHours
-			</td><td>
-				$tbrow->ActualHours
-			</td><td style=\"border-right: 1px solid black;\">
-				$hours_remaining
-			</td>
-			
-			
-			<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
-				" . gap_num($weekly_sums->Hours) . "
-			</td></tr>
-			";
+				<tr><td class=l>";
+					if ($tbrow->Phase==55) {
+						echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->Phase-$category ($cttext)</font></a>";
+						} else {
+						echo "$tbrow->Phase-$category ($cttext)";
+						}
+					echo "
+				</td><td>
+					$tbrow->CurrEstHours
+				</td><td>
+					$tbrow->ActualHours
+				</td><td style=\"border-right: 1px solid black;\">
+					$hours_remaining
+				</td>
+				
+				
+				<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+					" . gap_num($weekly_sums->Hours) . "
+				</td></tr>
+				";
+			}
 		}
-	}
+
+}
+else
+{
+	$ws_res=mssql_query($tbquery2);
+	while ($ws_row=mssql_fetch_object($ws_res)) {
+		$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Cost"]=$ws_row->Cost;
+		$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Hours"]=$ws_row->Hours;
+		}
+	if ($debug==1) tcheck("just after figuring out all the weekly stuff");
+	
+	$tbres=mssql_query($tbquery);
+	while ($tbrow=mssql_fetch_object($tbres)) {
+		if (($tbrow->CurrEstHours==0)&&
+			($tbrow->ActualHours==0)&&
+			($tbrow->RemainCmtdCost==0)&&
+			($tbrow->ActualCost==0)&&
+			($tbrow->CurrEstCost==0)) continue;
+		
+		if ($tbrow->ActualHours>0) {
+			$composite=round($tbrow->ActualCost / $tbrow->ActualHours,2);
+			} else {
+			$composite="N/A";
+			}
+		$this_job=$tbrow->Job;
+		$category=phase_cat($tbrow->Phase);
+		$weekly_sums->Hours="";
+		$weekly_sums->Cost="";
+		$weekly_sums->Hours=$weekly_sums_array[$tbrow->Phase][$tbrow->CostType]["Hours"];
+		$weekly_sums->Cost=$weekly_sums_array[$tbrow->Phase][$tbrow->CostType]["Cost"];
+		$tbrow->RangeHours=$weekly_sums->Hours;
+		$tbrow->RangeCosts=$weekly_sums->Cost;
+		add_to_ct_totals($tbrow->CostType);
+		if ($lastjob!=$this_job) {
+			$lastjob=$this_job;
+			$vp_sub_job_info=ms_getoneb("select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$tbrow->Job'");
+			echo "<tr align=center bgcolor=\"$fd_color_4\"><td colspan=4><b>$tbrow->Job / $vp_sub_job_info->Description</b></td><td style=\"border-left: 1px solid black;\">Hours</td></tr>";
+			}
+		$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+		$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+		$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+		$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+		$hours_remaining=gap_num($hours_remaining);
+		
+		$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+		$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+		$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
+		$cost_remaining=gap_num($cost_remaining);
+		$cttext=$ct_array[$tbrow->CostType];
+		
+		
+		
+			if ($tbrow->Phase != 25 && $tbrow->Phase != 33 && $tbrow->Phase != 55)
+			{
+				echo "
+				<tr><td class=l>";
+					if ($tbrow->Phase==55) {
+						echo "<a href=\"javascript:open_subcontracts($global_jobinfo_id)\"><font color=blue>$tbrow->Phase-$category ($cttext)</font></a>";
+						} else {
+						echo "$tbrow->Phase-$category ($cttext)";
+						}
+					echo "
+				</td><td>
+					$tbrow->CurrEstHours
+				</td><td>
+					$tbrow->ActualHours
+				</td><td style=\"border-right: 1px solid black;\">
+					$hours_remaining
+				</td>
+				
+				
+				<td class=h onclick=\"d('$tbrow->Phase','$tbrow->Job','$tbrow->CostType','h3','$date_starting_info->week_start_slashes','$date_info->week_end_slashes')\">
+					" . gap_num($weekly_sums->Hours) . "
+				</td></tr>
+				";
+			}
+		}
+}
+
+
 if ($debug==1) tcheck("before printing final totals");
 
 $this_job=0;
