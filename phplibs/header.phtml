@@ -1,5 +1,9 @@
 <?
 // GPH Cleanup warnings
+global $use_odbc;  //set this to true if you're developing on a system with no access to mssql library.
+
+$use_odbc = 0;
+
 $color_4 = isset($fd_color_4) ? $fd_color_4 : '#888';
 echo "
 <meta http-equiv=\"X-UA-Compatible\" content=\"chrome=1\">
