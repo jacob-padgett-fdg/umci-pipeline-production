@@ -91,13 +91,8 @@ echo "
 <div>
 ";
 
-if ($show_both=="Y")
-    datebox2($week_starting_mssql,"select_we.week_starting","update_graphs_full()");
-else
-{
-    echo "<a href=\"javascript:baldwin_graph_both_dates()\"><font color=blue>$ws_short</font></a>";
-	//echo "<a href=\"$pagename?mode=$mode&report_name=baldwin_full_labor_only&show_both=Y&week_ending=$week_ending\"><font color=blue>$ws_short</font></a>";
-}
+datebox2($week_starting_mssql,"select_we.week_starting","update_graphs_full()");
+
 echo "<br>"; 
 
 datebox2($week_ending_mssql,"select_we.week_ending","update_graphs_full()");
