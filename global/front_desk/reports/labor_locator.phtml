@@ -1,4 +1,4 @@
-<?
+<?PHP
 $employee_group=1;
 global $use_odbc;
 require("header.phtml");
@@ -178,11 +178,13 @@ while ($row=@mysql_fetch_object($res)) {
 	{
 		if ($row->off_site)
 		{
-			$html_out = $html_out . "<tr bgcolor=\"#cccccc\"><td style=\"border: 1px solid black;\" colspan=5 align=center>Off-site</td></tr>";
+			$offsite_count = getoneb("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and off_site = 1");
+			$html_out = $html_out . "<tr bgcolor=\"#cccccc\"><td style=\"border: 1px solid black;\" colspan=5 align=center>Off-site ($offsite_count->total)</td></tr>";
 		}
 		else
 		{
-			$html_out = $html_out . "<tr bgcolor=\"#cccccc\"><td style=\"border: 1px solid black;\" colspan=5 align=center>On-site</td></tr>";
+			$offsite_count = getoneb("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and off_site <> 1");
+			$html_out = $html_out . "<tr bgcolor=\"#cccccc\"><td style=\"border: 1px solid black;\" colspan=5 align=center>On-site ($offsite_count->total)</td></tr>";
 		}
 		
 		$last_offsite = $row->off_site;
