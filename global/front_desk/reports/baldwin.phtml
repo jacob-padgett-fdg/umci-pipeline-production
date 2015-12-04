@@ -413,7 +413,7 @@ while ($ws_row=mssql_fetch_object($ws_res)) {
 	$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Hours"]=$ws_row->Hours;
 	}
 if ($debug==1) tcheck("just after figuring out all the weekly stuff");
-$tbres=mssql_query($conn, $tbquery);
+$tbres=mssql_query($tbquery);
 while ($tbrow=@mssql_fetch_object($tbres)) {
 	if (($tbrow->CurrEstHours==0)&&
 		($tbrow->ActualHours==0)&&
