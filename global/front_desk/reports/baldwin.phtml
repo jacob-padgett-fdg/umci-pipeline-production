@@ -1,5 +1,6 @@
 <?
 session_write_close();
+global $use_odbc;
 $debug = 0;
 if ($debug==1) {
 $me_last_time=0;
@@ -406,14 +407,14 @@ order by CASE when CostType = 4 then 3 when CostType = 3 then 4 else CostType EN
 ";
 
 $weekly_sums_array=array();
-$ws_res=odbc_exec($conn, $tbquery2);
-while ($ws_row=odbc_fetch_object($ws_res)) {
+$ws_res=mssql_query( $tbquery2);
+while ($ws_row=mssql_fetch_object($ws_res)) {
 	$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Cost"]=$ws_row->Cost;
 	$weekly_sums_array[$ws_row->Phase][$ws_row->CostType]["Hours"]=$ws_row->Hours;
 	}
 if ($debug==1) tcheck("just after figuring out all the weekly stuff");
-$tbres=odbc_exec($conn, $tbquery);
-while ($tbrow=@odbc_fetch_object($tbres)) {
+$tbres=mssql_query($conn, $tbquery);
+while ($tbrow=@mssql_fetch_object($tbres)) {
 	if (($tbrow->CurrEstHours==0)&&
 		($tbrow->ActualHours==0)&&
 		($tbrow->RemainCmtdCost==0)&&
