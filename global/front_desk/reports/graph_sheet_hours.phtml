@@ -52,7 +52,7 @@ while ($row=odbc_fetch_object($res)) {
 }
 else
 {
-	$res=mssql_query($conn,$sql);
+	$res=mssql_query($sql);
 
 	$results_count=mssql_num_rows($res); 
 	if ($results_count<1) {
