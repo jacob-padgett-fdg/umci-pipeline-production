@@ -76,12 +76,17 @@ $week_ending_mssql=$date_info->week_end_slashes;
 
 
 if ($week_starting=="") {
-	$date_starting_info=date_info($date_info->week_start_slashes);
+	
+	$week_ending_array = explode("/", $week_ending_mssql);
+	$week_starting_time = mktime(0,0,0,$week_ending_array[0],$week_ending_array[1]-56,$week_ending_array[2]);
+	$week_start_slashes = date("M/d/Y", $week_starting_time);
+	$date_starting_info=date_info($week_start_slashes);
+	
 	} else {
 	$date_starting_info=date_info($week_starting);
 	}
+	
 $week_starting_mssql=$date_starting_info->week_start_slashes;
-//$we_short=date('m/d/y',strtotime("$week_ending_mssql"));
 $ws_short=date('m/d/y',strtotime("$date_starting_info->week_start_slashes"));
 
 if ($week_ending_mssql=="") die("Application error: Week ending error!");
