@@ -72,7 +72,7 @@ else
 		}	
 }
 $graph = new Graph(475,300,"auto");	
-$graph->SetScale("intlin",'','',0,sizeof($ydata));
+$graph->SetScale("intlin",'','',0,sizeof($ydata)-1);
 $graph->SetMarginColor("$fd_color_1");
 $graph->SetBackgroundGradient("$fd_color_4:1.1","black:0.5",GRAD_HOR,BGRAD_PLOT);
 
