@@ -5,7 +5,7 @@ include("reports/report_lib.inc");
 require("viewpoint_connect_ro.phtml");
 require_once("viewpoint_libs.inc");
 $report_name="foreman";
-if (!(pm_for_this_job())) check_report_permissions();
+
 fd_navs_header();
 include("main_tabs.phtml");
 session_write_close();

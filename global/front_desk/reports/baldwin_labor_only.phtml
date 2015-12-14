@@ -27,7 +27,6 @@ include("report_lib.inc");
 require("viewpoint_connect_ro.phtml");
 require_once("viewpoint_libs.inc");
 $report_name="baldwin";
-if (!(pm_for_this_job())) check_report_permissions();
 if ($debug==1) tcheck("after requires and permission check");
 $fd_color_5="#CCAA55";
 $fd_color_5="#DDBB66";
