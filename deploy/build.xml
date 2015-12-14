@@ -1,0 +1,110 @@
+<project name="umci-pipeline deployment" basedir="." xmlns:liquibase="antlib:liquibase.integration.ant">
+  <description>
+    Deploy job for umci-pipeline application.
+  </description>
+
+<!--
+
+The goal of this ant job is to deploy latest umci-pipeline code.
+
+git@github.com:UMCI/umci-pipeline.git
+
+Tasks:
+
+-init
+  initialize ant and setup logging
+
+-->
+
+  <!--                            
+        start setup tasks
+
+        include required libraries
+        - antcontrib for switch statement
+
+   -->
+
+  <taskdef resource="liquibase/integration/ant/antlib.xml" uri="antlib:liquibase.integration.ant">
+    <classpath>
+       <pathelement location="lib/liquibase.jar" />
+       <pathelement location="lib/mysql-connector-java-5.1.37-bin.jar" />
+       <pathelement location="lib/ant-contrib.jar" />
+    </classpath>
+  </taskdef>
+
+  <target name="-init">
+    <tstamp>
+      <format property="build.tstamp" pattern="yyyyMMdd-hhmm" />
+    </tstamp>
+    <property file="${basedir}/build.properties"/>
+    <mkdir dir="${basedir}/logs" />
+    <record name="${basedir}/logs/${build.tstamp}.log" action="start" append="true" />
+    <echo message="Build initiated for umci_pipeline, timestamp = ${build.tstamp}" />
+  </target>
+
+  <!--
+        end setup tasks
+   -->
+
+
+  <!--
+        start repository tasks
+   -->
+  <target name="updateRepository" if="deploybranch" >
+    <echo message="Initiating pull from git: git pull" />
+    <exec executable="${git.path}" dir="." failifexecutionfails="true" failonerror="true" logError="true" >
+      <arg line=" pull" />
+    </exec>
+    <echo message="...checking out branch ${deploybranch}..." />
+    <exec executable="${git.path}" dir="." failifexecutionfails="true" failonerror="true" logError="true" >
+      <arg line=" checkout ${deploybranch}" />
+    </exec>
+    <echo message="Done" />
+  </target>
+  <!--
+        end repository tasks
+   -->
+
+  <!--
+       start database tasks
+   -->
+  <target name="updateDatabase">
+    <liquibase:updateDatabase logLevel="debug" changelogfile="changelog/db.changelog-master.xml">
+      <liquibase:database id="${db.schema}"
+                          defaultSchemaName="${db.schema}"
+                          driver="${db.driver}"
+                          url="${db.url}"
+                          user="${db.user}"
+                          password="${db.pass}"/>
+    </liquibase:updateDatabase>
+  </target>
+
+<!--
+  - we run this first against an *existing* database to initialize the changelog and then run
+    updateDatabase instead on all subsequent runs
+-->
+
+  <target name="syncDatabase">
+    <liquibase:changeLogSync logLevel="debug" changelogfile="changelog/db.changelog-master.xml">
+      <liquibase:database id="${db.schema}"
+                          defaultSchemaName="${db.schema}"
+                          driver="${db.driver}"
+                          url="${db.url}"
+                          user="${db.user}"
+                          password="${db.pass}"
+      />
+    </liquibase:changeLogSync>
+  </target>
+  <!--
+        end database tasks
+   -->
+
+  <target name="syncDB" depends="-init,syncDatabase">
+    <echo message="Deploying code and database." />
+  </target>
+
+  <target name="deployAll" depends="-init,updateRepository,updateDatabase">
+    <echo message="Deploying code and database." />
+  </target>
+
+</project>

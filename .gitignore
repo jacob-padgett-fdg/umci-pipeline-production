@@ -1,3 +1,4 @@
+videos
 test.php
 crm
 update_mimetype.sql
@@ -8,3 +9,4 @@ _images
 .idea
 *.swp
 data
+deploy/logs

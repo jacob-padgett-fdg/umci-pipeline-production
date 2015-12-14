@@ -1,0 +1,46 @@
+The following packages are required on an Unbuntu 10.04 box (and generally required wherever this is run).
+
+- optionally run to update cache:
+  sudo apt-get update
+
+Required packages:
+  - mysql-server (existing server on another host or locally)
+  - ant
+  - git-core
+  - openjdk-6-jdk
+  - mailutils*
+
+* mailutils will install an MTA - stop or remove if not desired (ie, exim) but please be sure to allow
+  outbound mail to be sent from this host for notifications to work and set the "notify" variable in
+  each script
+
+Install example:
+$ sudo apt-get install ant git-core openjdk-6-jdk mailutils
+
+Set JAVA_HOME variable:
+
+export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+
+This deployment must be run as a user with permission to read the github repository.
+
+There are two steps required to integrate this deploy process with an existing database:
+1. sync the database changelogs with the current database:
+
+  $ ./setup_wrapper.sh development
+
+2. apply any subsequent changes (run regularly):
+
+  $ ./deploy_wrapper.sh development
+
+If this system is used to deploy a new system on a new database, simply run the deploy_wrapper with
+proper configuration options in build.properties and the correct branch specified, i.e.:
+
+  $ ./deploy_wrapper.sh development
+
+
+The deploy_wrapper.sh script can then be executed via a crontab entry to automatically deploy or it
+can be executed manually as desired.  A sample crontab entry to execute every 15 minutes might be:
+
+*/15 * * * * $path/deploy/deploy_wrapper.sh master > /dev/null 2>&1
+
+

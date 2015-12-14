@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+<changeSet author="root" id="docreg_cnstdwglog_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_cnstdwglog_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_cnstdwglog_insert AFTER INSERT ON cnstdwglog FOR EACH ROW begin
+call docreg_generic2 ('cnstdwglog',NEW.cnstdwglog_id,NEW.jobinfo_id,NEW.drawing_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_cnstdwglog_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_cnstdwglog_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_cnstdwglog_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_cnstdwglog_update AFTER UPDATE ON cnstdwglog FOR EACH ROW begin
+call docreg_generic2 ('cnstdwglog',NEW.cnstdwglog_id,NEW.jobinfo_id,NEW.drawing_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_cnstdwglog_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_cnstdwglog_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_cnstdwglog_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_cnstdwglog_delete AFTER DELETE ON cnstdwglog FOR EACH ROW begin
+call docunreg ('cnstdwglog',OLD.cnstdwglog_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_cnstdwglog_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_dailylog_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_dailylog_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_dailylog_insert AFTER INSERT ON dailylog FOR EACH ROW begin
+call docreg_generic2 ('dailylog',NEW.dailylog_id,NEW.jobinfo_id,NEW.log_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_dailylog_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_dailylog_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_dailylog_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_dailylog_update AFTER UPDATE ON dailylog FOR EACH ROW begin
+call docreg_generic2 ('dailylog',NEW.dailylog_id,NEW.jobinfo_id,NEW.log_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_dailylog_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_dailylog_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_dailylog_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_dailylog_delete AFTER DELETE ON dailylog FOR EACH ROW begin
+call docunreg ('dailylog',OLD.dailylog_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_dailylog_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="documents_deleted" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="documents_deleted"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER documents_deleted AFTER DELETE ON documents FOR EACH ROW begin
+delete from documents_links where doca = OLD.doc_id or docb = OLD.doc_id;
+delete from rfi_record_dwg_posting where doc_id = OLD.doc_id;
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER documents_deleted;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_drawing_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_drawing_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_drawing_insert AFTER INSERT ON drawinglog FOR EACH ROW begin
+call docreg_generic2 ('drawinglog',NEW.drawing_id,NEW.jobinfo_id,NEW.sheet_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_drawing_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_drawing_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_drawing_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_drawing_update AFTER UPDATE ON drawinglog FOR EACH ROW begin
+call docreg_generic2 ('drawinglog',NEW.drawing_id,NEW.jobinfo_id,NEW.sheet_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_drawing_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_drawing_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_drawing_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_drawing_delete AFTER DELETE ON drawinglog FOR EACH ROW begin
+call docunreg ('drawinglog',OLD.drawing_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_drawing_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_dsgdwglog_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_dsgdwglog_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_dsgdwglog_insert AFTER INSERT ON dsgdwglog FOR EACH ROW begin
+call docreg_generic2 ('dsgdwglog',NEW.dsgdwglog_id,NEW.jobinfo_id,NEW.drawing_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_dsgdwglog_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_dsgdwglog_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_dsgdwglog_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_dsgdwglog_update AFTER UPDATE ON dsgdwglog FOR EACH ROW begin
+call docreg_generic2 ('dsgdwglog',NEW.dsgdwglog_id,NEW.jobinfo_id,NEW.drawing_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_dsgdwglog_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_dsgdwglog_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_dsgdwglog_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_dsgdwglog_delete AFTER DELETE ON dsgdwglog FOR EACH ROW begin
+call docunreg ('dsgdwglog',OLD.dsgdwglog_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_dsgdwglog_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="cell_phone_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="cell_phone_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER cell_phone_insert AFTER INSERT ON fd_reports_valid_cell_phones FOR EACH ROW begin 
+if ((NEW.current_owner!=0)&&(NEW.device_class='cell')) then
+update contacts set phone_cell = NEW.phone_number where contacts.contacts_id = NEW.current_owner;
+end if;
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER cell_phone_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="cell_phone_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="cell_phone_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER cell_phone_update AFTER UPDATE ON fd_reports_valid_cell_phones FOR EACH ROW begin 
+if ((OLD.current_owner != 0)&&(NEW.current_owner!=OLD.current_owner)&&(OLD.device_class='cell')) then
+update contacts set phone_cell = '' where contacts.contacts_id = OLD.current_owner;
+end if;
+if ((NEW.current_owner!=0)&&(NEW.device_class='cell')) then
+update contacts set phone_cell = NEW.phone_number where contacts.contacts_id = NEW.current_owner;
+end if;
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER cell_phone_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="cell_phone_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="cell_phone_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER cell_phone_delete AFTER DELETE ON fd_reports_valid_cell_phones FOR EACH ROW begin 
+if ((OLD.current_owner != 0)&&(OLD.device_class='cell')) then
+update contacts set phone_cell = '' where contacts_id = OLD.current_owner;
+end if;
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER cell_phone_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_file_cabinet_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_file_cabinet_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_file_cabinet_insert AFTER INSERT ON file_cabinet FOR EACH ROW begin
+    if NEW.inbound_attached = 'N' then call docreg_generic2 ('file_cabinet',NEW.file_cabinet_id,NEW.jobinfo_id,NEW.file_num,'Unfiled inbound document','default');
+    else call docreg_generic2 ('file_cabinet',NEW.file_cabinet_id,NEW.jobinfo_id,NEW.file_num,concat(NEW.folder_name, ' - ', NEW.description),'default');
+    end if;
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_file_cabinet_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_file_cabinet_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_file_cabinet_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_file_cabinet_update AFTER UPDATE ON file_cabinet FOR EACH ROW begin
+    if NEW.inbound_attached = 'N' then call docreg_generic2 ('file_cabinet',NEW.file_cabinet_id,NEW.jobinfo_id,NEW.file_num,'Unfiled inbound document','default');
+    else call docreg_generic2 ('file_cabinet',NEW.file_cabinet_id,NEW.jobinfo_id,NEW.file_num,concat(NEW.folder_name, ' - ', NEW.description),'default');
+    end if;
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_file_cabinet_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_file_cabinet_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_file_cabinet_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_file_cabinet_delete AFTER DELETE ON file_cabinet FOR EACH ROW begin
+call docunreg ('file_cabinet',OLD.file_cabinet_id); 
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_file_cabinet_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_gcrfi_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_gcrfi_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_gcrfi_insert AFTER INSERT ON gcrfilog FOR EACH ROW begin
+call docreg_generic2 ('gcrfi',NEW.gcrfi_id,NEW.jobinfo_id,NEW.gcrfi_num,NEW.key_description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_gcrfi_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_gcrfi_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_gcrfi_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_gcrfi_update AFTER UPDATE ON gcrfilog FOR EACH ROW begin
+call docreg_generic2 ('gcrfi',NEW.gcrfi_id,NEW.jobinfo_id,NEW.gcrfi_num,NEW.key_description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_gcrfi_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_gcrfi_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_gcrfi_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_gcrfi_delete AFTER DELETE ON gcrfilog FOR EACH ROW begin
+call docunreg ('gcrfi',OLD.gcrfi_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_gcrfi_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_inbound_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_inbound_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_inbound_insert AFTER INSERT ON inbound FOR EACH ROW begin
+call docreg_generic2 ('inbound',NEW.inbound_id,NEW.jobinfo_id,NEW.scan_sequence,NEW.description,'default');
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_inbound_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_inbound_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_inbound_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_inbound_update AFTER UPDATE ON inbound FOR EACH ROW begin
+call docreg_generic2 ('inbound',NEW.inbound_id,NEW.jobinfo_id,NEW.scan_sequence,NEW.description,'default');
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_inbound_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_inbound_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_inbound_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_inbound_delete AFTER DELETE ON inbound FOR EACH ROW begin
+call docunreg ('inbound',OLD.inbound_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_inbound_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_letterlog_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_letterlog_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_letterlog_insert AFTER INSERT ON letterlog FOR EACH ROW begin
+call docreg_generic2 ('letterlog',NEW.letterlog_id,NEW.jobinfo_id,NEW.letterlog_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_letterlog_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_letterlog_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_letterlog_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_letterlog_update AFTER UPDATE ON letterlog FOR EACH ROW begin
+call docreg_generic2 ('letterlog',NEW.letterlog_id,NEW.jobinfo_id,NEW.letterlog_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_letterlog_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_letterlog_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_letterlog_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_letterlog_delete AFTER DELETE ON letterlog FOR EACH ROW begin
+call docunreg ('letterlog',OLD.letterlog_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_letterlog_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_oiclog_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_oiclog_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_oiclog_insert AFTER INSERT ON oiclog FOR EACH ROW begin
+call docreg_generic2 ('oiclog',NEW.oiclog_id,NEW.jobinfo_id,NEW.oic_number,NEW.description,NEW.section);   
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_oiclog_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_oiclog_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_oiclog_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_oiclog_update AFTER UPDATE ON oiclog FOR EACH ROW begin
+call docreg_generic2 ('oiclog',NEW.oiclog_id,NEW.jobinfo_id,NEW.oic_number,NEW.description,NEW.section);   
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_oiclog_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_oiclog_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_oiclog_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_oiclog_delete AFTER DELETE ON oiclog FOR EACH ROW begin
+call docunreg ('oiclog',OLD.oiclog_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_oiclog_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_pal_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_pal_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_pal_insert AFTER INSERT ON pal FOR EACH ROW begin
+call docreg_generic2 ('pal',NEW.pal_id,NEW.jobinfo_id,NEW.pal_num,NEW.short_description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_pal_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_pal_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_pal_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_pal_update AFTER UPDATE ON pal FOR EACH ROW begin
+call docreg_generic2 ('pal',NEW.pal_id,NEW.jobinfo_id,NEW.pal_num,NEW.short_description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_pal_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_pal_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_pal_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_pal_delete AFTER DELETE ON pal FOR EACH ROW begin
+call docunreg ('pal',OLD.pal_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_pal_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_polog_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_polog_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_polog_insert AFTER INSERT ON polog FOR EACH ROW begin
+call docreg_generic2 ('polog',NEW.polog_id,NEW.jobinfo_id,NEW.polog_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_polog_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_polog_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_polog_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_polog_delete AFTER DELETE ON polog FOR EACH ROW begin
+call docunreg ('polog',OLD.polog_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_polog_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_rfilog_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_rfilog_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_rfilog_insert AFTER INSERT ON rfilog FOR EACH ROW begin
+call docreg_generic2 ('rfi',NEW.rfi_id,NEW.jobinfo_id,NEW.rfi_num,NEW.key_description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_rfilog_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_rfilog_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_rfilog_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_rfilog_update AFTER UPDATE ON rfilog FOR EACH ROW begin
+call docreg_generic2 ('rfi',NEW.rfi_id,NEW.jobinfo_id,NEW.rfi_num,NEW.key_description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_rfilog_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_rfi_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_rfi_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_rfi_delete AFTER DELETE ON rfilog FOR EACH ROW begin
+call docunreg ('rfi',OLD.rfi_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_rfi_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_sketch_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_sketch_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_sketch_insert AFTER INSERT ON sketchlog FOR EACH ROW begin call docreg_generic2 ('sketchlog',NEW.sketchlog_id,NEW.jobinfo_id,NEW.sketch_num,NEW.dwg_title,NEW.section); end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_sketch_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_sketch_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_sketch_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_sketch_update AFTER UPDATE ON sketchlog FOR EACH ROW begin call docreg_generic2 ('sketchlog',NEW.sketchlog_id,NEW.jobinfo_id,NEW.sketch_num,NEW.dwg_title,NEW.section); end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_sketch_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_polog_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_polog_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_polog_update AFTER UPDATE ON polog FOR EACH ROW begin
+call docreg_generic2 ('polog',NEW.polog_id,NEW.jobinfo_id,NEW.polog_num,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_polog_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_sketch_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_sketch_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_sketch_delete AFTER DELETE ON sketchlog FOR EACH ROW begin
+call docunreg ('sketchlog',OLD.sketchlog_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_sketch_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_spooltrack_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_spooltrack_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_spooltrack_insert AFTER INSERT ON spool_fab_tracking FOR EACH ROW begin
+set @tag='';
+if ((NEW.dynamic_1!='') and (NEW.dynamic_1 is not null)) then set @tag=NEW.dynamic_1; end if;                    
+if ((NEW.dynamic_2!='') and (NEW.dynamic_2 is not null)) then set @tag=concat_ws('-',@tag,NEW.dynamic_2); end if;
+if ((NEW.dynamic_3!='') and (NEW.dynamic_3 is not null)) then set @tag=concat_ws('-',@tag,NEW.dynamic_3); end if;
+if ((NEW.dynamic_4!='') and (NEW.dynamic_4 is not null)) then set @tag=concat_ws('-',@tag,NEW.dynamic_4); end if;
+if ((NEW.dynamic_5!='') and (NEW.dynamic_5 is not null)) then set @tag=concat_ws('-',@tag,NEW.dynamic_5); end if;
+call docreg_generic2 ('spooltrack',NEW.spool_fab_tracking_id,NEW.jobinfo_id,@tag,NEW.cad_file_name,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_spooltrack_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_spooltrack_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_spooltrack_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_spooltrack_update AFTER UPDATE ON spool_fab_tracking FOR EACH ROW begin
+set @tag='';
+if ((NEW.dynamic_1!='') and (NEW.dynamic_1 is not null)) then set @tag=NEW.dynamic_1; end if;                    
+if ((NEW.dynamic_2!='') and (NEW.dynamic_2 is not null)) then set @tag=concat_ws('-',@tag,NEW.dynamic_2); end if;
+if ((NEW.dynamic_3!='') and (NEW.dynamic_3 is not null)) then set @tag=concat_ws('-',@tag,NEW.dynamic_3); end if;
+if ((NEW.dynamic_4!='') and (NEW.dynamic_4 is not null)) then set @tag=concat_ws('-',@tag,NEW.dynamic_4); end if;
+if ((NEW.dynamic_5!='') and (NEW.dynamic_5 is not null)) then set @tag=concat_ws('-',@tag,NEW.dynamic_5); end if;
+call docreg_generic2 ('spooltrack',NEW.spool_fab_tracking_id,NEW.jobinfo_id,@tag,NEW.cad_file_name,NEW.section);          
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_spooltrack_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_spooltrack_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_spooltrack_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_spooltrack_delete AFTER DELETE ON spool_fab_tracking FOR EACH ROW begin
+call docunreg ('spooltrack',OLD.spool_fab_tracking_id); 
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_spooltrack_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_subcontracts_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_subcontracts_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_subcontracts_insert AFTER INSERT ON subcontracts FOR EACH ROW begin
+call docreg_generic2 ('subcontracts',NEW.subcontracts_id,NEW.jobinfo_id,NEW.request_number,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_subcontracts_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_subcontracts_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_subcontracts_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_subcontracts_update AFTER UPDATE ON subcontracts FOR EACH ROW begin
+call docreg_generic2 ('subcontracts',NEW.subcontracts_id,NEW.jobinfo_id,NEW.request_number,NEW.description,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_subcontracts_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_subcontracts_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_subcontracts_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_subcontracts_delete AFTER DELETE ON subcontracts FOR EACH ROW begin
+call docunreg ('subcontracts',OLD.subcontracts_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_subcontracts_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_submittallog_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_submittallog_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_submittallog_insert AFTER INSERT ON submittallog FOR EACH ROW begin 
+set @spec=NEW.spec_section;
+set @desc='';
+if ((NEW.spec_sub_para!='') and (NEW.spec_sub_para is not NULL)) then set @spec=concat_ws(' ',@spec,NEW.spec_sub_para); end if;
+if ((NEW.spec_sub_sub_para!='') and (NEW.spec_sub_sub_para is not NULL)) then set @spec=concat_ws(' ',@spec,NEW.spec_sub_sub_para); end if;
+if ((NEW.submittal_num!='') and (NEW.submittal_num is not NULL)) then set @desc=NEW.submittal_num; end if;
+if ((NEW.submittal_description!='') and (NEW.submittal_description is not NULL)) then set @desc=concat_ws('-',@desc,NEW.submittal_description); end if;
+call docreg_generic2 ('submittallog',NEW.submittallog_id,New.jobinfo_id,@spec,@desc,NEW.section); 
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_submittallog_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_submittallog_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_submittallog_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_submittallog_update AFTER UPDATE ON submittallog FOR EACH ROW begin
+set @spec=NEW.spec_section;
+set @desc='';
+if ((NEW.spec_sub_para!='') and (NEW.spec_sub_para is not NULL)) then set @spec=concat_ws(' ',@spec,NEW.spec_sub_para); end if;
+if ((NEW.spec_sub_sub_para!='') and (NEW.spec_sub_sub_para is not NULL)) then set @spec=concat_ws(' ',@spec,NEW.spec_sub_sub_para); end if;
+if ((NEW.submittal_num!='') and (NEW.submittal_num is not NULL)) then set @desc=NEW.submittal_num; end if;
+if ((NEW.submittal_description!='') and (NEW.submittal_description is not NULL)) then set @desc=concat_ws('-',@desc,NEW.submittal_description); end if;
+call docreg_generic2 ('submittallog',NEW.submittallog_id,New.jobinfo_id,@spec,@desc,NEW.section); 
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_submittallog_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_submittallog_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_submittallog_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_submittallog_delete AFTER DELETE ON submittallog FOR EACH ROW begin
+call docunreg ('submittallog',OLD.submittallog_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_submittallog_delete;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_transmittal_insert" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_transmittal_insert"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_transmittal_insert AFTER INSERT ON transmittals FOR EACH ROW begin
+call docreg_generic2 ('transmittal',NEW.transmittal_id,NEW.jobinfo_id,NEW.transmittal_num,NEW.subject,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_transmittal_insert;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_transmittal_update" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_transmittal_update"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_transmittal_update AFTER UPDATE ON transmittals FOR EACH ROW begin
+call docreg_generic2 ('transmittal',NEW.transmittal_id,NEW.jobinfo_id,NEW.transmittal_num,NEW.subject,NEW.section);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_transmittal_update;
+  </rollback>
+</changeSet>
+<changeSet author="root" id="docreg_transmittal_delete" runOnChange="true">
+  <createProcedure encoding="utf8"
+                   procedureName="docreg_transmittal_delete"
+                   schemaName="global">
+<![CDATA[CREATE TRIGGER docreg_transmittal_delete AFTER DELETE ON transmittals FOR EACH ROW begin
+call docunreg ('transmittal',OLD.transmittal_id);
+end;]]>
+  </createProcedure>
+  <rollback>
+DROP TRIGGER docreg_transmittal_delete;
+  </rollback>
+</changeSet>
+</databaseChangeLog>
