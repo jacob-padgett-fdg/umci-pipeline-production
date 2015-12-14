@@ -1,4 +1,6 @@
 <?php
+global $use_odbc;
+$use_odbc = 0;
 session_write_close();
 include("reports/report_lib.inc");
 require("viewpoint_connect_ro.phtml");
@@ -12,9 +14,28 @@ $textx=array();
 $max=0;
 
 $contract_num=get_vp_contract_num();
-$res=@mssql_query("select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '15%' group by PREndDate order by PREndDate");
 
-$results_count=@mssql_num_rows($res); 
+$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '15%' ";
+
+if (!empty($week_starting))
+{
+	$sql .= " AND PREndDate >= '$week_starting' ";
+}
+
+if (!empty($week_ending))
+{
+	$sql .= " AND PREndDate <= '$week_ending' ";
+}
+
+$sql .= " group by PREndDate order by PREndDate";
+
+
+if ($use_odbc)
+{
+
+$res=odbc_exec($conn, $sql);
+
+$results_count=odbc_num_rows($res); 
 if ($results_count<1) {
     // GPH MARK - absolute path
 	$fullpath="/data/web/pipeline/images/na.jpg";
@@ -24,14 +45,37 @@ if ($results_count<1) {
 	exit;
 	}
 
-while ($row=@mssql_fetch_object($res)) {
+while ($row=odbc_fetch_object($res)) {
 	if ($row->Hours > $max) $max=$row->Hours;
 	array_push($ydata,$row->Hours);
 	$wedate=date('m/d/y',strtotime($row->PREndDate));
 	array_push($textx,$wedate);
 	}
+	
+}
+else
+{
+	$res=mssql_query( $sql);
+
+	$results_count=mssql_num_rows($res); 
+	if ($results_count<1) {
+		// GPH MARK - absolute path
+		$fullpath="/data/web/pipeline/images/na.jpg";
+		$fsize=@filesize($fullpath);
+		jpg_mime_header("na.jpg");
+		@readfile($fullpath);
+		exit;
+		}
+	
+	while ($row=mssql_fetch_object($res)) {
+		if ($row->Hours > $max) $max=$row->Hours;
+		array_push($ydata,$row->Hours);
+		$wedate=date('m/d/y',strtotime($row->PREndDate));
+		array_push($textx,$wedate);
+		}	
+}
 $graph = new Graph(475,300,"auto");	
-$graph->SetScale("intlin",'','',0,sizeof($ydata));
+$graph->SetScale("intlin",'','',0,sizeof($ydata)-1);
 $graph->SetMarginColor("$fd_color_1");
 $graph->SetBackgroundGradient("$fd_color_4:1.1","black:0.5",GRAD_HOR,BGRAD_PLOT);
 

@@ -1,8 +1,28 @@
 <?
+global $use_odbc;
+
+// GPH HARDCODED SERVER NAME
 if ($devel=="-devel") $server="hilly";
 else $server="hilly";
 
-@mssql_connect('hilly\viewpoint',"reddwarf","cl01st3r");
-@mssql_select_db("Viewpoint");
+// GPH HARDCODED CONNECTION STRING
+
+if (!$use_odbc)
+{
+    @mssql_connect('hilly\viewpoint',"reddwarf","cl01st3r");
+    @mssql_select_db("Viewpoint");
+}
+else
+{
+    // Replace the value of these variables with your own data
+    $user = 'reddwarf';
+    $pass = 'cl01st3r';
+    $server = 'hilly\viewpoint';
+    $database = 'Viewpoint';
+    
+    // No changes needed from now on
+    $connection_string = "DRIVER={SQL Server};SERVER=$server;DATABASE=$database"; 
+    $conn = odbc_connect($connection_string,$user,$pass);  
+}
 
 ?>

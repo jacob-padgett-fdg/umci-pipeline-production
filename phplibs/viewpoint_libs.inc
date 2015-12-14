@@ -1,24 +1,74 @@
-<?
-/////////////////////////////////////////////////////////////////////////////////////////
-function ms_getone ($query,$link="") {
-//echo "<hr>Z<hr>";	
-if ($link=="") $result=(@mssql_query($query));
-	else $result=(@mssql_query($query,$link));
-if ((mssql_num_rows($result)) != 1) {   
-	echo "Error: Non unique or missing record in function \"getone()\"<p>";
-	exit;
+<?php
+////////////////////////////////////////////////////////////////////////////////////////
+function ms_getone ($query,$link="")
+{
+	global $conn;
+	global $use_odbc;
+	
+	if ($use_odbc)
+	{
+		if ($link=="")
+			$result=(@odbc_exec($conn,$query));
+		else
+			$result=(@odbc_exec($conn,$query));
+			
+		if ((odbc_num_rows($result)) != 1)
+		{
+			echo "Error: Non unique or missing record in function \"getone()\"<p>";
+			exit;
+		}
+		return(odbc_fetch_object($result));
 	}
-return(mssql_fetch_object($result));
+	else
+	{
+		if ($link=="")
+			$result=(@mssql_query($query));
+		else
+			$result=(@mssql_query($query,$link));
+			
+		if ((mssql_num_rows($result)) != 1)
+		{
+			echo "Error: Non unique or missing record in function \"getone()\"<p>";
+			exit;
+		}
+		return(mssql_fetch_object($result));
+	}
 }
-                         
+	
+	
 /////////////////////////////////////////////////////////////////////////////////////////
-function ms_getoneb($query,$link="") {
-if ($link=="") $result=@mssql_query($query);
-else $result=(@mssql_query($query,$link));
-if ((@mssql_num_rows($result)) != 1) {   
-	return FALSE;
+function ms_getoneb($query,$link="")
+{
+	global $use_odbc;
+	
+	if ($use_odbc)
+	{
+		$user = 'reddwarf';
+		$pass = 'cl01st3r';
+		$server = 'hilly\viewpoint';
+		$database = 'Viewpoint';
+		
+		// No changes needed from now on
+		$connection_string = "DRIVER={SQL Server};SERVER=$server;DATABASE=$database"; 
+		$conn = odbc_connect($connection_string,$user,$pass);
+		
+		
+		$result=odbc_exec($conn, $query);
+		
+		if (odbc_num_rows($result) != 1)
+			return FALSE;
+		
+		return odbc_fetch_object($result);
 	}
-return(mssql_fetch_object($result));
+	else
+	{
+		if ($link=="")
+			$result=(@mssql_query($query));
+		else
+			$result=(@mssql_query($query,$link));
+		
+		return(mssql_fetch_object($result));
+	}
 }
 
 
