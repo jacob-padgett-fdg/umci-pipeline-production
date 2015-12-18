@@ -94,7 +94,7 @@ $report_name="baldwin";
 			}
 			else
 			{
-			    $tbres=mssql_query($conn, $tbquery);
+			    $tbres=mssql_query($tbquery);
 				$rowCount = 0;
 				while ($tbrow=mssql_fetch_object($tbres))
 				{
