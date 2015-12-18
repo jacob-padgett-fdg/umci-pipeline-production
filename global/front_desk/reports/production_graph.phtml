@@ -1,0 +1,280 @@
+<?php
+session_write_close();
+global $use_odbc;
+$debug = 0;
+
+require_once('header.phtml');
+include_once("report_lib.inc");
+require_once("viewpoint_connect_ro.phtml");
+require_once("viewpoint_libs.inc");
+$report_name="baldwin";
+
+?>
+<script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Craft', 'Hours'],
+			<?php
+			$ct_array=cost_type_array();
+			
+			$job=is_valid_viewpoint_job($global_jobinfo->contract_num);
+			
+			$tbquery="
+				select JCCP.Job, JCCP.Phase,
+				sum(JCCP.CurrEstHours) as CurrEstHours,
+				sum(JCCP.ActualHours) as ActualHours, 
+				
+				sum(JCCP.CurrEstCost) as CurrEstCost,
+				sum(JCCP.ActualCost) as ActualCost,
+				sum(JCCP.RemainCmtdCost) as RemainCmtdCost,
+				JCCP.CostType
+				from JCCP with (NOLOCK) 
+				Left outer JOIN JCCH with (NOLOCK) on JCCP.Phase = JCCH.Phase and JCCH.Job = JCCP.Job and JCCH.JCCo = JCCP.JCCo and JCCH.CostType = JCCP.CostType
+				where JCCP.JCCo = 1 and JCCP.Job like '$job->job%'
+				$query_limit_add
+				group by JCCP.Job,JCCP.Phase,JCCP.CostType
+				order by JCCP.Job,
+				CASE when JCCP.CostType = 4 then 3 when JCCP.CostType = 3 then 4 else JCCP.CostType END,
+				JCCP.Phase
+				";
+				
+			///////////////////////////////
+			if ($use_odbc)
+			{
+				$tbres=odbc_exec($conn, $tbquery);
+				$rowCount = 0;
+				while ($tbrow=odbc_fetch_object($tbres))
+				{
+					if ( ($tbrow->CurrEstHours==0) && ($tbrow->ActualHours==0) && ($tbrow->RemainCmtdCost==0) && ($tbrow->ActualCost==0) && ($tbrow->CurrEstCost==0))
+						continue;
+					
+					$rowCount++;
+					$this_job=$tbrow->Job;
+					$phase_info=ms_getoneb("select top 1 * from JCJP with (NOLOCK) where Job = '$tbrow->Job' and Phase = '$tbrow->Phase' and JCCo = 1 and PhaseGroup = 1");
+					$phase_info->Phase=ereg_replace("[ -]*$","",$phase_info->Phase);
+					
+					$weekly_sums_query="
+					select sum(ActualHours) as Hours, sum(ActualCost) as Cost
+					from JCCD with (NOLOCK)
+					where 
+					JCCo = 1 and 
+					Job = '$tbrow->Job' and 
+					CostType = '$tbrow->CostType' and
+					PhaseGroup = 1 and
+					Phase = '$tbrow->Phase' and 
+					PostedDate >= '$date_starting_info->week_start_slashes' and
+					PostedDate <= '$date_info->week_end_slashes'
+					group by CostType,Phase
+					";
+					
+					$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+					$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+					$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+					$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+					$hours_remaining=gap_num($hours_remaining);
+					
+					$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+					$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+					$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
+					$cost_remaining=gap_num($cost_remaining);
+					
+					$cttext=$ct_array[$tbrow->CostType];
+					
+					$phase_flag = substr($phase_info->Phase,0,2);
+					//print $phase_info->Phase;
+					
+					if ($phase_flag != 25 && $phase_flag != 33 && $phase_flag != 55 && $phase_flag != 26 && $phase_flag != 27 && $phase_flag != 28 && $phase_flag != 29)	
+					{
+						//['Acrocanthosaurus (top-spined lizard)', 12.2],
+						echo "['". $phase_info->Phase . "  " . addslashes($phase_info->Description) . "(" . $cttext . ")'," .  str_replace(",", "",$tbrow->ActualHours) . "],";
+					}
+				}
+			}
+			else
+			{
+			    $tbres=mssql_query($conn, $tbquery);
+				$rowCount = 0;
+				while ($tbrow=mssql_fetch_object($tbres))
+				{
+					if ( ($tbrow->CurrEstHours==0) && ($tbrow->ActualHours==0) && ($tbrow->RemainCmtdCost==0) && ($tbrow->ActualCost==0) && ($tbrow->CurrEstCost==0))
+						continue;
+					
+					$rowCount++;
+					$this_job=$tbrow->Job;
+					$phase_info=ms_getoneb("select top 1 * from JCJP with (NOLOCK) where Job = '$tbrow->Job' and Phase = '$tbrow->Phase' and JCCo = 1 and PhaseGroup = 1");
+					$phase_info->Phase=ereg_replace("[ -]*$","",$phase_info->Phase);
+					
+					$weekly_sums_query="
+					select sum(ActualHours) as Hours, sum(ActualCost) as Cost
+					from JCCD with (NOLOCK)
+					where 
+					JCCo = 1 and 
+					Job = '$tbrow->Job' and 
+					CostType = '$tbrow->CostType' and
+					PhaseGroup = 1 and
+					Phase = '$tbrow->Phase' and 
+					PostedDate >= '$date_starting_info->week_start_slashes' and
+					PostedDate <= '$date_info->week_end_slashes'
+					group by CostType,Phase
+					";
+					
+					$hours_remaining=$tbrow->CurrEstHours - $tbrow->ActualHours;
+					$cost_remaining=$tbrow->CurrEstCost-$tbrow->ActualCost;
+					$tbrow->ActualHours=gap_num($tbrow->ActualHours);
+					$tbrow->CurrEstHours=gap_num($tbrow->CurrEstHours);
+					$hours_remaining=gap_num($hours_remaining);
+					
+					$tbrow->ActualCost=gap_num($tbrow->ActualCost);
+					$tbrow->CurrEstCost=gap_num($tbrow->CurrEstCost);
+					$tbrow->RemainCmtdCost=gap_num($tbrow->RemainCmtdCost);
+					$cost_remaining=gap_num($cost_remaining);
+					
+					$cttext=$ct_array[$tbrow->CostType];
+					
+					$phase_flag = substr($phase_info->Phase,0,2);
+					//print $phase_info->Phase;
+					
+					if ($phase_flag != 25 && $phase_flag != 33 && $phase_flag != 55 && $phase_flag != 26 && $phase_flag != 27 && $phase_flag != 28 && $phase_flag != 29)	
+					{
+						//['Acrocanthosaurus (top-spined lizard)', 12.2],
+						echo "['". $phase_info->Phase . "  " . addslashes($phase_info->Description) . "(" . $cttext . ")'," .  str_replace(",", "",$tbrow->ActualHours) . "],";
+					}
+				}
+			}
+				
+			?>
+        ]);
+        var options = {
+          title: 'Hours Histogram',
+          histogram: { bucketSize: 50 },
+          legend: { position: 'none' },
+        };
+
+        var chart = new google.visualization.Histogram(document.getElementById('chart_div'));
+        chart.draw(data, options);
+		
+		var columnData = google.visualization.arrayToDataTable([
+        ['Craft', 'Pipe', 'Plumbing', 'Sheet' ],
+		<?php
+			$ypipedata=array();
+			$yplumbingdata=array();
+			$ysheetdata=array();
+			$datex=array();
+			$max=0;
+			$contract_num=get_vp_contract_num();
+	
+			// get pipe hours
+			$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '16%' ";
+
+			if (!empty($week_starting))
+			{
+				$sql .= " AND PREndDate >= '$week_starting' ";
+			}
+			
+			if (!empty($week_ending))
+			{
+				$sql .= " AND PREndDate <= '$week_ending' ";
+			}
+			
+			$sql .= " group by PREndDate order by PREndDate";
+			
+			$res=odbc_exec($conn, $sql);
+	
+			while ($row=odbc_fetch_object($res)) {
+				if ($row->Hours > $max) $max=$row->Hours;
+				array_push($ypipedata,$row->Hours);
+				$wedate=date('m/d/y',strtotime($row->PREndDate));
+				array_push($datex,$wedate);
+				}
+				
+			// get plumbing data
+			$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '15%' ";
+
+			if (!empty($week_starting))
+			{
+				$sql .= " AND PREndDate >= '$week_starting' ";
+			}
+			
+			if (!empty($week_ending))
+			{
+				$sql .= " AND PREndDate <= '$week_ending' ";
+			}
+			
+			$sql .= " group by PREndDate order by PREndDate";
+			
+			$res=odbc_exec($conn, $sql);
+	
+			while ($row=odbc_fetch_object($res)) {
+				if ($row->Hours > $max) $max=$row->Hours;
+				array_push($yplumbingdata,$row->Hours);
+				}
+				
+			// get sheet data
+			$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '17%' ";
+
+			if (!empty($week_starting))
+			{
+				$sql .= " AND PREndDate >= '$week_starting' ";
+			}
+			
+			if (!empty($week_ending))
+			{
+				$sql .= " AND PREndDate <= '$week_ending' ";
+			}
+			
+			$sql .= " group by PREndDate order by PREndDate";
+			
+			$res=odbc_exec($conn, $sql);
+	
+			while ($row=odbc_fetch_object($res)) {
+				if ($row->Hours > $max) $max=$row->Hours;
+				array_push($ysheetdata,$row->Hours);
+				}
+			
+			for ($i=0; $i< sizeof($datex);$i++)
+			{
+				  //['2010', 10, 24, 20],
+				  if ($i>0)
+						print ",";
+						
+				  print "['".$datex[$i]."', ";
+				  if (!empty($ypipedata[$i]))
+						print $ypipedata[$i];
+				  else
+						print '0.00';
+						
+				  print ", ";
+				  if (!empty($yplumbingdata[$i]))
+						print $yplumbingdata[$i];
+				  else
+						print '0.00';
+				  
+				  print ", ";
+				  
+				  if (!empty($ysheetdata[$i]))
+						print $ysheetdata[$i];
+				  else
+						print '0.00';
+				  
+				  print "]";
+			}
+		?>
+      ]);
+
+      var columnOptions = {
+        //width: 600,
+        //height: 400,
+        //legend: { position: 'top', maxLines: 3 },
+        bar: { groupWidth: '75%' },
+        isStacked: true,
+      };
+	  
+      var columnChart = new google.visualization.ColumnChart(document.getElementById("column_chart_div"));
+      columnChart.draw(columnData, columnOptions);
+      }
+    </script>
+
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+<div id="column_chart_div" style="width: 900px; height: 500px;"></div>
