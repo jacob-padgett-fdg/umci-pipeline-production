@@ -165,73 +165,150 @@ $report_name="baldwin";
 			$max=0;
 			$contract_num=get_vp_contract_num();
 	
-			// get pipe hours
-			$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '16%' ";
-
-			if (!empty($week_starting))
+			if ($use_odbc)
 			{
-				$sql .= " AND PREndDate >= '$week_starting' ";
+				  // get pipe hours
+				  $sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '16%' ";
+	  
+				  if (!empty($week_starting))
+				  {
+					  $sql .= " AND PREndDate >= '$week_starting' ";
+				  }
+				  
+				  if (!empty($week_ending))
+				  {
+					  $sql .= " AND PREndDate <= '$week_ending' ";
+				  }
+				  
+				  $sql .= " group by PREndDate order by PREndDate";
+				  
+				  $res=odbc_exec($conn, $sql);
+		  
+				  while ($row=odbc_fetch_object($res)) {
+					  if ($row->Hours > $max) $max=$row->Hours;
+					  array_push($ypipedata,$row->Hours);
+					  $wedate=date('m/d/y',strtotime($row->PREndDate));
+					  array_push($datex,$wedate);
+					  }
+					  
+				  // get plumbing data
+				  $sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '15%' ";
+	  
+				  if (!empty($week_starting))
+				  {
+					  $sql .= " AND PREndDate >= '$week_starting' ";
+				  }
+				  
+				  if (!empty($week_ending))
+				  {
+					  $sql .= " AND PREndDate <= '$week_ending' ";
+				  }
+				  
+				  $sql .= " group by PREndDate order by PREndDate";
+				  
+				  $res=odbc_exec($conn, $sql);
+		  
+				  while ($row=odbc_fetch_object($res)) {
+					  if ($row->Hours > $max) $max=$row->Hours;
+					  array_push($yplumbingdata,$row->Hours);
+					  }
+					  
+				  // get sheet data
+				  $sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '17%' ";
+	  
+				  if (!empty($week_starting))
+				  {
+					  $sql .= " AND PREndDate >= '$week_starting' ";
+				  }
+				  
+				  if (!empty($week_ending))
+				  {
+					  $sql .= " AND PREndDate <= '$week_ending' ";
+				  }
+				  
+				  $sql .= " group by PREndDate order by PREndDate";
+				  
+				  $res=odbc_exec($conn, $sql);
+		  
+				  while ($row=odbc_fetch_object($res)) {
+					  if ($row->Hours > $max) $max=$row->Hours;
+					  array_push($ysheetdata,$row->Hours);
+					  }
+					  
 			}
-			
-			if (!empty($week_ending))
+			else
 			{
-				$sql .= " AND PREndDate <= '$week_ending' ";
+				  // get pipe hours
+				  $sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '16%' ";
+	  
+				  if (!empty($week_starting))
+				  {
+					  $sql .= " AND PREndDate >= '$week_starting' ";
+				  }
+				  
+				  if (!empty($week_ending))
+				  {
+					  $sql .= " AND PREndDate <= '$week_ending' ";
+				  }
+				  
+				  $sql .= " group by PREndDate order by PREndDate";
+				  
+				  $res=mssql_query($sql);
+		  
+				  while ($row=mssql_fetch_object($res)) {
+					  if ($row->Hours > $max) $max=$row->Hours;
+					  array_push($ypipedata,$row->Hours);
+					  $wedate=date('m/d/y',strtotime($row->PREndDate));
+					  array_push($datex,$wedate);
+					  }
+					  
+				  // get plumbing data
+				  $sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '15%' ";
+	  
+				  if (!empty($week_starting))
+				  {
+					  $sql .= " AND PREndDate >= '$week_starting' ";
+				  }
+				  
+				  if (!empty($week_ending))
+				  {
+					  $sql .= " AND PREndDate <= '$week_ending' ";
+				  }
+				  
+				  $sql .= " group by PREndDate order by PREndDate";
+				  
+				  $res=mssql_query($sql);
+		  
+				  while ($row=mssql_fetch_object($res)) {
+					  if ($row->Hours > $max) $max=$row->Hours;
+					  array_push($yplumbingdata,$row->Hours);
+					  }
+					  
+				  // get sheet data
+				  $sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '17%' ";
+	  
+				  if (!empty($week_starting))
+				  {
+					  $sql .= " AND PREndDate >= '$week_starting' ";
+				  }
+				  
+				  if (!empty($week_ending))
+				  {
+					  $sql .= " AND PREndDate <= '$week_ending' ";
+				  }
+				  
+				  $sql .= " group by PREndDate order by PREndDate";
+				  
+				  $res=mssql_query($sql);
+		  
+				  while ($row=mssql_fetch_object($res)) {
+					  if ($row->Hours > $max) $max=$row->Hours;
+					  array_push($ysheetdata,$row->Hours);
+					  }
+					  
 			}
-			
-			$sql .= " group by PREndDate order by PREndDate";
-			
-			$res=odbc_exec($conn, $sql);
-	
-			while ($row=odbc_fetch_object($res)) {
-				if ($row->Hours > $max) $max=$row->Hours;
-				array_push($ypipedata,$row->Hours);
-				$wedate=date('m/d/y',strtotime($row->PREndDate));
-				array_push($datex,$wedate);
-				}
 				
-			// get plumbing data
-			$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '15%' ";
-
-			if (!empty($week_starting))
-			{
-				$sql .= " AND PREndDate >= '$week_starting' ";
-			}
-			
-			if (!empty($week_ending))
-			{
-				$sql .= " AND PREndDate <= '$week_ending' ";
-			}
-			
-			$sql .= " group by PREndDate order by PREndDate";
-			
-			$res=odbc_exec($conn, $sql);
-	
-			while ($row=odbc_fetch_object($res)) {
-				if ($row->Hours > $max) $max=$row->Hours;
-				array_push($yplumbingdata,$row->Hours);
-				}
 				
-			// get sheet data
-			$sql = "select PREndDate,sum(Hrs) as Hours from PRJC where Job like '$contract_num%' and Phase like '17%' ";
-
-			if (!empty($week_starting))
-			{
-				$sql .= " AND PREndDate >= '$week_starting' ";
-			}
-			
-			if (!empty($week_ending))
-			{
-				$sql .= " AND PREndDate <= '$week_ending' ";
-			}
-			
-			$sql .= " group by PREndDate order by PREndDate";
-			
-			$res=odbc_exec($conn, $sql);
-	
-			while ($row=odbc_fetch_object($res)) {
-				if ($row->Hours > $max) $max=$row->Hours;
-				array_push($ysheetdata,$row->Hours);
-				}
 			
 			for ($i=0; $i< sizeof($datex);$i++)
 			{
