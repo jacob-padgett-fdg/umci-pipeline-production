@@ -1,0 +1,55 @@
+<?
+if (!($payroll_check)) die_security();
+
+if ($delete_id!="") {
+	$delete_id=addslashes($delete_id);
+	@mysql_query("delete from timesheet_mileage_rates where mileage_id = '$delete_id'");
+	}
+
+if ($mileage_date_add != "") {
+	$mileage_date_add = vali_date($mileage_date_add);
+	@mysql_query("insert into timesheet_mileage_rates set
+	rate = '$rate',
+	effective_date = '$mileage_date_add',
+	creator = '$global_user_id',
+	create_date = now()");
+	$id=@mysql_insert_id();
+	}
+
+echo "
+<a href=$pagename?mode=main><font color=blue>Main Menu</font></a><p>";
+$query="select * from timesheet_mileage_rates order by effective_date desc";
+//tabledump($query);
+echo "<table border=1 cellspacing=0 cellpadding=5>
+<tr bgcolor=\"$fd_color_4\"><td>
+	<b>Date</b>
+</td><td>
+	<b>Rate</b>
+</td><td>
+	<b>Action</b>
+</td></tr>
+
+<tr><form name=newdate method=post action=\"$pagename\"><td>
+	<input type=hidden name=mode value=\"$mode\">
+	";datebox2("",'newdate.mileage_date_add');echo"
+</td><td>
+	<input type=\"number\" name=\"rate\" id=\"rate\" size=\"25\" step=\".01\"  min=\"0\" max=\"9999\"  />
+</td><td>
+	<input type=submit>
+</td></form></tr>
+";
+
+$res=@mysql_query($query);
+while ($row=@mysql_fetch_object($res)) {
+	$date=invali_date($row->effective_date,'/');
+	echo "
+	<tr><td>
+		$date
+	</td><td>
+		".number_format($row->rate,2)."
+	</td><td>
+		<a href=$pagename?mode=$mode&delete_id=$row->mileage_id><font color=blue><i>delete</i></font></a>
+	</td></tr>";
+	}
+echo "</table>";
+?>
