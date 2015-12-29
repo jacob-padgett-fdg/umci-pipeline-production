@@ -1009,7 +1009,6 @@ function verify_timesheet_shift($shift) {
 
 $today_info=date_info();
 
-
 $suid_check=getoneb("select * from timesheet_types where contacts_id = '$global_user->contacts_id' and contact_type = 'suid'");
 $billing_check=getoneb("select * from timesheet_types where contacts_id = '$global_user->contacts_id' and contact_type = 'billing'");
 $payroll_check=getoneb("select * from timesheet_types where contacts_id = '$global_user->contacts_id' and contact_type = 'payroll'");

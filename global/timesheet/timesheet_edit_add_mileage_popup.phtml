@@ -1,6 +1,8 @@
 <?
-require("timesheet_include.inc");
+require_once("querylib.inc");
+require_once("timesheet_include.inc");
 
+$mileage_rate = get_mileage_rate($workday);
 
 echo "
 

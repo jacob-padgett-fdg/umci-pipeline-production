@@ -3006,7 +3006,11 @@ Application: $application
         //die($query);
 
         if ($link == "")
-            $result = mysql_query($query);
+        {
+            $link = mysql_connect("127.0.0.1:3306", "globalreadwrite", "") or die(mysql_error());
+            mysql_select_db("global");
+            $result = mysql_query($query, $link);
+        }
         else
             $result = mysql_query($query, $link);
         
@@ -5394,6 +5398,16 @@ function position_menus() {
         $pdf->ezText("<b>ERROR: Unable to view or include pdf document!</b>");
         $pdf->ezText($error);
         $pdf->ezStream();
+    }
+    
+    function get_mileage_rate($workday)
+    {
+        $sql = "SELECT * FROM timesheet_mileage_rates WHERE effective_date <= '".$workday."' ORDER BY effective_date DESC";
+         $mileage_info = getoneb( $sql );
+         if (!empty($mileage_info))
+            return $mileage_info->rate;
+        else
+            return false;
     }
 
 
