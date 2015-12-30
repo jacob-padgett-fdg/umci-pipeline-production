@@ -5402,6 +5402,7 @@ function position_menus() {
     
     function get_mileage_rate($workday)
     {
+        $workday = date("Y-m-d", strtotime($workday));
         $sql = "SELECT * FROM timesheet_mileage_rates WHERE effective_date <= '".$workday."' ORDER BY effective_date DESC";
          $mileage_info = getoneb( $sql );
          if (!empty($mileage_info))
