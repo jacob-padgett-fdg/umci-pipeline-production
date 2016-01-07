@@ -36,18 +36,6 @@ while ($ef_row=@mysql_fetch_object($emp_first_res)) {
 	if ($vp_info->ActiveYN=='Y') update_trade($ef_row->contacts_id);
 	//$must_update='Y';
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	if ($vp_info->ActiveYN=='Y') $current='Y';
 	else {
 		$standby_res=@mssql_query("select top (1) * from HREH with (NOLOCK) where HRRef = '$ef_row->employee_num' and HRCo = 1 order by Seq desc");
@@ -194,7 +182,7 @@ while($vp_info=@mssql_fetch_object($ms_res2)) {
         // GPH MARK 2014-12-10: login_name = '$vp_info->udusername yields a login_name that is blank.
         // The goal here is instead to build a string concatenation of first char of first_name followed by last_name
         // Impact analysis: Check for other areas.
-		$query="insert into contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , display_name = '$last_name, $first_name' , login_name = '$vp_info->udusername', current = '$current' , employee_num = '$vp_info->HRRef' , employee_group = '$employee_group' , umc_emp = 'Y', timesheet_payroll_sequence_num = '$timesheet_payroll_sequence_num'";
+		$query="insert into contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , display_name = '$last_name, $first_name' , login_name = '$vp_info->udusername', email = '".$vp_info->udusername."@umci.com', current = '$current' , employee_num = '$vp_info->HRRef' , employee_group = '$employee_group' , umc_emp = 'Y', timesheet_payroll_sequence_num = '$timesheet_payroll_sequence_num'";
 		@mysql_query($query);
 		$new_employee_id=@mysql_insert_id();
 		@update_trade($new_employee_id);
