@@ -197,7 +197,7 @@ while($vp_info=@mssql_fetch_object($ms_res2)) {
         $loginName = $vp_info->udusername;
 		
 		if(empty($loginName)) {
-            $loginName = ucwords(substr($contact->first_name, 0, 1)) . ucwords($contact->last_name);
+            $loginName = ucwords(substr($first_name, 0, 1)) . ucwords($last_name);
         }
 		
 		$email = $loginName . "@umci.com";
