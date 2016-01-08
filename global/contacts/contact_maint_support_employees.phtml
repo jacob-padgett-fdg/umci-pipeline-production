@@ -195,15 +195,12 @@ while($vp_info=@mssql_fetch_object($ms_res2)) {
         // Note we are using first_name and not first_name_real.
         // "William 'Bill' Smith" will be BSmith.
         $loginName = $vp_info->udusername;
-		$emailPrefix = $vp_info->udusername;
-        if(empty($loginName)) {
-            $loginName = ucwords(substr($first_name, 1, 1), ucwords($last_name));
+		
+		if(empty($loginName)) {
+            $loginName = ucwords(substr($contact->first_name, 0, 1)) . ucwords($contact->last_name);
         }
-		if(empty($emailPrefix)) {
-            $emailPrefix = ucwords(substr($first_name, 1, 1), ucwords($last_name));
-        }
-
-		$email = $emailPrefix . '@umci.com';
+		
+		$email = $loginName . "@umci.com";
 		$query="insert into contacts set contact_type = 'contact', first_name = '$first_name', first_name_real = '$first_name_real' , last_name = '$last_name' , display_name = '$last_name, $first_name' , login_name = '$loginName', email = '$email', current = '$current' , employee_num = '$vp_info->HRRef' , employee_group = '$employee_group' , umc_emp = 'Y', timesheet_payroll_sequence_num = '$timesheet_payroll_sequence_num'";
 		@mysql_query($query);
 		$new_employee_id=@mysql_insert_id();
