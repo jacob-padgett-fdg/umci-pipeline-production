@@ -144,6 +144,7 @@ $query="select
 				";
 //tabledump($query); die();
 //tabledump($query);
+//die( $query );
 $res=@mysql_query($query);
 while ($row=@mysql_fetch_object($res)) {
 	if ($lastjob!=$row->job)
@@ -178,12 +179,14 @@ while ($row=@mysql_fetch_object($res)) {
 	{
 		if ($row->off_site)
 		{
-			$offsite_count = getoneb("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and off_site = 1");
+			$sql = "select sum(1) as total from vp_locator_cache left outer join contacts on (vp_locator_cache.employee_num = contacts.employee_num)  where job = '$row->job' and week_ending = '$row->week_ending' and employee_group = $employee_group and off_site = 1";
+			$offsite_count = getoneb( $sql );
 			$html_out = $html_out . "<tr bgcolor=\"#cccccc\"><td style=\"border: 1px solid black;\" colspan=5 align=center>Off-site ($offsite_count->total)</td></tr>";
 		}
 		else
 		{
-			$offsite_count = getoneb("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and off_site <> 1");
+			$sql = "select sum(1) as total from vp_locator_cache left outer join contacts on (vp_locator_cache.employee_num = contacts.employee_num) where job = '$row->job' and week_ending = '$row->week_ending' and employee_group = $employee_group and off_site <> 1";
+			$offsite_count = getoneb( $sql );
 			$html_out = $html_out . "<tr bgcolor=\"#cccccc\"><td style=\"border: 1px solid black;\" colspan=5 align=center>On-site ($offsite_count->total)</td></tr>";
 		}
 		

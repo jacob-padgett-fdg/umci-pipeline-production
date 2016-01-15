@@ -1,4 +1,4 @@
-<?
+<?php
 $debug=0;
 require('header.phtml');
 include("reports/report_lib.inc");
@@ -18,47 +18,12 @@ switch ($report_mode) {
 	case "baldwin_weekly_labor": 	$baldwin_weekly_labor_check	="checked";break;
 	case "baldwin_graphs_labor_only": 			$baldwin_graphs_check		="checked";break;
 	case "baldwin_mjcs": 			$baldwin_mjcs_check			="checked";break;
+	case "production_graph": $production_graph_check = "checked";break;
 	default:				$baldwin_check				="checked";
 							$report_mode				="baldwin_labor_only";break;
 	}
 
-function is_valid_viewpoint_job($job_num) {   
-	$job_num=strtoupper(escapeshellcmd($job_num));
-	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
-	if ($job_num_p1=="00000") return FALSE;
-	$job_num_p2=ereg_replace(".*-","",$job_num);
-	if ($job_num_p1==$job_num_p2) $job_num_p2="";
-	if ($job_num_p2=="") {
-		$job_str_query1="$job_num_p1-";
-	} else {
-		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
-		$job_str_query1="$job_num_p1-$job_num_p2";
-		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
-		$job_str_query2="$job_num_p1-$job_num_p2";
-		if ($job_str_query1==$job_str_query2) $job_str_query2="";
-	}
 
-	$job_query1="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query1'"; 
-	$job_res=ms_getoneb($job_query1);
-    
-	if ($job_res) {
-		$job_res->job=$job_str_query1;
-		$job_res->job_query=$job_query1;
-		$job_res->Description=escapeshellcmd($job_res->Description);
-	} else {
-		if ($job_str_query2!="") {
-			$job_query2="select * from JCJM with (NOLOCK) where JCCo = 1 and Job = '$job_str_query2'"; 
-			$job_res=ms_getoneb($job_query2);
-			if ($job_res)
-			{
-				$job_res->job=$job_str_query2;
-				$job_res->job_query=$job_query2;
-				$job_res->Description=escapeshellcmd($job_res->Description);
-			}
-		}
-	}
-	return $job_res;
-}
 // Gotta go get the is_valid_viewpoint_job_function from somewhere.. 
 // it should be in a central library, but too many conflicts at this point.
 // we'll do that as part of a major clean up.
@@ -175,15 +140,27 @@ function open_subcontracts(jobinfo_id) {
                 Details:<input <?php print $baldwin_full_check; ?> type=radio name=report_mode value=baldwin_full_labor_only onclick=submit() />
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 Graphs:<input <?php print $baldwin_graphs_check; ?> type=radio name=report_mode value=baldwin_graphs_labor_only onclick=submit() />
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				Production:<input <?php print $production_graph_check; ?> type=radio name=report_mode value=production_graph onclick=submit() />
             </div>
 	</form>	
 </div>
 
 
-<div id="fs_output_div" style="width: 950px;"></div>	
+<div id="fs_output_div" style="width: 950px;">
+	
+	<?php
+		if ($report_mode == "production_graph")
+		{
+			include_once("reports/production_graph.phtml");
+		}
+	?>
+	
+</div>	
 <div id=fs_output_dive>&nbsp;</div>	
 
 <?PHP
+
 $load_url="$pagename?mode=report_show&report_name=$report_mode&show_jobinfo_id=$global_jobinfo_id&week_ending=$week_ending&order_by=$order_by";
 
 //$load_url="$pagename";
@@ -193,12 +170,15 @@ $load_url="$pagename?mode=report_show&report_name=$report_mode&show_jobinfo_id=$
 fd_navs_footer();
 
 //sleep (.5);
-echo "
-<script>
-	ajaxManager('load_page','$load_url','fs_output_div');
-</script>
-";
-		
+
+if ($report_mode != "production_graph")
+{
+	echo "
+	<script>
+		ajaxManager('load_page','$load_url','fs_output_div');
+	</script>
+	";
+}		
 
 
 //die();

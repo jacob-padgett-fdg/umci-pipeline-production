@@ -173,7 +173,10 @@ if ($payroll_check) {
 		<a href=$pagename?mode=payroll_update_holidays><font color=blue>Update Holidays</font></a>
 	</ul></li>
 
-	
+	<ul><li>
+		<a href=$pagename?mode=payroll_update_mileage><font color=blue>Update Mileage Rates</font></a>
+	</ul></li>
+		
 	";
 	}
 
@@ -191,6 +194,7 @@ if ($billing_check) {
 		<a href=/global/front_desk$devel/index.html?mode=report_show&report_name=timesheet_week_by_group><font color=blue>Timesheets by Group / Week (front desk)</font></a>
 	</ul></li>";
 	}
+
 
 
 if (i_have_underlings($global_user->employee_num)) {
@@ -247,6 +251,8 @@ if ($global_user->timesheet_group_one_foreman=='Y') {
 		} 
 	
 	}
+
+
 
 
 if ($current_user->employee_num>1) $timesheet_title_add="";

@@ -1,16 +1,29 @@
 <?
-require("settings.cfg");
-require("global-auth.inc");
+session_start();
+
+global $use_odbc;
+global $global_user;
+
+$use_odbc = 0;
+
+//ini_set("display_errors","On");
+
+require_once("settings.cfg");
+require_once("querylib.inc");
+require_once("global-auth.inc");
+
+
 //if ($global_user->contacts_id==2) $global_user->employee_num="8494";
 //if ($global_user->contacts_id==2) $global_user->employee_num="9532";
-require("timesheet_libs.inc");
+require_once("timesheet_libs.inc");
 
 //if ($global_contacts_id='353'||$global_contacts_id=='4517'||$global_contacts_id='2'||$global_contacts_id='1') die("testing!!!");
 
 if ($global_contacts_id='353'||$global_contacts_id=='4517'||$global_contacts_id='2'||$global_contacts_id='1') include("viewpoint_connect_ro_pr.phtml");
 else include("viewpoint_connect_ro.phtml");
 
-require("../front_desk/reports/report_lib.inc");
+
+require_once("../front_desk/reports/report_lib.inc");
 
 if ($current_user_id=="") {
 	session_register('current_user_id');
@@ -27,7 +40,6 @@ if (($current_user->employee_num <=1)||(($current_user->employee_group!='3')&&($
 //	include("employee_number_required.phtml");
 //	exit;
 //	}
-
 if ($current_user_id != $last_user_id) {
 	session_register('last_user_id');
 	
