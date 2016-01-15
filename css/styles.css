@@ -46,7 +46,7 @@ div.centered {margin:0 auto;}
 /**
     frontpage styles
 */
-table.wideprint { border: 2px solid dimgray; border-collapse: collapse; }
+table.wideprint { border: 2px solid dimgray; border-collapse: collapse; width: 800px; }
 table.wideprint td { border: 2px solid dimgray; padding: 2px 2px 2px 2px;}
 table.wideprint th { background-color: #DDDDDD; border: 2px solid dimgray;}
 table.wideprint th.ext { width:5%; font-weight: bold; }
