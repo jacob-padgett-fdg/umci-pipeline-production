@@ -191,10 +191,14 @@ while ($row=@mysql_fetch_object($res)) {
 		}
 		
 		$last_offsite = $row->off_site;
+		$lastcraft="";
+		$lastclass="";
 	}
 	
 	if ($row->craft_text!=$lastcraft) {
-		$craft_count=getoneb("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and craft_text = '$row->craft_text'");
+		$sql = "select sum(1) as total from vp_locator_cache left outer join contacts on (vp_locator_cache.employee_num = contacts.employee_num)  where job = '$row->job' and week_ending = '$row->week_ending' and craft_text = '$row->craft_text' and employee_group = $employee_group and off_site = '$row->off_site'";
+		//echo $sql;
+		$craft_count=getoneb( $sql );
 		//tabledump("select sum(1) as total from vp_locator_cache where job = '$row->job' and week_ending = '$row->week_ending' and craft_text = '$row->craft_text'");
 		$lastcraft=$row->craft_text;
 		$lastclass="";
