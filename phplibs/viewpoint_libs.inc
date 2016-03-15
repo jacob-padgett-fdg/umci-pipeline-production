@@ -74,6 +74,44 @@ function is_valid_viewpoint_job($job_num) {
 	}
 	return $job_res;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
+function is_viewpoint_job_valid_and_open($job_num) {   
+	$job_num=strtoupper(escapeshellcmd($job_num));
+	$job_num_p1=str_pad(ereg_replace("-.*","",$job_num),5,"0",STR_PAD_LEFT);
+	if ($job_num_p1=="00000") return FALSE;
+	$job_num_p2=ereg_replace(".*-","",$job_num);
+	if ($job_num_p1==$job_num_p2) $job_num_p2="";
+	if ($job_num_p2=="") {
+		$job_str_query1="$job_num_p1-";
+	} else {
+		$job_num_p2=str_pad($job_num_p2,3," ",STR_PAD_LEFT);
+		$job_str_query1="$job_num_p1-$job_num_p2";
+		$job_num_p2=ereg_replace(" ","0",$job_num_p2);
+		$job_str_query2="$job_num_p1-$job_num_p2";
+		if ($job_str_query1==$job_str_query2) $job_str_query2="";
+	}
+
+	$job_query1="select * from JCJM with (NOLOCK) where JCCo = 1 and JobStatus = 1 and Job = '$job_str_query1'"; 
+	$job_res=ms_getoneb($job_query1);
+    
+	if ($job_res) {
+		$job_res->job=$job_str_query1;
+		$job_res->job_query=$job_query1;
+		$job_res->Description=escapeshellcmd($job_res->Description);
+	} else {
+		if ($job_str_query2!="") {
+			$job_query2="select * from JCJM with (NOLOCK) where JCCo = 1 and JobStatus = 1 and Job = '$job_str_query2'"; 
+			$job_res=ms_getoneb($job_query2);
+			if ($job_res) {
+				$job_res->job=$job_str_query2;
+				$job_res->job_query=$job_query2;
+				$job_res->Description=escapeshellcmd($job_res->Description);
+			}
+		}
+	}
+	return $job_res;
+}
 	
 /////////////////////////////////////////////////////////////////////////////////////////
 function ms_getoneb($query,$link="")

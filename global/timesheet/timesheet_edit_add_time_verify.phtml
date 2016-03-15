@@ -33,7 +33,7 @@ if ($job_num=="Training") {
 	$phase="19724";
 	}
 
-$job_info=is_valid_viewpoint_job($job_num);
+$job_info=is_viewpoint_job_valid_and_open($job_num);
 $phase_info=is_valid_viewpoint_labor_phase($phase,$job_info->job);
 
 //echo $phase_info;
