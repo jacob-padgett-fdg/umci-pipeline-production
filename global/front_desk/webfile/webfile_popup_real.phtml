@@ -94,16 +94,18 @@ if ($_FILES) {
 		$file_name=$_FILES["upload_file_$count"]['name'];
 		$file_size=$_FILES["upload_file_$count"]['size'];
 		
-		if ($mime_type=="application/force-download") $mime_type=mime_type_from_filename($file_name);
-		if ($mime_type=="application/x-pdf") $mime_type=mime_type_from_filename($file_name);
-		if ($mime_type=="application/x-download") $mime_type=mime_type_from_filename($file_name);
-		if ($mime_type=="application/download") $mime_type=mime_type_from_filename($file_name);
-		if ($mime_type=="application/unknown") $mime_type=mime_type_from_filename($file_name);
-		if ($mime_type=="application/binary") $mime_type=mime_type_from_filename($file_name);
-		if ($mime_type=="binary/octet-stream") $mime_type=mime_type_from_filename($file_name);
-		// FRON-36 NOTE: This FIXES the case where the MIME type is octet-binary.
-		// However, it does not explain said MIME type's origination, which I've been unable to replicate.
-		if ($mime_type=="application/octet-binary") $mime_type=mime_type_from_filename($file_name);
+		$known_mime_types = array(
+			"image/jpg",
+			"image/png",
+			"image/tiff",
+			"image/gif",
+			"image/bmp",
+			"application/pdf",
+		);
+
+		if(!in_array(strtolower($mime_type), $known_mime_types)){
+			$mime_type = mime_type_from_filename(trim($file_name));
+		}
 		
 		$query="insert into webfile_files set
 		file_group_id = '$file_group_info->file_group_id',

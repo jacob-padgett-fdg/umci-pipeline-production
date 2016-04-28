@@ -406,8 +406,18 @@ function add_file_from_var_contents($file_group_id,$file_contents,$file_name='un
 	$file_size=strlen($file_contents);
 	$file_info=new_file_info();
 	prep_for_new_files($file_info);
-	if (($mime_type=="")||($mime_type=="application/x-download")||($mime_type=="application/unknown")) $mime_type=mime_type_from_filename($file_name);
-	//if ($mime_type=="") $mime_type=mime_type_from_filename($file_name);
+	$known_mime_types = array(
+		"image/jpg",
+		"image/png",
+		"image/tiff",
+		"image/gif",
+		"image/bmp",
+		"application/pdf",
+	);
+
+	if(!in_array(strtolower($mime_type), $known_mime_types)){
+		$mime_type = mime_type_from_filename(trim($file_name));
+	}
 	//$file_info='foo';
 	$query="insert into webfile_files set
 	file_group_id = '$file_group_id',
