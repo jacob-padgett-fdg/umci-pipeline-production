@@ -21,7 +21,7 @@ if ($_FILES) {
 	if ($file_info->file_group_id=="2855") {
 		die("Oh no, a horrible and unforseen error must have occurred. I have no idea what happened, but surely if you try that again, the entire server might explode.");
 		}
-	
+
 	if ($_FILES["upload_file_1"]['name']!="") {
 	$file_info->description=addslashes($file_info->description);
 	$new_file_info=new_file_info();
@@ -34,16 +34,18 @@ if ($_FILES) {
 	$file_name=$_FILES["upload_file_1"]['name'];
 	$file_size=$_FILES["upload_file_1"]['size'];
 
-	if ($mime_type=="application/force-download") $mime_type=mime_type_from_filename($file_name);
-	if ($mime_type=="application/x-pdf") $mime_type=mime_type_from_filename($file_name);
-	if ($mime_type=="application/x-download") $mime_type=mime_type_from_filename($file_name);
-	if ($mime_type=="application/download") $mime_type=mime_type_from_filename($file_name);
-	if ($mime_type=="application/unknown") $mime_type=mime_type_from_filename($file_name);
-	if ($mime_type=="application/binary") $mime_type=mime_type_from_filename($file_name);
-	if ($mime_type=="binary/octet-stream") $mime_type=mime_type_from_filename($file_name);
-	// FRON-36 This MIME type is coming in, reported by one of the end clients.
-	// Cannot replicate using the client's files, but this ought to fix the case.
-	if ($mime_type=="application/octet-binary") $mime_type=mime_type_from_filename($file_name);
+	$known_mime_types = array(
+		"image/jpg",
+		"image/png",
+		"image/tiff",
+		"image/gif",
+		"image/bmp",
+		"application/pdf",
+	);
+
+	if(!in_array(strtolower($mime_type), $known_mime_types)){
+		$mime_type = mime_type_from_filename(trim($file_name));
+	}
 
 	$query="insert into webfile_files set
 		file_group_id = '$file_info->file_group_id',
@@ -69,7 +71,7 @@ if ($_FILES) {
 		";
 	@mysql_query($query);
 	$new_file_id=@mysql_insert_id();
-	$query2="update webfile_files set 
+	$query2="update webfile_files set
 		files_id = 0,
 		file_group_id = '0',
 		replaced_by = '$file_info->files_id'
@@ -77,9 +79,9 @@ if ($_FILES) {
 	@mysql_query($query2);
 	@mysql_query("update webfile_files set files_id = '$file_info->files_id' where files_id = '$new_file_id'");
 	@mysql_query("update webfile_files set files_id = '$new_file_id' where files_id = 0");
-	
+
 	@mysql_query("update webfile_files set replaced_by = '$new_file_id' where replaced_by = '$file_info->files_id' and files_id != '$new_file_id'");
-	
+
 	//die ("all changes complete...");
 	}
 	}
