@@ -1,0 +1,40 @@
+<div class="noprint" id="my_jobs_drop" onmouseout="hide_my_jobs();" onmouseover="show_my_jobs();"><b>Loading List..</b><br>please wait</div>
+<div class="noprint" id="recent_jobs_drop" onmouseout="hide_recent_jobs();" onmouseover="show_recent_jobs();"><b>Loading List..</b><br>please wait</div>
+<div class="flexContainer">
+    <div class="noprint" style="" id="fd_my_home_nav_button">
+            <a href="/global/front_desk?mode=my_home">
+                My Home
+            </a>
+    </div>
+    <div id="recent_jobs_button" onmouseover="show_recent_jobs();" onmouseout="hide_recent_jobs();">
+        <span>
+            Recent Jobs
+        </span>
+    </div>
+    <div id="my_jobs_button" onmouseover="show_my_jobs();" onmouseout="hide_my_jobs();">
+        <span>
+            My Jobs
+        </span>
+    </div>
+    <div id="job_search_header">
+        <form name="job_jump" title="Enter job # to go directly to it" method="post" action="/global/front_desk/">
+            <label for="contract_num">Load job:</label>
+            <input type="hidden" name="mode" value="fd_job_jump" />
+            <input type="text" size="6" name="contract_num" id="contract_num" onchange="submit();" />
+            <a href="javascript:open_job_search()">Search</a>
+        </form>
+    </div>
+    <div id="login_status_header">
+        <?php
+            echo "Logged in as ". $global_user->login_name . " <a href=$pagename?kill_session_info=1><font color=blue>Log Off</font></a>";
+            
+            //if (AccessControl::isAdmin($global_user->contacts_id))
+            //{
+                ?>
+                <!-- <div style="padding: 0px; width: 24px; position: absolute; top: 5px;"><center><img border=0 src="/images/lightbulb_small.png"></center></div>
+                <div style="padding: 0px; width: 24px; position: absolute; top: 7px;"><center>?</center></div> -->
+                <?php
+            //}       
+        ?>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+ body > div.timesheet_content > form > table > tbody > tr:nth-child(3) > td:nth-child(2) > span > a, body > div.timesheet_content > form > table > tbody > tr:nth-child(2) > td > span > a {
+    position: relative;
+    top: 2px;
+    background: #FFFFFF;
+    border-color: #bfbfbf;
+  } 
+}

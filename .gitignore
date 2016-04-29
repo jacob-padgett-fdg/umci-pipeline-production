@@ -10,4 +10,4 @@ _images
 *.swp
 data
 deploy/logs
-orgchart.pdf
+*.pdf

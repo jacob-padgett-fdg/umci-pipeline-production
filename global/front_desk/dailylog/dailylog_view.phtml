@@ -1,0 +1,429 @@
+<?PHP
+global $fd_color_1, $fd_color_2, $global_user, $pagename_up, $devel, $fd_color_4, $my_home_color, $global_jobinfo_id;
+$GLOBALS['contact_view_js'] = 'Y';
+$jobinfo_id = $global_jobinfo_id;
+
+$today=date('m-d-Y');
+$jobinfo=getone("select * from jobinfo where jobinfo_id = '$jobinfo_id'");
+
+if ($dailylog_id=="") die("Invalid log selection error!");
+$dailylog_id=addslashes($dailylog_id);
+$dailylog_info=getone("select * from dailylog where dailylog_id = '$dailylog_id'");
+$creator_info=getone("select * from contacts where contacts_id = '$dailylog_info->creator_id'");
+$dailylog_entry_info='';
+
+if (empty($dailylog_entries_id))
+    $dailylog_entries_id = "new";
+else
+{
+    $sql = "select * from dailylog_entries where dailylog_entries_id = '$dailylog_entries_id'";
+    $result = mysql_query( $sql );
+    $dailylog_entry_info = mysql_fetch_object($result);
+}
+
+$dateArray = explode("-",$dailylog_info->work_date);
+$date = $dateArray[1] . "/" . $dateArray[2] . "/" . $dateArray[0];
+
+require_once("header.phtml");
+require_once("frontdesk_pageheader.phtml");
+require_once("frontdesk_secondary_nav.phtml");
+require_once("frontdesk_tabs.phtml");
+?>
+
+<div style="background: <? echo $watermark;?>; background-repeat: repeat; vertical-align: top; text-align: left;">
+
+<h1>Daily Log # <?php echo $dailylog_info->log_num;  ?></h1>
+<h2><?php echo $dailylog_info->project; ?></h2>
+<h3><?php echo $date; ?></h3>
+<div><label>Location:</label><span><?php echo $dailylog_info->location; ?></span></div>
+<div><label>Weather:</label><span><?php echo $dailylog_info->weather; ?></span></div>
+<div class="margin-div">
+    <a href="index.php?mode=dailylog_edit&dailylog_id=<?php echo $dailylog_id; ?>&log_status=new"">Add Log Entry</a>
+    |
+    <a href="index.php">All Log Entries</a>
+</div>
+<div>
+<?php
+    $sql = "SELECT
+                    dailylog_entries.*,
+                    contacts.first_name,
+                    contacts.last_name
+                FROM
+                    dailylog_entries
+                    LEFT OUTER JOIN contacts ON contacts.contacts_id = dailylog_entries.creator_id
+                WHERE
+                    dailylog_id = '$dailylog_id'";
+                    
+    $result = mysql_query( $sql );
+    while ($row = mysql_fetch_object( $result))
+    {
+        echo "<div class=\"dailylog_entry\">";
+        echo "<div>" . $row->first_name . " " . $row->last_name . ": " . $row->entry_type . " Foreman</div>";
+        echo "<div><label>Work Progress:</label><span>".$row->work_progress."</span></div>";
+        echo "<div><label>Materials Recieved:</label><span>".$row->materials_received."</span></div>";
+        echo "<div><label>New Hires:</label><span>".$row->new_hires."</span></div>";
+        echo "<div><label>New Hire Safety Training:</label><span>".$row->new_hire_safety_training."</span></div>";
+        echo "<div><label>Hinderances:</label><span>".$row->work_hinderances."</span></div>";
+        echo "<div><label>Accidents, near misses or safety concerns:</label><span>".$row->accidents."</span></div>";
+        echo "<div><a href=\"index.php?mode=dailylog_edit&dailylog_id=".$dailylog_id."&log_status=edit&dailylog_entries_id=".$row->dailylog_entries_id."\">EDIT</a></div>";
+        echo "</div>";
+    }
+?>
+</div>
+<div>
+<?php
+$sql = "SELECT 
+                sum(`dailylog_entries`.`our_general_foreman_count`) `our_general_foreman_count`,
+                sum(`dailylog_entries`.`our_plumbing_foreman_count`) `our_plumbing_foreman_count`,
+                sum(`dailylog_entries`.`our_plumbing_journeyman_count`) `our_plumbing_journeyman_count`,
+                sum(`dailylog_entries`.`our_plumbing_apprentice_count`) `our_plumbing_apprentice_count`,
+                sum(`dailylog_entries`.`our_steamfitter_foreman_count`) `our_steamfitter_foreman_count`,
+                sum(`dailylog_entries`.`our_steamfitter_journeyman_count`) `our_steamfitter_journeyman_count`,
+                sum(`dailylog_entries`.`our_steamfitter_apprentice_count`) `our_steamfitter_apprentice_count`,
+                sum(`dailylog_entries`.`our_laborer_count`) `our_laborer_count`,
+                sum(`dailylog_entries`.`our_truck_driver_count`) `our_truck_driver_count`,
+                sum(`dailylog_entries`.`our_operating_engineer_count`) `our_operating_engineer_count`,
+                sum(`dailylog_entries`.`our_millwright_count`) `our_millwright_count`,
+                sum(`dailylog_entries`.`our_carpenter_count`) `our_carpenter_count`,
+                sum(`dailylog_entries`.`our_sheetmetal_count`) `our_sheetmetal_count`,
+                sum(`dailylog_entries`.`our_sheetmetal_foreman_count`) `our_sheetmetal_foreman_count`,
+                sum(`dailylog_entries`.`our_sheetmetal_journeyman_count`) `our_sheetmetal_journeyman_count`,
+                sum(`dailylog_entries`.`our_sheetmetal_apprentice_count`) `our_sheetmetal_apprentice_count`,
+                sum(`dailylog_entries`.`our_helper_count`) `our_helper_count`,
+                sum(`dailylog_entries`.`our_refrigeration_count`) `our_refrigeration_count`,
+                sum(`dailylog_entries`.`sub_temperature_control_count`) `sub_temperature_control_count`,
+                sum(`dailylog_entries`.`sub_insulation_count`) `sub_insulation_count`,
+                sum(`dailylog_entries`.`sub_painter_count`) `sub_painter_count`,
+                sum(`dailylog_entries`.`sub_sewer_men_count`) `sub_sewer_men_count`,
+                sum(`dailylog_entries`.`sub_electrician_count`) `sub_electrician_count`,
+                sum(`dailylog_entries`.`sub_refrigeration_count`) `sub_refrigeration_count`,
+                sum(`dailylog_entries`.`sub_air_balance_count`) `sub_air_balance_count`,
+                sum(`dailylog_entries`.`sub_sheet_metal_count`) `sub_sheet_metal_count`,
+                sum(`dailylog_entries`.`sub_core_drill_count`) `sub_core_drill_count`,
+                sum(`dailylog_entries`.`sub_fire_caulk_count`) `sub_fire_caulk_count`,
+                sum(`dailylog_entries`.`sub_fire_protection_count`) `sub_fire_protection_count`,
+                sum(`dailylog_entries`.`sub_chemical_treatment_count`) `sub_chemical_treatment_count`,
+                sum(`dailylog_entries`.`sub_fuel_tank_install_and_piping_count`) `sub_fuel_tank_install_and_piping_count`,
+                sum(`dailylog_entries`.`sub_excavation_count`) `sub_excavation_count`,
+                sum(`dailylog_entries`.`our_general_foreman_hours`) `our_general_foreman_hours`,
+                sum(`dailylog_entries`.`our_plumbing_foreman_hours`) `our_plumbing_foreman_hours`,
+                sum(`dailylog_entries`.`our_plumbing_journeyman_hours`) `our_plumbing_journeyman_hours`,
+                sum(`dailylog_entries`.`our_plumbing_apprentice_hours`) `our_plumbing_apprentice_hours`,
+                sum(`dailylog_entries`.`our_steamfitter_foreman_hours`) `our_steamfitter_foreman_hours`,
+                sum(`dailylog_entries`.`our_steamfitter_journeyman_hours`) `our_steamfitter_journeyman_hours`,
+                sum(`dailylog_entries`.`our_steamfitter_apprentice_hours`) `our_steamfitter_apprentice_hours`,
+                sum(`dailylog_entries`.`our_laborer_hours`) `our_laborer_hours`,
+                sum(`dailylog_entries`.`our_truck_driver_hours`) `our_truck_driver_hours`,
+                sum(`dailylog_entries`.`our_operating_engineer_hours`) `our_operating_engineer_hours`,
+                sum(`dailylog_entries`.`our_millwright_hours`) `our_millwright_hours`,
+                sum(`dailylog_entries`.`our_carpenter_hours`) `our_carpenter_hours`,
+                sum(`dailylog_entries`.`our_sheetmetal_hours`) `our_sheetmetal_hours`,
+                sum(`dailylog_entries`.`our_sheetmetal_foreman_hours`) `our_sheetmetal_foreman_hours`,
+                sum(`dailylog_entries`.`our_sheetmetal_journeyman_hours`) `our_sheetmetal_journeyman_hours`,
+                sum(`dailylog_entries`.`our_sheetmetal_apprentice_hours`) `our_sheetmetal_apprentice_hours`,
+                sum(`dailylog_entries`.`our_helper_hours`) `our_helper_hours`,
+                sum(`dailylog_entries`.`our_refrigeration_hours`) `our_refrigeration_hours`,
+                sum(`dailylog_entries`.`sub_temperature_control_hours`) `sub_temperature_control_hours`,
+                sum(`dailylog_entries`.`sub_insulation_hours`) `sub_insulation_hours`,
+                sum(`dailylog_entries`.`sub_painter_hours`) `sub_painter_hours`,
+                sum(`dailylog_entries`.`sub_sewer_men_hours`) `sub_sewer_men_hours`,
+                sum(`dailylog_entries`.`sub_electrician_hours`) `sub_electrician_hours`,
+                sum(`dailylog_entries`.`sub_refrigeration_hours`) `sub_refrigeration_hours`,
+                sum(`dailylog_entries`.`sub_air_balance_hours`) `sub_air_balance_hours`,
+                sum(`dailylog_entries`.`sub_sheet_metal_hours`) `sub_sheet_metal_hours`, 
+                sum(`dailylog_entries`.`sub_core_drill_hours`) `sub_core_drill_hours`,
+                sum(`dailylog_entries`.`sub_fire_caulk_hours`) `sub_fire_caulk_hours`,
+                sum(`dailylog_entries`.`sub_fire_protection_hours`) `sub_fire_protection_hours`,
+                sum(`dailylog_entries`.`sub_chemical_treatment_hours`) `sub_chemical_treatment_hours`,
+                sum(`dailylog_entries`.`sub_fuel_tank_install_and_piping_hours`) `sub_fuel_tank_install_and_piping_hours`,
+                sum(`dailylog_entries`.`sub_excavation_hours`) `sub_excavation_hours`
+            FROM
+                `global`.`dailylog_entries`
+            WHERE
+                dailylog_id = '$dailylog_id'
+            ";
+        
+$result = mysql_query( $sql );
+$dailylog_entry_info = mysql_fetch_object( $result );
+?>
+    	<table id="dailylog_totals" border="1" cellspacing="0" cellpadding="1" style="border: 1px solid black; font-size: 12px; ">
+            <tr bgcolor=$fd_color_4><td>
+                <b>Our Craft</b>
+            </td><td>
+                <b>Count</b>
+            </td><td>
+                <b>Hours</b>
+            </td></tr>
+            
+            <tr><td>
+                General Foreman
+            </td><td>
+                <?php echo $dailylog_entry_info->our_general_foreman_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_general_foreman_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Plumbing Foreman
+            </td><td>
+                <?php echo $dailylog_entry_info->our_plumbing_foreman_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_plumbing_foreman_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Plumbing Journeyman
+            </td><td>
+                <?php echo $dailylog_entry_info->our_plumbing_journeyman_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_plumbing_journeyman_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Plumbing Apprentices
+            </td><td>
+                <?php echo $dailylog_entry_info->our_plumbing_apprentice_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_plumbing_apprentice_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Steamfitter Foreman
+            </td><td>
+                <?php echo $dailylog_entry_info->our_steamfitter_foreman_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_steamfitter_foreman_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Steamfitter Journeyman
+            </td><td
+                <?php echo $dailylog_entry_info->our_steamfitter_journeyman_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_steamfitter_journeyman_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Steamfitter Apprentices
+            </td><td>
+                <?php echo $dailylog_entry_info->our_steamfitter_apprentice_count; ?>
+            </td><td
+                <?php echo $dailylog_entry_info->our_steamfitter_apprentice_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Laborers
+            </td><td>
+                <?php echo $dailylog_entry_info->our_laborer_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_laborer_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Truck Driver
+            </td><td>
+                <?php echo $dailylog_entry_info->our_truck_driver_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_truck_driver_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Operating Engineer
+            </td><td>
+                <?php echo $dailylog_entry_info->our_operating_engineer_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_operating_engineer_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Millwright
+            </td><td>
+                <?php echo $dailylog_entry_info->our_millwright_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_millwright_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Carpenter
+            </td><td>
+                <?php echo $dailylog_entry_info->our_carpenter_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_carpenter_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Sheetmetal
+            </td><td>
+                <?php echo $dailylog_entry_info->our_sheetmetal_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_sheetmetal_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Sheetmetal Foreman
+            </td><td>
+                <?php echo $dailylog_entry_info->our_sheetmetal_foreman_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_sheetmetal_foreman_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Sheetmetal Journeyman
+            </td><td>
+                <?php echo $dailylog_entry_info->our_sheetmetal_journeyman_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_sheetmetal_journeyman_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Sheetmetal Apprentices
+            </td><td>
+                <?php echo $dailylog_entry_info->our_sheetmetal_apprentice_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_sheetmetal_apprentice_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Helper
+            </td><td>
+                <?php echo $dailylog_entry_info->our_helper_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_helper_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Refrigeration
+            </td><td>
+                <?php echo $dailylog_entry_info->our_refrigeration_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->our_refrigeration_hours; ?>
+            </td></tr>
+        
+            <tr bgcolor=$fd_color_4><td>
+                <b>Subcontractors</b>
+            </td><td>
+                <b>Count</b>
+            </td><td>
+                <b>Hours</b>
+            </td></tr>
+            
+            <tr><td>
+                Temperature Control
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_temperature_control_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_temperature_control_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Insulation
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_insulation_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_insulation_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Painters
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_painter_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_painter_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Sewer Men
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_sewer_men_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_sewer_men_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Electrician
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_electrician_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_electrician_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Refrigeration
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_refrigeration_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_refrigeration_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Air Balance
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_air_balance_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_air_balance_hours; ?>
+            </td></tr>
+            
+            <tr><td>
+                Sheet Metal
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_sheet_metal_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_sheet_metal_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Core Drill
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_core_drill_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_core_drill_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Fire Caulk
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_fire_caulk_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_fire_caulk_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Fire Protection
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_fire_protection_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_fire_protection_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Chemical Treatment
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_chemical_treatment_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_chemical_treatment_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Fuel Tank Install/Piping
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_fuel_tank_install_and_piping_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_fuel_tank_install_and_piping_hours; ?>
+            </td></tr>
+        
+            <tr><td>
+                Excavation
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_excavation_count; ?>
+            </td><td>
+                <?php echo $dailylog_entry_info->sub_excavation_hours; ?>
+            </td></tr>
+	</table>
+</div>
+
+
+</div>
+<script>
+    setTimeout("ajaxManager('load_page','/global/front_desk?mode=my_jobs_menu','my_jobs_drop')",100);
+	setTimeout("ajaxManager('load_page','/global/front_desk?mode=recent_jobs_menu','recent_jobs_drop')",200);
+</script>
